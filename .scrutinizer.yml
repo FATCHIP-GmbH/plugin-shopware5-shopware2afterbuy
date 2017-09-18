@@ -1,0 +1,151 @@
+checks:
+    php:
+        code_rating: true
+        duplication: true
+        fix_php_opening_tag: false
+        remove_php_closing_tag: false
+        one_class_per_file: false
+        side_effects_or_types: true
+        no_mixed_inline_html: false
+        require_braces_around_control_structures: false
+        php5_style_constructor: false
+        no_global_keyword: true
+        avoid_usage_of_logical_operators: true
+        psr2_class_declaration: true
+        no_underscore_prefix_in_properties: false
+        no_underscore_prefix_in_methods: false
+        blank_line_after_namespace_declaration: false
+        single_namespace_per_use: true
+        psr2_switch_declaration: true
+        psr2_control_structure_declaration: false
+        avoid_superglobals: false
+        security_vulnerabilities: false
+        no_exit: true
+        return_doc_comment_if_not_inferrable: true
+        parameter_doc_comments: true
+        simplify_boolean_return: true
+        uppercase_constants: true
+        properties_in_camelcaps: true
+        parameters_in_camelcaps: true
+        no_goto: true
+        return_doc_comments: true
+        check_method_contracts:
+            verify_interface_like_constraints: true
+            verify_documented_constraints: true
+            verify_parent_constraints: true
+        prefer_while_loop_over_for_loop: true
+        param_doc_comment_if_not_inferrable: true
+        newline_at_end_of_file: true
+        custom_coding_standard:
+            ruleset_path: Build/ruleset.xml
+    javascript: true
+
+filter:
+    excluded_paths:
+        - "Build/"
+        - "Views/backend/_resources/js/"
+
+coding_style:
+    php:
+        indentation:
+            general:
+                use_tabs: false
+                size: 4
+            switch:
+                indent_case: true
+        spaces:
+            general:
+                linefeed_character: newline
+            before_parentheses:
+                function_declaration: false
+                closure_definition: true
+                function_call: false
+                if: true
+                for: true
+                while: true
+                switch: true
+                catch: true
+                array_initializer: false
+            around_operators:
+                assignment: true
+                logical: true
+                equality: true
+                relational: true
+                bitwise: true
+                additive: true
+                multiplicative: true
+                shift: true
+                unary_additive: false
+                concatenation: true
+                negation: false
+            before_left_brace:
+                class: true
+                function: true
+                if: true
+                else: true
+                for: true
+                while: true
+                do: true
+                switch: true
+                try: true
+                catch: true
+                finally: true
+            before_keywords:
+                else: true
+                while: true
+                catch: true
+                finally: true
+            within:
+                brackets: false
+                array_initializer: false
+                grouping: false
+                function_call: false
+                function_declaration: false
+                if: false
+                for: false
+                while: false
+                switch: false
+                catch: false
+                type_cast: false
+            ternary_operator:
+                before_condition: true
+                after_condition: true
+                before_alternative: true
+                after_alternative: true
+                in_short_version: false
+            other:
+                before_comma: false
+                after_comma: true
+                before_semicolon: false
+                after_semicolon: true
+                after_type_cast: true
+        braces:
+            classes_functions:
+                class: new-line
+                function: new-line
+                closure: end-of-line
+            if:
+                opening: end-of-line
+                always: true
+                else_on_new_line: false
+            for:
+                opening: end-of-line
+                always: true
+            while:
+                opening: end-of-line
+                always: true
+            do_while:
+                opening: end-of-line
+                always: true
+                while_on_new_line: false
+            switch:
+                opening: end-of-line
+            try:
+                opening: end-of-line
+                catch_on_new_line: false
+                finally_on_new_line: false
+        upper_lower_casing:
+            keywords:
+                general: lower
+            constants:
+                true_false_null: lower

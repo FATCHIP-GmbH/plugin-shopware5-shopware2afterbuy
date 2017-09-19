@@ -44,7 +44,7 @@ class Backend implements SubscriberInterface
             return;
         }
 
-        $view->extendsTemplate('backend/index/afterbuy.tpl');
+        $view->extendsTemplate('backend/index/shopware2afterbuy.tpl');
     }
 
 }

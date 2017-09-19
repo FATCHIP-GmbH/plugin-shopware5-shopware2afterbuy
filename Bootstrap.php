@@ -134,15 +134,15 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         $this->createMenuItem([
             'label' => 'Shopware2Afterbuy',
             'onclick' => 'createSimpleModule("FatchipShopware2AfterbuyAdmin", { "title": "Shopware2Afterbuy" })',
-            'class' => 'icon-hermes',
+            'class' => 'icon-afterbuy',
             'active' => 1,
             'parent' => $this->Menu()->findOneBy(['controller' => 'Customer'])
         ]);
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
         // Todo
-        $this->subscribeEvent('Shopware_CronJob_HermesExchange', 'onRunCronJob');
-        $this->createCronJob('Fatchip Shopware2Afterbuy', 'HermesExchange', 600);
+        // $this->subscribeEvent('Shopware_CronJob_HermesExchange', 'onRunCronJob');
+        // $this->createCronJob('Fatchip Shopware2Afterbuy', 'HermesExchange', 600);
 
         $this->updateSchema();
 
@@ -163,8 +163,6 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         $classes = $this->getModelClasses($em);
 
         $tool->dropSchema($classes);
-
-        $service = $this->get('shopware_attribute.crud_service');
 
         return $this->disable();
     }
@@ -300,7 +298,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
     public function getModelClasses(\Shopware\Components\Model\ModelManager $em)
     {
         return [
-            $em->getClassMetadata('Shopware\CustomModels\FatchipHermesShipping\PluginConfig'),
+            $em->getClassMetadata('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'),
         ];
     }
 }

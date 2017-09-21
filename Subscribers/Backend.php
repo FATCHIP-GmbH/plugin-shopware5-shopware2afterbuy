@@ -21,6 +21,8 @@ class Backend implements SubscriberInterface
         return [
             'Enlight_Controller_Action_PostDispatch_Backend_Index' =>
                 'onPostDispatchBackendIndex',
+            'Enlight_Controller_Action_PostDispatchSecure_Backend_ArticleList' =>
+                'onPostDispatchSecureBackendArticleList',
         ];
     }
 
@@ -45,6 +47,21 @@ class Backend implements SubscriberInterface
         }
 
         $view->extendsTemplate('backend/index/shopware2afterbuy.tpl');
+    }
+
+    /**
+     * Adds the ExtJS template extension to the ArticleList module
+     *
+     * @param \Enlight_Event_EventArgs $args
+     */
+    public function onPostDispatchSecureBackendArticleList(\Enlight_Event_EventArgs $args)
+    {
+        /** @var $controller \Enlight_Controller_Action */
+        $controller = $args->get('subject');
+
+        if ($controller->Request()->getActionName() == 'load') {
+            $controller->View()->extendsTemplate('backend/fatchip_shopware2_afterbuy_article_list/view/main/afterbuy.js');
+        }
     }
 
 }

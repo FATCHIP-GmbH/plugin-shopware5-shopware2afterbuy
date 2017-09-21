@@ -140,9 +140,8 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         ]);
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
-        // Todo
-        // $this->subscribeEvent('Shopware_CronJob_HermesExchange', 'onRunCronJob');
-        // $this->createCronJob('Fatchip Shopware2Afterbuy', 'HermesExchange', 600);
+        $this->subscribeEvent('Shopware_CronJob_AfterBuyExport', 'onRunCronJob');
+        $this->createCronJob('Afterbuy Article Export', 'AfterBuyExport', 600);
 
         $this->updateSchema();
 
@@ -262,6 +261,17 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
      */
     public function onRunCronJob(Enlight_Components_Cron_EventArgs $job)
     {
+        $logger = $this->get('pluginlogger')->withName('hermes');
+        $logger->info(date('Y-m-d H:i:s > ') . 'Hermes cronjob started.');
+
+        $this->registerMyComponents();
+        $this->registerCustomModels();
+        $this->Application()->Events()->addSubscriber(
+            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service()
+        );
+
+        $cronjob = new CronJob();
+        $cronjob->exportArticles2Afterbuy();
     }
 
     /**

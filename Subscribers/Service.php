@@ -36,6 +36,10 @@ class Service implements SubscriberInterface
             ->Models()
             ->getRepository('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig')
             ->find(1);
+        // Todo better error handling returns (No service Returned Exception)
+        if (!$configObject){
+            return;
+        }
         $configArray = $configObject->toCompatArray();
         return new fcafterbuyapi($configArray);
     }

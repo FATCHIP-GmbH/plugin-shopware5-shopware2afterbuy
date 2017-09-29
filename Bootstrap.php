@@ -333,6 +333,23 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
                 // user can not modify the attribute in the free text field module
                 'custom'           => false,
             ]);
+        $this->get('shopware_attribute.crud_service')
+            ->update('s_articles_attributes', 'afterbuy_ProductID', 'boolean', [
+                // label that is going to be displayed for this attribute
+                'label'            => 'Afterbuy ProductID',
+
+                // user has the opportunity to translate the attribute field for each shop
+                'translatable'     => false,
+
+                // attribute will be displayed in the backend module
+                'displayInBackend' => true,
+
+                // numeric position for the backend view, sorted ascending
+                'position'         => 2,
+
+                // user can not modify the attribute in the free text field module
+                'custom'           => false,
+            ]);
         $this->get('models')->generateAttributeModels(['s_articles_attributes']);
     }
 

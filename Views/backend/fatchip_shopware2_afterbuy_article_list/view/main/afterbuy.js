@@ -35,6 +35,16 @@ Ext.override(Shopware.apps.ArticleList.view.main.Grid, {
                 console.log("Afterbuy Attribute found and made visible")
                 console.log(column);
             }
+            if (column.dataIndex === 'Attribute_afterbuyProductid'){
+                column.header = "Afterbuy ProductID";
+                column.hidden = false;
+                column.editor = {
+                    xtype: 'textfield'
+                };
+
+                console.log("Afterbuy ProductID Attribute found and made visible")
+                console.log(column);
+            }
         }
         return columns;
     }

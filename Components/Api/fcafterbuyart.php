@@ -76,7 +76,6 @@ class fcafterbuyart
         'ManufacturerStandardProductIDValue' => null,
         'ProductBrand' => null,
         'CustomsTariffNumber' => null,
-        'ManufacturerPartNumber' => null,
         'GoogleProductCategory' => null,
         'Condition' => null,
         'Pattern' => null,

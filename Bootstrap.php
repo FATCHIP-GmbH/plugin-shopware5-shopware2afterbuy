@@ -140,8 +140,10 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         ]);
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
-        $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleExport', 'onRunCronJob');
+        $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleExport', 'onRunArticleExportCronJob');
+        $this->subscribeEvent('Shopware_CronJob_AfterBuyOrderImport', 'onRunOrderImportCronJob');
         $this->createCronJob('Afterbuy Article Export', 'AfterBuyArticleExport', 600);
+        $this->createCronJob('Afterbuy Order Import', 'AfterBuyOrderImport', 600);
 
         $this->updateSchema();
 
@@ -259,10 +261,10 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
     /**
      * @param Enlight_Components_Cron_EventArgs $job
      */
-    public function onRunCronJob(Enlight_Components_Cron_EventArgs $job)
+    public function onRunArticleExportCronJob(Enlight_Components_Cron_EventArgs $job)
     {
         $logger = $this->get('pluginlogger')->withName('shopware2afterbuy');
-        $logger->info(date('Y-m-d H:i:s > ') . 'shopware2afterbuy cronjob started.');
+        $logger->info(date('Y-m-d H:i:s > ') . 'shopware2afterbuy article export cronjob started.');
 
         $this->registerMyComponents();
         $this->registerCustomModels();
@@ -272,6 +274,24 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
 
         $cronjob = new CronJob();
         $cronjob->exportMainArticles2Afterbuy();
+    }
+
+    /**
+     * @param Enlight_Components_Cron_EventArgs $job
+     */
+    public function onRunOrderImportCronJob(Enlight_Components_Cron_EventArgs $job)
+    {
+        $logger = $this->get('pluginlogger')->withName('shopware2afterbuy');
+        $logger->info(date('Y-m-d H:i:s > ') . 'shopware2afterbuy order import cronjob started.');
+
+        $this->registerMyComponents();
+        $this->registerCustomModels();
+        $this->Application()->Events()->addSubscriber(
+            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service()
+        );
+
+        $cronjob = new CronJob();
+        $cronjob->importOrdersFromAfterbuy();
     }
 
     /**

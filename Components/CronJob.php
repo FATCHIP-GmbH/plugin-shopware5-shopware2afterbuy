@@ -101,6 +101,13 @@ class CronJob
         return true;
     }
 
+    public function importOrdersFromAfterbuy()
+    {
+        $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
+
+        return true;
+    }
+
     private function  mapAfterbuyArticleAttributes($article,$detail)
     {
         $fcAfterbuyArt = new Api\fcafterbuyart();

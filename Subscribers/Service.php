@@ -21,7 +21,7 @@ class Service implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Bootstrap_InitResource_fatchip_shopware2Afterbuy_api_client' =>
+            'Enlight_Bootstrap_InitResource_fatchip_shopware2afterbuy_api_client' =>
                 'onInitApiClient',
         ];
     }

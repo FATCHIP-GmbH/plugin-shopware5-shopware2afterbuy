@@ -140,8 +140,8 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         ]);
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
-        $this->subscribeEvent('Shopware_CronJob_AfterBuyExport', 'onRunCronJob');
-        $this->createCronJob('Afterbuy Article Export', 'AfterBuyExport', 600);
+        $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleExport', 'onRunCronJob');
+        $this->createCronJob('Afterbuy Article Export', 'AfterBuyArticleExport', 600);
 
         $this->updateSchema();
 
@@ -261,8 +261,8 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
      */
     public function onRunCronJob(Enlight_Components_Cron_EventArgs $job)
     {
-        $logger = $this->get('pluginlogger')->withName('hermes');
-        $logger->info(date('Y-m-d H:i:s > ') . 'Hermes cronjob started.');
+        $logger = $this->get('pluginlogger')->withName('shopware2afterbuy');
+        $logger->info(date('Y-m-d H:i:s > ') . 'shopware2afterbuy cronjob started.');
 
         $this->registerMyComponents();
         $this->registerCustomModels();
@@ -271,7 +271,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         );
 
         $cronjob = new CronJob();
-        $cronjob->exportArticles2Afterbuy();
+        $cronjob->exportMainArticles2Afterbuy();
     }
 
     /**
@@ -334,7 +334,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
                 'custom'           => false,
             ]);
         $this->get('shopware_attribute.crud_service')
-            ->update('s_articles_attributes', 'afterbuy_ProductID', 'boolean', [
+            ->update('s_articles_attributes', 'afterbuy_productid', 'integer', [
                 // label that is going to be displayed for this attribute
                 'label'            => 'Afterbuy ProductID',
 

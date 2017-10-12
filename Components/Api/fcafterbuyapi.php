@@ -243,6 +243,7 @@ class fcafterbuyapi {
                             <Discontinued>1</Discontinued>
                             <MergeStock>1</MergeStock>
                             <SellingPrice>' . $oArt->SellingPrice . '</SellingPrice>
+                            <DealerPrice>' . $oArt->DealerPrice . '</DealerPrice>
                             <ImageSmallURL>'.$oArt->ImageSmallURL.'</ImageSmallURL>
                             <ImageLargeURL>'.$oArt->ImageLargeURL.'</ImageLargeURL>
                             <ProductBrand>'.$oArt->ProductBrand.'</ProductBrand>

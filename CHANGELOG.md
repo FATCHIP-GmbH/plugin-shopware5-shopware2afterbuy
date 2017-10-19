@@ -1,3 +1,3 @@
-# Changelog - Shopware2afterbuy plugin for Shopware 5
+# Changelog - shopware2afterbuy plugin for Shopware 5
 
 * Initial plugin development.

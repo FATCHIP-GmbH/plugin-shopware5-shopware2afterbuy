@@ -1,8 +1,11 @@
 <?php
 
 namespace Shopware\FatchipShopware2Afterbuy\Components;
-
-use Doctrine\DBAL\Connection;
+use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Detail;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Customer\Customer;
+use Shopware\Models\Shop\Shop;
 
 /**
  * Class CronJob
@@ -11,13 +14,19 @@ use Doctrine\DBAL\Connection;
  */
 class CronJob
 {
+    /**
+     * @return bool
+     */
     public function exportMainArticles2Afterbuy()
     {
-        // Main Articles have no configurator_set_id defined
+
+        // ToDo Does not work with empty or wrong config
+        // handle this in Constructor?
+        /** @var \fcafterbuyapi $client */
         $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
 
         // Get all Articles where after Attribute is set
-
+        // Main Articles have no configurator_set_id defined
         $builder = Shopware()->Models()->createQueryBuilder();
 
         $builder->select([
@@ -71,6 +80,7 @@ class CronJob
 
         $afterbuyArticles = $builder->getQuery()->getArrayResult();
         foreach ($afterbuyArticles as $article) {
+            /** @var \Shopware\Models\Article\Repository $articleRepo */
             $articleRepo = Shopware()->Models()->getRepository('Shopware\Models\Article\Article');
             $idQuery = $articleRepo->getConfiguratorListIdsQuery(
                 $article['id']
@@ -92,6 +102,7 @@ class CronJob
                 $detail['prices'] = $this->formatPricesFromNetToGross($detail['prices'], $article['tax']);
             }
 
+            // ToDo shouldnt this be in foreach above?
              $mappedAfterbuyArticle = $this->mapAfterbuyArticleAttributes($article,$detail);
              $response = $client->updateArticleToAfterbuy($mappedAfterbuyArticle);
 
@@ -101,18 +112,17 @@ class CronJob
         return true;
     }
 
-    public function importOrdersFromAfterbuy()
-    {
-        $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
 
-        return true;
-    }
-
-    private function  mapAfterbuyArticleAttributes($article,$detail)
+    /**
+     * @param $article Article
+     * @param $detail Detail
+     * @return \fcafterbuyart|mixed
+     */
+    private function  mapAfterbuyArticleAttributes($article, $detail)
     {
-        $fcAfterbuyArt = new Api\fcafterbuyart();
-        $fcAfterbuyArt = $this->mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article, $detail);
-        $fcAfterbuyArt = $this->mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article, $detail);
+        $fcAfterbuyArt = new \fcafterbuyart();
+        $fcAfterbuyArt = $this->mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article);
+        $fcAfterbuyArt = $this->mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article);
 
         $fcAfterbuyArt->UserProductID           = null;  // Integer
         $fcAfterbuyArt->Anr                     = $article['id']; //Float
@@ -189,14 +199,25 @@ class CronJob
         return $fcAfterbuyArt;
     }
 
-    private function  mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article, $detail)
+
+    /**
+     * @param $fcAfterbuyArt \fcafterbuyart
+     * @param $article Article
+     * @return \fcafterbuyart|mixed
+     */
+    private function  mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article)
     {
         $fcAfterbuyArt->Name                    = $article['name']; // String
 
         return $fcAfterbuyArt;
     }
 
-    private function  mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article, $detail)
+    /**
+     * @param $fcAfterbuyArt \fcafterbuyart
+     * @param $article Article
+     * @return  \fcafterbuyart|mixed
+     */
+    private function  mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article)
     {
         $i = 1;
         foreach ($article['images'] as $image){
@@ -250,8 +271,8 @@ class CronJob
     /**
      * Adds afterbuy id to article dataset
      *
-     * @param $sArticleOxid
-     * @param $sResponse
+     * @param integer $articleId
+     * @param string $response
      * @return void
      */
     protected function _fcAddAfterbuyIdToArticle($articleId, $response)
@@ -259,7 +280,9 @@ class CronJob
         $oXml = simplexml_load_string($response);
         $productId = (string) $oXml->Result->NewProducts->NewProduct->ProductID;
         if ($productId) {
+            /** @var Article $article */
             $article = Shopware()->Models()->getRepository('Shopware\Models\Article\Article')->find($articleId);
+            /** @var \Shopware\Models\Attribute\Article $articleAttributes */
             $articleAttributes = $article->getAttribute();
             $articleAttributes->setAfterbuyProductid($productId);
             Shopware()->Models()->persist($articleAttributes);
@@ -267,6 +290,11 @@ class CronJob
         }
     }
 
+
+    /**
+     * @param integer $mediaId
+     * @return string
+     */
     protected function getImageSeoUrl($mediaId)
     {
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
@@ -277,6 +305,10 @@ class CronJob
         return $mediaService->getUrl($mediaImage->getPath());
     }
 
+    /**
+     * @param integer $articleId
+     * @return string
+     */
     protected function getArticleSeoUrl($articleId)
     {
 
@@ -293,5 +325,137 @@ class CronJob
 
         // ToDo http / https support
         return isset($row['path']) ? "http://{$host}/{$row['path']}" : "";
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function importOrdersFromAfterbuy()
+    {
+        // ToDO Does not work with empty or wrong config
+        /** @var \fcafterbuyapi $client */
+        $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
+
+        $response = $client->getSoldItemsFromAfterbuy();
+
+        $xmlResponse = simplexml_load_string($response);
+
+        if (!$xmlResponse){
+            // Nothing To Do
+            // ToDo Write Log Entry??
+            return true;
+        }
+        // ToDo validate Response (CallStatus)
+        foreach ($xmlResponse->Result->Orders->Order as $xmlOrder) {
+            $afterbuyOrder = new \fcafterbuyorder();
+            $afterbuyOrder->createOrderByApiResponse($xmlOrder);
+
+            // Benutzer Anlegen / Updaten falls vorhanden
+            $this->createCustomer($afterbuyOrder);
+
+            //
+        }
+        return true;
+    }
+
+
+    /**
+     * @param $afterbuyOrder \fcafterbuyorder
+     */
+    private function createCustomer(\fcafterbuyorder $afterbuyOrder){
+        // Set the Shop context instance for CLI
+        // ToDo support Subshops
+        $this->setupContext(1);
+        $registerService =  Shopware()->Container()->get('shopware_account.register_service');
+        $context = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext()->getShop();
+
+        // check if email address already exists as UserAccount (accountMode ACCOUNT_MODE_FAST_LOGIN (1)
+        $emailAddress = $afterbuyOrder->BuyerInfo['BillingAddress']->Mail;
+        /** @var Customer $customer */
+        $customer = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+            ->findOneBy(['email' => $emailAddress, 'accountMode' => 'ACCOUNT_MODE_FAST_LOGIN']);
+
+        if (!$customer){
+            $swCustomer = new Customer();
+            $this->mapAfterbuyCustomer($afterbuyOrder->BuyerInfo['BillingAddress'], $swCustomer);
+            $billingAddress  = $this->mapAfterbuyBillingAddress($afterbuyOrder->BuyerInfo['BillingAddress']);
+            $shippingAddress = $this->mapAfterbuyShippingAddress($afterbuyOrder->BuyerInfo['ShippingAddress']);
+
+            $registerService->register($context, $swCustomer, $billingAddress, $shippingAddress );
+        }
+    }
+
+    /**
+     * @param $billingAddress \fcafterbuyaddress
+     * @param $swCustomer Customer
+     * @return Customer
+     */
+    private function mapAfterbuyCustomer($billingAddress, $swCustomer){
+        $swCustomer->setAccountMode(Customer::ACCOUNT_MODE_FAST_LOGIN);
+        $swCustomer->setActive(false);
+        $swCustomer->setCustomerType(Customer::CUSTOMER_TYPE_PRIVATE);
+        // ToDo Firma
+        //$swCustomer->setCustomerType(Customer::CUSTOMER_TYPE_BUSINESS);
+        //$swCustomer->setBirthday($buyerInfo->) // Missing???
+        $swCustomer->setEmail($billingAddress->Mail);
+        $swCustomer->setFirstname($billingAddress->FirstName);
+        $swCustomer->setLastname($billingAddress->LastName);
+        if ($billingAddress->Title === 'Herr'){
+            $swCustomer->setSalutation('mr');
+        } else {
+            $swCustomer->setSalutation('ms');
+        }
+
+        // ToDO
+        //$swCustomer->setPaymentId()
+        return($swCustomer);
+    }
+
+    /**
+     * @param $afterbuyBillingAddress \fcafterbuyaddress
+     * @return Address
+     */
+    private function mapAfterbuyBillingAddress($afterbuyBillingAddress){
+        $swBillingAddress = new Address();
+        $swBillingAddress->setFirstname($afterbuyBillingAddress->FirstName);
+
+        return($swBillingAddress);
+    }
+
+    /**
+     * @param $afterbuyShippingAddress \fcafterbuyaddress
+     * @return Address
+     */
+    private function mapAfterbuyShippingAddress($afterbuyShippingAddress){
+        $swShippingAddress = new Address();
+        $swShippingAddress->setFirstname($afterbuyShippingAddress->FirstName);
+
+        return($swShippingAddress);
+    }
+
+    /**
+     * Sets the correct context for e.g. validation
+     *
+     * @param int $shopId
+     *
+     * @throws \Exception
+     */
+    private function setupContext($shopId = null)
+    {
+        /** @var \Shopware\Models\Shop\Repository; $shopRepository */
+        $shopRepository = Shopware()->Container()->get('models')->getRepository(Shop::class);
+
+        if ($shopId) {
+            /** @var Shop $shop */
+            $shop = $shopRepository->getActiveById($shopId);
+            if (!$shop) {
+                throw new \Exception(sprintf('Shop by id %s not found', $shopId));
+            }
+        } else {
+            $shop = $shopRepository->getActiveDefault();
+        }
+
+        $shop->registerResources();
     }
 }

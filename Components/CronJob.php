@@ -3,6 +3,7 @@
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
+use Shopware\Models\Country\Country;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
 use Shopware\Models\Shop\Shop;
@@ -371,16 +372,21 @@ class CronJob
         $context = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext()->getShop();
 
         // check if email address already exists as UserAccount (accountMode ACCOUNT_MODE_FAST_LOGIN (1)
-        $emailAddress = $afterbuyOrder->BuyerInfo['BillingAddress']->Mail;
+        $emailAddress = $afterbuyOrder->BuyerInfoBilling->Mail;
         /** @var Customer $customer */
         $customer = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
             ->findOneBy(['email' => $emailAddress, 'accountMode' => 'ACCOUNT_MODE_FAST_LOGIN']);
 
         if (!$customer){
             $swCustomer = new Customer();
-            $this->mapAfterbuyCustomer($afterbuyOrder->BuyerInfo['BillingAddress'], $swCustomer);
-            $billingAddress  = $this->mapAfterbuyBillingAddress($afterbuyOrder->BuyerInfo['BillingAddress']);
-            $shippingAddress = $this->mapAfterbuyShippingAddress($afterbuyOrder->BuyerInfo['ShippingAddress']);
+            $this->mapAfterbuyCustomer($afterbuyOrder->BuyerInfoBilling, $swCustomer);
+            $billingAddress  = $this->mapAfterbuyBillingAddress($afterbuyOrder->BuyerInfoBilling);
+            // in case there is no shippingAdresse use billingAddress
+            if (!$afterbuyOrder->BuyerInfoShipping){
+                $shippingAddress = $billingAddress;
+            } else {
+                $shippingAddress = $this->mapAfterbuyShippingAddress($afterbuyOrder->BuyerInfoShipping);
+            }
 
             $registerService->register($context, $swCustomer, $billingAddress, $shippingAddress );
         }
@@ -419,6 +425,18 @@ class CronJob
     private function mapAfterbuyBillingAddress($afterbuyBillingAddress){
         $swBillingAddress = new Address();
         $swBillingAddress->setFirstname($afterbuyBillingAddress->FirstName);
+        $swBillingAddress->setLastname($afterbuyBillingAddress->LastName);
+        if ($afterbuyBillingAddress->Title === 'Herr'){
+            $swBillingAddress->setSalutation('mr');
+        } else {
+            $swBillingAddress->setSalutation('ms');
+        }
+        $swBillingAddress->setStreet($afterbuyBillingAddress->Street);
+        $swBillingAddress->setAdditionalAddressLine1($afterbuyBillingAddress->Street2);
+        $swBillingAddress->setPhone($afterbuyBillingAddress->Phone);
+        $swBillingAddress->setZipcode($afterbuyBillingAddress->PostalCode);
+        $swBillingAddress->setCity($afterbuyBillingAddress->City);
+        $swBillingAddress->setCountry($this->getCountryByIso($afterbuyBillingAddress->CountryISO));
 
         return($swBillingAddress);
     }
@@ -430,6 +448,18 @@ class CronJob
     private function mapAfterbuyShippingAddress($afterbuyShippingAddress){
         $swShippingAddress = new Address();
         $swShippingAddress->setFirstname($afterbuyShippingAddress->FirstName);
+        $swShippingAddress->setLastname($afterbuyShippingAddress->LastName);
+        if ($afterbuyShippingAddress->Title === 'Herr'){
+            $swShippingAddress->setSalutation('mr');
+        } else {
+            $swShippingAddress->setSalutation('ms');
+        }
+        $swShippingAddress->setStreet($afterbuyShippingAddress->Street);
+        $swShippingAddress->setAdditionalAddressLine1($afterbuyShippingAddress->Street2);
+        $swShippingAddress->setPhone($afterbuyShippingAddress->Phone);
+        $swShippingAddress->setZipcode($afterbuyShippingAddress->PostalCode);
+        $swShippingAddress->setCity($afterbuyShippingAddress->City);
+        $swShippingAddress->setCountry($this->getCountryByIso($afterbuyShippingAddress->CountryISO));
 
         return($swShippingAddress);
     }
@@ -458,4 +488,26 @@ class CronJob
 
         $shop->registerResources();
     }
+
+
+    /**
+     * @param string $isoCode
+     * @return Country $country
+     */
+    private function getCountryByIso($isoCode){
+
+        /** @var \Shopware\Models\Country\Repository $countryRepository */
+        $countryRepository = Shopware()->Container()->get('models')->getRepository(Country::class);
+
+        if ($isoCode){
+            $country = $countryRepository->findOneBy(['iso' => $isoCode ]);
+        } else {
+            // get default Country from Shop ???
+        }
+
+        return $country;
+
+    }
+
+
 }

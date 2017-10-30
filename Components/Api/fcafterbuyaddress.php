@@ -35,8 +35,7 @@ class fcafterbuyaddress
      * @return void
      */
     public function createBillingAddressFromOrderResponse($oXmlOrder) {
-        $oBillingAddress = $oXmlOrder->BuyerInfoBilling->BillingAddress;
-        $this->createShippingAddressFromOrderResponse($oXmlOrder);
+        $oBillingAddress = $oXmlOrder->BuyerInfo->BillingAddress;
 
         $this->AfterbuyUserID = (string) $oBillingAddress->AfterbuyUserID;
         $this->AfterbuyUserIDAlt = (string) $oBillingAddress->AfterbuyUserIDAlt;
@@ -47,6 +46,17 @@ class fcafterbuyaddress
         $this->Mail = (string) $oBillingAddress->Mail;
         $this->IsMerchant = (string) $oBillingAddress->IsMerchant;
         $this->TaxIDNumber = (string) $oBillingAddress->TaxIDNumber;
+
+        $this->FirstName = (string) $oBillingAddress->FirstName;
+        $this->LastName = (string) $oBillingAddress->LastName;
+        $this->Company = (string) $oBillingAddress->Company;
+        $this->Street = (string) $oBillingAddress->Street;
+        $this->Street2 = (string) $oBillingAddress->Street2;
+        $this->PostalCode = (string) $oBillingAddress->PostalCode;
+        $this->City = (string) $oBillingAddress->City;
+        $this->StateOrProvince = (string) $oBillingAddress->StateOrProvince;
+        $this->Country = (string) $oBillingAddress->Country;
+        $this->CountryISO = (string) $oBillingAddress->CountryISO;
     }
 
     /**

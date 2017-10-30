@@ -35,7 +35,7 @@ class fcafterbuyaddress
      * @return void
      */
     public function createBillingAddressFromOrderResponse($oXmlOrder) {
-        $oBillingAddress = $oXmlOrder->BuyerInfo->BillingAddress;
+        $oBillingAddress = $oXmlOrder->BuyerInfoBilling->BillingAddress;
         $this->createShippingAddressFromOrderResponse($oXmlOrder);
 
         $this->AfterbuyUserID = (string) $oBillingAddress->AfterbuyUserID;

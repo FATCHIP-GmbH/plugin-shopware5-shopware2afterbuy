@@ -41,7 +41,7 @@ class fcafterbuysolditem
      * @param simplexml object
      * @return void
      */
-    public function createSoldItemFromXmlSoldItem($oXmlSoldItem) {
+    public function createSoldItemFromXml($oXmlSoldItem) {
         $oXmlSoldItem = $oXmlSoldItem->SoldItem;
         $this->ItemDetailsDone = (string) $oXmlSoldItem->ItemDetailsDone;
         $this->ItemID = (string) $oXmlSoldItem->ItemID;

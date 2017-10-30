@@ -180,8 +180,13 @@ class fcafterbuyapi {
         $sXmlData .= "<Orders>";
         $sXmlData .= "<Order>";
         $sXmlData .= "<OrderID>".$oOrderState->OrderID."</OrderID>";
-        $sXmlData .= "<PaymentInfo><PaymentDate>".$oOrderState->PaymentInfo->PaymentDate."</PaymentDate></PaymentInfo>";
-        $sXmlData .= "<ShippingInfo><DeliveryDate>".$oOrderState->ShippingInfo->DeliveryDate."</DeliveryDate></ShippingInfo>";
+        $sXmlData .= "<OrderExported>1</OrderExported>";
+        if (isset($oOrderState->PaymentInfo->PaymentDate)) {
+            $sXmlData .= "<PaymentInfo><PaymentDate>".$oOrderState->PaymentInfo->PaymentDate."</PaymentDate></PaymentInfo>";
+        }
+        if (isset($oOrderState->ShippingInfo->DeliveryDate)) {
+            $sXmlData .= "<ShippingInfo><DeliveryDate>".$oOrderState->ShippingInfo->DeliveryDate."</DeliveryDate></ShippingInfo>";
+        }
         $sXmlData .= "</Order>";
         $sXmlData .= "</Orders>";
         $sXmlData .= $this->getXmlFoot();
@@ -197,13 +202,12 @@ class fcafterbuyapi {
      * @return string
      */
     public function getSoldItemsFromAfterbuy() {
-        $sXmlData = $this->getXmlHead('GetSoldItems', 0);
+        $sXmlData = $this->getXmlHead('GetSoldItems', 30);
         $sXmlData .= "<MaxSoldItems>99</MaxSoldItems>";
         $sXmlData .= "<OrderDirection>1</OrderDirection>";
         $sXmlData .= "<RequestAllItems>1</RequestAllItems>";
         $sXmlData .= $this->getNewOrderFilter();
         $sXmlData .= $this->getXmlFoot();
-
         $sOutput = $this->requestAPI($sXmlData);
         return $sOutput;
     }
@@ -220,9 +224,10 @@ class fcafterbuyapi {
         if ($this->lastOrderId) {
             $sXmlData .= "<DataFilter>";
             $sXmlData .= "<Filter>";
-            $sXmlData .= "<FilterName>OnlyNewOrders</FilterName>";
+            $sXmlData .= "<FilterName>RangeID</FilterName>";
             $sXmlData .= "<FilterValues>";
             $sXmlData .= "<ValueFrom>".$this->lastOrderId."</ValueFrom>";
+            $sXmlData .= "<ValueTo>9999999999</ValueTo>";
             $sXmlData .= "</FilterValues>";
             $sXmlData .= "</Filter>";
             $sXmlData .= "</DataFilter>";

@@ -2,14 +2,13 @@
 
 use Shopware\Components\CSRFWhitelistAware;
 use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
-use Shopware\FatchipShopware2Afterbuy\Components\Api\fcafterbuyapi;
 
 /**
  * Backend controller
  */
 class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
-    /** @var string $configModel */
+    /** @var Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig $configModel */
     protected $configModel = 'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig';
 
     /**
@@ -67,12 +66,6 @@ class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight
         $config->setLogLevel(trim($params['LogLevel']));
         $this->get('models')->persist($config);
         $this->get('models')->flush($config);
-        //Todo: Check why forward does not work
-
-        // Todo: Test: Check Connection ot API
-        $ApiClient = new fcafterbuyapi($config->toCompatArray());
-        // ToDo Test: Request Afterbuy APi
-        $response = $ApiClient->fcGetAfterbuyTime();
         $this->forward('pluginConfig');
     }
 

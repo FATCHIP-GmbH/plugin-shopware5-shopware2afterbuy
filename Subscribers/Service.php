@@ -4,7 +4,6 @@ namespace Shopware\FatchipShopware2Afterbuy\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
-use Shopware\FatchipShopware2Afterbuy\Components\Api\fcafterbuyapi;
 
 /**
  * Class Service
@@ -27,10 +26,14 @@ class Service implements SubscriberInterface
     }
 
     /**
-     * @return fcafterbuyapi
+     * @return \fcafterbuyapi
      */
     public function onInitApiClient()
     {
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyapi.php';
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyart.php';
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyorder.php';
+
         /** @var  PluginConfig $configObject */
         $configObject = Shopware()
             ->Models()
@@ -41,6 +44,6 @@ class Service implements SubscriberInterface
             return;
         }
         $configArray = $configObject->toCompatArray();
-        return new fcafterbuyapi($configArray);
+        return new \fcafterbuyapi($configArray);
     }
 }

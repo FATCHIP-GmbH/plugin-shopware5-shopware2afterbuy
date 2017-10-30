@@ -138,7 +138,7 @@ class fcafterbuyorder
     /**
      * Contains keine Ahnung
      *
-     * @var string
+     * @var fcafterbuysolditem[]
      */
     public $SoldItems = null;
 

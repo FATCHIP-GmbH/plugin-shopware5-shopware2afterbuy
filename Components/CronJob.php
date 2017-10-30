@@ -352,9 +352,11 @@ class CronJob
             $afterbuyOrder = new \fcafterbuyorder();
             $afterbuyOrder->createOrderByApiResponse($xmlOrder);
 
-            // Benutzer Anlegen / Updaten falls vorhanden
-            $this->createCustomer($afterbuyOrder);
+            // Benutzer Anlegen / Todo Updaten falls vorhanden
 
+            // ToDo remove TempComment
+            // $this->createCustomer($afterbuyOrder);
+            $this->createOrder($afterbuyOrder);
             //
         }
         return true;
@@ -388,8 +390,38 @@ class CronJob
                 $shippingAddress = $this->mapAfterbuyShippingAddress($afterbuyOrder->BuyerInfoShipping);
             }
 
+
+            // ToDo log validation errors something like this:
+            /*
+            $violations = $this->getManager()->validate($order);
+                if ($violations->count() > 0) {
+                    throw new ApiException\ValidationException($violations);
+            }
+            */
+
             $registerService->register($context, $swCustomer, $billingAddress, $shippingAddress );
         }
+    }
+
+    /**
+     * @param $afterbuyOrder \fcafterbuyorder
+     */
+    private function createOrder(\fcafterbuyorder $afterbuyOrder){
+
+        // use Rest API Class ofr Order creation:
+        $orderResource = \Shopware\Components\Api\Manager::getResource('order');
+        //prepare Order creation Params
+        $orderParams = $this->getOrderParams($afterbuyOrder);
+        $orderResource->create($orderParams);
+        // Prerequisites for Order:
+
+        // Customer
+        // Payment
+        // Dispatch
+        // Shop //ToDo Subshop Support
+        // Billingaddress
+        // Shippingaddress
+        // OrderDetails / Orderpositions
     }
 
     /**
@@ -500,14 +532,286 @@ class CronJob
         $countryRepository = Shopware()->Container()->get('models')->getRepository(Country::class);
 
         if ($isoCode){
+            /** @var Country $country */
             $country = $countryRepository->findOneBy(['iso' => $isoCode ]);
         } else {
-            // get default Country from Shop ???
+            // ToDo get default Country from Shop or from User ???
+            // for now use DE
+            $country = $countryRepository->findOneBy(['iso' => 'DE' ]);
         }
 
         return $country;
 
     }
 
+    /**
+     * @param $afterbuyOrder \fcafterbuyorder
+     * @return array $params
+     */
+    private function getOrderParams($afterbuyOrder){
+
+        /* Example Params:
+        [
+            "customerId" => 1,
+            "paymentId" => 4,
+            "dispatchId" => 9,
+            "partnerId" => "",
+            "shopId" => 1,
+            "invoiceAmount" => 201.86,
+            "invoiceAmountNet" => 169.63,
+            "invoiceShipping" => 0,
+            "invoiceShippingNet" => 0,
+            "orderTime" => "2012-08-31 08:51:46",
+            "net" => 0,
+            "taxFree" => 0,
+            "languageIso" => "1",
+            "currency" => "EUR",
+            "currencyFactor" => 1,
+            "remoteAddress" => "217.86.205.141",
+            "details" => [[
+                "articleId" => 220,
+                "taxId" => 1,
+                "taxRate" => 19,
+                "statusId" => 0,
+                "articleNumber" => "SW10001",
+                "price" => 35.99,
+                "quantity" => 1,
+                "articleName" => "Versandkostenfreier Artikel",
+                "shipped" => 0,
+                "shippedGroup" => 0,
+                "mode" => 0,
+                "esdArticle" => 0,
+            ], [
+                "articleId" => 219,
+                "taxId" => 1,
+                "taxRate" => 19,
+                "statusId" => 0,
+                "articleNumber" => "SW10185",
+                "price" => 54.9,
+                "quantity" => 1,
+                "articleName" => "Express Versand",
+                "shipped" => 0,
+                "shippedGroup" => 0,
+                "mode" => 0,
+                "esdArticle" => 0,
+            ], [
+                "articleId" => 197,
+                "taxId" => 1,
+                "taxRate" => 19,
+                "statusId" => 0,
+                "articleNumber" => "SW10196",
+                "price" => 34.99,
+                "quantity" => 2,
+                "articleName" => "ESD Download Artikel",
+                "shipped" => 0,
+                "shippedGroup" => 0,
+                "mode" => 0,
+                "esdArticle" => 1,
+            ]],
+            "documents" => [],
+            "billing" => [
+                "id" => 2,
+                "customerId" => 1,
+                "countryId" => 2,
+                "stateId" => 3,
+                "company" => "shopware AG",
+                "salutation" => "mr",
+                "firstName" => "Max",
+                "lastName" => "Mustermann",
+                "street" => "Mustermannstra\u00dfe 92",
+                "zipCode" => "48624",
+                "city" => "Sch\u00f6ppingen",
+            ],
+            "shipping" => [
+                "id" => 2,
+                "countryId" => 2,
+                "stateId" => 3,
+                "customerId" => 1,
+                "company" => "shopware AG",
+                "salutation" => "mr",
+                "firstName" => "Max",
+                "lastName" => "Mustermann",
+                "street" => "Mustermannstra\u00dfe 92",
+                "zipCode" => "48624",
+                "city" => "Sch\u00f6ppingen"
+            ],
+            "paymentStatusId" => 17,
+            "orderStatusId" => 0
+        ]);
+        */
+
+        $params = [];
+
+        // all params are REQUEIRED !!!
+        $params['customerId'] = $this->getCreateOrderCustomerId($afterbuyOrder);
+        $params['paymentId'] = $this->getCreateOrderPaymentId($afterbuyOrder);
+        $params['dispatchId'] = $this->getCreateOrderDispatchId($afterbuyOrder);
+        $params['partnerId'] = "";
+        $params['shopId'] = 1; //ToDo Subshop Support
+        $params['invoiceAmount'] = $this->getCreateOrderInvoiceAmount($afterbuyOrder);
+        $params['invoiceAmountNet'] = $this->getCreateOrderInvoiceAmountNet($afterbuyOrder);
+        $params['invoiceShipping'] = $this->getCreateOrderInvoiceShipping($afterbuyOrder);
+        $params['invoiceShippingNet'] = $this->getCreateOrderInvoiceShippingNet($afterbuyOrder);
+        $params['net'] = 0; // ToDo netto Brutto Kunden
+        $params['taxFree'] = 0; // ToDo netto Brutto Kunden
+        $params['languageIso'] = $this->getCreateOrderLanguageIso($afterbuyOrder);
+        $params['currency'] = $this->getCreateOrderCurrency($afterbuyOrder);
+        $params['currencyFactor'] = $this->getCreateOrderCurrencyFactor($afterbuyOrder);
+
+        $params['paymentStatusId'] = 17;
+        $params['orderStatusId'] = 0;
+
+        $params['details'] =
+        [
+            [
+                "articleId" => 156 ,
+                "taxId" => 1,
+                "taxRate" => 19,
+                "statusId" => 0,
+                "articleNumber" => "SW10156",
+                "price" => 279.00,
+                "quantity" => 1,
+                "articleName" => "ADELAIDE 1",
+                "shipped" => 0,
+                "shippedGroup" => 0,
+                "mode" => 0,
+                "esdArticle" => 0,
+            ],
+
+        ];
+
+        $params['billing'] = $this->getCreateOrderBillingFromCustomer($params['customerId']);
+        $params['shipping'] = $this->getCreateOrderShippingFromCustomer($params['customerId']);
+
+        return $params;
+
+    }
+
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderCustomerId($afterbuyOrder){
+
+        $emailAddress = $afterbuyOrder->BuyerInfoBilling->Mail;
+        /** @var Customer $customer */
+        $customer = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
+            ->findOneBy(['email' => $emailAddress, 'accountMode' => 1]);
+        return $customer->getId();
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderPaymentId($afterbuyOrder){
+
+        // ToDo implement mapping of afterbuy payment and sw payments
+        // return "Vorkasse" => id = 5
+        return 5;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderDispatchId($afterbuyOrder){
+
+        // ToDo implement mapping of afterbuy payment and sw payments
+        // return "Standard Versand" => id = 9
+        return 9;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderInvoiceAmount($afterbuyOrder){
+
+        return $afterbuyOrder->PaymentInfo->FullAmount;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderInvoiceAmountNet($afterbuyOrder){
+
+        // ToDo calculate this value from Details without taxes
+        return $afterbuyOrder->PaymentInfo->FullAmount;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderInvoiceShipping($afterbuyOrder){
+
+        return $afterbuyOrder->ShippingInfo->ShippingCost;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderInvoiceShippingNet($afterbuyOrder){
+
+        // ToDo calculate this value from Details without taxes
+        return $afterbuyOrder->ShippingInfo->ShippingCost;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return int
+     */
+    private function getCreateOrderLanguageIso($afterbuyOrder){
+
+        // ToDo get language iso by checking ????
+        return 1;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return string
+     */
+    private function getCreateOrderCurrency($afterbuyOrder){
+
+        // ToDo Currency from AB Order
+        return 'EUR';
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return float
+     */
+    private function getCreateOrderCurrencyFactor($afterbuyOrder){
+
+        // ToDo Currency Factor fom SW Settings???
+        return 1.0;
+    }
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return array
+     */
+    private function getCreateOrderBillingFromCustomer($afterbuyOrder){
+
+        $address= [];
+        // ToDo Currency Factor fom SW Settings???
+        return $address;
+    }
+
+
+    /**
+     * @param \fcafterbuyorder $afterbuyOrder
+     * @return array
+     */
+    private function getCreateOrderShippingFromCustomer($afterbuyOrder){
+
+        $address= [];
+        // ToDo Currency Factor fom SW Settings???
+        return $address;
+    }
 
 }

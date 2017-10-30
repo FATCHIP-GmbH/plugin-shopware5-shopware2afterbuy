@@ -1,8 +1,5 @@
 <?php
 
-// ToDo: find a way to remove namespace??
-namespace Shopware\FatchipShopware2Afterbuy\Components\Api;
-
 /**
  * @see Afterbuy API documentation http://xmldoku.afterbuy.de/dokued/
  */
@@ -18,51 +15,57 @@ class fcafterbuyapi {
      * Error log level 1=Only errors, 2= Errors and warnings, 3=Output all
      * @var int
      */
-    protected $_iFcLogLevel;
+    protected $logLevel;
 
     /**
      * Filename for logfile
      * @var string
      */
-    protected $_sFcAfterbuyLogFilepath = null;
+    protected $afterbuyLogFilepath = null;
+
+    /**
+     * Ident for last requested order
+     * @var string
+     */
+    protected $lastOrderId = null;
 
     /**
      * ShopInterface Base URL of Afterbuy
      * https://www.afterbuy.de/afterbuy/ShopInterface.aspx
      * @var string
      */
-    protected $_sFcAfterbuyShopInterfaceBaseUrl = "";
+    protected $afterbuyShopInterfaceBaseUrl = "";
 
     /**
      * ABI Url of Afterbuy
      * http://api.afterbuy.de/afterbuy/ABInterface.aspx
      * @var string
      */
-    protected $_sFcAfterbuyAbiUrl = "";
+    protected $afterbuyAbiUrl = "";
 
     /**
      * Partner ID of Afterbuy
      * @var string
      */
-    protected $_sFcAfterbuyPartnerId = "";
+    protected $afterbuyPartnerId = "";
 
     /**
      * Partner Password for Afterbuy
      * @var string
      */
-    protected $_sFcAfterbuyPartnerPassword = "";
+    protected $afterbuyPartnerPassword = "";
 
     /**
      * Username for Afterbuy
      * @var string
      */
-    protected $_sFcAfterbuyUsername = "";
+    protected $afterbuyUsername = "";
 
     /**
      * User password for Afterbuy
      * @var string
      */
-    protected $_sFcAfterbuyUserPassword = "";
+    protected $afterbuyUserPassword = "";
 
 
     /**
@@ -70,13 +73,13 @@ class fcafterbuyapi {
      *
      * The foreseen configuration that is needed has to be a filled array like this
      * $aConfig = array(
-     *      'sFcAfterbuyShopInterfaceBaseUrl' => <AfterbuyShopInterfaceBaseUrl>,
-     *      'sFcAfterbuyAbiUrl' => <AfterbuyAbiUrl>,
-     *      'sFcAfterbuyPartnerId' => <AfterbuyPartnerId>,
-     *      'sFcAfterbuyPartnerPassword' => <AfterbuyPartnerPassword>,
-     *      'sFcAfterbuyUsername' => <AfterbuyUsername>,
-     *      'sFcAfterbuyUserPassword' => <AfterbuyUserPassword>,
-     *      'iFcLogLevel' => <LogLevel>,
+     *      'afterbuyShopInterfaceBaseUrl' => <AfterbuyShopInterfaceBaseUrl>,
+     *      'afterbuyAbiUrl' => <AfterbuyAbiUrl>,
+     *      'afterbuyPartnerId' => <AfterbuyPartnerId>,
+     *      'afterbuyPartnerPassword' => <AfterbuyPartnerPassword>,
+     *      'afterbuyUsername' => <AfterbuyUsername>,
+     *      'afterbuyUserPassword' => <AfterbuyUserPassword>,
+     *      'logLevel' => <LogLevel>,
      * );
      *
      * @param $aConfig
@@ -84,7 +87,7 @@ class fcafterbuyapi {
      */
     function __construct($aConfig) {
         try {
-            $this->_fcSetConfig($aConfig);
+            $this->setConfig($aConfig);
         } catch (Exception $e) {
             throw $e;
         }
@@ -99,14 +102,14 @@ class fcafterbuyapi {
      * @return void
      * @access protected
      */
-    public function fcWriteLog($sMessage, $iLogLevel = 1) {
+    public function writeLog($sMessage, $iLogLevel = 1) {
         // it is mandatory that a logfilepath has to be set
-        if ($this->_sFcAfterbuyLogFilepath === null) return;
+        if ($this->afterbuyLogFilepath === null) return;
 
         $sTime = date("Y-m-d H:i:s");
         $sFullMessage = "[" . $sTime . "] " . $sMessage . "\n";
-        if ($iLogLevel <= $this->_iFcLogLevel) {
-            file_put_contents($this->_sFcAfterbuyLogFilepath, $sFullMessage, FILE_APPEND);
+        if ($iLogLevel <= $this->logLevel) {
+            file_put_contents($this->afterbuyLogFilepath, $sFullMessage, FILE_APPEND);
         }
     }
 
@@ -116,8 +119,18 @@ class fcafterbuyapi {
      * @param $sPath
      * @return void
      */
-    public function fcSetLogFilePath($sPath) {
-        $this->_sFcAfterbuyLogFilepath = $sPath;
+    public function setLogFilePath($sPath) {
+        $this->afterbuyLogFilepath = $sPath;
+    }
+
+    /**
+     * Setter for last orderid
+     *
+     * @param $sLastOrderId
+     * @return void
+     */
+    public function setLastOrderId($sLastOrderId) {
+        $this->lastOrderId = $sLastOrderId;
     }
 
     /**
@@ -127,9 +140,9 @@ class fcafterbuyapi {
      * @return string API answer
      * @access protected
      */
-    public function fcRequestAPI($sXmlData) {
-        $this->fcWriteLog("DEBUG: Requesting Afterbuy API:\n".$sXmlData."\n",4);
-        $ch = curl_init($this->_sFcAfterbuyAbiUrl);
+    public function requestAPI($sXmlData) {
+        $this->writeLog("DEBUG: Requesting Afterbuy API:\n".$sXmlData."\n",4);
+        $ch = curl_init($this->afterbuyAbiUrl);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -138,7 +151,7 @@ class fcafterbuyapi {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $sOutput = curl_exec($ch);
         curl_close($ch);
-        $this->fcWriteLog("DEBUG: RESPONSE of Afterbuy API:\n".$sOutput."\n",4);
+        $this->writeLog("DEBUG: RESPONSE of Afterbuy API:\n".$sOutput."\n",4);
         return $sOutput;
     }
 
@@ -149,10 +162,31 @@ class fcafterbuyapi {
      * @return string
      */
     public function updateArticleToAfterbuy($oArt) {
-        $this->fcWriteLog("MESSAGE: Transfer article to afterbuy:".print_r($oArt,true));
-        $sXmlData = $this->_fcGetUpdateArticleXml($oArt);
-        $sOutput = $this->fcRequestAPI($sXmlData);
+        $this->writeLog("MESSAGE: Transfer article to afterbuy:".print_r($oArt,true));
+        $sXmlData = $this->getUpdateArticleXml($oArt);
+        $sOutput = $this->requestAPI($sXmlData);
 
+        return $sOutput;
+    }
+
+    /**
+     * Calls API for updating orderstate (senddate, paymentdate)
+     *
+     * @param $oOrderState
+     * @return string
+     */
+    public function updateSoldItemsOrderState($oOrderState) {
+        $sXmlData = $this->getXmlHead('UpdateSoldItems', 0);
+        $sXmlData .= "<Orders>";
+        $sXmlData .= "<Order>";
+        $sXmlData .= "<OrderID>".$oOrderState->OrderID."</OrderID>";
+        $sXmlData .= "<PaymentInfo><PaymentDate>".$oOrderState->PaymentInfo->PaymentDate."</PaymentDate></PaymentInfo>";
+        $sXmlData .= "<ShippingInfo><DeliveryDate>".$oOrderState->ShippingInfo->DeliveryDate."</DeliveryDate></ShippingInfo>";
+        $sXmlData .= "</Order>";
+        $sXmlData .= "</Orders>";
+        $sXmlData .= $this->getXmlFoot();
+
+        $sOutput = $this->requestAPI($sXmlData);
         return $sOutput;
     }
 
@@ -163,13 +197,38 @@ class fcafterbuyapi {
      * @return string
      */
     public function getSoldItemsFromAfterbuy() {
-        $sXmlData = $this->_fcGetXmlHead('GetSoldItems', 0);
+        $sXmlData = $this->getXmlHead('GetSoldItems', 0);
         $sXmlData .= "<MaxSoldItems>99</MaxSoldItems>";
         $sXmlData .= "<OrderDirection>1</OrderDirection>";
-        $sXmlData .= $this->_fcGetXmlFoot();
+        $sXmlData .= "<RequestAllItems>1</RequestAllItems>";
+        $sXmlData .= $this->getNewOrderFilter();
+        $sXmlData .= $this->getXmlFoot();
 
-        $sOutput = $this->fcRequestAPI($sXmlData);
+        $sOutput = $this->requestAPI($sXmlData);
         return $sOutput;
+    }
+
+    /**
+     * Returns filter for requesting only new orders
+     *
+     * @param void
+     * @return string
+     */
+    protected function getNewOrderFilter() {
+        $sXmlData = "";
+
+        if ($this->lastOrderId) {
+            $sXmlData .= "<DataFilter>";
+            $sXmlData .= "<Filter>";
+            $sXmlData .= "<FilterName>OnlyNewOrders</FilterName>";
+            $sXmlData .= "<FilterValues>";
+            $sXmlData .= "<ValueFrom>".$this->lastOrderId."</ValueFrom>";
+            $sXmlData .= "</FilterValues>";
+            $sXmlData .= "</Filter>";
+            $sXmlData .= "</DataFilter>";
+        }
+
+        return $sXmlData;
     }
 
     /**
@@ -178,7 +237,7 @@ class fcafterbuyapi {
      * @param $aConfig
      * @return void
      */
-    protected function _fcSetConfig($aConfig) {
+    protected function setConfig($aConfig) {
         foreach ($aConfig as $sConfigName=>$sConfigValue) {
             $this->$sConfigName = $sConfigValue;
         }
@@ -191,7 +250,7 @@ class fcafterbuyapi {
      * @return string API answer
      * @access public
      */
-    public function fcRequestShopInterfaceAPI($sRequest) {
+    public function requestShopInterfaceAPI($sRequest) {
         // prepare parameters for post call
         $aRequest = explode("?", $sRequest);
         $sParamString = $aRequest[1];
@@ -217,8 +276,8 @@ class fcafterbuyapi {
      * @param $sAbId
      * @return string
      */
-    protected function _fcGetUpdateArticleXml($oArt) {
-        $sXmlData = $this->_fcGetXmlHead('UpdateShopProducts');
+    protected function getUpdateArticleXml($oArt) {
+        $sXmlData = $this->getXmlHead('UpdateShopProducts');
         $sXmlData .= '<Products>
                         <Product>
                             <ProductIdent>';
@@ -243,7 +302,6 @@ class fcafterbuyapi {
                             <Discontinued>1</Discontinued>
                             <MergeStock>1</MergeStock>
                             <SellingPrice>' . $oArt->SellingPrice . '</SellingPrice>
-                            <DealerPrice>' . $oArt->DealerPrice . '</DealerPrice>
                             <ImageSmallURL>'.$oArt->ImageSmallURL.'</ImageSmallURL>
                             <ImageLargeURL>'.$oArt->ImageLargeURL.'</ImageLargeURL>
                             <ProductBrand>'.$oArt->ProductBrand.'</ProductBrand>
@@ -272,7 +330,7 @@ class fcafterbuyapi {
         }
         $sXmlData .= '</ProductPictures>';
         $sXmlData .= '</Product></Products>';
-        $sXmlData .= $this->_fcGetXmlFoot();
+        $sXmlData .= $this->getXmlFoot();
 
         return $sXmlData;
     }
@@ -284,14 +342,14 @@ class fcafterbuyapi {
      * @param int $iDetailLevel
      * @return string
      */
-    protected function _fcGetXmlHead($sCallName, $iDetailLevel = 0) {
+    protected function getXmlHead($sCallName, $iDetailLevel = 0) {
         $sXml = '<?xml version="1.0" encoding="utf-8"?>
                 <Request>
                     <AfterbuyGlobal>
-                        <PartnerID>' . $this->_sFcAfterbuyPartnerId . '</PartnerID>
-                        <PartnerPassword><![CDATA[' . $this->_sFcAfterbuyPartnerPassword . ']]></PartnerPassword>
-                        <UserID><![CDATA[' . $this->_sFcAfterbuyUsername . ']]></UserID>
-                        <UserPassword><![CDATA[' . $this->_sFcAfterbuyUserPassword . ']]></UserPassword>
+                        <PartnerID>' . $this->afterbuyPartnerId . '</PartnerID>
+                        <PartnerPassword><![CDATA[' . $this->afterbuyPartnerPassword . ']]></PartnerPassword>
+                        <UserID><![CDATA[' . $this->afterbuyUsername . ']]></UserID>
+                        <UserPassword><![CDATA[' . $this->afterbuyUserPassword . ']]></UserPassword>
                         <CallName>' . $sCallName . '</CallName>
                         <DetailLevel>' . $iDetailLevel . '</DetailLevel>
                         <ErrorLanguage>DE</ErrorLanguage>
@@ -305,21 +363,9 @@ class fcafterbuyapi {
      * @param void
      * @return string
      */
-    protected function _fcGetXmlFoot() {
+    protected function getXmlFoot() {
         $sXml = '</Request>';
         return $sXml;
     }
 
-    /**
-     * Test API in SW
-     *
-     * @param void
-     * @return string
-     */
-    public function fcGetAfterbuyTime() {
-        $sXmlData = $this->_fcGetXmlHead('GetAfterbuyTime');
-        $sXmlData .= $this->_fcGetXmlFoot();
-        $test = $this->fcRequestAPI($sXmlData);
-        return $test;
-    }
 }

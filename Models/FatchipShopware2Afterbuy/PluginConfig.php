@@ -197,13 +197,14 @@ class PluginConfig extends ModelEntity
     public function toCompatArray()
     {
         return [
-            '_sFcAfterbuyShopInterfaceBaseUrl' => $this->getAfterbuyShopInterfaceBaseUrl(),
-            '_sFcAfterbuyAbiUrl' => $this->getAfterbuyAbiUrl(),
-            '_sFcAfterbuyPartnerId' => $this->getAfterbuyPartnerId(),
-            '_sFcAfterbuyPartnerPassword' => $this->getAfterbuyPartnerPassword(),
-            '_sFcAfterbuyUsername' => $this->getAfterbuyUsername(),
-            '_sFcAfterbuyUserPassword' => $this->getAfterbuyUserpassword(),
-            '_iFcLogLevel' => $this->getLogLevel(),
+            'afterbuyShopInterfaceBaseUrl' => $this->getAfterbuyShopInterfaceBaseUrl(),
+            'afterbuyAbiUrl' => $this->getAfterbuyAbiUrl(),
+            'afterbuyPartnerId' => $this->getAfterbuyPartnerId(),
+            'afterbuyPartnerPassword' => $this->getAfterbuyPartnerPassword(),
+            'afterbuyUsername' => $this->getAfterbuyUsername(),
+            'afterbuyUserPassword' => $this->getAfterbuyUserpassword(),
+            'logLevel' => $this->getLogLevel(),
+
         ];
     }
 

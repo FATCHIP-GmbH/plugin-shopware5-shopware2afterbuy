@@ -82,7 +82,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyShopInterfaceBaseUrl(): string
+    public function getAfterbuyShopInterfaceBaseUrl()
     {
         return $this->afterbuyShopInterfaceBaseUrl;
     }
@@ -98,7 +98,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyAbiUrl(): string
+    public function getAfterbuyAbiUrl()
     {
         return $this->afterbuyAbiUrl;
     }
@@ -114,7 +114,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyPartnerId(): string
+    public function getAfterbuyPartnerId()
     {
         return $this->afterbuyPartnerId;
     }
@@ -130,7 +130,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyPartnerPassword(): string
+    public function getAfterbuyPartnerPassword()
     {
         return $this->afterbuyPartnerPassword;
     }
@@ -146,7 +146,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyUsername(): string
+    public function getAfterbuyUsername()
     {
         return $this->afterbuyUsername;
     }
@@ -162,7 +162,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getAfterbuyUserpassword(): string
+    public function getAfterbuyUserpassword()
     {
         return $this->afterbuyUserpassword;
     }
@@ -178,7 +178,7 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
-    public function getLogLevel(): string
+    public function getLogLevel()
     {
         return $this->logLevel;
     }

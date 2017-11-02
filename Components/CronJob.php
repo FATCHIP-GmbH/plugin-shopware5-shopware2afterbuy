@@ -127,7 +127,7 @@ class CronJob
 
         $fcAfterbuyArt->UserProductID           = null;  // Integer
         $fcAfterbuyArt->Anr                     = $article['id']; //Float
-        $fcAfterbuyArt->EAN                     = $article['mainDetail']['ean']; // String
+        $fcAfterbuyArt->EAN                     = $article['mainDetail']['number']; // String
         $fcAfterbuyArt->ProductID               = $article['mainDetail']['attribute']['afterbuyProductid']; // Integer
         $fcAfterbuyArt->ShortDescription        = $article['description']; // String
         $fcAfterbuyArt->Memo                    = null; // String
@@ -142,10 +142,10 @@ class CronJob
         $fcAfterbuyArt->MergeStock              = null; // bool
         $fcAfterbuyArt->UnitOfQuantity          = null; //$this->mapUnitQuantity($); // float???
         $fcAfterbuyArt->BasepriceFactor         = null;
-        $fcAfterbuyArt->MinimumStock            = null;
-        $fcAfterbuyArt->SellingPrice            = $detail['prices']['EK']['price'];
+        $fcAfterbuyArt->MinimumStock            = $article['mainDetail']['stockMin'];;
+        $fcAfterbuyArt->SellingPrice            = str_replace('.', ',',$detail['prices']['EK']['price']);
         $fcAfterbuyArt->BuyingPrice             = str_replace('.', ',',$article['mainDetail']['purchasePrice']);
-        $fcAfterbuyArt->DealerPrice             = $detail['prices']['H']['price'];
+        $fcAfterbuyArt->DealerPrice             = str_replace('.', ',',round($detail['prices'][0]['price'], 2));
         $fcAfterbuyArt->Level                   = null;
         $fcAfterbuyArt->Position                = null;
         $fcAfterbuyArt->TitleReplace            = null;
@@ -175,7 +175,7 @@ class CronJob
         $fcAfterbuyArt->FreeValue8              = null;
         $fcAfterbuyArt->FreeValue9              = null;
         $fcAfterbuyArt->FreeValue10             = null;
-        $fcAfterbuyArt->DeliveryTime            = null;
+        $fcAfterbuyArt->DeliveryTime            = $article['mainDetail']['shippingTime'];
         $fcAfterbuyArt->ImageSmallURL           = null;
         $fcAfterbuyArt->ImageLargeURL           = null;
         $fcAfterbuyArt->ImageName               = null;
@@ -184,7 +184,7 @@ class CronJob
         $fcAfterbuyArt->ManufacturerStandardProductIDValue         = null;
         $fcAfterbuyArt->ProductBrand            = $article['supplier']['name'];
         $fcAfterbuyArt->CustomsTariffNumber     = null;
-        $fcAfterbuyArt->ManufacturerPartNumber  = null;
+        $fcAfterbuyArt->ManufacturerPartNumber  = $article['mainDetail']['supplierNumber'];
         $fcAfterbuyArt->GoogleProductCategory   = null;
         $fcAfterbuyArt->Condition               = null;
         $fcAfterbuyArt->Pattern                 = null;

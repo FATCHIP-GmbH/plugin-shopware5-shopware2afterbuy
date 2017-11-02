@@ -233,6 +233,7 @@ class CronJob
             $fcAfterbuyArt->{$varName_PicNr} = $i;
             $fcAfterbuyArt->{$varName_PicUrl} = $this->getImageSeoUrl($image['mediaId']);
             $fcAfterbuyArt->{$varName_PicAltText} = $image['path']; // ToDO better description??
+            $i++;
         }
         return $fcAfterbuyArt;
     }
@@ -314,6 +315,7 @@ class CronJob
     {
 
         // ToDo Host is empty??
+        $this->setupContext(1);
         $host = Shopware()->Config()->BasePath;
 
         $db = Shopware()->Db();

@@ -191,6 +191,17 @@ class PluginConfig extends ModelEntity
         $this->logLevel = $logLevel;
     }
 
+
+    /**
+     * @return string
+     */
+    public function getAfterbuyLogfilePath()
+    {
+        $logPath  = Shopware()->Container()->getParameter('kernel.logs_dir');
+
+        return $logPath . '/fcAfterbuy.log';
+    }
+
     /**
      * @return array
      */
@@ -204,7 +215,7 @@ class PluginConfig extends ModelEntity
             'afterbuyUsername' => $this->getAfterbuyUsername(),
             'afterbuyUserPassword' => $this->getAfterbuyUserpassword(),
             'logLevel' => $this->getLogLevel(),
-
+            'afterbuyLogFilepath' => $this->getAfterbuyLogfilePath(),
         ];
     }
 

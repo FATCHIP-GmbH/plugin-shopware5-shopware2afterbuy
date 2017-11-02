@@ -75,8 +75,8 @@ class CronJob
             ->leftJoin('imageMapping.rules', 'mappingRule')
             ->leftJoin('mappingRule.option', 'ruleOption')
             ->where('attribute.afterbuyExport = 1')
-            ->andWhere('images.parentId IS NULL')
-            ->andWhere('article.configuratorSetId IS NULL');
+            ->andWhere('images.parentId IS NULL');
+            // ->andWhere('article.configuratorSetId IS NULL');
 
 
         $afterbuyArticles = $builder->getQuery()->getArrayResult();
@@ -313,8 +313,7 @@ class CronJob
      */
     protected function getArticleSeoUrl($articleId)
     {
-
-        // ToDo Host is empty??
+        // ToDo add subshop handling
         $this->setupContext(1);
         $host = Shopware()->Config()->BasePath;
 

@@ -277,8 +277,7 @@ class fcafterbuyapi {
     /**
      * Returns xml for requesting aftberbuy abi
      *
-     * @param $oArt
-     * @param $sAbId
+     * @param \fcafterbuyart $oArt
      * @return string
      */
     protected function getUpdateArticleXml($oArt) {
@@ -315,8 +314,12 @@ class fcafterbuyapi {
                             <CanonicalUrl>'.$oArt->CanonicalUrl.'</CanonicalUrl>
                             <ManufacturerPartNumber>'.$oArt->ManufacturerPartNumber.'</ManufacturerPartNumber>
                             <Keywords>'.$oArt->Keywords.'</Keywords>
+                            <SellingPrice>'.$oArt->SellingPrice.'</SellingPrice>
                             <BuyingPrice>'.$oArt->BuyingPrice.'</BuyingPrice>
+                            <DealerPrice>'.$oArt->DealerPrice.'</DealerPrice>
                             <Weight>'.$oArt->Weight.'</Weight>
+                            <DeliveryTime><![CDATA['.$oArt->DeliveryTime.']]></DeliveryTime>
+                            <MinimumStock>'.$oArt->MinimumStock.'</MinimumStock>
         ';
         if ($oArt->EAN != "") {
             $sXmlData .= '<ManufacturerStandardProductIDType><![CDATA[EAN]]></ManufacturerStandardProductIDType>

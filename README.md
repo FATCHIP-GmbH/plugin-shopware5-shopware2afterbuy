@@ -11,7 +11,7 @@ https://wiki.fatchip.de/public/faqshopware2afterbuy
 
 ## Author
 
-FATCHIP GmbH | [web](http://www.fatchip.de/) | [support@fatchip.de](mailto:support@fatchip.de)
+FATCHIP GmbH | [web](https://www.fatchip.de/) | [support@fatchip.de](mailto:support@fatchip.de)
 
 ## License Details
 Please see the [License File](LICENSE.md) for more information.

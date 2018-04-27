@@ -3,6 +3,7 @@
 namespace Shopware\FatchipShopware2Afterbuy\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
+use Fatchip\Afterbuy\ApiClient;
 use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
 
 /**
@@ -21,18 +22,40 @@ class Service implements SubscriberInterface
     {
         return [
             'Enlight_Bootstrap_InitResource_fatchip_shopware2afterbuy_api_client' =>
+                'onInitApiLegacyClient',
+            'Enlight_Bootstrap_InitResource_afterbuy_api_client' =>
                 'onInitApiClient',
         ];
     }
 
     /**
-     * @return \fcafterbuyapi
+     * @return ApiClient
+     * @throws \Exception
      */
     public function onInitApiClient()
     {
-        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyapi.php';
-        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyart.php';
-        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/Api/fcafterbuyorder.php';
+        /** @var  PluginConfig $config */
+        $config = Shopware()
+            ->Models()
+            ->getRepository('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig')
+            ->find(1);
+
+        if (!$config) {
+            throw new \Exception('Plugin configuration could not be found!');
+        }
+
+        return new ApiClient($config->toCompatArray());
+    }
+
+    /**
+     * @return \fcafterbuyapi
+     * @throws \Exception
+     */
+    public function onInitApiLegacyClient()
+    {
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/LegacyApi/fcafterbuyapi.php';
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/LegacyApi/fcafterbuyart.php';
+        require_once __DIR__ .  DIRECTORY_SEPARATOR . '../Components/LegacyApi/fcafterbuyorder.php';
 
         /** @var  PluginConfig $configObject */
         $configObject = Shopware()
@@ -41,7 +64,7 @@ class Service implements SubscriberInterface
             ->find(1);
         // Todo better error handling returns (No service Returned Exception)
         if (!$configObject){
-            return;
+            return null;
         }
         $configArray = $configObject->toCompatArray();
         return new \fcafterbuyapi($configArray);

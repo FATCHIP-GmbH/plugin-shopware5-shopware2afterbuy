@@ -1,3 +1,6 @@
 [submodule "Components/Api"]
 	path = Components/Api
 	url = https://github.com/FATCHIP-GmbH/library-afterbuy.git
+[submodule "Components/LegacyApi"]
+	path = Components/LegacyApi
+	url = https://github.com/FATCHIP-GmbH/library-afterbuy.git

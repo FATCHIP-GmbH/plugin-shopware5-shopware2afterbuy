@@ -318,6 +318,10 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
     public function registerMyComponents()
     {
         $this->Application()->Loader()->registerNamespace(
+            'Fatchip\Afterbuy',
+            $this->Path() . 'Components/Api/'
+        );
+        $this->Application()->Loader()->registerNamespace(
             'Shopware\FatchipShopware2Afterbuy',
             $this->Path()
         );

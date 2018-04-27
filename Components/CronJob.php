@@ -1,6 +1,9 @@
 <?php
 
 namespace Shopware\FatchipShopware2Afterbuy\Components;
+
+use Fatchip\Afterbuy\Types\Product;
+use Shopware\Bundle\StoreFrontBundle\Struct\ShopContext;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Country\Country;
@@ -17,14 +20,14 @@ class CronJob
 {
     /**
      * @return bool
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Zend_Db_Statement_Exception
      */
     public function exportMainArticles2Afterbuy()
     {
-
-        // ToDo Does not work with empty or wrong config
-        // handle this in Constructor?
-        /** @var \fcafterbuyapi $client */
-        $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
+        // TODO: Handle this in the constructor?
+        // TODO: Does not work with an empty or wrong configuration
+        $client = Shopware()->Container()->get('afterbuy_api_client');
 
         // Get all Articles where after Attribute is set
         // Main Articles have no configurator_set_id defined
@@ -78,7 +81,6 @@ class CronJob
             ->andWhere('images.parentId IS NULL');
             // ->andWhere('article.configuratorSetId IS NULL');
 
-
         $afterbuyArticles = $builder->getQuery()->getArrayResult();
         foreach ($afterbuyArticles as $article) {
             /** @var \Shopware\Models\Article\Repository $articleRepo */
@@ -99,18 +101,54 @@ class CronJob
                 if (empty($detail['prices']) ) {
                     continue;
                 }
-
                 $detail['prices'] = $this->formatPricesFromNetToGross($detail['prices'], $article['tax']);
+                // TODO: Check if the articles get their Afterbuy product ID properly
+                $response = $client->updateShopProducts($this->mapArticleToProduct($article, $detail));
+                $this->addAfterbuyIdToArticle($detail['id'], $response);
             }
-
-            // ToDo shouldnt this be in foreach above?
-             $mappedAfterbuyArticle = $this->mapAfterbuyArticleAttributes($article,$detail);
-             $response = $client->updateArticleToAfterbuy($mappedAfterbuyArticle);
-
-            $this->_fcAddAfterbuyIdToArticle($article['id'], $response);
         }
-
         return true;
+    }
+
+    /**
+     * @param $article
+     * @param $detail
+     * @return Product
+     * @throws \Zend_Db_Statement_Exception
+     */
+    protected function mapArticleToProduct($article, $detail)
+    {
+        $afterbuyProductID = $detail['attribute']['afterbuyProductid'];
+        $product = new Product();
+        if ($afterbuyProductID) {
+            $product->getProductIdent()->setProductID($afterbuyProductID);
+        } else {
+            $product->getProductIdent()
+                ->setProductInsert(true)
+                ->setBaseProductType(0)
+                ->setUserProductID($detail['id'])
+                ->setAnr($detail['id'])
+                ->setEAN($detail['number']);
+        }
+        // TODO: Map the product pictures
+        return $product
+            ->setName($article['name'])
+            ->setAnr($detail['id'])
+            ->setEAN($detail['number'])
+            ->setProductBrand($article['supplier']['name'])
+            ->setManufacturerPartNumber($detail['supplierNumber'])
+            ->setDescription($article['descriptionLong'])
+            ->setShortDescription($article['description'])
+            ->setKeywords($article['keywords'])
+            ->setQuantity($detail['inStock'])
+            ->setMinimumStock($detail['stockMin'])
+            ->setSellingPrice(str_replace('.', ',', $detail['prices']['EK']['price']))
+            ->setBuyingPrice(str_replace('.', ',', $detail['purchasePrice']))
+            ->setDealerPrice(str_replace('.', ',', round($detail['prices'][0]['price'], 2)))
+            ->setTaxRate(str_replace('.', ',', $article['tax']['tax']))
+            ->setWeight(str_replace('.', ',', $detail['weight']))
+            ->setDeliveryTime($detail['shippingTime'])
+            ->setCanonicalUrl($this->getArticleSeoUrl($article['id']));
     }
 
 
@@ -118,8 +156,9 @@ class CronJob
      * @param $article Article
      * @param $detail Detail
      * @return \fcafterbuyart|mixed
+     * @throws \Zend_Db_Statement_Exception
      */
-    private function  mapAfterbuyArticleAttributes($article, $detail)
+    private function mapAfterbuyArticleAttributes($article, $detail)
     {
         $fcAfterbuyArt = new \fcafterbuyart();
         $fcAfterbuyArt = $this->mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article);
@@ -209,7 +248,6 @@ class CronJob
     private function  mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article)
     {
         $fcAfterbuyArt->Name                    = $article['name']; // String
-
         return $fcAfterbuyArt;
     }
 
@@ -232,7 +270,7 @@ class CronJob
 
             $fcAfterbuyArt->{$varName_PicNr} = $i;
             $fcAfterbuyArt->{$varName_PicUrl} = $this->getImageSeoUrl($image['mediaId']);
-            $fcAfterbuyArt->{$varName_PicAltText} = $image['path']; // ToDO better description??
+            $fcAfterbuyArt->{$varName_PicAltText} = $image['path']; // TODO: Better description?
             $i++;
         }
         return $fcAfterbuyArt;
@@ -243,7 +281,6 @@ class CronJob
      *
      * @param $prices
      * @param $tax
-     *
      * @return array
      */
     protected function formatPricesFromNetToGross($prices, $tax)
@@ -257,8 +294,8 @@ class CronJob
                 $price['price'] = str_replace('.', ',', $price['price']);
                 $price['pseudoPrice'] = str_replace('.', ',',$price['pseudoPrice']);
             }
-            // Use customerGroup Key as new key
-            // ToDO what to do with non-standard customerGroups
+            // Use customerGroup's key as new key
+            // TODO: What to do with non-standard customerGroups?
             if ($customerGroup['key'] == 'H' ){
                 $prices['H'] = $price;
             }
@@ -266,32 +303,30 @@ class CronJob
                 $prices['EK'] = $price;
             }
         }
-
         return $prices;
     }
 
     /**
-     * Adds afterbuy id to article dataset
+     * Adds Afterbuy's product ID to the article details
      *
-     * @param integer $articleId
+     * @param integer $detailID
      * @param string $response
      * @return void
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected function _fcAddAfterbuyIdToArticle($articleId, $response)
+    protected function addAfterbuyIdToArticle($detailID, $response)
     {
         $oXml = simplexml_load_string($response);
-        $productId = (string) $oXml->Result->NewProducts->NewProduct->ProductID;
-        if ($productId) {
-            /** @var Article $article */
-            $article = Shopware()->Models()->getRepository('Shopware\Models\Article\Article')->find($articleId);
-            /** @var \Shopware\Models\Attribute\Article $articleAttributes */
-            $articleAttributes = $article->getAttribute();
-            $articleAttributes->setAfterbuyProductid($productId);
-            Shopware()->Models()->persist($articleAttributes);
+        $productID = (string) $oXml->Result->NewProducts->NewProduct->ProductID;
+        if ($productID) {
+            $detail = Shopware()->Models()->getRepository('Shopware\Models\Article\Detail')->find($detailID);
+            /** @var \Shopware\Models\Attribute\Article $attributes */
+            $attributes = $detail->getAttribute();
+            $attributes->setAfterbuyProductid($productID);
+            Shopware()->Models()->persist($attributes);
             Shopware()->Models()->flush();
         }
     }
-
 
     /**
      * @param integer $mediaId
@@ -302,63 +337,54 @@ class CronJob
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
         $mediaRepo = Shopware()->Models()->getRepository('Shopware\Models\Media\Media');
         $mediaImage = $mediaRepo->findOneBy(array('id' => $mediaId));
-        // ToDO Exception Handling
-
+        // TODO: Add proper exception handling
         return $mediaService->getUrl($mediaImage->getPath());
     }
 
     /**
      * @param integer $articleId
      * @return string
+     * @throws \Zend_Db_Statement_Exception|\Exception
      */
     protected function getArticleSeoUrl($articleId)
     {
-        // ToDo add subshop handling
+        // TODO: Add support for sub-shops
         $this->setupContext(1);
         $host = Shopware()->Config()->BasePath;
-
         $db = Shopware()->Db();
-
         $sql = "SELECT path FROM s_core_rewrite_urls WHERE org_path = :org_path";
         $params = [ ":org_path" => "sViewport=detail&sArticle={$articleId}" ];
-
         $query = $db->executeQuery($sql, $params);
         $row = $query->fetch();
-
-        // ToDo http / https support
+        // TODO: Add support for http and https
         return isset($row['path']) ? "http://{$host}/{$row['path']}" : "";
     }
 
 
     /**
      * @return bool
+     * @throws \Shopware\Components\Api\Exception\ValidationException
      */
     public function importOrdersFromAfterbuy()
     {
-        // ToDO Does not work with empty or wrong config
+        // TODO: Does not work with an empty or wrong configuration
         /** @var \fcafterbuyapi $client */
         $client = Shopware()->Container()->get('fatchip_shopware2afterbuy_api_client');
-
         $response = $client->getSoldItemsFromAfterbuy();
-
         $xmlResponse = simplexml_load_string($response);
-
-        if (!$xmlResponse){
-            // Nothing To Do
-            // ToDo Write Log Entry??
+        if (!$xmlResponse) {
+            // Nothing to do here
+            // TODO: Write a log entry?
             return true;
         }
-        // ToDo validate Response (CallStatus)
+        // TODO: Validate the response (CallStatus)
         foreach ($xmlResponse->Result->Orders->Order as $xmlOrder) {
             $afterbuyOrder = new \fcafterbuyorder();
             $afterbuyOrder->createOrderByApiResponse($xmlOrder);
-
-            // Benutzer Anlegen / Todo Updaten falls vorhanden
-
-            // ToDo remove TempComment
-            // $this->createCustomer($afterbuyOrder);
+            // Create customer / TODO: Update existing customers
+            // TODO: Uncomment the next line soon
+            //$this->createCustomer($afterbuyOrder);
             $this->createOrder($afterbuyOrder);
-            //
         }
         return true;
     }
@@ -366,20 +392,22 @@ class CronJob
 
     /**
      * @param $afterbuyOrder \fcafterbuyorder
+     * @throws \Exception
      */
-    private function createCustomer(\fcafterbuyorder $afterbuyOrder){
-        // Set the Shop context instance for CLI
-        // ToDo support Subshops
+    private function createCustomer(\fcafterbuyorder $afterbuyOrder)
+    {
+        // Set the shop context instance for CLI
+        // TODO: Support for sub-shops
         $this->setupContext(1);
         $registerService =  Shopware()->Container()->get('shopware_account.register_service');
-        $context = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext()->getShop();
-
-        // check if email address already exists as UserAccount (accountMode ACCOUNT_MODE_FAST_LOGIN (1)
+        /** @var ShopContext|Shop $context */
+        $context = Shopware()->Container()->get('shopware_storefront.context_service')->getShopContext();
+        $context = $context->getShop();
+        // Check if email address already exists with accountMode ACCOUNT_MODE_FAST_LOGIN (1)
         $emailAddress = $afterbuyOrder->BuyerInfoBilling->Mail;
         /** @var Customer $customer */
         $customer = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
             ->findOneBy(['email' => $emailAddress, 'accountMode' => 'ACCOUNT_MODE_FAST_LOGIN']);
-
         if (!$customer){
             $swCustomer = new Customer();
             $this->mapAfterbuyCustomer($afterbuyOrder->BuyerInfoBilling, $swCustomer);
@@ -390,39 +418,36 @@ class CronJob
             } else {
                 $shippingAddress = $this->mapAfterbuyShippingAddress($afterbuyOrder->BuyerInfoShipping);
             }
-
-
-            // ToDo log validation errors something like this:
+            // TODO: Log validation errors / something like this:
             /*
             $violations = $this->getManager()->validate($order);
                 if ($violations->count() > 0) {
                     throw new ApiException\ValidationException($violations);
             }
             */
-
             $registerService->register($context, $swCustomer, $billingAddress, $shippingAddress );
         }
     }
 
     /**
      * @param $afterbuyOrder \fcafterbuyorder
+     * @throws \Shopware\Components\Api\Exception\ValidationException
      */
-    private function createOrder(\fcafterbuyorder $afterbuyOrder){
-
-        // use Rest API Class ofr Order creation:
+    private function createOrder(\fcafterbuyorder $afterbuyOrder)
+    {
+        // Use REST API class for order creation
         $orderResource = \Shopware\Components\Api\Manager::getResource('order');
-        //prepare Order creation Params
+        // Prepare order creation parameters
         $orderParams = $this->getOrderParams($afterbuyOrder);
         $orderResource->create($orderParams);
-        // Prerequisites for Order:
-
-        // Customer
-        // Payment
-        // Dispatch
-        // Shop //ToDo Subshop Support
-        // Billingaddress
-        // Shippingaddress
-        // OrderDetails / Orderpositions
+        // Prerequisites for an order:
+        // - Customer
+        // - Payment
+        // - Dispatch
+        // - Shop // TODO: Sub-shop support
+        // - Billing address
+        // - Shipping address
+        // - Order details
     }
 
     /**
@@ -430,11 +455,12 @@ class CronJob
      * @param $swCustomer Customer
      * @return Customer
      */
-    private function mapAfterbuyCustomer($billingAddress, $swCustomer){
+    private function mapAfterbuyCustomer($billingAddress, $swCustomer)
+    {
         $swCustomer->setAccountMode(Customer::ACCOUNT_MODE_FAST_LOGIN);
         $swCustomer->setActive(false);
         $swCustomer->setCustomerType(Customer::CUSTOMER_TYPE_PRIVATE);
-        // ToDo Firma
+        // TODO: Companies / business customers
         //$swCustomer->setCustomerType(Customer::CUSTOMER_TYPE_BUSINESS);
         //$swCustomer->setBirthday($buyerInfo->) // Missing???
         $swCustomer->setEmail($billingAddress->Mail);
@@ -445,9 +471,9 @@ class CronJob
         } else {
             $swCustomer->setSalutation('ms');
         }
+        // TODO: Figure out how to handle this
+        //$swCustomer->setPaymentId();
 
-        // ToDO
-        //$swCustomer->setPaymentId()
         return($swCustomer);
     }
 
@@ -455,7 +481,8 @@ class CronJob
      * @param $afterbuyBillingAddress \fcafterbuyaddress
      * @return Address
      */
-    private function mapAfterbuyBillingAddress($afterbuyBillingAddress){
+    private function mapAfterbuyBillingAddress($afterbuyBillingAddress)
+    {
         $swBillingAddress = new Address();
         $swBillingAddress->setFirstname($afterbuyBillingAddress->FirstName);
         $swBillingAddress->setLastname($afterbuyBillingAddress->LastName);
@@ -478,7 +505,8 @@ class CronJob
      * @param $afterbuyShippingAddress \fcafterbuyaddress
      * @return Address
      */
-    private function mapAfterbuyShippingAddress($afterbuyShippingAddress){
+    private function mapAfterbuyShippingAddress($afterbuyShippingAddress)
+    {
         $swShippingAddress = new Address();
         $swShippingAddress->setFirstname($afterbuyShippingAddress->FirstName);
         $swShippingAddress->setLastname($afterbuyShippingAddress->LastName);
@@ -506,7 +534,7 @@ class CronJob
      */
     private function setupContext($shopId = null)
     {
-        /** @var \Shopware\Models\Shop\Repository; $shopRepository */
+        /** @var \Shopware\Models\Shop\Repository $shopRepository */
         $shopRepository = Shopware()->Container()->get('models')->getRepository(Shop::class);
 
         if ($shopId) {
@@ -518,7 +546,6 @@ class CronJob
         } else {
             $shop = $shopRepository->getActiveDefault();
         }
-
         $shop->registerResources();
     }
 
@@ -527,30 +554,28 @@ class CronJob
      * @param string $isoCode
      * @return Country $country
      */
-    private function getCountryByIso($isoCode){
-
+    private function getCountryByIso($isoCode)
+    {
         /** @var \Shopware\Models\Country\Repository $countryRepository */
         $countryRepository = Shopware()->Container()->get('models')->getRepository(Country::class);
 
-        if ($isoCode){
+        if ($isoCode) {
             /** @var Country $country */
             $country = $countryRepository->findOneBy(['iso' => $isoCode ]);
         } else {
-            // ToDo get default Country from Shop or from User ???
-            // for now use DE
+            // TODO: Get default country from the shop or from the user?
+            // For now we'll use DE -> Germany
             $country = $countryRepository->findOneBy(['iso' => 'DE' ]);
         }
-
         return $country;
-
     }
 
     /**
      * @param $afterbuyOrder \fcafterbuyorder
      * @return array $params
      */
-    private function getOrderParams($afterbuyOrder){
-
+    private function getOrderParams($afterbuyOrder)
+    {
         /* Example Params:
         [
             "customerId" => 1,
@@ -643,18 +668,19 @@ class CronJob
 
         $params = [];
 
-        // all params are REQUEIRED !!!
+        // All parameters are REQUIRED!
+        
         $params['customerId'] = $this->getCreateOrderCustomerId($afterbuyOrder);
         $params['paymentId'] = $this->getCreateOrderPaymentId($afterbuyOrder);
         $params['dispatchId'] = $this->getCreateOrderDispatchId($afterbuyOrder);
         $params['partnerId'] = "";
-        $params['shopId'] = 1; //ToDo Subshop Support
+        $params['shopId'] = 1; // TODO: Sub-shop support
         $params['invoiceAmount'] = $this->getCreateOrderInvoiceAmount($afterbuyOrder);
         $params['invoiceAmountNet'] = $this->getCreateOrderInvoiceAmountNet($afterbuyOrder);
         $params['invoiceShipping'] = $this->getCreateOrderInvoiceShipping($afterbuyOrder);
         $params['invoiceShippingNet'] = $this->getCreateOrderInvoiceShippingNet($afterbuyOrder);
-        $params['net'] = 0; // ToDo netto Brutto Kunden
-        $params['taxFree'] = 0; // ToDo netto Brutto Kunden
+        $params['net'] = 0; // TODO: Support different rules for business customers
+        $params['taxFree'] = 0; // TODO: Support different rules for business customers
         $params['languageIso'] = $this->getCreateOrderLanguageIso($afterbuyOrder);
         $params['currency'] = $this->getCreateOrderCurrency($afterbuyOrder);
         $params['currencyFactor'] = $this->getCreateOrderCurrencyFactor($afterbuyOrder);
@@ -685,7 +711,6 @@ class CronJob
         $params['shipping'] = $this->getCreateOrderShippingFromCustomer($params['customerId']);
 
         return $params;
-
     }
 
 
@@ -693,8 +718,8 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderCustomerId($afterbuyOrder){
-
+    private function getCreateOrderCustomerId($afterbuyOrder)
+    {
         $emailAddress = $afterbuyOrder->BuyerInfoBilling->Mail;
         /** @var Customer $customer */
         $customer = Shopware()->Models()->getRepository('Shopware\Models\Customer\Customer')
@@ -706,9 +731,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderPaymentId($afterbuyOrder){
-
-        // ToDo implement mapping of afterbuy payment and sw payments
+    private function getCreateOrderPaymentId($afterbuyOrder)
+    {
+        // TODO: Implement mapping of Afterbuy payments and SW payments
         // return "Vorkasse" => id = 5
         return 5;
     }
@@ -717,9 +742,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderDispatchId($afterbuyOrder){
-
-        // ToDo implement mapping of afterbuy payment and sw payments
+    private function getCreateOrderDispatchId($afterbuyOrder)
+    {
+        // TODO: Implement mapping of Afterbuy dispatches and SW dispatches
         // return "Standard Versand" => id = 9
         return 9;
     }
@@ -728,8 +753,8 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderInvoiceAmount($afterbuyOrder){
-
+    private function getCreateOrderInvoiceAmount($afterbuyOrder)
+    {
         return $afterbuyOrder->PaymentInfo->FullAmount;
     }
 
@@ -737,9 +762,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderInvoiceAmountNet($afterbuyOrder){
-
-        // ToDo calculate this value from Details without taxes
+    private function getCreateOrderInvoiceAmountNet($afterbuyOrder)
+    {
+        // TODO: Calculate this value from the details without taxes
         return $afterbuyOrder->PaymentInfo->FullAmount;
     }
 
@@ -747,8 +772,8 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderInvoiceShipping($afterbuyOrder){
-
+    private function getCreateOrderInvoiceShipping($afterbuyOrder)
+    {
         return $afterbuyOrder->ShippingInfo->ShippingCost;
     }
 
@@ -756,9 +781,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderInvoiceShippingNet($afterbuyOrder){
-
-        // ToDo calculate this value from Details without taxes
+    private function getCreateOrderInvoiceShippingNet($afterbuyOrder)
+    {
+        // TODO: Calculate this value from the details without taxes
         return $afterbuyOrder->ShippingInfo->ShippingCost;
     }
 
@@ -766,9 +791,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return int
      */
-    private function getCreateOrderLanguageIso($afterbuyOrder){
-
-        // ToDo get language iso by checking ????
+    private function getCreateOrderLanguageIso($afterbuyOrder)
+    {
+        // TODO: Get language ISO code somehow?
         return 1;
     }
 
@@ -776,9 +801,9 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return string
      */
-    private function getCreateOrderCurrency($afterbuyOrder){
-
-        // ToDo Currency from AB Order
+    private function getCreateOrderCurrency($afterbuyOrder)
+    {
+        // TODO: Get the currency from an Afterbuy order
         return 'EUR';
     }
 
@@ -786,32 +811,31 @@ class CronJob
      * @param \fcafterbuyorder $afterbuyOrder
      * @return float
      */
-    private function getCreateOrderCurrencyFactor($afterbuyOrder){
-
-        // ToDo Currency Factor fom SW Settings???
+    private function getCreateOrderCurrencyFactor($afterbuyOrder)
+    {
+        // TODO: Currency factor fom SW settings?
         return 1.0;
     }
 
     /**
-     * @param \fcafterbuyorder $afterbuyOrder
+     * @param int $customerID
      * @return array
      */
-    private function getCreateOrderBillingFromCustomer($afterbuyOrder){
-
-        $address= [];
-        // ToDo Currency Factor fom SW Settings???
+    private function getCreateOrderBillingFromCustomer($customerID)
+    {
+        $address = [];
+        // TODO: Get the customer's billing address
         return $address;
     }
 
-
     /**
-     * @param \fcafterbuyorder $afterbuyOrder
+     * @param int $customerID
      * @return array
      */
-    private function getCreateOrderShippingFromCustomer($afterbuyOrder){
-
-        $address= [];
-        // ToDo Currency Factor fom SW Settings???
+    private function getCreateOrderShippingFromCustomer($customerID)
+    {
+        $address = [];
+        // TODO: Get the customer's shipping address
         return $address;
     }
 

@@ -3,6 +3,11 @@
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 use Fatchip\Afterbuy\Types\Product;
+use Fatchip\Afterbuy\Types\Product\AddBaseProduct;
+use Fatchip\Afterbuy\Types\Product\AddBaseProducts;
+use Fatchip\Afterbuy\Types\Product\ProductIdent;
+use Fatchip\Afterbuy\Types\Product\ProductPicture;
+use Fatchip\Afterbuy\Types\Product\ProductPictures;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContext;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
@@ -28,113 +33,197 @@ class CronJob
         // TODO: Handle this in the constructor?
         // TODO: Does not work with an empty or wrong configuration
         $client = Shopware()->Container()->get('afterbuy_api_client');
-
-        // Get all Articles where after Attribute is set
-        // Main Articles have no configurator_set_id defined
-        $builder = Shopware()->Models()->createQueryBuilder();
-
-        $builder->select([
-            'article',
-            'mainDetail',
-            'tax',
-            'attribute',
-            'supplier',
-            'categories',
-            'similar',
-            'accessories',
-            'accessoryDetail',
-            'similarDetail',
-            'images',
-            'links',
-            'downloads',
-            'linkAttribute',
-            'customerGroups',
-            'imageAttribute',
-            'downloadAttribute',
-            'propertyValues',
-            'imageMapping',
-            'mappingRule',
-            'ruleOption',
-        ])
-            ->from('Shopware\Models\Article\Article', 'article')
-            ->leftJoin('article.mainDetail', 'mainDetail')
-            ->leftJoin('article.categories', 'categories', null, null, 'categories.id')
-            ->leftJoin('article.similar', 'similar')
-            ->leftJoin('article.related', 'accessories')
-            ->leftJoin('accessories.mainDetail', 'accessoryDetail')
-            ->leftJoin('similar.mainDetail', 'similarDetail')
-            ->leftJoin('article.images', 'images')
-            ->leftJoin('article.links', 'links')
-            ->leftJoin('article.downloads', 'downloads')
-            ->leftJoin('article.tax', 'tax')
-            ->leftJoin('mainDetail.attribute', 'attribute')
-            ->leftJoin('article.supplier', 'supplier')
-            ->leftJoin('links.attribute', 'linkAttribute')
-            ->leftJoin('article.customerGroups', 'customerGroups')
-            ->leftJoin('images.attribute', 'imageAttribute')
-            ->leftJoin('downloads.attribute', 'downloadAttribute')
-            ->leftJoin('article.propertyValues', 'propertyValues')
-            ->leftJoin('images.mappings', 'imageMapping')
-            ->leftJoin('imageMapping.rules', 'mappingRule')
-            ->leftJoin('mappingRule.option', 'ruleOption')
-            ->where('attribute.afterbuyExport = 1')
-            ->andWhere('images.parentId IS NULL');
-            // ->andWhere('article.configuratorSetId IS NULL');
-
-        $afterbuyArticles = $builder->getQuery()->getArrayResult();
+        // Get all articles where the attribute afterbuyExport is true.
+        // Simple articles have an undefined configuratorSetId --> NULL
+        // unlike article configurator sets that have multiple details.
+        $afterbuyArticles = array_map(
+            [$this, 'collectArticleDetails'],
+            Shopware()->Models()
+                ->createQueryBuilder()
+                ->select([
+                    'article',
+                    'mainDetail',
+                    'tax',
+                    'attribute',
+                    'supplier',
+                    'categories',
+                    'similar',
+                    'accessories',
+                    'accessoryDetail',
+                    'similarDetail',
+                    'images',
+                    'links',
+                    'downloads',
+                    'linkAttribute',
+                    'customerGroups',
+                    'imageAttribute',
+                    'downloadAttribute',
+                    'propertyValues',
+                    'imageMapping',
+                    'mappingRule',
+                    'ruleOption',
+                ])
+                ->from('Shopware\Models\Article\Article', 'article')
+                ->leftJoin('article.mainDetail', 'mainDetail')
+                ->leftJoin('article.categories', 'categories', null, null, 'categories.id')
+                ->leftJoin('article.similar', 'similar')
+                ->leftJoin('article.related', 'accessories')
+                ->leftJoin('accessories.mainDetail', 'accessoryDetail')
+                ->leftJoin('similar.mainDetail', 'similarDetail')
+                ->leftJoin('article.images', 'images')
+                ->leftJoin('article.links', 'links')
+                ->leftJoin('article.downloads', 'downloads')
+                ->leftJoin('article.tax', 'tax')
+                ->leftJoin('mainDetail.attribute', 'attribute')
+                ->leftJoin('article.supplier', 'supplier')
+                ->leftJoin('links.attribute', 'linkAttribute')
+                ->leftJoin('article.customerGroups', 'customerGroups')
+                ->leftJoin('images.attribute', 'imageAttribute')
+                ->leftJoin('downloads.attribute', 'downloadAttribute')
+                ->leftJoin('article.propertyValues', 'propertyValues')
+                ->leftJoin('images.mappings', 'imageMapping')
+                ->leftJoin('imageMapping.rules', 'mappingRule')
+                ->leftJoin('mappingRule.option', 'ruleOption')
+                ->where('images.parentId IS NULL')
+                ->andWhere('attribute.afterbuyExport = 1')
+                ->getQuery()->getArrayResult()
+        );
         foreach ($afterbuyArticles as $article) {
-            /** @var \Shopware\Models\Article\Repository $articleRepo */
-            $articleRepo = Shopware()->Models()->getRepository('Shopware\Models\Article\Article');
-            $idQuery = $articleRepo->getConfiguratorListIdsQuery(
-                $article['id']
-            );
-            $ids = $idQuery->getArrayResult();
-
-            foreach ($ids as $key => $id) {
-                $ids[$key] = $id['id'];
-            }
-
-            $query = $articleRepo->getDetailsByIdsQuery($ids);
-            $details = $query->getArrayResult();
-
-            foreach ($details as $key => $detail) {
-                if (empty($detail['prices']) ) {
-                    continue;
+            if ($article['configuratorSetId'] !== null && count($article['allDetails']) > 1) {
+                $variants = [];
+                $variantIds = [];
+                $variantNames = [];
+                $mainDetail = null;
+                foreach ($article['allDetails'] as $detail) {
+                    if ($detail['id'] == $article['mainDetailId']) {
+                        $mainDetail = $this->mapArticleToProduct($article, $detail, ProductIdent::TYPE_VARIANT_SET, 0);
+                    }
+                    $variants[] = $this->mapArticleToProduct($article, $detail, ProductIdent::TYPE_NO_CHILDREN, 1);
+                    $variantIds[$detail['number']] = $detail['id'];
+                    $variantNames[$detail['number']] = $detail['additionalText'];
                 }
-                $detail['prices'] = $this->formatPricesFromNetToGross($detail['prices'], $article['tax']);
-                // TODO: Check if the articles get their Afterbuy product ID properly
-                $response = $client->updateShopProducts($this->mapArticleToProduct($article, $detail));
-                $this->addAfterbuyIdToArticle($detail['id'], $response);
+                $response = $client->updateShopProducts($variants);
+                $mainDetail->setAddBaseProducts(new AddBaseProducts());
+                foreach ($response['Result']['NewProducts']['NewProduct'] as $newProduct) {
+                    $this->addAfterbuyIdToArticleDetail(
+                        $variantIds[$newProduct['UserProductID']],
+                        $newProduct['ProductID']
+                    );
+                    $isMainDetail = $newProduct['UserProductID'] == $mainDetail->getProductIdent()->getUserProductID();
+                    $children = $mainDetail->getAddBaseProducts()->getAddBaseProduct();
+                    $children[] = new AddBaseProduct(
+                        $newProduct['ProductID'],
+                        $variantNames[$newProduct['UserProductID']],
+                        $isMainDetail
+                            ? AddBaseProduct::VARIANT_STANDARD
+                            : AddBaseProduct::VARIANT_OPTIONAL
+                    );
+                    $mainDetail->getAddBaseProducts()->setAddBaseProduct($children);
+                }
+                $mainArticleNumber = strstr($mainDetail->getProductIdent()->getUserProductID(), '.', true);
+                $mainDetailId = $mainDetail->getAnr();
+                $mainDetailProductIdent = $mainDetail->setAnr(null)->getProductIdent();
+                if (empty($mainDetailProductIdent->getProductID())) {
+                    $mainDetailProductIdent->setAnr(null)->setUserProductID($mainArticleNumber);
+                }
+                $response = $client->updateShopProducts($mainDetail);
+                $baseProductId = $response['Result']['NewProducts']['NewProduct']['ProductID'];
+                $this->addAfterbuyIdToArticleDetail($mainDetailId, $baseProductId, true);
+            } else {
+                $detail = $article['allDetails'][0];
+                $product = $this->mapArticleToProduct($article, $detail, ProductIdent::TYPE_NO_CHILDREN, 0);
+                $response = $client->updateShopProducts($product);
+                $productId = $response['Result']['NewProducts']['NewProduct']['ProductID'];
+                $this->addAfterbuyIdToArticleDetail($detail['id'], $productId);
             }
         }
         return true;
     }
 
     /**
-     * @param $article
-     * @param $detail
+     * @param array $article
+     * @return array
+     */
+    protected function collectArticleDetails($article) {
+        /** @var \Shopware\Models\Article\Repository $articleRepository */
+        $articleRepository = Shopware()->Models()->getRepository('Shopware\Models\Article\Article');
+        $ids = array_column($articleRepository->getConfiguratorListIdsQuery($article['id'])->getResult(), 'id');
+        $details = $articleRepository->getDetailsByIdsQuery($ids)->getArrayResult();
+        $article['allDetails'] = [];
+        foreach ($details as $detail) {
+            if (!empty($detail['prices']) ) {
+                $detail['prices'] = $this->formatPricesFromNetToGross($detail['prices'], $article['tax']);
+            }
+            array_push($article['allDetails'], $detail);
+        }
+        return $article;
+    }
+
+    /**
+     * @param array $article
+     * @param array $detail
+     * @param int $type
+     * @param int $level
      * @return Product
      * @throws \Zend_Db_Statement_Exception
      */
-    protected function mapArticleToProduct($article, $detail)
+    protected function mapArticleToProduct($article, $detail, $type = 0, $level = 0)
     {
-        $afterbuyProductID = $detail['attribute']['afterbuyProductid'];
-        $product = new Product();
-        if ($afterbuyProductID) {
-            $product->getProductIdent()->setProductID($afterbuyProductID);
-        } else {
+        $afterbuyFieldKey = ($type === ProductIdent::TYPE_VARIANT_SET)
+            ? 'afterbuyBaseProductid'
+            : 'afterbuyProductid';
+        $afterbuyProductID = $detail['attribute'][$afterbuyFieldKey] ?: null;
+        $product = new Product($afterbuyProductID);
+        if (empty($afterbuyProductID)) {
             $product->getProductIdent()
-                ->setProductInsert(true)
-                ->setBaseProductType(0)
-                ->setUserProductID($detail['id'])
-                ->setAnr($detail['id'])
-                ->setEAN($detail['number']);
+                ->setBaseProductType($type)
+                ->setUserProductID($detail['number'])
+                ->setAnr($detail['id']);
         }
-        // TODO: Map the product pictures
+        $productPictures = [];
+        $imageSmallURL = null;
+        $imageLargeURL = null;
+        $mediaRepository = Shopware()->Models()->getRepository('Shopware\Models\Media\Media');
+        $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+        foreach ($article['images'] as $index => $image) {
+            $pictureNr = $index + 1;
+            if ($pictureNr > 12) {
+                break;
+            }
+            $mediaImage = $mediaRepository->findOneBy(array('id' => $image['mediaId']));
+            $pictureUrl = $mediaService->getUrl($mediaImage->getPath());
+            $imageLargeURL = $imageLargeURL ?: $pictureUrl;
+            $productPicture = new ProductPicture();
+            $productPicture
+                ->setNr($pictureNr)
+                ->setUrl($pictureUrl)
+                ->setAltText($image['path']);
+            $thumbnailPath = array_shift($mediaImage->getCreatedThumbnails());
+            if (!empty($thumbnailPath)) {
+                $thumbnailUrl = $mediaService->getUrl($thumbnailPath);
+                $imageSmallURL = $imageSmallURL ?: $thumbnailUrl;
+                $thumbnail = new ProductPicture();
+                $thumbnail
+                    ->setTyp(ProductPicture::PICTURE_THUMB)
+                    ->setUrl($thumbnailUrl)
+                    ->setAltText($thumbnailPath);
+                $listPicture = new ProductPicture();
+                $listPicture
+                    ->setTyp(ProductPicture::PICTURE_LIST)
+                    ->setUrl($thumbnailUrl)
+                    ->setAltText($thumbnailPath);
+                $productPicture->setChilds([
+                    $thumbnail,
+                    $listPicture,
+                ]);
+            }
+            $productPictures[] = $productPicture;
+        }
+        $productPictures = !empty($productPictures) ? new ProductPictures($productPictures) : null;
         return $product
+            ->setLevel($level)
             ->setName($article['name'])
             ->setAnr($detail['id'])
-            ->setEAN($detail['number'])
             ->setProductBrand($article['supplier']['name'])
             ->setManufacturerPartNumber($detail['supplierNumber'])
             ->setDescription($article['descriptionLong'])
@@ -148,132 +237,10 @@ class CronJob
             ->setTaxRate(str_replace('.', ',', $article['tax']['tax']))
             ->setWeight(str_replace('.', ',', $detail['weight']))
             ->setDeliveryTime($detail['shippingTime'])
-            ->setCanonicalUrl($this->getArticleSeoUrl($article['id']));
-    }
-
-
-    /**
-     * @param $article Article
-     * @param $detail Detail
-     * @return \fcafterbuyart|mixed
-     * @throws \Zend_Db_Statement_Exception
-     */
-    private function mapAfterbuyArticleAttributes($article, $detail)
-    {
-        $fcAfterbuyArt = new \fcafterbuyart();
-        $fcAfterbuyArt = $this->mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article);
-        $fcAfterbuyArt = $this->mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article);
-
-        $fcAfterbuyArt->UserProductID           = null;  // Integer
-        $fcAfterbuyArt->Anr                     = $article['id']; //Float
-        $fcAfterbuyArt->EAN                     = $article['mainDetail']['number']; // String
-        $fcAfterbuyArt->ProductID               = $article['mainDetail']['attribute']['afterbuyProductid']; // Integer
-        $fcAfterbuyArt->ShortDescription        = $article['description']; // String
-        $fcAfterbuyArt->Memo                    = null; // String
-        $fcAfterbuyArt->Description             = $article['descriptionLong'];
-        $fcAfterbuyArt->Keywords                = $article['keywords']; // String Kelkoo Keywords
-        $fcAfterbuyArt->Quantity                = $article['mainDetail']['inStock']; // Integer
-        $fcAfterbuyArt->AuctionQuantity         = null; // Integer
-        $fcAfterbuyArt->AddQuantity             = null;
-        $fcAfterbuyArt->AddAuctionQuantity      = null;
-        $fcAfterbuyArt->Stock                   = null; // bool
-        $fcAfterbuyArt->Discontinued            = null; // bool
-        $fcAfterbuyArt->MergeStock              = null; // bool
-        $fcAfterbuyArt->UnitOfQuantity          = null; //$this->mapUnitQuantity($); // float???
-        $fcAfterbuyArt->BasepriceFactor         = null;
-        $fcAfterbuyArt->MinimumStock            = $article['mainDetail']['stockMin'];;
-        $fcAfterbuyArt->SellingPrice            = str_replace('.', ',',$detail['prices']['EK']['price']);
-        $fcAfterbuyArt->BuyingPrice             = str_replace('.', ',',$article['mainDetail']['purchasePrice']);
-        $fcAfterbuyArt->DealerPrice             = str_replace('.', ',',round($detail['prices'][0]['price'], 2));
-        $fcAfterbuyArt->Level                   = null;
-        $fcAfterbuyArt->Position                = null;
-        $fcAfterbuyArt->TitleReplace            = null;
-        $fcAfterbuyArt->ScaledQuantity          = null;
-        $fcAfterbuyArt->ScaledPrice             = null;
-        $fcAfterbuyArt->ScaledDPrice            = null;
-        $fcAfterbuyArt->TaxRate                 = str_replace('.', ',',$article['tax']['tax']);
-        $fcAfterbuyArt->Weight                  = $article['mainDetail']['weight'];
-        $fcAfterbuyArt->Stocklocation_1         = null;
-        $fcAfterbuyArt->Stocklocation_2         = null;
-        $fcAfterbuyArt->Stocklocation_3         = null;
-        $fcAfterbuyArt->Stocklocation_4         = null;
-        $fcAfterbuyArt->CountryOfOrigin         = null;
-        $fcAfterbuyArt->SearchAlias             = null;
-        $fcAfterbuyArt->Froogle                 = null;
-        $fcAfterbuyArt->Kelkoo                  = null;
-        $fcAfterbuyArt->ShippingGroup           = null;
-        $fcAfterbuyArt->ShopShippingGroup       = null;
-        $fcAfterbuyArt->CrossCatalogID          = null;
-        $fcAfterbuyArt->FreeValue1              = null;
-        $fcAfterbuyArt->FreeValue2              = null;
-        $fcAfterbuyArt->FreeValue3              = null;
-        $fcAfterbuyArt->FreeValue4              = null;
-        $fcAfterbuyArt->FreeValue5              = null;
-        $fcAfterbuyArt->FreeValue6              = null;
-        $fcAfterbuyArt->FreeValue7              = null;
-        $fcAfterbuyArt->FreeValue8              = null;
-        $fcAfterbuyArt->FreeValue9              = null;
-        $fcAfterbuyArt->FreeValue10             = null;
-        $fcAfterbuyArt->DeliveryTime            = $article['mainDetail']['shippingTime'];
-        $fcAfterbuyArt->ImageSmallURL           = null;
-        $fcAfterbuyArt->ImageLargeURL           = null;
-        $fcAfterbuyArt->ImageName               = null;
-        $fcAfterbuyArt->ImageSource             = null;
-        $fcAfterbuyArt->ManufacturerStandardProductIDType         = null;
-        $fcAfterbuyArt->ManufacturerStandardProductIDValue         = null;
-        $fcAfterbuyArt->ProductBrand            = $article['supplier']['name'];
-        $fcAfterbuyArt->CustomsTariffNumber     = null;
-        $fcAfterbuyArt->ManufacturerPartNumber  = $article['mainDetail']['supplierNumber'];
-        $fcAfterbuyArt->GoogleProductCategory   = null;
-        $fcAfterbuyArt->Condition               = null;
-        $fcAfterbuyArt->Pattern                 = null;
-        $fcAfterbuyArt->Material                = null;
-        $fcAfterbuyArt->ItemColor               = null;
-        $fcAfterbuyArt->ItemSize                = null;
-        $fcAfterbuyArt->CanonicalUrl            = $this->getArticleSeoUrl($article['id']);
-        $fcAfterbuyArt->EnergyClass             = null;
-        $fcAfterbuyArt->EnergyClassPictureUrl   = null;
-        $fcAfterbuyArt->Gender                  = null;
-        $fcAfterbuyArt->AgeGroup                = null;
-
-        return $fcAfterbuyArt;
-    }
-
-
-    /**
-     * @param $fcAfterbuyArt \fcafterbuyart
-     * @param $article Article
-     * @return \fcafterbuyart|mixed
-     */
-    private function  mapRequiredAfterbuyArticleAttributes($fcAfterbuyArt, $article)
-    {
-        $fcAfterbuyArt->Name                    = $article['name']; // String
-        return $fcAfterbuyArt;
-    }
-
-    /**
-     * @param $fcAfterbuyArt \fcafterbuyart
-     * @param $article Article
-     * @return  \fcafterbuyart|mixed
-     */
-    private function  mapImageAfterbuyArticleAttributes($fcAfterbuyArt, $article)
-    {
-        $i = 1;
-        foreach ($article['images'] as $image){
-            // only 12 pictures are supported by afterbuy
-            if ($i > 12){
-                continue;
-            }
-            $varName_PicNr = "ProductPicture_Nr_".$i;
-            $varName_PicUrl = "ProductPicture_Url_".$i;
-            $varName_PicAltText = "ProductPicture_AltText_".$i;
-
-            $fcAfterbuyArt->{$varName_PicNr} = $i;
-            $fcAfterbuyArt->{$varName_PicUrl} = $this->getImageSeoUrl($image['mediaId']);
-            $fcAfterbuyArt->{$varName_PicAltText} = $image['path']; // TODO: Better description?
-            $i++;
-        }
-        return $fcAfterbuyArt;
+            ->setCanonicalUrl($this->getArticleSeoUrl($article['id']))
+            ->setImageLargeURL($imageLargeURL)
+            ->setImageSmallURL($imageSmallURL)
+            ->setProductPictures($productPictures);
     }
 
     /**
@@ -310,35 +277,25 @@ class CronJob
      * Adds Afterbuy's product ID to the article details
      *
      * @param integer $detailID
-     * @param string $response
+     * @param integer $productID
+     * @param bool $isMainDetail
      * @return void
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected function addAfterbuyIdToArticle($detailID, $response)
+    protected function addAfterbuyIdToArticleDetail($detailID, $productID, $isMainDetail = false)
     {
-        $oXml = simplexml_load_string($response);
-        $productID = (string) $oXml->Result->NewProducts->NewProduct->ProductID;
         if ($productID) {
             $detail = Shopware()->Models()->getRepository('Shopware\Models\Article\Detail')->find($detailID);
             /** @var \Shopware\Models\Attribute\Article $attributes */
             $attributes = $detail->getAttribute();
-            $attributes->setAfterbuyProductid($productID);
+            if ($isMainDetail) {
+                $attributes->setAfterbuyBaseProductid($productID);
+            } else {
+                $attributes->setAfterbuyProductid($productID);
+            }
             Shopware()->Models()->persist($attributes);
             Shopware()->Models()->flush();
         }
-    }
-
-    /**
-     * @param integer $mediaId
-     * @return string
-     */
-    protected function getImageSeoUrl($mediaId)
-    {
-        $mediaService = Shopware()->Container()->get('shopware_media.media_service');
-        $mediaRepo = Shopware()->Models()->getRepository('Shopware\Models\Media\Media');
-        $mediaImage = $mediaRepo->findOneBy(array('id' => $mediaId));
-        // TODO: Add proper exception handling
-        return $mediaService->getUrl($mediaImage->getPath());
     }
 
     /**

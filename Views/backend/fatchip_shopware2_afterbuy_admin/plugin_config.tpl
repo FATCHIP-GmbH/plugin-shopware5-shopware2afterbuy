@@ -67,7 +67,7 @@
                         <div class="form-group">
                             <label class="sr-only" for="AfterbuyPartnerPassword">{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</label>
                             <input name="AfterbuyPartnerPassword"
-                                   type="text"
+                                   type="password"
                                    class="form-control field-wide"
                                     {if !empty($config)}
                                         value="{$config->getAfterbuyPartnerPassword()}"
@@ -93,7 +93,7 @@
                         <div class="form-group">
                             <label class="sr-only" for="AfterbuyUserPassword">{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</label>
                             <input name="AfterbuyUserPassword"
-                                   type="text"
+                                   type="password"
                                    class="form-control field-wide"
                                     {if !empty($config)}
                                         value="{$config->getAfterbuyUserPassword()}"

@@ -139,6 +139,27 @@ class CronJob
         }
         return true;
     }
+    /**
+     * @return bool
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Zend_Db_Statement_Exception
+     */
+    public function importMainArticles2Shopware()
+    {
+        // Get SDK object
+        // TODO: Handle this in the constructor?
+        // TODO: Does not work with an empty or wrong configuration
+        $client = Shopware()->Container()->get('afterbuy_api_client');
+
+        // Get all articles from AfterbuyAPI
+        // Map article field names
+        // for each article
+        //     if article exists in db
+        //         if article has changed update it
+        //         else do nothing
+        //     else add it
+        return true;
+    }
 
     /**
      * @param array $article

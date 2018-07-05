@@ -21,6 +21,8 @@ class ControllerPath implements SubscriberInterface
         return [
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_FatchipShopware2AfterbuyAdmin' =>
                 'onGetControllerPathBackendAdmin',
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipShopware2AfterbuyTriggerCronJob'
+            => 'onGetFrontendControllerPath',
         ];
     }
 
@@ -34,5 +36,16 @@ class ControllerPath implements SubscriberInterface
     public function onGetControllerPathBackendAdmin(\Enlight_Event_EventArgs $args)
     {
         return __DIR__ . '/../Controllers/Backend/FatchipShopware2AfterbuyAdmin.php';
+    }
+
+    /**
+     * Provide path to custom frontend controllers
+     * @param \Enlight_Event_EventArgs $args
+     * @return string
+     */
+    public function onGetFrontendControllerPath(\Enlight_Event_EventArgs $args)
+    {
+        $controllerName = $args->getRequest()->getControllerName();
+        return __DIR__ . '/../Controllers/Frontend/' . $controllerName . '.php';
     }
 }

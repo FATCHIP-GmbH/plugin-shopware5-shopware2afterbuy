@@ -141,9 +141,10 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
 
         $this->subscribeEvent('Enlight_Controller_Front_DispatchLoopStartup', 'onStartDispatch');
         $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleExport', 'onRunArticleExportCronJob');
-        $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleImport', 'onRunArticleImportCronJob');
+//        $this->subscribeEvent('Shopware_CronJob_AfterBuyArticleImport', 'onRunArticleImportCronJob');
         $this->subscribeEvent('Shopware_CronJob_AfterBuyOrderImport', 'onRunOrderImportCronJob');
         $this->createCronJob('Afterbuy Article Export', 'AfterBuyArticleExport', 600, 1, 0);
+//        $this->createCronJob('Afterbuy Article Import', 'AfterBuyArticleImport', 600, 1, 0);
         // $this->createCronJob('Afterbuy Order Import', 'AfterBuyOrderImport', 600, 1, 0);
 
         $this->updateSchema();

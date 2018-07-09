@@ -152,14 +152,38 @@ class CronJob
         $client = Shopware()->Container()->get('afterbuy_api_client');
 
         // Get all articles from AfterbuyAPI
-        $response = $client->getShopProductsFromAfterbuy();
+        $product = $client->getShopProductsFromAfterbuy();
+        $article = new Article();
+        $article->setName('roman');
+        Shopware()->Models()->persist($article);
+        Shopware()->Models()->flush($article);
         // Map article field names
         // for each article
         //     if article exists in db
         //         if article has changed update it
         //         else do nothing
         //     else add it
-        return $response;
+        return $product;
+    }
+
+    protected function mapProductToArticle(Product $product) {
+        $productIdent = $product->getProductIdent();
+        $type = $productIdent->getBaseProductType() ?: ProductIdent::TYPE_NO_CHILDREN;
+        $afterbuyFieldKey = ($type === ProductIdent::TYPE_VARIANT_SET)
+            ? 'afterbuyBaseProductid'
+            : 'afterbuyProductid';
+        $detail = [
+            'attribute' => [
+                $afterbuyFieldKey => $product
+            ]
+        ];
+        $article = [];
+
+        $ID = $productIdent->getUserProductID();
+        $anr = $productIdent->getAnr();
+        $attribute = [
+            $afterbuyFieldKey => $productIdent
+        ];
     }
 
     /**

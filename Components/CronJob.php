@@ -152,13 +152,14 @@ class CronJob
         $client = Shopware()->Container()->get('afterbuy_api_client');
 
         // Get all articles from AfterbuyAPI
+        $response = $client->getShopProductsFromAfterbuy();
         // Map article field names
         // for each article
         //     if article exists in db
         //         if article has changed update it
         //         else do nothing
         //     else add it
-        return true;
+        return $response;
     }
 
     /**

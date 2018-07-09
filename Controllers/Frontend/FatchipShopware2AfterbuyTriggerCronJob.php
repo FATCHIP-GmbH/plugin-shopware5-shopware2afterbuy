@@ -15,6 +15,5 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
 
         var_dump($response);
         echo $response;
-//        echo $this->Request()->getParam('job');
     }
 }

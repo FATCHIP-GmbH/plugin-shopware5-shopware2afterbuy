@@ -144,7 +144,7 @@ class CronJob
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Zend_Db_Statement_Exception
      */
-    public function importArticles2Shopware()
+    public function importProducts2Shopware()
     {
         // Get SDK object
         // TODO: Handle this in the constructor?

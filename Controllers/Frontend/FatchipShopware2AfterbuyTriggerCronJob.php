@@ -11,7 +11,7 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
 
         $cronjob = new CronJob();
-        $response = $cronjob->importArticles2Shopware();
+        $response = $cronjob->importProducts2Shopware();
 
         var_dump($response);
         echo $response;

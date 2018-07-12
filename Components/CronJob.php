@@ -9,6 +9,8 @@ use Fatchip\Afterbuy\Types\Product\ProductIdent;
 use Fatchip\Afterbuy\Types\Product\ProductPicture;
 use Fatchip\Afterbuy\Types\Product\ProductPictures;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContext;
+use Shopware\Components\Api\Exception\CustomValidationException;
+use Shopware\Components\Api\Exception\ValidationException;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Country\Country;
@@ -140,30 +142,74 @@ class CronJob
         return true;
     }
     /**
-     * @return bool
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Zend_Db_Statement_Exception
+     * @return int[]
      */
     public function importProducts2Shopware()
     {
+        // only documented product fields are parsed
+        // https://xmldoku.afterbuy.de/dokued/
+
         // Get SDK object
         // TODO: Handle this in the constructor?
         // TODO: Does not work with an empty or wrong configuration
-        $client = Shopware()->Container()->get('afterbuy_api_client');
+        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        /** @var \Shopware\Components\Api\Resource\Article $resource */
+        $resource = \Shopware\Components\Api\Manager::getResource('article');
 
-        // Get all articles from AfterbuyAPI
-        $product = $client->getShopProductsFromAfterbuy();
-        $article = new Article();
-        $article->setName('roman');
-        Shopware()->Models()->persist($article);
-        Shopware()->Models()->flush($article);
-        // Map article field names
-        // for each article
-        //     if article exists in db
-        //         if article has changed update it
-        //         else do nothing
-        //     else add it
-        return $product;
+
+        // Get all productsResult from AfterbuyAPI
+        $productsResult = $apiClient->getShopProductsFromAfterbuy();
+        if ($productsResult['CallStatus'] != 'Success') {
+            // TODO: fix error handling
+            die('GetShopProducts: CallStatus: [' . $productsResult['CallStatus'] . '] Awaited: [Success].');
+        }
+        if ($productsResult['Result']['HasMoreProducts']) {
+            // pagination on
+        } else {
+            // pagination off
+        }
+        $lastProductID = $productsResult['Result']['LastProductID'];
+        // for each productsResult
+        foreach ($productsResult['Result']['Products']['Product'] as $product) {
+            // Map article field names
+            // https://github.com/FATCHIP-GmbH/plugin-shopware5-shopware2afterbuy/blob/09a89913c2bfecf47f2e727aec3d6a2ea7dafce3/Components/CronJob.php
+            $articleArray = [
+                'id' => $product['Anr'],
+                'description' => $product['ShortDescription'],
+                'descriptionLong' => $product['Description'],
+                'keywords' => $product['Keywords'],
+                'mainDetail' => [
+                    'number' => $product['EAN'],
+                    'inStock' => $product['Quantity'],
+                    'stockMin' => $product['MinimumStock'],
+                    'attribute' => [
+                        'afterbuyProductid' => $product['ProductID']
+                    ]
+                ],
+//                'details' => [
+//                ]
+            ];
+            //     if article exists in db
+            //         if article has changed
+            //             update it
+            //         else do nothing
+            //     else create it
+//            try {
+//                $article = $resource->create($articleArray);
+//            } catch (CustomValidationException $e) {
+//                // TODO: implement
+//                die('CustomValidationException: ' . $e);
+//            } catch (ValidationException $e) {
+//                // TODO: implement
+//                die('ValidationException: ' . $e);
+//            }
+        }
+
+        $repo = Shopware()->Models()->getRepository('Shopware\Models\Article\Detail');
+        /** @var \Shopware\Models\Article\Detail[] $a */
+        $a = $repo->findBy([ 'article' => 5 ]);
+
+        return $productsResult;
     }
 
     protected function mapProductToArticle(Product $product) {
@@ -672,7 +718,7 @@ class CronJob
         $params = [];
 
         // All parameters are REQUIRED!
-        
+
         $params['customerId'] = $this->getCreateOrderCustomerId($afterbuyOrder);
         $params['paymentId'] = $this->getCreateOrderPaymentId($afterbuyOrder);
         $params['dispatchId'] = $this->getCreateOrderDispatchId($afterbuyOrder);

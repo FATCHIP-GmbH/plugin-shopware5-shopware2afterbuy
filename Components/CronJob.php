@@ -271,7 +271,7 @@ class CronJob
      * product links to nowhere. No Product with productID BaseProduct found.
      */
     protected function findVariantSetProductAndIndex($product, $products) {
-        if (!isset('BaseProducts', $product)) {
+        if (!isset($product['BaseProducts'])) {
             throw new InvalidArgumentException('Given Product is not related to a variant set.');
         }
 

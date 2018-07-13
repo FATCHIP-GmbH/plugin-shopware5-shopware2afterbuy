@@ -147,15 +147,10 @@ class CronJob
      */
     public function importProducts2Shopware()
     {
-        // only documented product fields are parsed
-        // https://xmldoku.afterbuy.de/dokued/
-
         // Get SDK object
-        // TODO: Handle this in the constructor?
-        // TODO: Does not work with an empty or wrong configuration
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
         /** @var \Shopware\Components\Api\Resource\Article $resource */
-        $resource = \Shopware\Components\Api\Manager::getResource('article');
+        $articleResource = \Shopware\Components\Api\Manager::getResource('article');
 
 
         // Get all productsResult from AfterbuyAPI
@@ -170,26 +165,12 @@ class CronJob
             // pagination off
         }
         $lastProductID = $productsResult['Result']['LastProductID'];
+
+        $products = $productsResult['Result']['Products']['Product'];
         // for each productsResult
-        foreach ($productsResult['Result']['Products']['Product'] as $product) {
+        foreach ($products as $product) {
             // Map article field names
-            // https://github.com/FATCHIP-GmbH/plugin-shopware5-shopware2afterbuy/blob/09a89913c2bfecf47f2e727aec3d6a2ea7dafce3/Components/CronJob.php
-            $articleArray = [
-                'id' => $product['Anr'],
-                'description' => $product['ShortDescription'],
-                'descriptionLong' => $product['Description'],
-                'keywords' => $product['Keywords'],
-                'mainDetail' => [
-                    'number' => $product['EAN'],
-                    'inStock' => $product['Quantity'],
-                    'stockMin' => $product['MinimumStock'],
-                    'attribute' => [
-                        'afterbuyProductid' => $product['ProductID']
-                    ]
-                ],
-//                'details' => [
-//                ]
-            ];
+            $articleArray = $this->mapProductToArticle($products, $product['ProductID']);
             //     if article exists in db
             //         if article has changed
             //             update it
@@ -213,24 +194,35 @@ class CronJob
         return $productsResult;
     }
 
-    protected function mapProductToArticle(Product $product) {
-        $productIdent = $product->getProductIdent();
-        $type = $productIdent->getBaseProductType() ?: ProductIdent::TYPE_NO_CHILDREN;
-        $afterbuyFieldKey = ($type === ProductIdent::TYPE_VARIANT_SET)
-            ? 'afterbuyBaseProductid'
-            : 'afterbuyProductid';
-        $detail = [
-            'attribute' => [
-                $afterbuyFieldKey => $product
-            ]
+    /**
+     * @param array $product - the product to be mapped
+     * @param array $products - all products, we need this, to find the index in
+     *                        variant sets.
+     *
+     * @return array
+     */
+    protected function mapProductToDetail(array $product, array $products) {
+        $articleDetail = [
+//            'id' => $product['Anr'],
+//            'description' => $product['ShortDescription'],
+//            'descriptionLong' => $product['Description'],
+//            'keywords' => $product['Keywords'],
+//            'mainDetail' => [
+//                'number' => $product['EAN'],
+//                'inStock' => $product['Quantity'],
+//                'stockMin' => $product['MinimumStock'],
+//                'attribute' => [
+//                    'afterbuyProductid' => $product['ProductID']
+//                ]
+//            ],
+////                'details' => [
+////                ]
+            'ordernumber' => $this->generateOrdernumber($product, $products),
+            'suppliernumber' => $product['ManufacturerPartNumber'],
+            'kind' =>
         ];
-        $article = [];
 
-        $ID = $productIdent->getUserProductID();
-        $anr = $productIdent->getAnr();
-        $attribute = [
-            $afterbuyFieldKey => $productIdent
-        ];
+        return $articleDetail;
     }
 
     /**

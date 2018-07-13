@@ -8,6 +8,7 @@ use Fatchip\Afterbuy\Types\Product\AddBaseProducts;
 use Fatchip\Afterbuy\Types\Product\ProductIdent;
 use Fatchip\Afterbuy\Types\Product\ProductPicture;
 use Fatchip\Afterbuy\Types\Product\ProductPictures;
+use InvalidArgumentException;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContext;
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\ValidationException;
@@ -230,6 +231,45 @@ class CronJob
         $attribute = [
             $afterbuyFieldKey => $productIdent
         ];
+    }
+
+    /**
+     * Generates a Shopware article number (ordernumber) from given product. If
+     * the product is not in a variant set, the ordernumber is just the
+     * product's 'Anr'. Otherwise the productID is merged with a '.' and the
+     * index, where the product is in the list of base products, in the variant
+     * set.
+     *
+     * @param array $product  - the product to be mapped
+     * @param array $products - all products. This is needed to find the index
+     *                        in variant sets.
+     *
+     * @return string ordernumber - the resulting ordernumber.
+     * @throws InvalidArgumentException - when the given product is a
+     * variant set (parent object), this is when its 'Anr' equals 0. Then this
+     * product has not to be imported to Shopware and therefore it does not need
+     * a ordernumber.
+     */
+    protected function generateOrdernumber(array $product, array $products) {
+        if ($product['Anr'] == 0) {
+            throw new InvalidArgumentException('Given product is variant set. No ordernumbers for variant sets in Shopware.');
+        }
+
+        $baseProductID = $product['BaseProducts']['BaseProduct']['BaseProductID'];
+        $productID = $product['ProductID'];
+
+        foreach ($products as $prod) {
+            if ($prod['ProductID'] != $baseProductID) {
+                continue;
+            }
+
+            foreach ($prod['BaseProducts']['BaseProduct'] as $index => $baseProduct) {
+                if ($baseProduct['BaseProductID'] == $productID) {
+                    return $product['Anr'] . '.' . $index;
+                }
+            }
+        }
+        return (string) $product['Anr'];
     }
 
     /**

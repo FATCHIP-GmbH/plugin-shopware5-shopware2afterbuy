@@ -244,7 +244,7 @@ class CronJob
      * @param array $products - all products. This is needed to find the index
      *                        in variant sets.
      *
-     * @return string ordernumber - the resulting ordernumber.
+     * @return string the resulting ordernumber.
      * @throws InvalidArgumentException - when the given product is a
      * variant set (parent object), this is when its 'Anr' equals 0. Then this
      * product has not to be imported to Shopware and therefore it does not need
@@ -253,6 +253,34 @@ class CronJob
     protected function generateOrdernumber(array $product, array $products) {
         if ($product['Anr'] == 0) {
             throw new InvalidArgumentException('Given product is variant set. No ordernumbers for variant sets in Shopware.');
+        }
+
+        try {
+            $index = $this->findVariantSetProductAndIndex($product, $products)[1];
+
+            return $product['Anr'] . '.' . $index;
+        } catch (InvalidArgumentException $e) {
+            return (string) $product['Anr'];
+        }
+    }
+
+    /**
+     * Finds the given product's variant set and returns an array with the found
+     * product and the given product's index ind the variant set.
+     *
+     * @param array $product
+     * @param array $products
+     *
+     * @return array 0: the found variant set<br>
+     *               1: the given product's index in the variant set
+     * @throws InvalidArgumentException - when given product is not related to
+     * any variant set; no BaseProduct field defined.
+     * @throws InvalidArgumentException - when BaseProduct field of given
+     * product links to nowhere. No Product with productID BaseProduct found.
+     */
+    protected function findVariantSetProductAndIndex($product, $products) {
+        if (!isset('BaseProducts', $product)) {
+            throw new InvalidArgumentException('Given Product is not related to a variant set.');
         }
 
         $baseProductID = $product['BaseProducts']['BaseProduct']['BaseProductID'];
@@ -265,11 +293,12 @@ class CronJob
 
             foreach ($prod['BaseProducts']['BaseProduct'] as $index => $baseProduct) {
                 if ($baseProduct['BaseProductID'] == $productID) {
-                    return $product['Anr'] . '.' . $index;
+                    return [$prod, $index];
                 }
             }
         }
-        return (string) $product['Anr'];
+
+        throw new InvalidArgumentException('Given product links to unknown baseProduct.');
     }
 
     /**

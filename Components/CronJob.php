@@ -219,7 +219,7 @@ class CronJob
 ////                ]
             'ordernumber' => $this->generateOrdernumber($product, $products),
             'suppliernumber' => $product['ManufacturerPartNumber'],
-            'kind' =>
+            'kind' => ''
         ];
 
         return $articleDetail;

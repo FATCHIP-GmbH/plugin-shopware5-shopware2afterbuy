@@ -58,6 +58,18 @@ class ImportProductsCronJob {
                     $variantSets[$productID] = $product;
 
                     $articles[$productID] = $this->createArticleArray($product);
+                    $articles[$productID]['details'] = [];
+
+                    foreach (
+                        $product['BaseProducts']['BaseProduct'] as $baseProduct
+                    ) {
+                        if (isset($variantProducts[$baseProduct['BaseProductID']])) {
+                            array_push(
+                                $articles[$productID]['details'],
+                                $variantProducts[$baseProduct['BaseProductID']]
+                            );
+                        }
+                    }
                 } else {
                     $variantProducts[$productID] = $product;
 

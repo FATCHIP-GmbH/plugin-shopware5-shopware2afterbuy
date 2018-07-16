@@ -1,6 +1,6 @@
 <?php
 
-use \Shopware\FatchipShopware2Afterbuy\Components\CronJob;
+use \Shopware\FatchipShopware2Afterbuy\Components\ImportProductsCronJob;
 
 /**
  * Frontend controller
@@ -10,10 +10,9 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
     public function triggerAction() {
         Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
 
-        $cronjob = new CronJob();
-        $response = $cronjob->importProducts2Shopware();
+        $importProductsCronJob = new ImportProductsCronJob();
+        $response = $importProductsCronJob->importProducts2Shopware();
 
         var_dump($response);
-        echo $response;
     }
 }

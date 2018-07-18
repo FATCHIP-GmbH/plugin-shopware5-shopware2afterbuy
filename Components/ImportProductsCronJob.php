@@ -9,6 +9,7 @@
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 
+use Shopware\Components\Api\Resource\Article as ArticleResource;
 use Shopware\Components\Api\Manager as ApiManager;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Tax\Tax;
@@ -21,8 +22,8 @@ class ImportProductsCronJob {
     public function importProducts2Shopware() {
         // Get SDK object
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
-        /** @var \Shopware\Components\Api\Resource\Article $resource */
-        $articleResource = ApiManager::getResource('article');
+        /** @var ArticleResource $resource */
+        $articleResource = ApiManager::getResource('Article');
 
 
         // Get all products from AfterbuyAPI
@@ -41,74 +42,95 @@ class ImportProductsCronJob {
         $lastProductID = $productsResult['Result']['LastProductID'];
 
         $products = $productsResult['Result']['Products']['Product'];
-        $variantSets = [];
-        $variantProducts = [];
+
         $articles = [];
         $details = [];
+        $mainDetailsMap = [];
 
-        // for each productsResult
+        // for each product in products
         foreach ($products as $product) {
-            // Map article field names
+            // Map article / detail field names
+
             $productID = $product['ProductID'];
 
             // variantSet related?
             if (isset($product['BaseProducts'])) {
                 // variantSet parent object?
                 if ($product['Anr'] == '0') {
-                    $variantSets[$productID] = $product;
+                    $currentParentProduct = $product;
+                    $currentParentProductID = $productID;
+                    
+                    $variantSets[$currentParentProductID] = $currentParentProduct;
 
-                    $articles[$productID] = $this->createArticleArray($product);
-                    $articles[$productID]['details'] = [];
+                    $articles[$currentParentProductID] = $this->createArticleArray($currentParentProduct);
+                    $articles[$currentParentProductID]['details'] = [];
 
-                    foreach (
-                        $product['BaseProducts']['BaseProduct'] as $baseProduct
-                    ) {
-                        if (isset($variantProducts[$baseProduct['BaseProductID']])) {
-                            array_push(
-                                $articles[$productID]['details'],
-                                $variantProducts[$baseProduct['BaseProductID']]
+                    // foreach variant set product
+                    foreach ($currentParentProduct['BaseProducts']['BaseProduct'] as $currentChildProduct) {
+                        $currentChildProductID = $currentChildProduct['BaseProductID'];
+
+                        // mainDetail?
+                        if ($currentChildProduct['BaseProductsRelationData']['DefaultProduct'] == -1) {
+                            $mainDetailsMap[$currentParentProductID] = $currentChildProductID;
+                        }
+
+                        // detail already processed?
+                        if (isset($details[$currentChildProductID])) {
+                            $isMainDetail = $mainDetailsMap[$currentParentProductID] == $currentChildProductID;
+                            $this->addDetailToArticle(
+                                $isMainDetail,
+                                $articles[$currentParentProductID],
+                                $details[$currentChildProductID]
                             );
                         }
                     }
+                // variantSet childObject
                 } else {
-                    $variantProducts[$productID] = $product;
+                    $currentChildProductID = $productID;
+                    $parentProductID = $product['BaseProducts']['BaseProduct']['BaseProductID'];
 
-                    $details[$productID] = $this->createDetailArray($product);
+                    $details[$currentChildProductID] = $this->createDetailArray($product);
+
+                    // variant set already processed?
+                    if (isset($articles[$parentProductID])) {
+                        $isMainDetail = $mainDetailsMap[$parentProductID] == $currentChildProductID;
+                        $this->addDetailToArticle(
+                            $isMainDetail,
+                            $articles[$parentProductID],
+                            $details[$currentChildProductID]
+                        );
+                    }
                 }
+
+
             } else {
                 // single product
                 $details[$productID] = $this->createDetailArray($product);
 
                 $articles[$productID] = $this->createArticleArray($product);
-                $articles[$productID]['mainDetail'] = $details[$productID];
+                $this->addDetailToArticle(
+                    true,
+                    $articles[$productID],
+                    $details[$productID]
+                );
             }
 
-//            try {
-//                $articleArray = $this->mapProductToDetail($product, $products);
-//                var_dump($articleArray);
-//            } catch (InvalidArgumentException $e) {
-//            }
             //     if article exists in db
             //         if article has changed
             //             update it
             //         else do nothing
             //     else create it
-//            try {
-//                $article = $articleResource->create($articleArray);
-//            } catch (CustomValidationException $e) {
-//                // TODO: implement
-//                die('CustomValidationException: ' . $e);
-//            } catch (ValidationException $e) {
-//                // TODO: implement
-//                die('ValidationException: ' . $e);
-//            }
         }
 
-        $repo = Shopware()
-            ->Models()
-            ->getRepository('Shopware\Models\Article\Detail');
-        /** @var ArticleDetail[] $a */
-        $a = $repo->findBy(['article' => 5]);
+        foreach ($articles as $article) {
+            $articleResource->create($article);
+        }
+//
+//        $repo = Shopware()
+//            ->Models()
+//            ->getRepository('Shopware\Models\Article\Detail');
+//        /** @var ArticleDetail[] $a */
+//        $a = $repo->findBy(['article' => 5]);
 
         return $productsResult;
     }
@@ -137,26 +159,26 @@ class ImportProductsCronJob {
 
         $articles['name'] = $product['Name'];
         $articles['description'] = $product['ShortDescription'];
-        $articles['description_long'] = $product['Description'];
+        $articles['descriptionLong'] = $product['Description'];
         $articles['shippingtime'] = $product['DeliveryTime'];
-        $articles['tax'] = $taxObject;
+        $articles['tax'] = $product['TaxRate'];
         $articles['keywords'] = $product['Keywords'];
-        $articles['changetime'] = $product['ModDate'];
+        $articles['changed'] = $product['ModDate'];
 
         // TODO: what to map here?
         $articles['datum'] = $product[''];
-        $articles['active'] = $product[''];
-        $articles['pseudosales'] = $product[''];
+        $articles['active'] = 1;
+        $articles['pseudosales'] = 0;
         $articles['topseller'] = $product[''];
         $articles['metaTitle'] = $product[''];
         $articles['pricegroupID'] = $product[''];
-        $articles['pricegroupActive'] = $product[''];
+        $articles['pricegroupActive'] = 0;
         $articles['filtergroupID'] = $product[''];
-        $articles['laststock'] = $product[''];
+        $articles['laststock'] = $product['Discontinued'] & $product['Stock'];
         $articles['crossbundleloock'] = $product[''];
-        $articles['notification'] = $product[''];
-        $articles['template'] = $product[''];
-        $articles['mode'] = $product[''];
+        $articles['notification'] = 0;
+        $articles['template'] = '';
+        $articles['mode'] = 0;
 
         return $articles;
     }
@@ -168,12 +190,33 @@ class ImportProductsCronJob {
      * @return array
      */
     protected function createDetailArray(array $product) {
-        $details = [];
+        $detail = [];
 
-        $details['ordernumber'] = $product['Anr'];
-        $details['suppliernumber'] = $product['ManufacturerPartNumber'];
-        $details['shippingtime'] = $product['DeliveryTime'];
+        $detail['number'] = $product['Anr'];
+        $detail['supplierNumber'] = $product['ManufacturerPartNumber'];
+        $detail['shippingTime'] = $product['DeliveryTime'];
 
-        return $details;
+        return $detail;
+    }
+
+    /**
+     * Adds the given detail to the given article. When detail is mainDetail,
+     * the detail is set article's mainDetail field. Otherwise the detail is
+     * added to the details array.
+     *
+     * @param array $isMainDetail
+     * @param array $article
+     * @param array $detail
+     */
+    protected function addDetailToArticle($isMainDetail, &$article, $detail) {
+        // mainDetail?
+        if ($isMainDetail) {
+            $article['mainDetail'] = $detail;
+        } else {
+            array_push(
+                $article['details'],
+                $detail
+            );
+        }
     }
 }

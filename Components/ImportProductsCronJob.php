@@ -10,6 +10,7 @@ namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 
 use Shopware\Components\Api\Resource\Article as ArticleResource;
+use Fatchip\Afterbuy\ApiClient;
 use Shopware\Components\Api\Manager as ApiManager;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Tax\Tax;
@@ -21,6 +22,7 @@ class ImportProductsCronJob {
      */
     public function importProducts2Shopware() {
         // Get SDK object
+        /** @var ApiClient $apiClient */
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
         /** @var ArticleResource $resource */
         $articleResource = ApiManager::getResource('Article');
@@ -59,7 +61,7 @@ class ImportProductsCronJob {
                 if ($product['Anr'] == '0') {
                     $currentParentProduct = $product;
                     $currentParentProductID = $productID;
-                    
+
                     $variantSets[$currentParentProductID] = $currentParentProduct;
 
                     $articles[$currentParentProductID] = $this->createArticleArray($currentParentProduct);
@@ -115,22 +117,27 @@ class ImportProductsCronJob {
                 );
             }
 
-            //     if article exists in db
-            //         if article has changed
-            //             update it
-            //         else do nothing
-            //     else create it
         }
 
         foreach ($articles as $article) {
-            $articleResource->create($article);
+            $repo = Shopware()
+                ->Models()
+                ->getRepository('Shopware\Models\Article\Detail');
+            /** @var ArticleDetail[] $a */
+            $articleMatch = $repo->findBy(['number' => $article['mainDetail']['number']]);
+
+            // if article exists in db
+            if ($articleMatch) {
+                // TODO: iterate over $article['mainDetail'] by key => value and compare each value with the equivalent value in $articleMatch
+                // if article has changed
+                    // update it
+                // else do nothing
+            }
+            // else create it
+            else {
+                $articleResource->create($article);
+            }
         }
-//
-//        $repo = Shopware()
-//            ->Models()
-//            ->getRepository('Shopware\Models\Article\Detail');
-//        /** @var ArticleDetail[] $a */
-//        $a = $repo->findBy(['article' => 5]);
 
         return $productsResult;
     }

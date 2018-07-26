@@ -17,6 +17,10 @@ use Shopware\Models\Tax\Tax;
 
 
 class ImportProductsCronJob {
+    /** @var array The fields, that are objects in SW detail */
+    protected $test = [
+    ];
+
     /**
      * @return int[]
      */
@@ -124,11 +128,29 @@ class ImportProductsCronJob {
                 ->Models()
                 ->getRepository('Shopware\Models\Article\Detail');
             /** @var ArticleDetail[] $a */
-            $articleMatch = $repo->findBy(['number' => $article['mainDetail']['number']]);
+            $mainDetail_AB = $article['mainDetail'];
+            $mainDetail_SW = $repo->findBy(['number' => $mainDetail_AB['number']]);
 
             // if article exists in db
-            if ($articleMatch) {
-                // TODO: iterate over $article['mainDetail'] by key => value and compare each value with the equivalent value in $articleMatch
+            if ($mainDetail_SW) {
+                foreach ($mainDetail_AB as $key => $value) {
+                    $setter = 'set' . ucfirst($key);
+                    $getter = 'get' . ucfirst($key);
+
+                    // getter exists in Shopware detail?
+                    if (method_exists($mainDetail_SW[0], $getter)) {
+                        $this->updateValue(
+                            $mainDetail_SW[0],
+                            $getter,
+                            $setter,
+                            $value
+                        );
+                    }
+                }
+
+                foreach ($mainDetail_AB as $key => $value) {
+
+                }
                 // if article has changed
                     // update it
                 // else do nothing
@@ -140,6 +162,15 @@ class ImportProductsCronJob {
         }
 
         return $productsResult;
+    }
+
+    protected function updateValue($mainDetail_SW, $getter, $setter, $value_AB) {
+        // compare value sw - ab
+        // setter exists in Shopware detail?
+        if (method_exists($mainDetail_SW, $setter)) {
+            // overwrite it in Shopware
+            $mainDetail_SW->$setter($value_AB);
+        }
     }
 
     /**

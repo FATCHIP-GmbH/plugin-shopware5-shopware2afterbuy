@@ -22,7 +22,8 @@ class ApiMock {
             'Result'     => array(
                 'HasMoreProducts'      => '0',
                 'Products'             => array(
-                    'Product' => $this->getProducts([27])
+                    'Product' => $this->getProducts(range(22, 26))
+//                    'Product' => $this->getProducts([27])
                 ),
                 'ShippingServicesList' => 'http://www.afterbuy.de/afterbuy/shop/storefront/versandkosten.aspx?s20vkid=114696&s2lnid=130458',
                 'LastProductID'        => '148507977',

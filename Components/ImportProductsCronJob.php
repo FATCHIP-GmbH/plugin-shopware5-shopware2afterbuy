@@ -84,27 +84,6 @@ class ImportProductsCronJob {
         return $detail;
     }
 
-    /**
-     * Adds the given detail to the given article. When detail is mainDetail,
-     * the detail is set article's mainDetail field. Otherwise the detail is
-     * added to the details array.
-     *
-     * @param bool  $isMainDetail
-     * @param array $article
-     * @param array $detail
-     */
-    protected function addDetailToArticle($isMainDetail, &$article, $detail) {
-        // mainDetail?
-        if ($isMainDetail) {
-            $article['mainDetail'] = $detail;
-        } else {
-            array_push(
-                $article['variants'],
-                $detail
-            );
-        }
-    }
-
     protected function convertProduct2ArticlesArray($products) {
         $articles = [];
         $details = [];
@@ -148,12 +127,8 @@ class ImportProductsCronJob {
 
                         // detail already processed?
                         if (isset($details[$currentChildProductID])) {
-                            $isMainDetail
-                                = $mainDetailsMap[$currentParentProductID]
-                                == $currentChildProductID;
-                            $this->addDetailToArticle(
-                                $isMainDetail,
-                                $articles[$currentParentProductID],
+                            array_push(
+                                $articles[$currentParentProductID]['variants'],
                                 $details[$currentChildProductID]
                             );
                         }
@@ -169,11 +144,8 @@ class ImportProductsCronJob {
 
                     // variant set already processed?
                     if (isset($articles[$parentProductID])) {
-                        $isMainDetail = $mainDetailsMap[$parentProductID]
-                            == $currentChildProductID;
-                        $this->addDetailToArticle(
-                            $isMainDetail,
-                            $articles[$parentProductID],
+                        array_push(
+                            $articles[$parentProductID]['variants'],
                             $details[$currentChildProductID]
                         );
                     }
@@ -185,9 +157,9 @@ class ImportProductsCronJob {
                 $details[$productID] = $this->createDetailArray($product);
 
                 $articles[$productID] = $this->createArticleArray($product);
-                $this->addDetailToArticle(
-                    true,
-                    $articles[$productID],
+
+                array_push(
+                    $articles[$productID]['variants'],
                     $details[$productID]
                 );
             }

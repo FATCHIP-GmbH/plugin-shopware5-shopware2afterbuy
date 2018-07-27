@@ -20,12 +20,16 @@ class ImportProductsCronJob {
     /**
      * @return int[]
      */
-    public function importProducts2Shopware() {
+    public function importProducts2Shopware($standard = true) {
         $productsResult = $this->retrieveProductsArray();
 
         $products = $productsResult['Result']['Products']['Product'];
 
-        $articles = $this->convertProduct2ArticlesArray($products);
+        $articles = $this->convertProducts2ArticlesArray($products);
+
+        if ( ! $standard) {
+            return $articles;
+        }
 
         $this->addArticles($articles);
 
@@ -84,7 +88,7 @@ class ImportProductsCronJob {
         return $detail;
     }
 
-    protected function convertProduct2ArticlesArray($products) {
+    protected function convertProducts2ArticlesArray($products) {
         $articles = [];
         $details = [];
         $mainDetailsMap = [];
@@ -127,9 +131,12 @@ class ImportProductsCronJob {
 
                         // detail already processed?
                         if (isset($details[$currentChildProductID])) {
-                            array_push(
-                                $articles[$currentParentProductID]['variants'],
-                                $details[$currentChildProductID]
+                            $articles = $this->addDetailToArticle(
+                                $articles,
+                                $details,
+                                $mainDetailsMap,
+                                $currentParentProductID,
+                                $currentChildProductID
                             );
                         }
                     }
@@ -144,9 +151,12 @@ class ImportProductsCronJob {
 
                     // variant set already processed?
                     if (isset($articles[$parentProductID])) {
-                        array_push(
-                            $articles[$parentProductID]['variants'],
-                            $details[$currentChildProductID]
+                        $articles = $this->addDetailToArticle(
+                            $articles,
+                            $details,
+                            $mainDetailsMap,
+                            $parentProductID,
+                            $currentChildProductID
                         );
                     }
                 }
@@ -158,9 +168,12 @@ class ImportProductsCronJob {
 
                 $articles[$productID] = $this->createArticleArray($product);
 
-                array_push(
-                    $articles[$productID]['variants'],
-                    $details[$productID]
+                $articles = $this->addDetailToArticle(
+                    $articles,
+                    $details,
+                    $mainDetailsMap,
+                    $productID,
+                    $productID
                 );
             }
         }
@@ -168,9 +181,13 @@ class ImportProductsCronJob {
         return $articles;
     }
 
+
+    // TODO: fix this to use the triggerAction
     protected function addArticles($articles) {
         /** @var ArticleResource $resource */
         $articleResource = ApiManager::getResource('Article');
+        /** @var Shopware/Components/Api/ $detailResource */
+        $detailResource = ApiManager::getResource('Article');
 
         foreach ($articles as $articleArray) {
             $modelManager = Shopware()->Models();
@@ -197,7 +214,22 @@ class ImportProductsCronJob {
                 );
             } // else create it
             else {
-                $articleResource->create($articleArray);
+                $variants = $articleArray['variants'];
+                unset($articleArray['variants']);
+
+                $result = $articleResource->create($articleArray);
+//                $result = $client->post('articles', $article);
+
+                $articleId = json_decode($result)->data->id;
+
+                foreach ($variants as $variant) {
+                    $variant['articleId'] = $articleId;
+                    $result = $articleResource->create($articleArray);
+//                    $result = $client->post('variants', $variant);
+                }
+
+                echo $result;
+                echo $articleId;
             }
         }
     }
@@ -206,9 +238,10 @@ class ImportProductsCronJob {
      * @return array
      */
     protected function retrieveProductsArray() {
-// Get SDK object
+        // Get SDK object
         /** @var ApiClient $apiClient */
-        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+//        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        $apiClient = new ApiMock();
 
 
         // Get all products from AfterbuyAPI
@@ -226,5 +259,43 @@ class ImportProductsCronJob {
         }
 
         return $productsResult;
+    }
+
+    /**
+     * Adds the given detail to the given article. When detail is mainDetail,
+     * the detail is set article's mainDetail field. Otherwise the detail is
+     * added to the details array.
+     * TODO: improve documentation
+     *
+     * @param array $articles
+     * @param array $details
+     * @param array $mainDetailsMap
+     * @param int   $articleProductID
+     * @param int   $detailProductID
+     *
+     * @return mixed
+     */
+    protected function addDetailToArticle(
+        $articles,
+        $details,
+        $mainDetailsMap,
+        $articleProductID,
+        $detailProductID
+    ) {
+        $isMainDetail
+            = $mainDetailsMap[$articleProductID]
+            == $detailProductID;
+        // mainDetail?
+        if ($isMainDetail) {
+            $articles[$articleProductID]['mainDetail']
+                = $details[$detailProductID];
+        } else {
+            array_push(
+                $articles[$articleProductID]['variants'],
+                $details[$detailProductID]
+            );
+        }
+
+        return $articles;
     }
 }

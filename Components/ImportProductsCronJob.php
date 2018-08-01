@@ -19,11 +19,11 @@ use Shopware\Components\Api\Manager as ApiManager;
 use Shopware\Models\Article\Detail as ArticleDetail;
 
 use Fatchip\Afterbuy\ApiClient;
+use Shopware\Models\Article\Detail;
 
 
 class ImportProductsCronJob {
     /**
-     * @return int[]
      */
     public function importProducts2Shopware() {
         $productsResult = $this->retrieveProductsArray();
@@ -87,6 +87,11 @@ class ImportProductsCronJob {
         return $detail;
     }
 
+    /**
+     * @param $products
+     *
+     * @return array|mixed
+     */
     protected function convertProducts2ArticlesArray($products) {
         $articles = [];
         $details = [];
@@ -181,63 +186,54 @@ class ImportProductsCronJob {
     }
 
 
+    /**
+     * @param array $articles
+     */
     protected function addArticles($articles) {
-        /** @var ArticleResource $articleResource */
-        $articleResource = ApiManager::getResource('article');
-        /** @var VariantResource $variantResource */
-        $variantResource = ApiManager::getResource('variant');
-
         foreach ($articles as $articleArray) {
-            $modelManager = Shopware()->Models();
-            $repo = $modelManager->getRepository(
+            $detailRepository = Shopware()->Models()->getRepository(
                 'Shopware\Models\Article\Detail'
             );
-            /** @var ArticleDetail[] $mainDetail_AB */
-            $mainDetail_AB = $articleArray['mainDetail'];
-            /** @var ArticleDetail[] $mainDetail_SW */
-            $mainDetail_SW = $repo->findBy(
-                ['number' => $mainDetail_AB['number']]
+
+            // separate variantsArray from articleArray
+            $variants = $articleArray['variants'];
+            unset($articleArray['variants']);
+
+            /** @var ArticleDetail $mainDetail */
+            $mainDetail = $detailRepository->findOneBy(
+                ['number' => $articleArray['mainDetail']['number']]
             );
-
             // article exists in db?
-            if ($mainDetail_SW) {
-                // if article has changed
+            if ($mainDetail) {
                 // update it
-                // else do nothing
-                //
-                // SW handles updates itself - Yay
-                $articleResource->update(
-                    $mainDetail_SW[0]->getArticleId(),
-                    $articleArray
-                );
-            } // else create it
-            else {
-                $variants = $articleArray['variants'];
-                unset($articleArray['variants']);
 
-                $articleId = null;
+                $articleId = $mainDetail->getArticleId();
 
-                try {
-                    $article = $articleResource->create($articleArray);
-                    $articleId = $article->getId();
-                } catch (CustomValidationException $e) {
-                    // TODO: handle  exception
-                } catch (ValidationException $e) {
-                    // TODO: handle  exception
-                }
-
+                $this->updateArticle($articleId, $articleArray);
 
                 foreach ($variants as $variantArray) {
-                    $variantArray['articleId'] = $articleId;
-                    try {
-                        $variantResource->create($variantArray);
-                    } catch (NotFoundException $e) {
-                        // TODO: handle  exception
-                    } catch (ParameterMissingException $e) {
-                        // TODO: handle  exception
-                    } catch (ValidationException $e) {
-                        // TODO: handle  exception
+                    /** @var Detail $detail */
+                    $detail = $detailRepository->findOneBy(
+                        ['number' => $variantArray['number']]
+                    );
+                    // variant exists ind db?
+                    if ($detail) {
+                        // update it
+
+
+                        $this->updateVariant($detail->getId(), $variantArray);
+                    } else {
+                        // create it
+                        $this->createVariant($articleId, $variantArray);
                     }
+                }
+            } else {
+                // create it
+
+                $articleId = $this->createArticle($articleArray);
+
+                foreach ($variants as $variantArray) {
+                    $this->createVariant($articleId, $variantArray);
                 }
             }
         }
@@ -306,5 +302,99 @@ class ImportProductsCronJob {
         }
 
         return $articles;
+    }
+
+    /**
+     * @param int   $articleId
+     * @param array $variantArray
+     */
+    protected function createVariant(
+        $articleId,
+        $variantArray
+    ) {
+        /** @var VariantResource $variantResource */
+        $variantResource = ApiManager::getResource('variant');
+
+        $variantArray['articleId'] = $articleId;
+
+        try {
+            $variantResource->create($variantArray);
+        } catch (NotFoundException $e) {
+            // TODO: handle  exception
+        } catch (ParameterMissingException $e) {
+            // TODO: handle  exception
+        } catch (ValidationException $e) {
+            // TODO: handle  exception
+        }
+    }
+
+    /**
+     * @param array $articleArray
+     *
+     * @return null|int
+     */
+    protected function createArticle($articleArray) {
+        /** @var ArticleResource $articleResource */
+        $articleResource = ApiManager::getResource('article');
+
+        $articleId = null;
+
+        try {
+            $article = $articleResource->create($articleArray);
+            $articleId = $article->getId();
+        } catch (CustomValidationException $e) {
+            // TODO: handle  exception
+        } catch (ValidationException $e) {
+            // TODO: handle  exception
+        }
+
+        return $articleId;
+    }
+
+    /**
+     * @param int   $articleId
+     * @param array $articleArray
+     */
+    protected function updateArticle(
+        $articleId,
+        $articleArray
+    ) {
+        /** @var ArticleResource $articleResource */
+        $articleResource = ApiManager::getResource('article');
+
+        try {
+            $articleResource->update(
+                $articleId,
+                $articleArray
+            );
+        } catch (NotFoundException $e) {
+            // TODO: handle  exception
+        } catch (ParameterMissingException $e) {
+            // TODO: handle  exception
+        } catch (ValidationException $e) {
+            // TODO: handle  exception
+        }
+    }
+
+    /**
+     * @param int   $variantId
+     * @param array $variantArray
+     */
+    protected function updateVariant(
+        $variantId,
+        $variantArray
+    ) {
+        /** @var VariantResource $variantResource */
+        $variantResource = ApiManager::getResource('variant');
+
+        try {
+            $variantResource->update($variantId, $variantArray);
+        } catch (NotFoundException $e) {
+            // TODO: handle  exception
+        } catch (ParameterMissingException $e) {
+            // TODO: handle  exception
+        } catch (ValidationException $e) {
+            // TODO: handle  exception
+        }
     }
 }

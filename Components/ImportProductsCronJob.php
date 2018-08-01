@@ -9,7 +9,12 @@
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 
+use Shopware\Components\Api\Exception\CustomValidationException;
+use Shopware\Components\Api\Exception\NotFoundException;
+use Shopware\Components\Api\Exception\ParameterMissingException;
+use Shopware\Components\Api\Exception\ValidationException;
 use Shopware\Components\Api\Resource\Article as ArticleResource;
+use Shopware\Components\Api\Resource\Variant as VariantResource;
 use Shopware\Components\Api\Manager as ApiManager;
 use Shopware\Models\Article\Detail as ArticleDetail;
 
@@ -176,12 +181,11 @@ class ImportProductsCronJob {
     }
 
 
-    // TODO: fix this to use the triggerAction
     protected function addArticles($articles) {
-        /** @var ArticleResource $resource */
-        $articleResource = ApiManager::getResource('Article');
-        /** @var Shopware/Components/Api/ $detailResource */
-        $detailResource = ApiManager::getResource('Article');
+        /** @var ArticleResource $articleResource */
+        $articleResource = ApiManager::getResource('article');
+        /** @var VariantResource $variantResource */
+        $variantResource = ApiManager::getResource('variant');
 
         foreach ($articles as $articleArray) {
             $modelManager = Shopware()->Models();
@@ -211,19 +215,30 @@ class ImportProductsCronJob {
                 $variants = $articleArray['variants'];
                 unset($articleArray['variants']);
 
-                $result = $articleResource->create($articleArray);
-//                $result = $client->post('articles', $article);
+                $articleId = null;
 
-                $articleId = json_decode($result)->data->id;
-
-                foreach ($variants as $variant) {
-                    $variant['articleId'] = $articleId;
-                    $result = $articleResource->create($articleArray);
-//                    $result = $client->post('variants', $variant);
+                try {
+                    $article = $articleResource->create($articleArray);
+                    $articleId = $article->getId();
+                } catch (CustomValidationException $e) {
+                    // TODO: handle  exception
+                } catch (ValidationException $e) {
+                    // TODO: handle  exception
                 }
 
-                echo $result;
-                echo $articleId;
+
+                foreach ($variants as $variantArray) {
+                    $variantArray['articleId'] = $articleId;
+                    try {
+                        $variantResource->create($variantArray);
+                    } catch (NotFoundException $e) {
+                        // TODO: handle  exception
+                    } catch (ParameterMissingException $e) {
+                        // TODO: handle  exception
+                    } catch (ValidationException $e) {
+                        // TODO: handle  exception
+                    }
+                }
             }
         }
     }

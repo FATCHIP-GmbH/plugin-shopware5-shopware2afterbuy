@@ -99,8 +99,9 @@ class ImportProductsCronJob {
                     $variantSets[$currentParentProductID]
                         = $currentParentProduct;
 
-                    $articles[$currentParentProductID] = $this
-                        ->createArticleArray($currentParentProduct);
+                    $articles[$currentParentProductID] = $this->mapArticleData(
+                        $currentParentProduct
+                    );
                     $articles[$currentParentProductID]['variants'] = [];
 
                     // foreach variant set product
@@ -129,7 +130,7 @@ class ImportProductsCronJob {
                             );
                         }
                     }
-                // variantSet childObject
+                    // variantSet childObject
                 } else {
                     $currentChildProductID = $productID;
                     $parentProductID
@@ -155,7 +156,7 @@ class ImportProductsCronJob {
                 // single product
                 $details[$productID] = $this->createDetailArray($product);
 
-                $articles[$productID] = $this->createArticleArray($product);
+                $articles[$productID] = $this->mapArticleData($product);
 
                 $articles = $this->addDetailToArticle(
                     $articles,
@@ -171,12 +172,15 @@ class ImportProductsCronJob {
     }
 
     /**
+     * Converts the given product array to an article array, by mapping the
+     * relevant fields.
+     *
      * @param array $product - Array with product data, as it comes from the
      *                       Afterbuy API.
      *
      * @return array
      */
-    protected function createArticleArray(array $product) {
+    protected function mapArticleData($product) {
         $article = [];
 
         $article['name'] = $product['Name'];

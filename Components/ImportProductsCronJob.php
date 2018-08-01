@@ -137,7 +137,7 @@ class ImportProductsCronJob {
                         = $product['BaseProducts']['BaseProduct']['BaseProductID'];
 
                     $details[$currentChildProductID]
-                        = $this->createDetailArray($product);
+                        = $this->mapDetailData($product);
 
                     // variant set already processed?
                     if (isset($articles[$parentProductID])) {
@@ -154,7 +154,7 @@ class ImportProductsCronJob {
 
             } else {
                 // single product
-                $details[$productID] = $this->createDetailArray($product);
+                $details[$productID] = $this->mapDetailData($product);
 
                 $articles[$productID] = $this->mapArticleData($product);
 
@@ -210,12 +210,15 @@ class ImportProductsCronJob {
     }
 
     /**
+     * Converts the given product array to an detail array, by mapping the
+     * relevant fields.
+     *
      * @param array $product - Array with product data, as it comes from the
      *                       Afterbuy API.
      *
      * @return array
      */
-    protected function createDetailArray(array $product) {
+    protected function mapDetailData($product) {
         $detail = [];
 
         $detail['number'] = $product['Anr'];

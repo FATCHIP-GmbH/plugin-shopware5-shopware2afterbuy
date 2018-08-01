@@ -36,7 +36,7 @@ class ImportProductsCronJob {
 
         $products = $productsResult['Result']['Products']['Product'];
 
-        $articles = $this->convertProducts2ArticlesArray($products);
+        $articles = $this->convertProducts2Articles($products);
 
         $this->addArticles($articles);
     }
@@ -68,6 +68,106 @@ class ImportProductsCronJob {
         }
 
         return $productsResult;
+    }
+
+    /**
+     * Converts products array to articles array.
+     *
+     * @param array $products
+     *
+     * @return array
+     */
+    protected function convertProducts2Articles($products) {
+        /** @var array $articles */
+        $articles = [];
+        $details = [];
+        $mainDetailsMap = [];
+
+        // for each product in products
+        foreach ($products as $product) {
+            // Map article / detail field names
+
+            $productID = $product['ProductID'];
+
+            // variantSet related?
+            if (isset($product['BaseProducts'])) {
+                // variantSet parent object?
+                if ($product['Anr'] == '0') {
+                    $currentParentProduct = $product;
+                    $currentParentProductID = $productID;
+
+                    $variantSets[$currentParentProductID]
+                        = $currentParentProduct;
+
+                    $articles[$currentParentProductID] = $this
+                        ->createArticleArray($currentParentProduct);
+                    $articles[$currentParentProductID]['variants'] = [];
+
+                    // foreach variant set product
+                    $baseProducts
+                        = $currentParentProduct['BaseProducts']['BaseProduct'];
+                    foreach ($baseProducts as $currentChildProduct) {
+                        $currentChildProductID
+                            = $currentChildProduct['BaseProductID'];
+
+                        // mainDetail?
+                        if ($currentChildProduct['BaseProductsRelationData']['DefaultProduct']
+                            == -1
+                        ) {
+                            $mainDetailsMap[$currentParentProductID]
+                                = $currentChildProductID;
+                        }
+
+                        // detail already processed?
+                        if (isset($details[$currentChildProductID])) {
+                            $articles = $this->addDetailToArticle(
+                                $articles,
+                                $details,
+                                $mainDetailsMap,
+                                $currentParentProductID,
+                                $currentChildProductID
+                            );
+                        }
+                    }
+                // variantSet childObject
+                } else {
+                    $currentChildProductID = $productID;
+                    $parentProductID
+                        = $product['BaseProducts']['BaseProduct']['BaseProductID'];
+
+                    $details[$currentChildProductID]
+                        = $this->createDetailArray($product);
+
+                    // variant set already processed?
+                    if (isset($articles[$parentProductID])) {
+                        $articles = $this->addDetailToArticle(
+                            $articles,
+                            $details,
+                            $mainDetailsMap,
+                            $parentProductID,
+                            $currentChildProductID
+                        );
+                    }
+                }
+
+
+            } else {
+                // single product
+                $details[$productID] = $this->createDetailArray($product);
+
+                $articles[$productID] = $this->createArticleArray($product);
+
+                $articles = $this->addDetailToArticle(
+                    $articles,
+                    $details,
+                    $mainDetailsMap,
+                    $productID,
+                    $productID
+                );
+            }
+        }
+
+        return $articles;
     }
 
     /**
@@ -120,104 +220,6 @@ class ImportProductsCronJob {
         $detail['laststock'] = $product['Discontinued'] & $product['Stock'];
 
         return $detail;
-    }
-
-    /**
-     * @param $products
-     *
-     * @return array|mixed
-     */
-    protected function convertProducts2ArticlesArray($products) {
-        $articles = [];
-        $details = [];
-        $mainDetailsMap = [];
-
-        // for each product in products
-        foreach ($products as $product) {
-            // Map article / detail field names
-
-            $productID = $product['ProductID'];
-
-            // variantSet related?
-            if (isset($product['BaseProducts'])) {
-                // variantSet parent object?
-                if ($product['Anr'] == '0') {
-                    $currentParentProduct = $product;
-                    $currentParentProductID = $productID;
-
-                    $variantSets[$currentParentProductID]
-                        = $currentParentProduct;
-
-                    $articles[$currentParentProductID]
-                        = $this->createArticleArray($currentParentProduct);
-                    $articles[$currentParentProductID]['variants'] = [];
-
-                    // foreach variant set product
-                    foreach (
-                        $currentParentProduct['BaseProducts']['BaseProduct'] as
-                        $currentChildProduct
-                    ) {
-                        $currentChildProductID
-                            = $currentChildProduct['BaseProductID'];
-
-                        // mainDetail?
-                        if ($currentChildProduct['BaseProductsRelationData']['DefaultProduct']
-                            == -1
-                        ) {
-                            $mainDetailsMap[$currentParentProductID]
-                                = $currentChildProductID;
-                        }
-
-                        // detail already processed?
-                        if (isset($details[$currentChildProductID])) {
-                            $articles = $this->addDetailToArticle(
-                                $articles,
-                                $details,
-                                $mainDetailsMap,
-                                $currentParentProductID,
-                                $currentChildProductID
-                            );
-                        }
-                    }
-                    // variantSet childObject
-                } else {
-                    $currentChildProductID = $productID;
-                    $parentProductID
-                        = $product['BaseProducts']['BaseProduct']['BaseProductID'];
-
-                    $details[$currentChildProductID]
-                        = $this->createDetailArray($product);
-
-                    // variant set already processed?
-                    if (isset($articles[$parentProductID])) {
-                        $articles = $this->addDetailToArticle(
-                            $articles,
-                            $details,
-                            $mainDetailsMap,
-                            $parentProductID,
-                            $currentChildProductID
-                        );
-                    }
-                }
-
-
-            } else {
-                // single product
-                $details[$productID] = $this->createDetailArray($product);
-
-                $articles[$productID] = $this->createArticleArray($product);
-
-                $articles = $this->addDetailToArticle(
-                    $articles,
-                    $details,
-                    $mainDetailsMap,
-                    $productID,
-                    $productID
-                );
-            }
-        }
-
-        return $articles;
     }
 
 

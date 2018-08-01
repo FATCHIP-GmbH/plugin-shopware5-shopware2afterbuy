@@ -38,7 +38,7 @@ class ImportProductsCronJob {
 
         $articles = $this->convertProducts2Articles($products);
 
-        $this->addArticles($articles);
+        $this->importArticles($articles);
     }
 
     /**
@@ -231,9 +231,11 @@ class ImportProductsCronJob {
 
 
     /**
+     * Imports the given articles array into shopware.
+     *
      * @param array $articles
      */
-    protected function addArticles($articles) {
+    protected function importArticles($articles) {
         foreach ($articles as $articleArray) {
             $detailRepository = Shopware()->Models()->getRepository(
                 'Shopware\Models\Article\Detail'

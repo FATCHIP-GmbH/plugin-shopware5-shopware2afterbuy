@@ -42,6 +42,35 @@ class ImportProductsCronJob {
     }
 
     /**
+     * Call the AfterBuy API and retrieve all the products as array.
+     *
+     * @return array
+     */
+    protected function retrieveProductsArray() {
+        // Get SDK object
+        /** @var ApiClient $apiClient */
+        // $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        $apiClient = new ApiMock();
+
+
+        // Get all products from AfterbuyAPI
+        $productsResult = $apiClient->getShopProductsFromAfterbuy();
+        if ($productsResult['CallStatus'] != 'Success') {
+            // TODO: fix error handling
+            die('GetShopProducts: CallStatus: ['
+                . $productsResult['CallStatus']
+                . '] Awaited: [Success].');
+        }
+        if ($productsResult['Result']['HasMoreProducts']) {
+            // pagination on
+        } else {
+            // pagination off
+        }
+
+        return $productsResult;
+    }
+
+    /**
      * @param array $product - Array with product data, as it comes from the
      *                       Afterbuy API.
      *
@@ -243,33 +272,6 @@ class ImportProductsCronJob {
                 }
             }
         }
-    }
-
-    /**
-     * @return array
-     */
-    protected function retrieveProductsArray() {
-        // Get SDK object
-        /** @var ApiClient $apiClient */
-//        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
-        $apiClient = new ApiMock();
-
-
-        // Get all products from AfterbuyAPI
-        $productsResult = $apiClient->getShopProductsFromAfterbuy();
-        if ($productsResult['CallStatus'] != 'Success') {
-            // TODO: fix error handling
-            die('GetShopProducts: CallStatus: ['
-                . $productsResult['CallStatus']
-                . '] Awaited: [Success].');
-        }
-        if ($productsResult['Result']['HasMoreProducts']) {
-            // pagination on
-        } else {
-            // pagination off
-        }
-
-        return $productsResult;
     }
 
     /**

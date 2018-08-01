@@ -22,8 +22,14 @@ use Fatchip\Afterbuy\ApiClient;
 use Shopware\Models\Article\Detail;
 
 
+/**
+ * Import products from AfterBuy API and import them into shopware
+ *
+ * @package Shopware\FatchipShopware2Afterbuy\Components
+ */
 class ImportProductsCronJob {
     /**
+     * The entry point of this Class.
      */
     public function importProducts2Shopware() {
         $productsResult = $this->retrieveProductsArray();

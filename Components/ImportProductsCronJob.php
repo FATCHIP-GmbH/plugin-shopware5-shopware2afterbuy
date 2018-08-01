@@ -20,20 +20,14 @@ class ImportProductsCronJob {
     /**
      * @return int[]
      */
-    public function importProducts2Shopware($standard = true) {
+    public function importProducts2Shopware() {
         $productsResult = $this->retrieveProductsArray();
 
         $products = $productsResult['Result']['Products']['Product'];
 
         $articles = $this->convertProducts2ArticlesArray($products);
 
-        if ( ! $standard) {
-            return $articles;
-        }
-
         $this->addArticles($articles);
-
-        return $productsResult;
     }
 
     /**

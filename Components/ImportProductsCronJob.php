@@ -81,6 +81,7 @@ class ImportProductsCronJob {
         /** @var array $articles */
         $articles = [];
         $details = [];
+        $mainDetails = [];
 
         // for each product in products
         foreach ($products as $product) {
@@ -103,25 +104,36 @@ class ImportProductsCronJob {
                     );
                     $articles[$currentParentProductID]['variants'] = [];
 
-                    // foreach variant set product
-                    $baseProducts
+                    $childProducts
                         = $currentParentProduct['BaseProducts']['BaseProduct'];
-                    foreach ($baseProducts as $currentChildProduct) {
+
+                    // foreach variant set product
+                    foreach ($childProducts as $currentChildProduct) {
                         $currentChildProductID
                             = $currentChildProduct['BaseProductID'];
 
+                        // is currentChildProduct athe mainDetail for currentParentProduct?
+                        if (
+                            $currentChildProduct['BaseProductsRelationData']['DefaultProduct']
+                            == -1
+                        ) {
+                            $mainDetails[$currentParentProductID]
+                                = $currentChildProductID;
+                        }
+
                         // detail already processed?
                         if (isset($details[$currentChildProductID])) {
-                            $articles = $this->addDetailToArticle(
-                                $articles,
-                                $details,
-                                $currentParentProductID,
-                                $currentChildProductID
+                            $articles[$currentParentProductID]
+                                = $this->addDetailToArticle(
+                                $articles[$currentParentProductID],
+                                $details[$currentChildProductID],
+                                $mainDetails[$currentParentProductID]
+                                == $currentChildProductID
                             );
                         }
                     }
-                    // variantSet childObject
-                } else {
+                } // variantSet childObject
+                else {
                     $currentChildProductID = $productID;
                     $parentProductID
                         = $product['BaseProducts']['BaseProduct']['BaseProductID'];
@@ -131,27 +143,25 @@ class ImportProductsCronJob {
 
                     // variant set already processed?
                     if (isset($articles[$parentProductID])) {
-                        $articles = $this->addDetailToArticle(
-                            $articles,
-                            $details,
-                            $parentProductID,
-                            $currentChildProductID
+                        $articles[$parentProductID] = $this->addDetailToArticle(
+                            $articles[$parentProductID],
+                            $details[$currentChildProductID],
+                            $mainDetails[$parentProductID]
+                            == $currentChildProductID
                         );
                     }
                 }
 
-
-            } else {
-                // single product
+            } // single product
+            else {
                 $details[$productID] = $this->mapDetailData($product);
 
                 $articles[$productID] = $this->mapArticleData($product);
 
-                $articles = $this->addDetailToArticle(
-                    $articles,
-                    $details,
-                    $productID,
-                    $productID
+                $articles[$productID] = $this->addDetailToArticle(
+                    $articles[$productID],
+                    $details[$productID],
+                    true
                 );
             }
         }
@@ -215,10 +225,6 @@ class ImportProductsCronJob {
         $detail['shippingTime'] = $product['DeliveryTime'];
         $detail['laststock'] = $product['Discontinued'] & $product['Stock'];
 
-        // mainDetail?
-        $detail['mainDetail']
-            = $product['BaseProductsRelationData']['DefaultProduct'] == -1;
-
         return $detail;
     }
 
@@ -279,37 +285,26 @@ class ImportProductsCronJob {
 
     /**
      * Adds the given detail to the given article. When detail is mainDetail,
-     * the detail is set article's mainDetail field. Otherwise the detail is
-     * added to the details array.
-     * TODO: improve documentation
+     * the detail is set to article's mainDetail field. Otherwise the detail is
+     * added to the variants array.
      *
-     * @param array $articles
-     * @param array $details
-     * @param int   $articleProductID
-     * @param int   $detailProductID
+     * @param array $article
+     * @param array $detail
+     * @param bool  $isMainDetail
      *
      * @return mixed
      */
-    protected function addDetailToArticle(
-        $articles,
-        $details,
-        $articleProductID,
-        $detailProductID
-    ) {
-        $isMainDetail = $details[$detailProductID]['mainDetail'];
-
+    protected function addDetailToArticle($article, $detail, $isMainDetail) {
         // mainDetail?
         if ($isMainDetail) {
-            $articles[$articleProductID]['mainDetail']
-                = $details[$detailProductID];
+            // add detail as mainDetail
+            $article['mainDetail'] = $detail;
         } else {
-            array_push(
-                $articles[$articleProductID]['variants'],
-                $details[$detailProductID]
-            );
+            // add detail as variant
+            array_push($article['variants'], $detail);
         }
 
-        return $articles;
+        return $article;
     }
 
     /**

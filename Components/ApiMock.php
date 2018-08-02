@@ -6,7 +6,6 @@
  * Time: 18:00
  */
 
-//namespace Shopware\Plugins\Community\Frontend\FatchipShopware2Afterbuy\Components;
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 

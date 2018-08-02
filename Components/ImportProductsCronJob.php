@@ -13,9 +13,19 @@ use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
 use Shopware\Components\Api\Exception\ValidationException;
-use Shopware\Components\Api\Resource\Article as ArticleResource;
-use Shopware\Components\Api\Resource\Variant as VariantResource;
-use Shopware\Components\Api\Manager as ApiManager;
+// use Shopware\Components\Api\Resource\Article as ArticleResource;
+// TODO: remove this for productive use
+use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
+// TODO: remove this for productive use
+use Shopware\FatchipShopware2Afterbuy\Components\ArticleResourceMock as ArticleResource;
+// use Shopware\Components\Api\Resource\Variant as VariantResource;
+// TODO: remove this for productive use
+use Shopware\FatchipShopware2Afterbuy\Components\VariantResourceMock as VariantResource;
+// use Shopware\Components\Api\Manager as ApiManager;
+// TODO: remove this for productive use
+use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
+
+use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail as ArticleDetail;
 
 use Fatchip\Afterbuy\ApiClient;
@@ -343,6 +353,7 @@ class ImportProductsCronJob {
         $articleId = null;
 
         try {
+            /** @var Article $article */
             $article = $articleResource->create($articleArray);
             $articleId = $article->getId();
         } catch (CustomValidationException $e) {
@@ -383,10 +394,7 @@ class ImportProductsCronJob {
      * @param int   $variantId
      * @param array $variantArray
      */
-    protected function updateVariant(
-        $variantId,
-        $variantArray
-    ) {
+    protected function updateVariant($variantId, $variantArray) {
         /** @var VariantResource $variantResource */
         $variantResource = ApiManager::getResource('variant');
 

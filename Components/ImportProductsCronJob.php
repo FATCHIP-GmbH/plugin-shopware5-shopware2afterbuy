@@ -81,7 +81,6 @@ class ImportProductsCronJob {
         /** @var array $articles */
         $articles = [];
         $details = [];
-        $mainDetailsMap = [];
 
         // for each product in products
         foreach ($products as $product) {
@@ -111,20 +110,11 @@ class ImportProductsCronJob {
                         $currentChildProductID
                             = $currentChildProduct['BaseProductID'];
 
-                        // mainDetail?
-                        if ($currentChildProduct['BaseProductsRelationData']['DefaultProduct']
-                            == -1
-                        ) {
-                            $mainDetailsMap[$currentParentProductID]
-                                = $currentChildProductID;
-                        }
-
                         // detail already processed?
                         if (isset($details[$currentChildProductID])) {
                             $articles = $this->addDetailToArticle(
                                 $articles,
                                 $details,
-                                $mainDetailsMap,
                                 $currentParentProductID,
                                 $currentChildProductID
                             );
@@ -144,7 +134,6 @@ class ImportProductsCronJob {
                         $articles = $this->addDetailToArticle(
                             $articles,
                             $details,
-                            $mainDetailsMap,
                             $parentProductID,
                             $currentChildProductID
                         );
@@ -161,7 +150,6 @@ class ImportProductsCronJob {
                 $articles = $this->addDetailToArticle(
                     $articles,
                     $details,
-                    $mainDetailsMap,
                     $productID,
                     $productID
                 );
@@ -211,7 +199,8 @@ class ImportProductsCronJob {
 
     /**
      * Converts the given product array to an detail array, by mapping the
-     * relevant fields.
+     * relevant fields. The given product must be variantSet related, therefore
+     * $product['BaseProductsRelationData'] must be set.
      *
      * @param array $product - Array with product data, as it comes from the
      *                       Afterbuy API.
@@ -225,6 +214,10 @@ class ImportProductsCronJob {
         $detail['supplierNumber'] = $product['ManufacturerPartNumber'];
         $detail['shippingTime'] = $product['DeliveryTime'];
         $detail['laststock'] = $product['Discontinued'] & $product['Stock'];
+
+        // mainDetail?
+        $detail['mainDetail']
+            = $product['BaseProductsRelationData']['DefaultProduct'] == -1;
 
         return $detail;
     }
@@ -293,7 +286,6 @@ class ImportProductsCronJob {
      *
      * @param array $articles
      * @param array $details
-     * @param array $mainDetailsMap
      * @param int   $articleProductID
      * @param int   $detailProductID
      *
@@ -302,13 +294,11 @@ class ImportProductsCronJob {
     protected function addDetailToArticle(
         $articles,
         $details,
-        $mainDetailsMap,
         $articleProductID,
         $detailProductID
     ) {
-        $isMainDetail
-            = $mainDetailsMap[$articleProductID]
-            == $detailProductID;
+        $isMainDetail = $details[$detailProductID]['mainDetail'];
+
         // mainDetail?
         if ($isMainDetail) {
             $articles[$articleProductID]['mainDetail']

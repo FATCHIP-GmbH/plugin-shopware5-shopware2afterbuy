@@ -222,18 +222,17 @@ class ImportProductsCronJob {
         return $detail;
     }
 
-
     /**
      * Imports the given articles array into shopware.
      *
      * @param array $articles
      */
     protected function importArticles($articles) {
-        foreach ($articles as $articleArray) {
-            $detailRepository = Shopware()->Models()->getRepository(
-                'Shopware\Models\Article\Detail'
-            );
+        $detailRepository = Shopware()->Models()->getRepository(
+            'Shopware\Models\Article\Detail'
+        );
 
+        foreach ($articles as $articleArray) {
             // separate variantsArray from articleArray
             $variants = $articleArray['variants'];
             unset($articleArray['variants']);
@@ -242,6 +241,7 @@ class ImportProductsCronJob {
             $mainDetail = $detailRepository->findOneBy(
                 ['number' => $articleArray['mainDetail']['number']]
             );
+
             // article exists in db?
             if ($mainDetail) {
                 // update it
@@ -255,11 +255,10 @@ class ImportProductsCronJob {
                     $detail = $detailRepository->findOneBy(
                         ['number' => $variantArray['number']]
                     );
+
                     // variant exists ind db?
                     if ($detail) {
                         // update it
-
-
                         $this->updateVariant($detail->getId(), $variantArray);
                     } else {
                         // create it

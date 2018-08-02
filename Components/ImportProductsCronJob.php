@@ -49,8 +49,8 @@ class ImportProductsCronJob {
     protected function retrieveProductsArray() {
         // Get SDK object
         /** @var ApiClient $apiClient */
-        // $apiClient = Shopware()->Container()->get('afterbuy_api_client');
-        $apiClient = new ApiMock();
+        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        // $apiClient = new ApiMock();
 
 
         // Get all products from AfterbuyAPI

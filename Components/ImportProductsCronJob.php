@@ -238,12 +238,44 @@ class ImportProductsCronJob {
      * @return array
      */
     protected function mapDetailData($product) {
-        $detail = [];
+        $detail = [
+            'number'         => $product['Anr'],
+            'supplierNumber' => $product['ManufacturerPartNumber'],
+            // don't know what that is
+            // seams to be some kind of articleName extension in lastSeenProductsConfig
+            'additionalText' => '',
+            'active'         => true,
+            'inStock'        => $product['Quantity'],
+            'stockMin'       => $product['MinimumStock'],
+            'lastStock'      => $product['Discontinued'] & $product['Stock'],
+            'weight'         => $product['Weight'],
+            'ean'            =>
+                $product['ManufacturerStandardProductIDType'] == 'EAN'
+                    ? $product['ManufacturerStandardProductIDValue']
+                    : null,
+            'unit'           => $product['UnitOfQuantity'],
 
-        $detail['number'] = $product['Anr'];
-        $detail['supplierNumber'] = $product['ManufacturerPartNumber'];
-        $detail['shippingTime'] = $product['DeliveryTime'];
-        $detail['laststock'] = $product['Discontinued'] & $product['Stock'];
+            // TODO: hier weiter machen
+            'purchaseSteps'  => '',
+            'maxPurchase'    => '',
+            'minPurchase'    => '',
+            'purchaseUnit'   => '',
+            'referenceUnit'  => '',
+            'packUnit'       => '',
+            'releaseDate'    => '',
+            'shippingFree'   => '',
+            'shippingTime'   => $product['DeliveryTime'],
+            'purchasePrice'  => '',
+
+            // TODO: not in article model, but in db
+            'sales'          => '',
+
+            // TODO: what to map here
+            'position'       => $product['Position'],
+            'width'          => null,
+            'height'         => null,
+            'len'            => null,
+        ];
 
         return $detail;
     }

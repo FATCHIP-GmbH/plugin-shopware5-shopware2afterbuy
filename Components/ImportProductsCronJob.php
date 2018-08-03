@@ -189,30 +189,40 @@ class ImportProductsCronJob {
      * @return array
      */
     protected function mapArticleData($product) {
-        $article = [];
+        // https://community.shopware.com/Artikel-anlegen_detail_807.html
+        // https://community.shopware.com/_detail_1778.html
+        $article = [
+            'name'             => $product['Name'],
+            'description'      => $product['ShortDescription'],
+            'descriptionLong'  => $product['Description'],
+            // TODO: not in article model, but in db
+            'shippingtime'     => $product['DeliveryTime'],
+            'tax'              => $product['TaxRate'],
+            'keywords'         => $product['Keywords'],
+            'changed'          => $product['ModDate'],
+            'active'           => 1,
+            'pseudoSales'      => 0,
+            'highlight'        => false,
+            'metaTitle'        => '',
+            'lastStock'        => $product['Discontinued'] & $product['Stock'],
+            'notification'     => false,
+            'template'         => '',
+            'supplier'         => $product['ProductBrand'],
+            'availableFrom'    => null,
+            'availableTo'      => null,
+            'configuratorSet'  => null,
+            'priceGroup'       => null,
+            'pricegroupActive' => false,
+            'propertyGroup'    => null,
+            'crossBundleLook'  => false,
 
-        $article['name'] = $product['Name'];
-        $article['description'] = $product['ShortDescription'];
-        $article['descriptionLong'] = $product['Description'];
-        $article['shippingtime'] = $product['DeliveryTime'];
-        $article['tax'] = $product['TaxRate'];
-        $article['keywords'] = $product['Keywords'];
-        $article['changed'] = $product['ModDate'];
+            // TODO: what to map here?
 
-        // TODO: what to map here?
-        $article['datum'] = $product[''];
-        $article['active'] = 1;
-        $article['pseudosales'] = 0;
-        $article['topseller'] = $product[''];
-        $article['metaTitle'] = $product[''];
-        $article['pricegroupID'] = $product[''];
-        $article['pricegroupActive'] = 0;
-        $article['filtergroupID'] = $product[''];
-        $article['laststock'] = $product['Discontinued'] & $product['Stock'];
-        $article['crossbundleloock'] = $product[''];
-        $article['notification'] = 0;
-        $article['template'] = '';
-        $article['mode'] = 0;
+            // could not find field in AB API
+            'added'            => null,
+            // not sure what kind of mode is meant
+            'mode'             => 0,
+        ];
 
         return $article;
     }

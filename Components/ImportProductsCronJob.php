@@ -13,14 +13,17 @@ use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
 use Shopware\Components\Api\Exception\ValidationException;
+
 // use Shopware\Components\Api\Resource\Article as ArticleResource;
 // TODO: remove this for productive use
 use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
 // TODO: remove this for productive use
 use Shopware\FatchipShopware2Afterbuy\Components\ArticleResourceMock as ArticleResource;
+
 // use Shopware\Components\Api\Resource\Variant as VariantResource;
 // TODO: remove this for productive use
 use Shopware\FatchipShopware2Afterbuy\Components\VariantResourceMock as VariantResource;
+
 // use Shopware\Components\Api\Manager as ApiManager;
 // TODO: remove this for productive use
 use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
@@ -49,6 +52,8 @@ class ImportProductsCronJob {
         $articles = $this->convertProducts2Articles($products);
 
         $this->importArticles($articles);
+
+        var_dump($productsResult);
     }
 
     /**
@@ -146,7 +151,10 @@ class ImportProductsCronJob {
                 else {
                     $currentChildProductID = $productID;
                     $parentProductID
-                        = $product['BaseProducts']['BaseProduct']['BaseProductID'];
+                        = $product
+                    ['BaseProducts']
+                    ['BaseProduct']
+                    ['BaseProductID'];
 
                     $details[$currentChildProductID]
                         = $this->mapDetailData($product);

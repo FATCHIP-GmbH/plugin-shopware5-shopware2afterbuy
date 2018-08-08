@@ -13,4 +13,14 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
         $importProductsCronJob = new ImportProductsCronJob();
         $importProductsCronJob->importProducts2Shopware();
     }
+
+    public function callAction() {
+        Shopware()->Plugins()->Controller()->ViewRenderer()->setNoRender();
+        Shopware()->Plugins()->Controller()->Json()->setPadding();
+
+        $importProductsCronJob = new ImportProductsCronJob();
+        $xml = $importProductsCronJob->call();
+
+        var_dump($xml);
+    }
 }

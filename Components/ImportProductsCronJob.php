@@ -9,6 +9,7 @@
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 
+use Doctrine\ORM\OptimisticLockException;
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
@@ -18,14 +19,17 @@ use Shopware\Components\Api\Exception\ValidationException;
 use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
 
 use Shopware\Components\Api\Resource\Article as ArticleResource;
+
 // TODO: remove this for productive use
 // use Shopware\FatchipShopware2Afterbuy\Components\ArticleResourceMock as ArticleResource;
 
 use Shopware\Components\Api\Resource\Variant as VariantResource;
+
 // TODO: remove this for productive use
 // use Shopware\FatchipShopware2Afterbuy\Components\VariantResourceMock as VariantResource;
 
 use Shopware\Components\Api\Manager as ApiManager;
+
 // TODO: remove this for productive use
 // use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
 
@@ -34,6 +38,8 @@ use Shopware\Models\Article\Detail as ArticleDetail;
 
 use Fatchip\Afterbuy\ApiClient;
 use Shopware\Models\Article\Detail;
+use Shopware\Models\Tax\Repository;
+use Shopware\Models\Tax\Tax;
 
 
 /**
@@ -242,6 +248,31 @@ class ImportProductsCronJob {
     }
 
     /**
+     * @param $taxRate
+     */
+    protected function createTax($taxRate) {
+        /** @var Repository $taxRepo */
+        $taxRepo = Shopware()->Models()->getRepository(
+            'Shopware\Models\Tax\Tax'
+        );
+
+        $tax = $taxRepo->findOneBy(['tax' => $taxRate]);
+
+        if ( ! $tax) {
+            /** @var \Shopware\Models\Tax\Tax $taxRepo */
+            $tax = new Tax();
+
+            $tax->setName($taxRate . ' %');
+            $tax->setTax($taxRate);
+            Shopware()->Models()->persist($tax);
+            try {
+                Shopware()->Models()->flush($tax);
+            } catch (OptimisticLockException $e) {
+            }
+        }
+    }
+
+    /**
      * Converts the given product array to an detail array, by mapping the
      * relevant fields. The given product must be variantSet related, therefore
      * $product['BaseProductsRelationData'] must be set.
@@ -305,6 +336,9 @@ class ImportProductsCronJob {
         );
 
         foreach ($articles as $articleArray) {
+
+            $this->createTax($articleArray['tax']);
+
             // separate variantsArray from articleArray
             $variants = $articleArray['variants'];
             unset($articleArray['variants']);

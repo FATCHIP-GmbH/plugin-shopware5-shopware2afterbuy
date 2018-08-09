@@ -300,7 +300,14 @@ class ImportProductsCronJob {
                     : null,
             'unit'           => $product['UnitOfQuantity'],
 
-            // TODO: hier weiter machen
+            // TODO: not in article model, but in db
+            'sales'          => '',
+
+            // TODO: what to map here
+            'position'       => $product['Position'],
+            'width'          => null,
+            'height'         => null,
+            'len'            => null,
             'purchaseSteps'  => '',
             'maxPurchase'    => '',
             'minPurchase'    => '',
@@ -311,15 +318,6 @@ class ImportProductsCronJob {
             'shippingFree'   => '',
             'shippingTime'   => $product['DeliveryTime'],
             'purchasePrice'  => '',
-
-            // TODO: not in article model, but in db
-            'sales'          => '',
-
-            // TODO: what to map here
-            'position'       => $product['Position'],
-            'width'          => null,
-            'height'         => null,
-            'len'            => null,
         ];
 
         return $detail;

@@ -248,31 +248,6 @@ class ImportProductsCronJob {
     }
 
     /**
-     * @param $taxRate
-     */
-    protected function createTax($taxRate) {
-        /** @var Repository $taxRepo */
-        $taxRepo = Shopware()->Models()->getRepository(
-            'Shopware\Models\Tax\Tax'
-        );
-
-        $tax = $taxRepo->findOneBy(['tax' => $taxRate]);
-
-        if ( ! $tax) {
-            /** @var \Shopware\Models\Tax\Tax $taxRepo */
-            $tax = new Tax();
-
-            $tax->setName($taxRate . ' %');
-            $tax->setTax($taxRate);
-            Shopware()->Models()->persist($tax);
-            try {
-                Shopware()->Models()->flush($tax);
-            } catch (OptimisticLockException $e) {
-            }
-        }
-    }
-
-    /**
      * Converts the given product array to an detail array, by mapping the
      * relevant fields. The given product must be variantSet related, therefore
      * $product['BaseProductsRelationData'] must be set.
@@ -334,6 +309,31 @@ class ImportProductsCronJob {
         ];
 
         return $detail;
+    }
+
+    /**
+     * @param $taxRate
+     */
+    protected function createTax($taxRate) {
+        /** @var Repository $taxRepo */
+        $taxRepo = Shopware()->Models()->getRepository(
+            'Shopware\Models\Tax\Tax'
+        );
+
+        $tax = $taxRepo->findOneBy(['tax' => $taxRate]);
+
+        if ( ! $tax) {
+            /** @var \Shopware\Models\Tax\Tax $taxRepo */
+            $tax = new Tax();
+
+            $tax->setName($taxRate . ' %');
+            $tax->setTax($taxRate);
+            Shopware()->Models()->persist($tax);
+            try {
+                Shopware()->Models()->flush($tax);
+            } catch (OptimisticLockException $e) {
+            }
+        }
     }
 
     /**

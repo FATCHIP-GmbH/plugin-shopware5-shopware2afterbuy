@@ -110,18 +110,20 @@
                         <h5>{s name=fieldlabel/additionalSettings}Zusätzliche Einstellungen{/s}</h5>
                         <hr/>
 
-                        <p>{s name=fieldlabel/ShopwareOrdernumberMapping}ShopwareOrdernumberMapping{/s}</p>
+                        <p>{s name=fieldlabel/OrdernumberMapping}OrdernumberMapping{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="ShopwareOrdernumberMapping">
-                                {s name=fieldlabel/ShopwareOrdernumberMapping}ShopwareOrdernumberMapping{/s}
-                            </label>
-                            <input name="ShopwareOrdernumberMapping"
-                                   type="text"
-                                   class="form-control field-wide"
-                                    {if !empty($config)}
-                                        value="{$config->getShopwareOrdernumberMapping()}"
-                                    {/if}
-                                   id="ShopwareOrdernumberMapping">
+                            <select name="OrdernumberMapping" form="pluginConfig">
+                                {if !empty($config)}
+                                    {foreach $ordernumberMapping as $key => $value}
+                                    <option value="{$key}"
+                                            {if $config->getOrdernumberMapping() === $key}
+                                    selected
+                                            {/if}>
+                                        {s name=fieldlabel/$key}{$value}{/s}
+                                    </option>
+                                    {/foreach}
+                                {/if}
+                            </select>
                         </div>
 
                         <hr/>

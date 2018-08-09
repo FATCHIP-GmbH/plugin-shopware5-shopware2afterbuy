@@ -36,6 +36,12 @@ class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight
             'config' => $this->get('models')->createQueryBuilder()
                 ->select('c')->from($this->configModel, 'c')->where('c.id = 1')
                 ->getQuery()->execute()[0],
+            'ordernumberMapping' => [
+                'ProductID' => 'ProductID',
+                'Anr' => 'Interne Artikelnummer (Anr)',
+                'EAN' => 'Externe Artikelnummer (Afterbuy EAN)',
+                'EuAN' => 'Europäische Artikelnummer (EAN)'
+            ]
         ];
         $this->View()->assign($context);
     }
@@ -63,7 +69,7 @@ class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight
         $config->setAfterbuyShopInterfaceBaseUrl(trim($params['AfterbuyShopInterfaceBaseUrl']));
         $config->setAfterbuyUsername(trim($params['AfterbuyUsername']));
         $config->setAfterbuyUserpassword(trim($params['AfterbuyUserPassword']));
-        $config->setShopwareOrdernumberMapping(trim($params['ShopwareOrdernumberMapping']));
+        $config->setOrdernumberMapping(trim($params['OrdernumberMapping']));
         $config->setLogLevel(trim($params['LogLevel']));
         $this->get('models')->persist($config);
         $this->get('models')->flush($config);

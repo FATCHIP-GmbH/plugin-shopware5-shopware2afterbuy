@@ -1,4 +1,3 @@
-
 {extends file='backend/fatchip_shopware2_afterbuy_admin/_base/layout.tpl'}
 
 {block name='backend_admin_afterbuy_title'}
@@ -29,7 +28,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyShopInterfaceBaseUrl}AfterbuyShopInterfaceBaseUrl{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyShopInterfaceBaseUrl">{s name=fieldlabel/AfterbuyShopInterfaceBaseUrl}AfterbuyShopInterfaceBaseUrl{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyShopInterfaceBaseUrl">{s name=fieldlabel/AfterbuyShopInterfaceBaseUrl}AfterbuyShopInterfaceBaseUrl{/s}</label>
                             <input name="AfterbuyShopInterfaceBaseUrl"
                                    type="text"
                                    class="form-control field-wide"
@@ -41,7 +41,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyAbiUrl}AfterbuyAbiUrl{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyAbiUrl">{s name=fieldlabel/AfterbuyAbiUrl}AfterbuyAbiUrl{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyAbiUrl">{s name=fieldlabel/AfterbuyAbiUrl}AfterbuyAbiUrl{/s}</label>
                             <input name="AfterbuyAbiUrl"
                                    type="text"
                                    class="form-control field-wide"
@@ -53,7 +54,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyPartnerId}AfterbuyPartnerId{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyPartnerId">{s name=fieldlabel/AfterbuyPartnerId}AfterbuyPartnerId{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyPartnerId">{s name=fieldlabel/AfterbuyPartnerId}AfterbuyPartnerId{/s}</label>
                             <input name="AfterbuyPartnerId"
                                    type="text"
                                    class="form-control field-wide"
@@ -65,7 +67,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyPartnerPassword">{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyPartnerPassword">{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</label>
                             <input name="AfterbuyPartnerPassword"
                                    type="password"
                                    class="form-control field-wide"
@@ -79,7 +82,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyUsername}AfterbuyUsername{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyUsername">{s name=fieldlabel/AfterbuyUsername}AfterbuyUsername{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyUsername">{s name=fieldlabel/AfterbuyUsername}AfterbuyUsername{/s}</label>
                             <input name="AfterbuyUsername"
                                    type="text"
                                    class="form-control field-wide"
@@ -91,7 +95,8 @@
 
                         <p>{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</p>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyUserPassword">{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</label>
+                            <label class="sr-only"
+                                   for="AfterbuyUserPassword">{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</label>
                             <input name="AfterbuyUserPassword"
                                    type="password"
                                    class="form-control field-wide"
@@ -99,6 +104,24 @@
                                         value="{$config->getAfterbuyUserPassword()}"
                                     {/if}
                                    id="AfterbuyUserPassword">
+                        </div>
+
+                        <hr/>
+                        <h5>{s name=fieldlabel/additionalSettings}Zusätzliche Einstellungen{/s}</h5>
+                        <hr/>
+
+                        <p>{s name=fieldlabel/ShopwareOrdernumberMapping}ShopwareOrdernumberMapping{/s}</p>
+                        <div class="form-group">
+                            <label class="sr-only" for="ShopwareOrdernumberMapping">
+                                {s name=fieldlabel/ShopwareOrdernumberMapping}ShopwareOrdernumberMapping{/s}
+                            </label>
+                            <input name="ShopwareOrdernumberMapping"
+                                   type="text"
+                                   class="form-control field-wide"
+                                    {if !empty($config)}
+                                        value="{$config->getShopwareOrdernumberMapping()}"
+                                    {/if}
+                                   id="ShopwareOrdernumberMapping">
                         </div>
 
                         <hr/>

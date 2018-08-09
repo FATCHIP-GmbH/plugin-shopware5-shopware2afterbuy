@@ -65,6 +65,13 @@ class PluginConfig extends ModelEntity
     private $afterbuyUserpassword;
 
     /**
+     * @var string $shopwareOrdernumberMapping
+     *
+     * @ORM\Column(name="shopware_ordernumber_mapping", type="string", nullable=true)
+     */
+    private $shopwareOrdernumberMapping;
+
+    /**
      * @var string $logLevel
      *
      * @ORM\Column(name="log_level", type="string", nullable=true)
@@ -178,6 +185,20 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
+    public function getShopwareOrdernumberMapping() {
+        return $this->shopwareOrdernumberMapping;
+    }
+
+    /**
+     * @param string $shopwareOrdernumberMapping
+     */
+    public function setShopwareOrdernumberMapping($shopwareOrdernumberMapping) {
+        $this->shopwareOrdernumberMapping = $shopwareOrdernumberMapping;
+    }
+
+    /**
+     * @return string
+     */
     public function getLogLevel()
     {
         return $this->logLevel;
@@ -214,6 +235,7 @@ class PluginConfig extends ModelEntity
             'afterbuyPartnerPassword' => $this->getAfterbuyPartnerPassword(),
             'afterbuyUsername' => $this->getAfterbuyUsername(),
             'afterbuyUserPassword' => $this->getAfterbuyUserpassword(),
+            'shopwareOrdernumberMapping' => $this->getShopwareOrdernumberMapping(),
             'logLevel' => $this->getLogLevel(),
             'afterbuyLogFilepath' => $this->getAfterbuyLogfilePath(),
         ];

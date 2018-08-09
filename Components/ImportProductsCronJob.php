@@ -119,7 +119,7 @@ class ImportProductsCronJob {
             // variantSet related?
             if (isset($product['BaseProducts'])) {
                 // variantSet parent object?
-                if ($product['Anr'] == '0') {
+                if ( ! isset($product['BaseProducts']['BaseProduct']['BaseProductID'])) {
                     $currentParentProduct = $product;
                     $currentParentProductID = $productID;
 

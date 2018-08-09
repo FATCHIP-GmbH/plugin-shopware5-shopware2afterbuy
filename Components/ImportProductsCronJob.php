@@ -296,10 +296,11 @@ class ImportProductsCronJob {
                     ? $product['ManufacturerStandardProductIDValue']
                     : null,
             'unit'           => $product['UnitOfQuantity'],
-            'prices' => [
+            'prices'         => [
                 [
                     'customerGroupKey' => 'EK',
-                    'price' => $product['SellingPrice']                ]
+                    'price'            => $product['SellingPrice'],
+                ],
             ],
             'additionalText' => '',
 

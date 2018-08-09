@@ -106,7 +106,11 @@ class ImportProductsCronJob {
      */
     protected function convertProducts2Articles($products) {
         /** @var array $articles */
-        $articles = [];
+        $articles = [
+            'configuratorSet' => [
+                'groups' => [],
+            ],
+        ];
         $details = [];
         $mainDetails = [];
 
@@ -146,6 +150,14 @@ class ImportProductsCronJob {
                         ) {
                             $mainDetails[$currentParentProductID]
                                 = $currentChildProductID;
+                        }
+
+                        //find variation groups and options
+                        $options =
+                            $currentChildProduct['BaseProductsRelationData']['eBayVariationData'];
+                        foreach ($options as $option) {
+                            $articles = $this->addOption($option, $articles);
+
                         }
 
                         // detail already processed?
@@ -511,5 +523,37 @@ class ImportProductsCronJob {
         } catch (ValidationException $e) {
             // TODO: handle  exception
         }
+    }
+
+    /**
+     * @param $option
+     * @param $articles
+     *
+     * @return mixed
+     */
+    protected function addOption($option, $articles) {
+// variationGroup missing in map?
+        if ( ! array_key_exists(
+            $option['ebayVariationName'],
+            $articles['configuratorSet']['groups']
+        )
+        ) {
+            // create new group
+            $articles['configuratorSet']['groups'][$option['ebayVariationName']] =
+                [];
+        }
+
+        // variationOption missing in Group?
+        if ( ! in_array(
+            $option['ebayVariationValue'],
+            $articles['configuratorSet']['groups'][$option['ebayVariationName']]
+        )
+        ) {
+            // add option to group
+            $articles['configuratorSet']['groups'][$option['ebayVariationName']][] =
+                $option['ebayVariationValue'];
+        }
+
+        return $articles;
     }
 }

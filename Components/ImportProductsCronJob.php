@@ -283,8 +283,21 @@ class ImportProductsCronJob {
      * @return array
      */
     protected function mapDetailData($product) {
+        $ordernumberMapping = Shopware()->Models()->getRepository(
+            'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
+        )->findOneBy(['id' => '1'])->getOrdernumberMapping();
+
+        // is ordernumberMapping in special case EuAN?
+        if ($ordernumberMapping === 'EuAN') {
+            if ($product['ManufacturerStandardProductIDType'] === 'EAN') {
+                $ordernumberMapping = 'ManufacturerStandardProductIDValue';
+            }
+            // else $ordernumberMapping will stay on 'EuAN'
+            // then $detail['number'] will be null
+        }
+
         $detail = [
-            'number'         => $product['Anr'],
+            'number'         => $product[$ordernumberMapping],
             'supplierNumber' => $product['ManufacturerPartNumber'],
             // don't know what that is
             // seams to be some kind of articleName extension in lastSeenProductsConfig

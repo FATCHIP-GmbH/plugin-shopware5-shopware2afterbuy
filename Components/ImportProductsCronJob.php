@@ -274,9 +274,6 @@ class ImportProductsCronJob {
         $detail = [
             'number'         => $product[$ordernumberMapping],
             'supplierNumber' => $product['ManufacturerPartNumber'],
-            // don't know what that is
-            // seams to be some kind of articleName extension in lastSeenProductsConfig
-            'additionalText' => '',
             'active'         => true,
             'inStock'        => $product['Quantity'],
             'stockMin'       => $product['MinimumStock'],
@@ -287,6 +284,12 @@ class ImportProductsCronJob {
                     ? $product['ManufacturerStandardProductIDValue']
                     : null,
             'unit'           => $product['UnitOfQuantity'],
+            'prices' => [
+                [
+                    'customerGroupKey' => 'EK',
+                    'price' => $product['SellingPrice']                ]
+            ],
+            'additionalText' => '',
 
             // TODO: not in article model, but in db
             'sales'          => '',

@@ -21,11 +21,6 @@ class ProductsToArticlesConverter {
      * ProductsToArticlesConverter constructor.
      */
     public function __construct() {
-        // $this->articles = [
-        //     'configuratorSet' => [
-        //         'groups' => [],
-        //     ],
-        // ];
         $this->articles = [];
         $this->details = [];
         $this->mainDetails = [];
@@ -106,10 +101,10 @@ class ProductsToArticlesConverter {
         }
 
         //find variation groups and options
-        // $options = $child['BaseProductsRelationData']['eBayVariationData'];
-        // foreach ($options as $option) {
-        //     $this->addOption($option);
-        // }
+        $options = $child['BaseProductsRelationData']['eBayVariationData'];
+        foreach ($options as $option) {
+            $this->addOption($option, $parentID);
+        }
 
         // detail already processed?
         if (isset($this->details[$childID])) {
@@ -133,6 +128,9 @@ class ProductsToArticlesConverter {
         // https://community.shopware.com/Artikel-anlegen_detail_807.html
         // https://community.shopware.com/_detail_1778.html
         $this->articles[$product['ProductID']] = [
+            // 'configuratorSet'  => [
+            //     'groups' => [],
+            // ],
             'name'             => $product['Name'],
             'description'      => $product['ShortDescription'],
             'descriptionLong'  => $product['Description'],
@@ -151,7 +149,6 @@ class ProductsToArticlesConverter {
             'supplier'         => $product['ProductBrand'],
             'availableFrom'    => null,
             'availableTo'      => null,
-            'configuratorSet'  => null,
             'priceGroup'       => null,
             'pricegroupActive' => false,
             'propertyGroup'    => null,
@@ -256,28 +253,42 @@ class ProductsToArticlesConverter {
 
     /**
      * @param $option
+     * @param $parentID
      */
-    protected function addOption($option) {
-        // variationGroup missing in map?
-        if ( ! array_key_exists(
-            $option['ebayVariationName'],
-            $this->articles['configuratorSet']['groups']
-        )
-        ) {
+    protected function addOption($option, $parentID) {
+        $groups = &$this->articles[$parentID]['configuratorSet']['groups'];
+        /** @var array array with all group names in groups $groupNames  */
+        $groupNames = array_column($groups, 'name');
+        $groupName = $option['eBayVariationName'];
+        $optionName = $option['eBayVariationValue'];
+
+        $groupIndex = -1;
+        // group does not yet exist?
+        if ( ! in_array($groupName, $groupNames)) {
             // create new group
-            $articles['configuratorSet']['groups'][$option['ebayVariationName']] =
-                [];
+            $groups[] = [
+                'name'    => $groupName,
+                'options' => [],
+            ];
+            $groupIndex = count($groups) - 1;
+        } else {
+            // find group named by $groupName
+            foreach ($groups as $index => $group) {
+                if ($group['name'] == $groupName) {
+                    $groupIndex = $index;
+                    break;
+                }
+            }
         }
 
+        /** @var array array with all option names in group $optionNames  */
+        $optionNames = array_column($groups[$groupIndex], 'name');
         // variationOption missing in Group?
-        if ( ! in_array(
-            $option['ebayVariationValue'],
-            $this->articles['configuratorSet']['groups'][$option['ebayVariationName']]
-        )
-        ) {
+        if ( ! in_array($optionName, $optionNames)) {
             // add option to group
-            $this->articles['configuratorSet']['groups'][$option['ebayVariationName']][] =
-                $option['ebayVariationValue'];
+            $groups[$groupIndex]['options'][] = [
+                'name' => $option['eBayVariationValue']
+            ];
         }
     }
 }

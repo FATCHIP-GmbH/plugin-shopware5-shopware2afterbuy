@@ -16,7 +16,7 @@ use Shopware\Components\Api\Exception\ParameterMissingException;
 use Shopware\Components\Api\Exception\ValidationException;
 
 // TODO: remove this for productive use
-use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
+// use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
 
 use Shopware\Components\Api\Resource\Article as ArticleResource;
 
@@ -34,12 +34,12 @@ use Shopware\Components\Api\Manager as ApiManager;
 // use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
 
 use Shopware\Models\Article\Article;
-use Shopware\Models\Article\Detail as ArticleDetail;
 
-use Fatchip\Afterbuy\ApiClient;
-use Shopware\Models\Article\Detail;
+use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Tax\Repository;
 use Shopware\Models\Tax\Tax;
+
+use Fatchip\Afterbuy\ApiClient;
 
 
 /**
@@ -56,7 +56,8 @@ class ImportProductsCronJob {
 
         $products = $productsResult['Result']['Products']['Product'];
 
-        $articles = $this->convertProducts2Articles($products);
+        $converter = new ProductsToArticlesConverter();
+        $articles = $converter->convertProducts2Articles($products);
 
         $this->importArticles($articles);
 
@@ -88,268 +89,13 @@ class ImportProductsCronJob {
                 . $productsResult['CallStatus']
                 . '] Awaited: [Success].');
         }
-        if ($productsResult['Result']['HasMoreProducts']) {
+        // if ($productsResult['Result']['HasMoreProducts']) {
             // pagination on
-        } else {
+        // } else {
             // pagination off
-        }
+        // }
 
         return $productsResult;
-    }
-
-    /**
-     * Converts products array to articles array.
-     *
-     * @param array $products
-     *
-     * @return array
-     */
-    protected function convertProducts2Articles($products) {
-        /** @var array $articles */
-        $articles = [
-            'configuratorSet' => [
-                'groups' => [],
-            ],
-        ];
-        $details = [];
-        $mainDetails = [];
-
-        // for each product in products
-        foreach ($products as $product) {
-            // Map article / detail field names
-
-            $productID = $product['ProductID'];
-
-            // variantSet related?
-            if (isset($product['BaseProducts'])) {
-                // variantSet parent object?
-                if ( ! isset($product['BaseProducts']['BaseProduct']['BaseProductID'])) {
-                    $currentParentProduct = $product;
-                    $currentParentProductID = $productID;
-
-                    $variantSets[$currentParentProductID]
-                        = $currentParentProduct;
-
-                    $articles[$currentParentProductID] = $this->mapArticleData(
-                        $currentParentProduct
-                    );
-                    $articles[$currentParentProductID]['variants'] = [];
-
-                    $childProducts
-                        = $currentParentProduct['BaseProducts']['BaseProduct'];
-
-                    // foreach variant set product
-                    foreach ($childProducts as $currentChildProduct) {
-                        $currentChildProductID
-                            = $currentChildProduct['BaseProductID'];
-
-                        // is currentChildProduct athe mainDetail for currentParentProduct?
-                        if (
-                            $currentChildProduct['BaseProductsRelationData']['DefaultProduct']
-                            == -1
-                        ) {
-                            $mainDetails[$currentParentProductID]
-                                = $currentChildProductID;
-                        }
-
-                        //find variation groups and options
-                        $options =
-                            $currentChildProduct['BaseProductsRelationData']['eBayVariationData'];
-                        foreach ($options as $option) {
-                            $articles = $this->addOption($option, $articles);
-
-                        }
-
-                        // detail already processed?
-                        if (isset($details[$currentChildProductID])) {
-                            $articles[$currentParentProductID]
-                                = $this->addDetailToArticle(
-                                $articles[$currentParentProductID],
-                                $details[$currentChildProductID],
-                                $mainDetails[$currentParentProductID]
-                                == $currentChildProductID
-                            );
-                        }
-                    }
-                } // variantSet childObject
-                else {
-                    $currentChildProductID = $productID;
-                    $parentProductID
-                        = $product
-                    ['BaseProducts']
-                    ['BaseProduct']
-                    ['BaseProductID'];
-
-                    $details[$currentChildProductID]
-                        = $this->mapDetailData($product);
-
-                    // variant set already processed?
-                    if (isset($articles[$parentProductID])) {
-                        $articles[$parentProductID] = $this->addDetailToArticle(
-                            $articles[$parentProductID],
-                            $details[$currentChildProductID],
-                            $mainDetails[$parentProductID]
-                            == $currentChildProductID
-                        );
-                    }
-                }
-
-            } // single product
-            else {
-                $details[$productID] = $this->mapDetailData($product);
-
-                $articles[$productID] = $this->mapArticleData($product);
-
-                $articles[$productID] = $this->addDetailToArticle(
-                    $articles[$productID],
-                    $details[$productID],
-                    true
-                );
-            }
-        }
-
-        return $articles;
-    }
-
-    /**
-     * Converts the given product array to an article array, by mapping the
-     * relevant fields.
-     *
-     * @param array $product - Array with product data, as it comes from the
-     *                       Afterbuy API.
-     *
-     * @return array
-     */
-    protected function mapArticleData($product) {
-        // https://community.shopware.com/Artikel-anlegen_detail_807.html
-        // https://community.shopware.com/_detail_1778.html
-        $article = [
-            'name'             => $product['Name'],
-            'description'      => $product['ShortDescription'],
-            'descriptionLong'  => $product['Description'],
-            // TODO: not in article model, but in db
-            'shippingtime'     => $product['DeliveryTime'],
-            'tax'              => $product['TaxRate'],
-            'keywords'         => $product['Keywords'],
-            'changed'          => $product['ModDate'],
-            'active'           => 1,
-            'pseudoSales'      => 0,
-            'highlight'        => false,
-            'metaTitle'        => '',
-            'lastStock'        => $product['Discontinued'] & $product['Stock'],
-            'notification'     => false,
-            'template'         => '',
-            'supplier'         => $product['ProductBrand'],
-            'availableFrom'    => null,
-            'availableTo'      => null,
-            'configuratorSet'  => null,
-            'priceGroup'       => null,
-            'pricegroupActive' => false,
-            'propertyGroup'    => null,
-            'crossBundleLook'  => false,
-
-            // TODO: what to map here?
-
-            // could not find field in AB API
-            'added'            => null,
-            // not sure what kind of mode is meant
-            'mode'             => 0,
-        ];
-
-        return $article;
-    }
-
-    /**
-     * Converts the given product array to an detail array, by mapping the
-     * relevant fields. The given product must be variantSet related, therefore
-     * $product['BaseProductsRelationData'] must be set.
-     *
-     * @param array $product - Array with product data, as it comes from the
-     *                       Afterbuy API.
-     *
-     * @return array
-     */
-    protected function mapDetailData($product) {
-        $ordernumberMapping = Shopware()->Models()->getRepository(
-            'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
-        )->findOneBy(['id' => '1'])->getOrdernumberMapping();
-
-        // is ordernumberMapping in special case EuAN?
-        if ($ordernumberMapping === 'EuAN') {
-            if ($product['ManufacturerStandardProductIDType'] === 'EAN') {
-                $ordernumberMapping = 'ManufacturerStandardProductIDValue';
-            }
-            // else $ordernumberMapping will stay on 'EuAN'
-            // then $detail['number'] will be null
-        }
-
-        $detail = [
-            'number'         => $product[$ordernumberMapping],
-            'supplierNumber' => $product['ManufacturerPartNumber'],
-            'active'         => true,
-            'inStock'        => $product['Quantity'],
-            'stockMin'       => $product['MinimumStock'],
-            'lastStock'      => $product['Discontinued'] & $product['Stock'],
-            'weight'         => $product['Weight'],
-            'ean'            =>
-                $product['ManufacturerStandardProductIDType'] == 'EAN'
-                    ? $product['ManufacturerStandardProductIDValue']
-                    : null,
-            'unit'           => $product['UnitOfQuantity'],
-            'prices'         => [
-                [
-                    'customerGroupKey' => 'EK',
-                    'price'            => $product['SellingPrice'],
-                ],
-            ],
-            'additionalText' => '',
-
-            // TODO: not in article model, but in db
-            'sales'          => '',
-
-            // TODO: what to map here
-            'position'       => $product['Position'],
-            'width'          => null,
-            'height'         => null,
-            'len'            => null,
-            'purchaseSteps'  => '',
-            'maxPurchase'    => '',
-            'minPurchase'    => '',
-            'purchaseUnit'   => '',
-            'referenceUnit'  => '',
-            'packUnit'       => '',
-            'releaseDate'    => '',
-            'shippingFree'   => '',
-            'shippingTime'   => $product['DeliveryTime'],
-            'purchasePrice'  => '',
-        ];
-
-        return $detail;
-    }
-
-    /**
-     * @param $taxRate
-     */
-    protected function createTax($taxRate) {
-        /** @var Repository $taxRepo */
-        $taxRepo = Shopware()->Models()->getRepository(
-            'Shopware\Models\Tax\Tax'
-        );
-
-        $tax = $taxRepo->findOneBy(['tax' => $taxRate]);
-
-        if ( ! $tax) {
-            /** @var \Shopware\Models\Tax\Tax $taxRepo */
-            $tax = new Tax();
-
-            $tax->setName($taxRate . ' %');
-            $tax->setTax($taxRate);
-            Shopware()->Models()->persist($tax);
-            try {
-                Shopware()->Models()->flush($tax);
-            } catch (OptimisticLockException $e) {
-            }
-        }
     }
 
     /**
@@ -384,7 +130,7 @@ class ImportProductsCronJob {
                 $this->updateArticle($articleId, $articleArray);
 
                 foreach ($variants as $variantArray) {
-                    /** @var Detail $detail */
+                    /** @var ArticleDetail $detail */
                     $detail = $detailRepository->findOneBy(
                         ['number' => $variantArray['number']]
                     );
@@ -411,27 +157,28 @@ class ImportProductsCronJob {
     }
 
     /**
-     * Adds the given detail to the given article. When detail is mainDetail,
-     * the detail is set to article's mainDetail field. Otherwise the detail is
-     * added to the variants array.
-     *
-     * @param array $article
-     * @param array $detail
-     * @param bool  $isMainDetail
-     *
-     * @return mixed
+     * @param $taxRate
      */
-    protected function addDetailToArticle($article, $detail, $isMainDetail) {
-        // mainDetail?
-        if ($isMainDetail) {
-            // add detail as mainDetail
-            $article['mainDetail'] = $detail;
-        } else {
-            // add detail as variant
-            array_push($article['variants'], $detail);
-        }
+    protected function createTax($taxRate) {
+        /** @var Repository $taxRepo */
+        $taxRepo = Shopware()->Models()->getRepository(
+            'Shopware\Models\Tax\Tax'
+        );
 
-        return $article;
+        $tax = $taxRepo->findOneBy(['tax' => $taxRate]);
+
+        if ( ! $tax) {
+            /** @var \Shopware\Models\Tax\Tax $taxRepo */
+            $tax = new Tax();
+
+            $tax->setName($taxRate . ' %');
+            $tax->setTax($taxRate);
+            Shopware()->Models()->persist($tax);
+            try {
+                Shopware()->Models()->flush($tax);
+            } catch (OptimisticLockException $e) {
+            }
+        }
     }
 
     /**
@@ -524,37 +271,5 @@ class ImportProductsCronJob {
         } catch (ValidationException $e) {
             // TODO: handle  exception
         }
-    }
-
-    /**
-     * @param $option
-     * @param $articles
-     *
-     * @return mixed
-     */
-    protected function addOption($option, $articles) {
-// variationGroup missing in map?
-        if ( ! array_key_exists(
-            $option['ebayVariationName'],
-            $articles['configuratorSet']['groups']
-        )
-        ) {
-            // create new group
-            $articles['configuratorSet']['groups'][$option['ebayVariationName']] =
-                [];
-        }
-
-        // variationOption missing in Group?
-        if ( ! in_array(
-            $option['ebayVariationValue'],
-            $articles['configuratorSet']['groups'][$option['ebayVariationName']]
-        )
-        ) {
-            // add option to group
-            $articles['configuratorSet']['groups'][$option['ebayVariationName']][] =
-                $option['ebayVariationValue'];
-        }
-
-        return $articles;
     }
 }

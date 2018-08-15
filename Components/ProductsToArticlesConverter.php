@@ -282,7 +282,7 @@ class ProductsToArticlesConverter {
         }
 
         /** @var array array with all option names in group $optionNames  */
-        $optionNames = array_column($groups[$groupIndex], 'name');
+        $optionNames = array_column($groups[$groupIndex]['options'], 'name');
         // variationOption missing in Group?
         if ( ! in_array($optionName, $optionNames)) {
             // add option to group

@@ -102,17 +102,38 @@ class ProductsToArticlesConverter {
 
         //find variation groups and options
         $options = $child['BaseProductsRelationData']['eBayVariationData'];
-        foreach ($options as $option) {
-            $this->addOption($option, $parentID);
-        }
 
-        // detail already processed?
-        if (isset($this->details[$childID])) {
-            $this->addDetailToArticle(
-                $parentID,
-                $childID,
-                $this->mainDetails[$parentID] == $childID
-            );
+        switch ($this->articles[$parentID]['BaseProductFlag']) {
+            // VariationSetParent
+            case 1:
+                if (array_key_exists(0, $options)) {
+                    foreach ($options as $option) {
+                        $this->addOption($option, $parentID);
+                    }
+                } else {
+                    $this->addOption($options, $parentID);
+                }
+
+                // detail already processed?
+                if (isset($this->details[$childID])) {
+                    $this->addDetailToArticle(
+                        $parentID,
+                        $childID,
+                        $this->mainDetails[$parentID] == $childID
+                    );
+                }
+                break;
+
+            // ProductSetParent
+            case 2:
+                break;
+
+            // Product related to a set
+            case 3:
+                break;
+
+            default:
+                // TODO: error handling
         }
     }
 
@@ -153,6 +174,7 @@ class ProductsToArticlesConverter {
             'pricegroupActive' => false,
             'propertyGroup'    => null,
             'crossBundleLook'  => false,
+            'BaseProductFlag'  => $product['BaseProductFlag'],
 
             // TODO: what to map here?
 
@@ -257,7 +279,7 @@ class ProductsToArticlesConverter {
      */
     protected function addOption($option, $parentID) {
         $groups = &$this->articles[$parentID]['configuratorSet']['groups'];
-        /** @var array array with all group names in groups $groupNames  */
+        /** @var array array with all group names in groups $groupNames */
         $groupNames = array_column($groups, 'name');
         $groupName = $option['eBayVariationName'];
         $optionName = $option['eBayVariationValue'];
@@ -281,13 +303,13 @@ class ProductsToArticlesConverter {
             }
         }
 
-        /** @var array array with all option names in group $optionNames  */
+        /** @var array array with all option names in group $optionNames */
         $optionNames = array_column($groups[$groupIndex]['options'], 'name');
         // variationOption missing in Group?
         if ( ! in_array($optionName, $optionNames)) {
             // add option to group
             $groups[$groupIndex]['options'][] = [
-                'name' => $option['eBayVariationValue']
+                'name' => $option['eBayVariationValue'],
             ];
         }
     }

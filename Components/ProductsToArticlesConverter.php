@@ -16,6 +16,8 @@ class ProductsToArticlesConverter {
     protected $details;
     /** @var array $mainDetails */
     protected $mainDetails;
+    /** @var array $detailConfigOptions */
+    protected $detailConfigOptions;
 
     /**
      * ProductsToArticlesConverter constructor.
@@ -24,6 +26,7 @@ class ProductsToArticlesConverter {
         $this->articles = [];
         $this->details = [];
         $this->mainDetails = [];
+        $this->detailConfigOptions = [];
     }
 
 
@@ -108,10 +111,18 @@ class ProductsToArticlesConverter {
             case 1:
                 if (array_key_exists(0, $options)) {
                     foreach ($options as $option) {
-                        $this->addOption($option, $parentID);
+                        $this->createConfiguratorOption(
+                            $option,
+                            $parentID,
+                            $childID
+                        );
                     }
                 } else {
-                    $this->addOption($options, $parentID);
+                    $this->createConfiguratorOption(
+                        $options,
+                        $parentID,
+                        $childID
+                    );
                 }
 
                 // detail already processed?
@@ -212,7 +223,9 @@ class ProductsToArticlesConverter {
             // then $detail['number'] will be null
         }
 
-        $this->details[$product['ProductID']] = [
+        $detail = &$this->details[$product['ProductID']];
+
+        $detail = [
             'number'         => $product[$ordernumberMapping],
             'supplierNumber' => $product['ManufacturerPartNumber'],
             'active'         => true,
@@ -252,6 +265,11 @@ class ProductsToArticlesConverter {
             'shippingTime'   => $product['DeliveryTime'],
             'purchasePrice'  => '',
         ];
+
+        $options = $this->detailConfigOptions[$product['ProductID']];
+        if (isset($options)) {
+            $detail['configuratorOptions'] = $options;
+        }
     }
 
     /**
@@ -276,11 +294,15 @@ class ProductsToArticlesConverter {
     /**
      * @param $option
      * @param $parentID
+     * @param $childID
      */
-    protected function addOption($option, $parentID) {
+    protected function createConfiguratorOption($option, $parentID, $childID) {
         $groups = &$this->articles[$parentID]['configuratorSet']['groups'];
         /** @var array array with all group names in groups $groupNames */
         $groupNames = array_column($groups, 'name');
+        // normalize values
+        $option['eBayVariationName'] = ucfirst($option['eBayVariationName']);
+        $option['eBayVariationValue'] = ucfirst($option['eBayVariationValue']);
         $groupName = $option['eBayVariationName'];
         $optionName = $option['eBayVariationValue'];
 
@@ -310,6 +332,36 @@ class ProductsToArticlesConverter {
             // add option to group
             $groups[$groupIndex]['options'][] = [
                 'name' => $option['eBayVariationValue'],
+            ];
+        }
+
+        $this->addConfiguratorOptionToDetail($option, $childID);
+    }
+
+    protected function addConfiguratorOptionToDetail($option, $childID) {
+        $groupName = $option['eBayVariationName'];
+        $optionName = $option['eBayVariationValue'];
+        $detail = null;
+
+        if (isset($this->details[$childID])) {
+            $detailConfigOptions =
+                &$this->details[$childID]['configuratorOptions'];
+        } else {
+            $detailConfigOptions = &$this->detailConfigOptions[$childID];
+        }
+
+        $optionAlreadySet = false;
+        foreach ($detailConfigOptions as $opt) {
+            if ($opt['group'] == $groupName && $opt['option'] == $optionName) {
+                $optionAlreadySet = true;
+                break;
+            }
+        }
+
+        if ( ! $optionAlreadySet) {
+            $detailConfigOptions[] = [
+                'group'  => $groupName,
+                'option' => $optionName,
             ];
         }
     }

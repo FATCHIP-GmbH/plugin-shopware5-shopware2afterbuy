@@ -25,24 +25,65 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
     }
 
     public function testAction() {
+        $mainDetail = array(
+            'isMain'              => true,
+            'number'              => 'SW10015',
+            'supplierNumber'      => '',
+            'active'              => true,
+            'inStock'             => '',
+            'stockMin'            => '',
+            'lastStock'           => '',
+            'weight'              => '',
+            'unit'                => '',
+            'additionalText'      => '',
+
+            // TODO: not in article model, but in db
+            'sales'               => '',
+
+            // TODO: what to map here
+            'position'            => '',
+            'width'               => null,
+            'height'              => null,
+            'len'                 => null,
+            'purchaseSteps'       => '',
+            'maxPurchase'         => '',
+            'minPurchase'         => '',
+            'purchaseUnit'        => '',
+            'referenceUnit'       => '',
+            'packUnit'            => '',
+            'releaseDate'         => '',
+            'shippingFree'        => '',
+            'shippingTime'        => '',
+            'purchasePrice'       => '',
+            'additionaltext'      => 'Rot',
+            'configuratorOptions' => array(
+                array('group' => 'Farbe', 'option' => 'Rot'),
+            ),
+            'prices'              => array(
+                array(
+                    'customerGroupKey' => 'EK',
+                    'price'            => 1999,
+                ),
+            ),
+        );
         $newArticle = array(
-            'configuratorSet' => array(
+            'configuratorSet'  => array(
                 'groups' => array(
                     array(
-                        'name' => 'Farbe',
+                        'name'    => 'Farbe',
                         'options' => array(
                             array('name' => 'Rot'),
                             array('name' => 'Blau'),
                             array('name' => 'Weiß'),
-                        )
+                        ),
                     ),
-                )
+                ),
             ),
-            'name'       => 'Jacke',
-            'description' => 'Meta-Kurzbeschreibung',
-            'descriptionLong' => '<p>asdf</p>p>',
-            'shippingtime' => '',
-            'taxId'      => 1,
+            'name'             => 'Jacke',
+            'description'      => 'Meta-Kurzbeschreibung',
+            'descriptionLong'  => '<p>asdf</p>p>',
+            'shippingtime'     => '',
+            'taxId'            => 1,
             'keywords'         => 'Meta-Keywords',
             'changed'          => '2018-08-15 16:23:30',
             'active'           => 1,
@@ -67,59 +108,97 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
             'added'            => '2018-08-15',
             // not sure what kind of mode is meant
             'mode'             => 0,
-            'supplierId' => 1,
-            'pricegroupID' => 1,
-            'variants' => array(
+            'supplierId'       => 1,
+            'pricegroupID'     => 1,
+            'mainDetail'       => $mainDetail,
+            'variants'         => array(
+                // $mainDetail,
                 array(
-                    'isMain' => true,
-                    'number' => 'turn',
-                    'inStock' => 15,
-                    'additionaltext' => 'L / Black',
+                    'isMain'              => false,
+                    'number'              => 'SW10015.1',
+                    'supplierNumber'      => '',
+                    'active'              => true,
+                    'inStock'             => '',
+                    'stockMin'            => '',
+                    'lastStock'           => '',
+                    'weight'              => '',
+                    'unit'                => '',
+                    'additionalText'      => '',
+
+                    // TODO: not in article model, but in db
+                    'sales'               => '',
+
+                    // TODO: what to map here
+                    'position'            => '',
+                    'width'               => null,
+                    'height'              => null,
+                    'len'                 => null,
+                    'purchaseSteps'       => '',
+                    'maxPurchase'         => '',
+                    'minPurchase'         => '',
+                    'purchaseUnit'        => '',
+                    'referenceUnit'       => '',
+                    'packUnit'            => '',
+                    'releaseDate'         => '',
+                    'shippingFree'        => '',
+                    'shippingTime'        => '',
+                    'purchasePrice'       => '',
+                    'additionaltext'      => 'Blau',
                     'configuratorOptions' => array(
-                        array('group' => 'Size', 'option' => 'L'),
-                        array('group' => 'Color', 'option' => 'Black'),
+                        array('group' => 'Farbe', 'option' => 'Blau'),
                     ),
-                    'prices' => array(
+                    'prices'              => array(
                         array(
                             'customerGroupKey' => 'EK',
-                            'price' => 1999,
+                            'price'            => 1999,
                         ),
-                    )
+                    ),
                 ),
                 array(
-                    'isMain' => false,
-                    'number' => 'turn.1',
-                    'inStock' => 15,
-                    'additionaltext' => 'S / Black',
+                    'isMain'              => false,
+                    'number'              => 'SW10015.2',
+                    'supplierNumber'      => '',
+                    'active'              => true,
+                    'inStock'             => '',
+                    'stockMin'            => '',
+                    'lastStock'           => '',
+                    'weight'              => '',
+                    'unit'                => '',
+                    'additionalText'      => '',
+
+                    // TODO: not in article model, but in db
+                    'sales'               => '',
+
+                    // TODO: what to map here
+                    'position'            => '',
+                    'width'               => null,
+                    'height'              => null,
+                    'len'                 => null,
+                    'purchaseSteps'       => '',
+                    'maxPurchase'         => '',
+                    'minPurchase'         => '',
+                    'purchaseUnit'        => '',
+                    'referenceUnit'       => '',
+                    'packUnit'            => '',
+                    'releaseDate'         => '',
+                    'shippingFree'        => '',
+                    'shippingTime'        => '',
+                    'purchasePrice'       => '',
+                    'additionaltext'      => 'Weiß',
                     'configuratorOptions' => array(
-                        array('group' => 'Size', 'option' => 'S'),
-                        array('group' => 'Color', 'option' => 'Black'),
+                        array('group' => 'Farbe', 'option' => 'Weiß'),
                     ),
-                    'prices' => array(
+                    'prices'              => array(
                         array(
                             'customerGroupKey' => 'EK',
-                            'price' => 999,
+                            'price'            => 1999,
                         ),
-                    )
+                    ),
                 ),
-                array(
-                    'isMain' => false,
-                    'number' => 'turn.2',
-                    'inStock' => 15,
-                    'additionaltext' => 'S / Red',
-                    'configuratorOptions' => array(
-                        array('group' => 'Size', 'option' => 'S'),
-                        array('group' => 'Color', 'option' => 'Red'),
-                    ),
-                    'prices' => array(
-                        array(
-                            'customerGroupKey' => 'EK',
-                            'price' => 999,
-                        ),
-                    )
-                )
-            )
+            ),
         );
 
-        $client->put('articles/193', $updateArticle);}
+        $importer = new ImportProductsCronJob();
+        // $importer->createArticle($newArticle);
+    }
 }

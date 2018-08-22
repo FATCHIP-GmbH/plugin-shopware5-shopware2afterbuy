@@ -72,11 +72,11 @@ class PluginConfig extends ModelEntity
     private $ordernumberMapping;
 
     /**
-     * @var boolean $catNews
+     * @var string $category
      *
-     * @ORM\Column(name="category_news", type="boolean")
+     * @ORM\Column(name="category", type="string", nullable=true)
      */
-    private $catNews;
+    private $category;
 
     /**
      * @var string $logLevel
@@ -204,17 +204,17 @@ class PluginConfig extends ModelEntity
     }
 
     /**
-     * @return boolean
+     * @return string
      */
-    public function getCatNews() {
-        return $this->catNews;
+    public function getCategory() {
+        return $this->category;
     }
 
     /**
-     * @param boolean $catNews
+     * @param string $category
      */
-    public function setCatNews($catNews) {
-        $this->catNews = $catNews;
+    public function setCategory($category) {
+        $this->category = $category;
     }
 
     /**
@@ -257,7 +257,7 @@ class PluginConfig extends ModelEntity
             'afterbuyUsername' => $this->getAfterbuyUsername(),
             'afterbuyUserPassword' => $this->getAfterbuyUserpassword(),
             'ordernumberMapping' => $this->getOrdernumberMapping(),
-            'catNews' => $this->getCatNews(),
+            'category' => $this->getCategory(),
             'logLevel' => $this->getLogLevel(),
             'afterbuyLogFilepath' => $this->getAfterbuyLogfilePath(),
         ];

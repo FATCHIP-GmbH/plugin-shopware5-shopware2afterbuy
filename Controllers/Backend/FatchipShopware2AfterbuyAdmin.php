@@ -70,7 +70,7 @@ class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight
         $config->setAfterbuyUsername(trim($params['AfterbuyUsername']));
         $config->setAfterbuyUserpassword(trim($params['AfterbuyUserPassword']));
         $config->setOrdernumberMapping(trim($params['OrdernumberMapping']));
-        $config->setCatNews(array_key_exists('CatNews', $params));
+        $config->setCategory(trim($params['Category']));
         $config->setLogLevel(trim($params['LogLevel']));
         $this->get('models')->persist($config);
         $this->get('models')->flush($config);

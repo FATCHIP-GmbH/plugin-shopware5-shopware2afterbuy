@@ -128,19 +128,16 @@
 
                         <hr/>
 
-                        <p>{s name=fieldlabel/CatNews}Kategorie Neuheiten{/s}</p>
+                        <p>{s name=fieldlabel/Category/slug}Kategorie Neuheiten{/s}</p>
                         <div class="form-group">
                             <label>
                                 <input
-                                        name="CatNews"
-                                        value="pluginConfig"
-                                        type="checkbox"
-                                        {if $config->getCatNews()}
-                                            checked
-                                        {/if}
+                                        name="Category"
+                                        type="text"
+                                        value="{$config->getCategory()}"
                                 />
                                 <br>
-                                {s name=fieldlabel/CatNews/description}
+                                {s name=fieldlabel/Category/description}
                                 Wenn aktiviert, werden alle Artikel der Kategorie "Neuheiten" zugeordnet.
                                 Andernfalls müssen die Kategorien per Hand zuordnet werden.
                                 {/s}

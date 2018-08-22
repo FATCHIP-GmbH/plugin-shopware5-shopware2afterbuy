@@ -115,15 +115,36 @@
                             <select name="OrdernumberMapping" form="pluginConfig">
                                 {if !empty($config)}
                                     {foreach $ordernumberMapping as $key => $value}
-                                    <option value="{$key}"
-                                            {if $config->getOrdernumberMapping() === $key}
-                                    selected
-                                            {/if}>
-                                        {s name=fieldlabel/$key}{$value}{/s}
-                                    </option>
+                                        <option value="{$key}"
+                                                {if $config->getOrdernumberMapping() === $key}
+                                        selected
+                                                {/if}>
+                                            {s name=fieldlabel/$key}{$value}{/s}
+                                        </option>
                                     {/foreach}
                                 {/if}
                             </select>
+                        </div>
+
+                        <hr/>
+
+                        <p>{s name=fieldlabel/CatNews}Kategorie Neuheiten{/s}</p>
+                        <div class="form-group">
+                            <label>
+                                <input
+                                        name="CatNews"
+                                        value="pluginConfig"
+                                        type="checkbox"
+                                        {if $config->getCatNews()}
+                                            checked
+                                        {/if}
+                                />
+                                <br>
+                                {s name=fieldlabel/CatNews/description}
+                                Wenn aktiviert, werden alle Artikel der Kategorie "Neuheiten" zugeordnet.
+                                Andernfalls müssen die Kategorien per Hand zuordnet werden.
+                                {/s}
+                            </label>
                         </div>
 
                         <hr/>

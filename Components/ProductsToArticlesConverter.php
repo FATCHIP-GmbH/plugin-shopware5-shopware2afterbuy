@@ -34,10 +34,11 @@ class ProductsToArticlesConverter {
      * Converts products array to articles array.
      *
      * @param array $products
+     * @param int   $categoryId
      *
      * @return array
      */
-    public function convertProducts2Articles($products) {
+    public function convertProducts2Articles($products, $categoryId) {
         // for each product in products
         foreach ($products as $product) {
             // Map article / detail field names
@@ -51,7 +52,7 @@ class ProductsToArticlesConverter {
 
                     $variantSets[$productID] = $product;
 
-                    $this->mapArticleData($product);
+                    $this->mapArticleData($product, $categoryId);
 
                     $children = $product['BaseProducts']['BaseProduct'];
 
@@ -82,7 +83,7 @@ class ProductsToArticlesConverter {
             else {
                 $this->mapDetailData($product);
 
-                $this->mapArticleData($product);
+                $this->mapArticleData($product, $categoryId);
 
                 $this->addDetailToArticle($productID, $productID, true);
             }
@@ -155,8 +156,9 @@ class ProductsToArticlesConverter {
      *
      * @param array $product - Array with product data, as it comes from the
      *                       Afterbuy API.
+     * @param int   $categoryId
      */
-    protected function mapArticleData($product) {
+    protected function mapArticleData($product, $categoryId) {
         // https://community.shopware.com/Artikel-anlegen_detail_807.html
         // https://community.shopware.com/_detail_1778.html
         $this->articles[$product['ProductID']] = [
@@ -186,6 +188,11 @@ class ProductsToArticlesConverter {
             'propertyGroup'    => null,
             'crossBundleLook'  => false,
             'BaseProductFlag'  => $product['BaseProductFlag'],
+            'categories'       => [
+                [
+                    'id' => $categoryId,
+                ],
+            ],
 
             // TODO: what to map here?
 

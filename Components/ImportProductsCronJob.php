@@ -60,10 +60,12 @@ class ImportProductsCronJob {
         $products = $productsResult['Result']['Products']['Product'];
 
         $categoryId = $this->createCategory();
-        die(var_dump($categoryId));
 
         $converter = new ProductsToArticlesConverter();
-        $articles = $converter->convertProducts2Articles($products);
+        $articles = $converter->convertProducts2Articles(
+            $products,
+            $categoryId
+        );
 
         $this->importArticles($articles);
 

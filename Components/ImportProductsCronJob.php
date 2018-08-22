@@ -35,6 +35,7 @@ use Shopware\Components\Api\Manager as ApiManager;
 // TODO: remove this for productive use
 // use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
 
+use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
 use Shopware\Models\Article\Article;
 
 use Shopware\Models\Article\Detail as ArticleDetail;
@@ -51,6 +52,24 @@ use Fatchip\Afterbuy\ApiClient;
  * @package Shopware\FatchipShopware2Afterbuy\Components
  */
 class ImportProductsCronJob {
+    /** @var PluginConfig pluginConfig */
+    protected $pluginConfig;
+
+    /**
+     * ImportProductsCronJob constructor.
+     *
+     * @param $pluginConfig
+     */
+    public function __construct() {
+        $this->pluginConfig = Shopware()
+            ->Models()
+            ->getRepository(
+                'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
+            )
+            ->findOneBy(['id' => '1']);;
+    }
+
+
     /**
      * The entry point of this Class.
      */
@@ -69,6 +88,10 @@ class ImportProductsCronJob {
 
         $this->importArticles($articles);
 
+        if ($this->pluginConfig->getMissingProductsStrategy() === 'delete') {
+            // TODO: delete all articles, that are in shopware, but not in $articles
+        }
+
         var_dump($productsResult);
     }
 
@@ -80,13 +103,7 @@ class ImportProductsCronJob {
     protected function createCategory() {
         /** @var CategoryResource $categoryResource */
         $categoryResource = ApiManager::getResource('category');
-        $categoryName = Shopware()
-            ->Models()
-            ->getRepository(
-                'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
-            )
-            ->findOneBy(['id' => '1'])
-            ->getCategory();
+        $categoryName = $this->pluginConfig->getCategory();
 
         if ( ! $categoryName) {
             return null;

@@ -147,11 +147,12 @@
                             <select id="OrdernumberMapping" name="OrdernumberMapping" form="pluginConfig">
                                 {if !empty($config)}
                                     {foreach $ordernumberMapping as $key => $value}
-                                        <option value="{$key}"
+                                        <option
                                                 {if $config->getOrdernumberMapping() === $key}
-                                        selected
-                                                {/if}>
-                                            {s name=fieldlabel/$key}{$value}{/s}
+                                                    selected
+                                                {/if}
+                                                value="{$key}">
+                                            {$value}
                                         </option>
                                     {/foreach}
                                 {/if}
@@ -182,6 +183,34 @@
                                     per Hand im Backend einer Kategorie zugeordnet werden.
                                 {/s}
                             </div>
+                        </div>
+
+                        <hr/>
+
+                        <h4>
+                            {s name="fieldlabel/MissingProductsStrategies"}
+                                Fehlende Produkte
+                            {/s}
+                        </h4>
+                        <div class="form-group">
+                            <div>{s name="fieldlabel/MissingProductsStrategies/description"}
+                                    Wenn in Afterbuy ein Artikel gelöscht wurde, der in Shopware noch existiert,
+                                    folgende Strategie anwenden:
+                                {/s}</div>
+                            <label class="sr-only" for="MissingProducts"></label>
+                            <select id="MissingProductsStrategy" name="MissingProductsStrategy" form="pluginConfig">
+                                {if !empty($config)}
+                                    {foreach $missingProductsStrategies as $key => $value}
+                                        <option
+                                                {if $config->getMissingProductsStrategy() === $key}
+                                                    selected
+                                                {/if}
+                                                value="{$key}">
+                                            {$value}
+                                        </option>
+                                    {/foreach}
+                                {/if}
+                            </select>
                         </div>
 
                         <hr/>

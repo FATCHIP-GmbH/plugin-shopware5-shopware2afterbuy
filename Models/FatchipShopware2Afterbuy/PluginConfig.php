@@ -79,6 +79,13 @@ class PluginConfig extends ModelEntity
     private $category;
 
     /**
+     * @var string $missingProductsStrategy
+     *
+     * @ORM\Column(name="missing_products_strategy", type="string", nullable=true)
+     */
+    private $missingProductsStrategy;
+
+    /**
      * @var string $logLevel
      *
      * @ORM\Column(name="log_level", type="string", nullable=true)
@@ -215,6 +222,20 @@ class PluginConfig extends ModelEntity
      */
     public function setCategory($category) {
         $this->category = $category;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMissingProductsStrategy() {
+        return $this->missingProductsStrategy;
+    }
+
+    /**
+     * @param string $missingProductsStrategy
+     */
+    public function setMissingProductsStrategy($missingProductsStrategy) {
+        $this->missingProductsStrategy = $missingProductsStrategy;
     }
 
     /**

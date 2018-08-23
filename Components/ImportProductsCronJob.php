@@ -366,7 +366,7 @@ class ImportProductsCronJob {
      * @param int[] $productIds List of all ProductIds, that where either
      *                          imported or updated.
      */
-    protected function deleteSurplus($productIds): void {
+    protected function deleteSurplus($productIds) {
         /** @var ArticleResource $articleResource */
         $articleResource = ApiManager::getResource('article');
         /** @var Article[] $presentArticles */
@@ -377,7 +377,7 @@ class ImportProductsCronJob {
 
         foreach ($presentArticles as $article) {
             /** @var bool $deleteArticle */
-            $deleteArticle = in_array(
+            $deleteArticle = ! in_array(
                 $article->getAttribute()->getAfterbuyProductid(),
                 $productIds
             );

@@ -89,7 +89,8 @@ class ImportProductsCronJob {
         $this->importArticles($articles);
 
         if ($this->pluginConfig->getMissingProductsStrategy() === 'delete') {
-            // TODO: delete all articles, that are in shopware, but not in $articles
+            $this->deleteSurplus($articles);
+
         }
 
         var_dump($productsResult);
@@ -337,6 +338,56 @@ class ImportProductsCronJob {
             // TODO: handle  exception
         } catch (ValidationException $e) {
             // TODO: handle  exception
+        }
+    }
+
+    /**
+     * Deletes the articles, that are already in Shopware, but where not,
+     * imported or updated.
+     *
+     * @param $importedArticles
+     */
+    protected function deleteSurplus($importedArticles): void {
+        /** @var int[] $productIds */
+        $productIds = [];
+        /** @var ArticleResource $articleResource */
+        $articleResource = ApiManager::getResource('article');
+        /** @var int[] $deleteArticles */
+        $deleteArticles = [];
+        /** @var Article[] $presentArticles */
+        $presentArticles = Shopware()
+            ->Models()
+            ->getRepository('Shopware\Models\Article\Article')
+            ->findAll();
+
+        foreach ($importedArticles as $article) {
+            $id = $article['mainDetail']['attribute']['afterbuyProductid'];
+
+            if ( ! is_null($id)) {
+                $productIds[] = $id;
+            }
+        }
+
+
+        foreach ($presentArticles as $article) {
+            /** @var int[] $articleInProductIds */
+            $articleInProductIds = in_array(
+                $article->getAttribute()->getAfterbuyProductid(),
+                $productIds
+            );
+            if ( ! $articleInProductIds) {
+                $deleteArticles[] = $article->getId();
+            }
+        }
+
+        foreach ($deleteArticles as $article) {
+            try {
+                $articleResource->delete($article);
+            } catch (NotFoundException $e) {
+                // TODO: handle  exception
+            } catch (ParameterMissingException $e) {
+                // TODO: handle  exception
+            }
         }
     }
 }

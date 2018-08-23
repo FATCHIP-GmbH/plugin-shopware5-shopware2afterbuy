@@ -57,8 +57,6 @@ class ImportProductsCronJob {
 
     /**
      * ImportProductsCronJob constructor.
-     *
-     * @param $pluginConfig
      */
     public function __construct() {
         $this->pluginConfig = Shopware()
@@ -74,23 +72,34 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
-        $productsResult = $this->retrieveProductsArray();
+        /** @var int[] $productIds */
+        $productIds = [];
+        $pageIndex = 0;
 
-        $products = $productsResult['Result']['Products']['Product'];
+        do {
+            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
-        $categoryId = $this->createCategory();
+            $products = $productsResult['Result']['Products']['Product'];
 
-        $converter = new ProductsToArticlesConverter();
-        $articles = $converter->convertProducts2Articles(
-            $products,
-            $categoryId
-        );
+            $categoryId = $this->createCategory();
 
-        $this->importArticles($articles);
+            $converter = new ProductsToArticlesConverter();
 
-        if ($this->pluginConfig->getMissingProductsStrategy() === 'delete') {
-            $this->deleteSurplus($articles);
+            $importArticles = $converter->convertProducts2Articles(
+                $products,
+                $categoryId
+            );
 
+            $productIds = array_merge(
+                $productIds,
+                $this->importArticles($importArticles)
+            );
+
+            $strategy = $this->pluginConfig->getMissingProductsStrategy();
+        } while ($productsResult['Result']['HasMoreProducts']);
+
+        if ($strategy === 'delete') {
+            $this->deleteSurplus($productIds);
         }
 
         var_dump($productsResult);
@@ -140,43 +149,50 @@ class ImportProductsCronJob {
     /**
      * Call the AfterBuy API and retrieve all the products as array.
      *
+     * @param int $iMaxShopItems
+     * @param int $iPage
+     *
      * @return array
      */
-    protected function retrieveProductsArray() {
+    protected function retrieveProductsArray($iMaxShopItems = 250, $iPage = 0) {
         // Get SDK object
         /** @var ApiClient $apiClient */
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
         // $apiClient = new ApiMock();
 
-
         // Get all products from AfterbuyAPI
-        $productsResult = $apiClient->getShopProductsFromAfterbuy();
+        $productsResult = $apiClient->getShopProductsFromAfterbuy(
+            $iMaxShopItems,
+            $iPage
+        );
         if ($productsResult['CallStatus'] != 'Success') {
             // TODO: fix error handling
             die('GetShopProducts: CallStatus: ['
                 . $productsResult['CallStatus']
                 . '] Awaited: [Success].');
         }
-        // if ($productsResult['Result']['HasMoreProducts']) {
-        // pagination on
-        // } else {
-        // pagination off
-        // }
 
         return $productsResult;
     }
 
     /**
-     * Imports the given articles array into shopware.
+     * Imports the given articles array into shopware and returns an array with
+     * all imported productId's.
      *
      * @param array $articles
+     *
+     * @return array
      */
     protected function importArticles($articles) {
         $detailRepository = Shopware()->Models()->getRepository(
             'Shopware\Models\Article\Detail'
         );
 
+        $productIds = [];
+
         foreach ($articles as $articleArray) {
+            $productIds[] =
+                $articleArray['mainDetail']['attribute']['afterbuyProductid'];
 
             $this->createTax($articleArray['tax']);
 
@@ -222,6 +238,8 @@ class ImportProductsCronJob {
                 }
             }
         }
+
+        return $productIds;
     }
 
     /**
@@ -345,48 +363,40 @@ class ImportProductsCronJob {
      * Deletes the articles, that are already in Shopware, but where not,
      * imported or updated.
      *
-     * @param $importedArticles
+     * @param int[] $productIds List of all ProductIds, that where either
+     *                          imported or updated.
      */
-    protected function deleteSurplus($importedArticles): void {
-        /** @var int[] $productIds */
-        $productIds = [];
+    protected function deleteSurplus($productIds): void {
         /** @var ArticleResource $articleResource */
         $articleResource = ApiManager::getResource('article');
-        /** @var int[] $deleteArticles */
-        $deleteArticles = [];
         /** @var Article[] $presentArticles */
         $presentArticles = Shopware()
             ->Models()
             ->getRepository('Shopware\Models\Article\Article')
             ->findAll();
 
-        foreach ($importedArticles as $article) {
-            $id = $article['mainDetail']['attribute']['afterbuyProductid'];
-
-            if ( ! is_null($id)) {
-                $productIds[] = $id;
-            }
-        }
-
-
         foreach ($presentArticles as $article) {
-            /** @var int[] $articleInProductIds */
-            $articleInProductIds = in_array(
+            /** @var bool $deleteArticle */
+            $deleteArticle = in_array(
                 $article->getAttribute()->getAfterbuyProductid(),
                 $productIds
             );
-            if ( ! $articleInProductIds) {
-                $deleteArticles[] = $article->getId();
-            }
-        }
 
-        foreach ($deleteArticles as $article) {
-            try {
-                $articleResource->delete($article);
-            } catch (NotFoundException $e) {
-                // TODO: handle  exception
-            } catch (ParameterMissingException $e) {
-                // TODO: handle  exception
+            // article with no afterbuyProductId where never imported from AB
+            // but in some cases the array $productIds can contain null values
+            $deleteArticle = $deleteArticle
+                || is_null(
+                    $article->getAttribute()->getAfterbuyProductid()
+                );
+
+            if ($deleteArticle) {
+                try {
+                    $articleResource->delete($article->getId());
+                } catch (NotFoundException $e) {
+                    // TODO: handle  exception
+                } catch (ParameterMissingException $e) {
+                    // TODO: handle  exception
+                }
             }
         }
     }

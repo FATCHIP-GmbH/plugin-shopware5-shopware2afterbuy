@@ -230,7 +230,9 @@ class ProductsToArticlesConverter {
             // then $detail['number'] will be null
         }
 
-        $detail = &$this->details[$product['ProductID']];
+        $productID = $product['ProductID'];
+
+        $detail = &$this->details[$productID];
 
         $detail = [
             'number'         => $product[$ordernumberMapping],
@@ -252,6 +254,9 @@ class ProductsToArticlesConverter {
                 ],
             ],
             'additionalText' => '',
+            'attribute'      => [
+                'afterbuyProductid' => $productID,
+            ],
 
             // TODO: not in article model, but in db
             'sales'          => '',
@@ -273,7 +278,7 @@ class ProductsToArticlesConverter {
             'purchasePrice'  => '',
         ];
 
-        $options = $this->detailConfigOptions[$product['ProductID']];
+        $options = $this->detailConfigOptions[$productID];
         if (isset($options)) {
             $detail['configuratorOptions'] = $options;
         }

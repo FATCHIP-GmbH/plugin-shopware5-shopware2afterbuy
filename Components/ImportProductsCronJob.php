@@ -319,10 +319,7 @@ class ImportProductsCronJob {
      * @param int   $articleId
      * @param array $articleArray
      */
-    protected function updateArticle(
-        $articleId,
-        $articleArray
-    ) {
+    protected function updateArticle($articleId, $articleArray) {
         /** @var ArticleResource $articleResource */
         $articleResource = ApiManager::getResource('article');
 

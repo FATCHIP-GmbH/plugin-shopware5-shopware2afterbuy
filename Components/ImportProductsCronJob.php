@@ -44,6 +44,7 @@ use Shopware\Models\Tax\Repository;
 use Shopware\Models\Tax\Tax;
 
 use Fatchip\Afterbuy\ApiClient;
+use Shopware\Plugins\Community\Frontend\FatchipShopware2Afterbuy\Components\ImageCrawler;
 
 
 /**
@@ -72,6 +73,16 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
+        // $this->importProducts();
+        $this->importImages();
+    }
+
+    // TODO: remove in productive
+    public function call() {
+        return $this->retrieveProductsArray();
+    }
+
+    protected function importProducts(): void {
         /** @var int[] $productIds */
         $productIds = [];
         $pageIndex = 0;
@@ -92,7 +103,7 @@ class ImportProductsCronJob {
 
             $productIds = array_merge(
                 $productIds,
-                $this->importArticles($importArticles)
+                $this->writeArticles($importArticles)
             );
 
             $strategy = $this->pluginConfig->getMissingProductsStrategy();
@@ -105,9 +116,23 @@ class ImportProductsCronJob {
         var_dump($productsResult);
     }
 
-    // TODO: remove in productive
-    public function call() {
-        return $this->retrieveProductsArray();
+    protected function importImages() {
+        /** @var int[] $productIds */
+        $productIds = [];
+        $pageIndex = 0;
+
+        // do {
+            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
+
+            $products = $productsResult['Result']['Products']['Product'];
+
+            $images = new ImageCrawler();
+
+            $imgs = $images->retrieveImages($products);
+
+        // } while ($productsResult['Result']['HasMoreProducts']);
+
+        var_dump($imgs);
     }
 
     protected function createCategory() {
@@ -183,7 +208,7 @@ class ImportProductsCronJob {
      *
      * @return array
      */
-    protected function importArticles($articles) {
+    protected function writeArticles($articles) {
         $detailRepository = Shopware()->Models()->getRepository(
             'Shopware\Models\Article\Detail'
         );

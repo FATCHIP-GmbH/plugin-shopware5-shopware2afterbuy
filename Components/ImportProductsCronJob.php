@@ -118,21 +118,35 @@ class ImportProductsCronJob {
 
     protected function importImages() {
         /** @var int[] $productIds */
-        $productIds = [];
         $pageIndex = 0;
 
         // do {
-            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
+        $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
-            $products = $productsResult['Result']['Products']['Product'];
+        $products = $productsResult['Result']['Products']['Product'];
 
-            $images = new ImageCrawler();
+        $imageCrawler = new ImageCrawler();
 
-            $imgs = $images->retrieveImages($products);
+        $images = $imageCrawler->retrieveImages($products);
+
+        foreach ($images as $productId => $image) {
+            // retrieve SW article name from ProductID
+            /** @var ArticleResource $articleResource */
+            $articleResource = ApiManager::getResource('article');
+
+            /** @var Article[] $articles */
+            $articles = $articleResource->getRepository()->findAll();
+            foreach ($articles as $article) {
+                $name = $article->getName();
+                $article->getMainDetail()->getAttribute()->getAfterbuyProductId();
+            }
+            // create array
+            // push array to api
+        }
 
         // } while ($productsResult['Result']['HasMoreProducts']);
 
-        var_dump($imgs);
+        var_dump($images);
     }
 
     protected function createCategory() {

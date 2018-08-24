@@ -110,6 +110,7 @@ class ProductsToArticlesConverter {
         switch ($this->articles[$parentID]['BaseProductFlag']) {
             // VariationSetParent
             case 1:
+                // multiple options?
                 if (array_key_exists(0, $options)) {
                     foreach ($options as $option) {
                         $this->createConfiguratorOption(
@@ -337,7 +338,7 @@ class ProductsToArticlesConverter {
             }
         }
 
-        /** @var array array with all option names in group $optionNames */
+        /** @var array array with all option names in group */
         $optionNames = array_column($groups[$groupIndex]['options'], 'name');
         // variationOption missing in Group?
         if ( ! in_array($optionName, $optionNames)) {

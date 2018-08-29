@@ -13,6 +13,8 @@ class ImageCrawler {
     public function retrieveImages($products) {
         $productLinkMap = [];
         foreach ($products as $product) {
+            $productId = $product['ProductID'];
+
             // no variation set parent?
             if ($product['BaseProductFlag'] != 1) {
                 continue;
@@ -22,8 +24,13 @@ class ImageCrawler {
 
             $links = [];
             foreach ($children as $child) {
+                $baseProductsData = $child['BaseProductsRelationData'];
+                if ($baseProductsData['DefaultProduct'] == '-1') {
+                    $productId = $child['BaseProductID'];
+                }
+
                 $config = $this->processConfiguration(
-                    $child['BaseProductsRelationData']['eBayVariationData']
+                    $baseProductsData['eBayVariationData']
                 );
 
                 $link = $config['link'];
@@ -33,7 +40,7 @@ class ImageCrawler {
                     $index = count($links);
 
                     $links[] = [
-                        'link'    => $link,
+                        'link'           => $link,
                         'configurations' => [],
                     ];
                 } else {
@@ -46,7 +53,7 @@ class ImageCrawler {
                 }
             }
 
-            $productLinkMap[$product['ProductID']] = $links;
+            $productLinkMap[$productId] = $links;
         }
 
         return $productLinkMap;
@@ -59,15 +66,34 @@ class ImageCrawler {
      */
     protected function processConfiguration($configuration) {
         $result = [];
-        foreach ($configuration as $option) {
-            $imageLink = $option['eBayVariationUrls'];
 
-            if ($imageLink) {
-                $result['link'] = $imageLink;
-                $result['options'][] = $option['eBayVariationValue'];
+        // multiple options?
+        if (array_key_exists(0, $configuration)) {
+            foreach ($configuration as $option) {
+                $result = $this->addimageToArray($option);
             }
+        } else {
+            $result = $this->addimageToArray($configuration);
         }
 
         return $result;
     }
+
+    /**
+     * @param $option
+     *
+     * @return mixed
+     */
+    protected function addimageToArray($option) {
+        $result = [];
+
+        $imageLink = $option['eBayVariationUrls'];
+
+        if ($imageLink) {
+            $result['link'] = $imageLink;
+            $result['options'][] = $option['eBayVariationValue'];
+        }
+
+        return $result;
+}
 }

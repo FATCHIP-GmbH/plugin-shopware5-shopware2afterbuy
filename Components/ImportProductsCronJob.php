@@ -73,7 +73,7 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
-        // $this->importProducts();
+        $this->importProducts();
         $this->importImages();
     }
 
@@ -82,19 +82,17 @@ class ImportProductsCronJob {
         return $this->retrieveProductsArray();
     }
 
-    protected function importProducts(): void {
+    protected function importProducts() {
         /** @var int[] $productIds */
         $productIds = [];
         $pageIndex = 0;
+        $categoryId = $this->createCategory();
+        $converter = new ProductsToArticlesConverter();
 
         do {
             $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
             $products = $productsResult['Result']['Products']['Product'];
-
-            $categoryId = $this->createCategory();
-
-            $converter = new ProductsToArticlesConverter();
 
             $importArticles = $converter->convertProducts2Articles(
                 $products,
@@ -112,41 +110,70 @@ class ImportProductsCronJob {
         if ($strategy === 'delete') {
             $this->deleteSurplus($productIds);
         }
-
-        var_dump($productsResult);
     }
 
     protected function importImages() {
         /** @var int[] $productIds */
         $pageIndex = 0;
 
-        // do {
-        $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
+        do {
+            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
-        $products = $productsResult['Result']['Products']['Product'];
+            $products = $productsResult['Result']['Products']['Product'];
 
-        $imageCrawler = new ImageCrawler();
+            $imageCrawler = new ImageCrawler();
 
-        $images = $imageCrawler->retrieveImages($products);
+            $imageArray = $imageCrawler->retrieveImages($products);
 
-        foreach ($images as $productId => $image) {
-            // retrieve SW article name from ProductID
-            /** @var ArticleResource $articleResource */
-            $articleResource = ApiManager::getResource('article');
+            foreach ($imageArray as $productId => $images) {
+                $query = '
+                SELECT a.`id` articleID,  at.`afterbuy_productid`
+                FROM `s_articles` AS a
+                INNER JOIN `s_articles_details` AS d ON a.`main_detail_id` = d.`id`
+                INNER JOIN `s_articles_attributes` AS at ON d.`id` = at.`articledetailsID`
+                WHERE `afterbuy_productid` = ?
+            ';
+                $articleId = Shopware()->Db()->fetchOne($query, $productId);
 
-            /** @var Article[] $articles */
-            $articles = $articleResource->getRepository()->findAll();
-            foreach ($articles as $article) {
-                $name = $article->getName();
-                $article->getMainDetail()->getAttribute()->getAfterbuyProductId();
+                // retrieve SW article name from ProductID
+                /** @var ArticleResource $articleResource */
+                $articleResource = ApiManager::getResource('article');
+
+                /** @var Article $article */
+                $article = $articleResource->getRepository()->find($articleId);
+
+                // create array
+                $createImages = [
+                    // 'name'   => $article->getName(),
+                    'images' => [],
+                ];
+
+                foreach ($images as $image) {
+                    $options = [];
+                    foreach ($image['configurations'] as $value) {
+                        $optionsIndex = count($options);
+                        $options[] = [];
+
+                        foreach ($value as $v) {
+                            $options[$optionsIndex][] = ['name' => $v];
+                        }
+                    }
+                    $createImages['images'][] = [
+                        'link'    => $image['link'],
+                        'options' => $options,
+                    ];
+                }
+
+                // push array to api
+                try {
+                    $this->updateArticle($articleId, $createImages);
+                } catch (Exception $e) {
+                    echo $e;
+                    echo '<br>';
+                }
             }
-            // create array
-            // push array to api
-        }
 
-        // } while ($productsResult['Result']['HasMoreProducts']);
-
-        var_dump($images);
+        } while ($productsResult['Result']['HasMoreProducts']);
     }
 
     protected function createCategory() {

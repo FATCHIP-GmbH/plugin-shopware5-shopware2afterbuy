@@ -8,43 +8,30 @@
 
 namespace Shopware\FatchipShopware2Afterbuy\Components;
 
+use Exception;
 
 use Doctrine\ORM\OptimisticLockException;
-use Exception;
+
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
 use Shopware\Components\Api\Exception\ValidationException;
-
-// TODO: remove this for productive use
-// use Shopware\FatchipShopware2Afterbuy\Components\ApiMock as Api;
-
 use Shopware\Components\Api\Resource\Article as ArticleResource;
 use Shopware\Components\Api\Resource\Category as CategoryResource;
-
-// TODO: remove this for productive use
-// use Shopware\FatchipShopware2Afterbuy\Components\ArticleResourceMock as ArticleResource;
-
 use Shopware\Components\Api\Resource\Variant as VariantResource;
-
-// TODO: remove this for productive use
-// use Shopware\FatchipShopware2Afterbuy\Components\VariantResourceMock as VariantResource;
-
 use Shopware\Components\Api\Manager as ApiManager;
 
-// TODO: remove this for productive use
-// use Shopware\FatchipShopware2Afterbuy\Components\ApiManagerMock as ApiManager;
-
 use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
-use Shopware\Models\Article\Article;
 
+use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Category\Category;
 use Shopware\Models\Tax\Repository;
 use Shopware\Models\Tax\Tax;
 
-use Fatchip\Afterbuy\ApiClient;
 use Shopware\Plugins\Community\Frontend\FatchipShopware2Afterbuy\Components\ImageCrawler;
+
+use Fatchip\Afterbuy\ApiClient;
 
 
 /**

@@ -76,6 +76,8 @@ class ImportProductsCronJob {
         $categoryId = $this->createCategory();
         $converter = new ProductsToArticlesConverter();
 
+        $categories = $this->retrieveCategoriesArray(200, 2);
+
         do {
             $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
@@ -97,6 +99,17 @@ class ImportProductsCronJob {
         if ($strategy === 'delete') {
             $this->deleteSurplus($productIds);
         }
+    }
+
+    protected function retrieveCategoriesArray($maxCatalogs, $detailLevel) {
+        /** @var ApiClient $apiClient */
+        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        $categories = $apiClient->getCatalogsFromAfterbuy(
+            $maxCatalogs,
+            $detailLevel
+        );
+
+        return $categories;
     }
 
     protected function importImages() {

@@ -12,6 +12,7 @@ use Exception;
 
 use Doctrine\ORM\OptimisticLockException;
 
+use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
@@ -60,6 +61,7 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
+        $this->importCatalogs();
         $this->importProducts();
         $this->importImages();
     }
@@ -75,8 +77,6 @@ class ImportProductsCronJob {
         $pageIndex = 0;
         $categoryId = $this->createCategory();
         $converter = new ProductsToArticlesConverter();
-
-        $categories = $this->retrieveCategoriesArray(200, 2);
 
         do {
             $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
@@ -101,15 +101,68 @@ class ImportProductsCronJob {
         }
     }
 
-    protected function retrieveCategoriesArray($maxCatalogs, $detailLevel) {
-        /** @var ApiClient $apiClient */
-        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
-        $categories = $apiClient->getCatalogsFromAfterbuy(
-            $maxCatalogs,
-            $detailLevel
+    protected function importCatalogs() {
+        $converter = new CatalogsToCategoriesConverter();
+        $pageNumber = 0;
+
+        do {
+            $catalogsResult = $this->retrieveCatalogsArray(
+                200,
+                2,
+                $pageNumber++
+            );
+
+            $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
+
+            foreach ($catalogs as $catalog) {
+                $category = $converter->convertCatalogsToCategories($catalog);
+
+                $this->cacheData($category, 'FatchipShopware2Afterbuy');
+            }
+        } while ($catalogsResult['Result']['HasMoreProducts']);
+        die();
+    }
+
+    /**
+     * Caches the given array to .json file in MediaManager. The array must have
+     * the following format:
+     *
+     * [
+     *   AfterBuyID => dataArray
+     * ]
+     *
+     * The dataArray will be converted to json and dumped to a file
+     * /media/$path/AfterBuyID.json
+     *
+     * @param array  $data
+     * @param string $path
+     */
+    protected function cacheData($data, $path = '/') {
+        /** @var MediaService $mediaService */
+        $mediaService = Shopware()->Container()->get(
+            'shopware_media.media_service'
         );
 
-        return $categories;
+        foreach ($data as $id => $value) {
+            $filePath = 'media/' . trim($path, '/') . '/' . $id . '.json';
+            $mediaService->write($filePath, $value);
+        }
+    }
+
+    protected function retrieveCatalogsArray(
+        $maxCatalogs,
+        $detailLevel,
+        $pageNumber
+    ) {
+        /** @var ApiClient $apiClient */
+        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        $catalogs = $apiClient->getCatalogsFromAfterbuy(
+            $maxCatalogs,
+            $detailLevel,
+            $pageNumber
+        );
+
+        return $catalogs;
     }
 
     protected function importImages() {

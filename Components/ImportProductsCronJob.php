@@ -12,7 +12,9 @@ use Exception;
 
 use Doctrine\ORM\OptimisticLockException;
 
-use Shopware\Bundle\MediaBundle\MediaService;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
@@ -41,8 +43,24 @@ use Fatchip\Afterbuy\ApiClient;
  * @package Shopware\FatchipShopware2Afterbuy\Components
  */
 class ImportProductsCronJob {
+    const CACHE_PATH = __DIR__
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . '..'
+    . DIRECTORY_SEPARATOR . 'files'
+    . DIRECTORY_SEPARATOR . 'FatchipShopware2Afterbuy'
+    . DIRECTORY_SEPARATOR . 'cache';
+
     /** @var PluginConfig pluginConfig */
     protected $pluginConfig;
+
+    /** @var Filesystem $fileSystem */
+    protected $fileSystem;
+
 
     /**
      * ImportProductsCronJob constructor.
@@ -53,7 +71,14 @@ class ImportProductsCronJob {
             ->getRepository(
                 'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
             )
-            ->findOneBy(['id' => '1']);;
+            ->findOneBy(['id' => '1']);
+
+        $this->fileSystem = new Filesystem(
+            new Local(
+                self::CACHE_PATH . DIRECTORY_SEPARATOR
+                . $this->pluginConfig->getAfterbuyPartnerId()
+            )
+        );
     }
 
 
@@ -73,7 +98,7 @@ class ImportProductsCronJob {
 
     // TODO: remove in productive
     public function callCatalogs() {
-        return $this->retrieveCAtalogsArray();
+        return $this->retrieveCatalogsArray();
     }
 
     protected function importProducts() {
@@ -83,10 +108,23 @@ class ImportProductsCronJob {
         $categoryId = $this->createCategory();
         $converter = new ProductsToArticlesConverter();
 
+        $latestModificationDate = $this->getLatestCacheDate('products');
+
         do {
-            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
+            $productsResult = $this->retrieveProductsArray(
+                250,
+                $pageIndex++,
+                $latestModificationDate
+            );
 
             $products = $productsResult['Result']['Products']['Product'];
+
+            foreach ($products as $product) {
+                $product = [
+                    $product['ProductID'] => $product,
+                ];
+                $this->cacheData($product, 'products');
+            }
 
             $importArticles = $converter->convertProducts2Articles(
                 $products,
@@ -106,6 +144,22 @@ class ImportProductsCronJob {
         }
     }
 
+    protected function getLatestCacheDate($directory) {
+        $list = $this->fileSystem->listContents(
+            trim($directory, DIRECTORY_SEPARATOR)
+        );
+
+        $latestCacheDate = 0;
+
+        foreach ($list as $file) {
+            $latestCacheDate = max($latestCacheDate, $file['timestamp']);
+        }
+
+        // echo date('D, d M Y H:i:s', $latestCacheDate);
+
+        return $latestCacheDate;
+    }
+
     protected function importCatalogs() {
         $converter = new CatalogsToCategoriesConverter();
         $pageNumber = 0;
@@ -122,10 +176,22 @@ class ImportProductsCronJob {
             foreach ($catalogs as $catalog) {
                 $category = $converter->convertCatalogsToCategories($catalog);
 
-                $this->cacheData($category, 'FatchipShopware2Afterbuy');
+                $this->cacheData($category, 'categories');
             }
-        } while ($catalogsResult['Result']['HasMoreProducts']);
-        die();
+        } while ($catalogsResult['Result']['HasMoreCatalogs']);
+    }
+
+    protected function deleteCache($directory = '') {
+        $files = $this->fileSystem->listContents(
+            trim(DIRECTORY_SEPARATOR, $directory)
+        );
+
+        foreach ($files as $file) {
+            try {
+                $this->fileSystem->delete($file);
+            } catch (FileNotFoundException $e) {
+            }
+        }
     }
 
     /**
@@ -140,24 +206,24 @@ class ImportProductsCronJob {
      * /media/$path/AfterBuyID.json
      *
      * @param array  $data
-     * @param string $path
+     * @param string $directory
      */
-    protected function cacheData($data, $path = '/') {
-        /** @var MediaService $mediaService */
-        $mediaService = Shopware()->Container()->get(
-            'shopware_media.media_service'
-        );
-
+    protected function cacheData($data, $directory) {
         foreach ($data as $id => $value) {
-            $filePath = 'media/' . trim($path, '/') . '/' . $id . '.json';
-            $mediaService->write($filePath, $value);
+            $fileName = $id . '.json';
+
+            $this->fileSystem->put(
+                trim($directory, DIRECTORY_SEPARATOR)
+                . DIRECTORY_SEPARATOR . $fileName,
+                json_encode($value)
+            );
         }
     }
 
     protected function retrieveCatalogsArray(
-        $maxCatalogs,
-        $detailLevel,
-        $pageNumber
+        $maxCatalogs = 200,
+        $detailLevel = 2,
+        $pageNumber = 0
     ) {
         /** @var ApiClient $apiClient */
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
@@ -273,21 +339,37 @@ class ImportProductsCronJob {
     /**
      * Call the AfterBuy API and retrieve all the products as array.
      *
-     * @param int $iMaxShopItems
-     * @param int $iPage
+     * @param int    $iMaxShopItems
+     * @param int    $iPage
+     * @param string $timestamp
      *
      * @return array
      */
-    protected function retrieveProductsArray($iMaxShopItems = 250, $iPage = 0) {
+    protected function retrieveProductsArray(
+        $iMaxShopItems = 250,
+        $iPage = 0,
+        $timestamp = ''
+    ) {
         // Get SDK object
         /** @var ApiClient $apiClient */
         $apiClient = Shopware()->Container()->get('afterbuy_api_client');
         // $apiClient = new ApiMock();
 
+        $dataFilter = [
+            [
+                'FilterName'   => 'DateFilter',
+                'FilterValues' => [
+                    'DateFrom'    => date('d.m.Y H:i:s', $timestamp),
+                    'FilterValue' => 'ModDate',
+                ],
+            ],
+        ];
+
         // Get all products from AfterbuyAPI
         $productsResult = $apiClient->getShopProductsFromAfterbuy(
             $iMaxShopItems,
-            $iPage
+            $iPage,
+            $dataFilter
         );
         if ($productsResult['CallStatus'] != 'Success') {
             // TODO: fix error handling

@@ -67,8 +67,13 @@ class ImportProductsCronJob {
     }
 
     // TODO: remove in productive
-    public function call() {
+    public function callProducts() {
         return $this->retrieveProductsArray();
+    }
+
+    // TODO: remove in productive
+    public function callCatalogs() {
+        return $this->retrieveCAtalogsArray();
     }
 
     protected function importProducts() {

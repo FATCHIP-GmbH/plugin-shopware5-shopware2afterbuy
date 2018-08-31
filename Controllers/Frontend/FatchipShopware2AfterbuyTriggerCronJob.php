@@ -19,7 +19,18 @@ class Shopware_Controllers_Frontend_FatchipShopware2AfterbuyTriggerCronJob exten
         Shopware()->Plugins()->Controller()->Json()->setPadding();
 
         $importProductsCronJob = new ImportProductsCronJob();
-        $xml = $importProductsCronJob->call();
+
+        $parameter = array_keys($this->request->getParams())[3];
+        switch ($parameter) {
+            case 'products':
+                $xml = $importProductsCronJob->callProducts();
+                break;
+            case 'catalogs':
+                $xml = $importProductsCronJob->callCatalogs();
+                break;
+            default:
+                echo 'Don\'t know what to do with parameter ' . $parameter;
+        }
 
         var_dump($xml);
     }

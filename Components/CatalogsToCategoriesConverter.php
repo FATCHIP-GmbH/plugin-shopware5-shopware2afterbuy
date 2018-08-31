@@ -16,7 +16,7 @@ class CatalogsToCategoriesConverter {
         $catId = $catalog['CatalogID'];
 
         $categorie = [
-            'name'            => $catalog['name'],
+            'name'            => $catalog['Name'],
             'parentId'        => $catalog['ParentID'],
             'metaDescription' => $catalog['Description'],
             'position'        => $catalog['Position'],
@@ -25,7 +25,7 @@ class CatalogsToCategoriesConverter {
         ];
 
         return [
-            'id' => $categorie,
+            $catId => $categorie,
         ];
     }
 }

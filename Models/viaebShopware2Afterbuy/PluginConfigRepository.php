@@ -1,13 +1,13 @@
 <?php
 
-namespace Shopware\CustomModels\FatchipShopware2Afterbuy;
+namespace Shopware\CustomModels\viaebShopware2Afterbuy;
 
 use Shopware\Components\Model\ModelRepository;
 
 /**
  * Repository class for PluginConfig
  *
- * @package Shopware\CustomModels\FatchipShopware2Afterbuy
+ * @package Shopware\CustomModels\viaebShopware2Afterbuy
  */
 class PluginConfigRepository extends ModelRepository
 {

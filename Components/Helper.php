@@ -1,11 +1,11 @@
 <?php
 
-namespace  Shopware\FatchipShopware2Afterbuy\Components;
+namespace  Shopware\viaebShopware2Afterbuy\Components;
 
 /**
  * Class Helper
  *
- * @package  Shopware\FatchipShopware2Afterbuy\Components
+ * @package  Shopware\viaebShopware2Afterbuy\Components
  */
 class Helper
 {

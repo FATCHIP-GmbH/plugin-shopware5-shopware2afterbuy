@@ -1,6 +1,6 @@
 <?php
 
-use Shopware\FatchipShopware2Afterbuy\Components\CronJob;
+use Shopware\viaebShopware2Afterbuy\Components\CronJob;
 
 /**
  * The Bootstrap class is the main entry point of any Shopware plugin.
@@ -18,7 +18,7 @@ use Shopware\FatchipShopware2Afterbuy\Components\CronJob;
  *
  * - uninstall: Triggered when the plugin is reinstalled or uninstalled. Clean up your tables here.
  */
-class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopware_Components_Plugin_Bootstrap
+class Shopware_Plugins_Frontend_viaebShopware2Afterbuy_Bootstrap extends Shopware_Components_Plugin_Bootstrap
 {
     /**
      * Returns plugin info
@@ -133,7 +133,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
 
         $this->createMenuItem([
             'label' => 'Shopware2Afterbuy',
-            'onclick' => 'createSimpleModule("FatchipShopware2AfterbuyAdmin", { "title": "Shopware2Afterbuy" })',
+            'onclick' => 'createSimpleModule("viaebShopware2AfterbuyAdmin", { "title": "Shopware2Afterbuy" })',
             'class' => 'icon-afterbuy',
             'active' => 1,
             'parent' => $this->Menu()->findOneBy(['controller' => 'Customer'])
@@ -248,9 +248,9 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         $this->registerMySnippets();
 
         $subscribers = [
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\ControllerPath(),
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Backend(),
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service(),
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\ControllerPath(),
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\Backend(),
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\Service(),
         ];
 
         foreach ($subscribers as $subscriber) {
@@ -269,7 +269,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         $this->registerMyComponents();
         $this->registerCustomModels();
         $this->Application()->Events()->addSubscriber(
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service()
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\Service()
         );
 
         $cronjob = new CronJob();
@@ -287,7 +287,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
         $this->registerMyComponents();
         $this->registerCustomModels();
         $this->Application()->Events()->addSubscriber(
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service()
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\Service()
         );
 
         $cronjob = new CronJob();
@@ -322,7 +322,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
             $this->Path() . 'Components/Api/'
         );
         $this->Application()->Loader()->registerNamespace(
-            'Shopware\FatchipShopware2Afterbuy',
+            'Shopware\viaebShopware2Afterbuy',
             $this->Path()
         );
     }
@@ -334,7 +334,7 @@ class Shopware_Plugins_Frontend_FatchipShopware2Afterbuy_Bootstrap extends Shopw
     public function getModelClasses(\Shopware\Components\Model\ModelManager $em)
     {
         return [
-            $em->getClassMetadata('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'),
+            $em->getClassMetadata('Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig'),
         ];
     }
 

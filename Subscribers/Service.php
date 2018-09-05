@@ -1,15 +1,15 @@
 <?php
 
-namespace Shopware\FatchipShopware2Afterbuy\Subscribers;
+namespace Shopware\viaebShopware2Afterbuy\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 use Fatchip\Afterbuy\ApiClient;
-use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
+use Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig;
 
 /**
  * Class Service
  *
- * @package Shopware\FatchipShopware2Afterbuy\Subscribers
+ * @package Shopware\viaebShopware2Afterbuy\Subscribers
  */
 class Service implements SubscriberInterface
 {
@@ -37,7 +37,7 @@ class Service implements SubscriberInterface
         /** @var  PluginConfig $config */
         $config = Shopware()
             ->Models()
-            ->getRepository('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig')
+            ->getRepository('Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig')
             ->find(1);
 
         if (!$config) {
@@ -60,7 +60,7 @@ class Service implements SubscriberInterface
         /** @var  PluginConfig $configObject */
         $configObject = Shopware()
             ->Models()
-            ->getRepository('Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig')
+            ->getRepository('Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig')
             ->find(1);
         // Todo better error handling returns (No service Returned Exception)
         if (!$configObject){

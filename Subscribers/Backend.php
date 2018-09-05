@@ -1,13 +1,13 @@
 <?php
 
-namespace Shopware\FatchipShopware2Afterbuy\Subscribers;
+namespace Shopware\viaebShopware2Afterbuy\Subscribers;
 
 use Enlight\Event\SubscriberInterface;
 
 /**
  * Class Backend
  *
- * @package Shopware\FatchipShopware2Afterbuy\Subscribers
+ * @package Shopware\viaebShopware2Afterbuy\Subscribers
  */
 class Backend implements SubscriberInterface
 {

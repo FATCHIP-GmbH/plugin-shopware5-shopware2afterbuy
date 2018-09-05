@@ -1,15 +1,15 @@
 <?php
 
 use Shopware\Components\CSRFWhitelistAware;
-use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
+use Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig;
 
 /**
  * Backend controller
  */
-class Shopware_Controllers_Backend_FatchipShopware2AfterbuyAdmin extends Enlight_Controller_Action implements CSRFWhitelistAware
+class Shopware_Controllers_Backend_viaebShopware2AfterbuyAdmin extends Enlight_Controller_Action implements CSRFWhitelistAware
 {
-    /** @var Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig $configModel */
-    protected $configModel = 'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig';
+    /** @var Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig $configModel */
+    protected $configModel = 'Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig';
 
     /**
      * @return string[]

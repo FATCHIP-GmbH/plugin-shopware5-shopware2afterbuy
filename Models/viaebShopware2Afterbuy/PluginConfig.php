@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopware\CustomModels\FatchipShopware2Afterbuy;
+namespace Shopware\CustomModels\viaebShopware2Afterbuy;
 
 use Doctrine\ORM\Mapping as ORM;
 use Shopware\Components\Model\ModelEntity;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 use Fatchip\Afterbuy\Types\Product;
 use Fatchip\Afterbuy\Types\Product\AddBaseProduct;
@@ -19,7 +19,7 @@ use Shopware\Models\Shop\Shop;
 /**
  * Class CronJob
  *
- * @package Shopware\FatchipShopware2Afterbuy\Components
+ * @package Shopware\viaebShopware2Afterbuy\Components
  */
 class CronJob
 {

@@ -60,7 +60,7 @@ class Backend implements SubscriberInterface
         $controller = $args->get('subject');
 
         if ($controller->Request()->getActionName() == 'load') {
-            $controller->View()->extendsTemplate('backend/fatchip_shopware2_afterbuy_article_list/view/main/afterbuy.js');
+            $controller->View()->extendsTemplate('backend/viaeb_shopware2_afterbuy_article_list/view/main/afterbuy.js');
         }
     }
 

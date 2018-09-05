@@ -1,5 +1,5 @@
 
-{extends file='backend/fatchip_shopware2_afterbuy_admin/_base/layout.tpl'}
+{extends file='backend/viaeb_shopware2_afterbuy_admin/_base/layout.tpl'}
 
 {block name='backend_admin_afterbuy_title'}
     {s name=label/admin_afterbuy_title}Hier können Sie die Grundeinstellungen des Plugins vornehmen und anpassen{/s}

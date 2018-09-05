@@ -29,8 +29,6 @@ use Shopware\Models\Category\Category;
 use Shopware\Models\Tax\Repository;
 use Shopware\Models\Tax\Tax;
 
-use Shopware\Plugins\Community\Frontend\FatchipShopware2Afterbuy\Components\ImageCrawler;
-
 use Fatchip\Afterbuy\ApiClient;
 
 

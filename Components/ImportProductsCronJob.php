@@ -12,9 +12,6 @@ use Exception;
 
 use Doctrine\ORM\OptimisticLockException;
 
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\Filesystem;
 use Shopware\Components\Api\Exception\CustomValidationException;
 use Shopware\Components\Api\Exception\NotFoundException;
 use Shopware\Components\Api\Exception\ParameterMissingException;
@@ -43,23 +40,11 @@ use Fatchip\Afterbuy\ApiClient;
  * @package Shopware\FatchipShopware2Afterbuy\Components
  */
 class ImportProductsCronJob {
-    const CACHE_PATH = __DIR__
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . '..'
-    . DIRECTORY_SEPARATOR . 'files'
-    . DIRECTORY_SEPARATOR . 'FatchipShopware2Afterbuy'
-    . DIRECTORY_SEPARATOR . 'cache';
-
     /** @var PluginConfig pluginConfig */
     protected $pluginConfig;
 
-    /** @var Filesystem $fileSystem */
-    protected $fileSystem;
+    /** @var JSONCache */
+    protected $caching;
 
 
     /**
@@ -73,11 +58,8 @@ class ImportProductsCronJob {
             )
             ->findOneBy(['id' => '1']);
 
-        $this->fileSystem = new Filesystem(
-            new Local(
-                self::CACHE_PATH . DIRECTORY_SEPARATOR
-                . $this->pluginConfig->getAfterbuyPartnerId()
-            )
+        $this->caching = new JSONCache(
+            $this->pluginConfig->getAfterbuyPartnerId()
         );
     }
 
@@ -108,14 +90,10 @@ class ImportProductsCronJob {
         $categoryId = $this->createCategory();
         $converter = new ProductsToArticlesConverter();
 
-        $latestModificationDate = $this->getLatestCacheDate('products');
+        $this->caching->deleteCache('products');
 
         do {
-            $productsResult = $this->retrieveProductsArray(
-                250,
-                $pageIndex++,
-                $latestModificationDate
-            );
+            $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
             $products = $productsResult['Result']['Products']['Product'];
 
@@ -123,7 +101,7 @@ class ImportProductsCronJob {
                 $product = [
                     $product['ProductID'] => $product,
                 ];
-                $this->cacheData($product, 'products');
+                $this->caching->cacheData($product, 'products');
             }
 
             $importArticles = $converter->convertProducts2Articles(
@@ -144,22 +122,6 @@ class ImportProductsCronJob {
         }
     }
 
-    protected function getLatestCacheDate($directory) {
-        $list = $this->fileSystem->listContents(
-            trim($directory, DIRECTORY_SEPARATOR)
-        );
-
-        $latestCacheDate = 0;
-
-        foreach ($list as $file) {
-            $latestCacheDate = max($latestCacheDate, $file['timestamp']);
-        }
-
-        // echo date('D, d M Y H:i:s', $latestCacheDate);
-
-        return $latestCacheDate;
-    }
-
     protected function importCatalogs() {
         $converter = new CatalogsToCategoriesConverter();
         $pageNumber = 0;
@@ -176,48 +138,9 @@ class ImportProductsCronJob {
             foreach ($catalogs as $catalog) {
                 $category = $converter->convertCatalogsToCategories($catalog);
 
-                $this->cacheData($category, 'categories');
+                $this->caching->cacheData($category, 'categories');
             }
         } while ($catalogsResult['Result']['HasMoreCatalogs']);
-    }
-
-    protected function deleteCache($directory = '') {
-        $files = $this->fileSystem->listContents(
-            trim(DIRECTORY_SEPARATOR, $directory)
-        );
-
-        foreach ($files as $file) {
-            try {
-                $this->fileSystem->delete($file);
-            } catch (FileNotFoundException $e) {
-            }
-        }
-    }
-
-    /**
-     * Caches the given array to .json file in MediaManager. The array must have
-     * the following format:
-     *
-     * [
-     *   AfterBuyID => dataArray
-     * ]
-     *
-     * The dataArray will be converted to json and dumped to a file
-     * /media/$path/AfterBuyID.json
-     *
-     * @param array  $data
-     * @param string $directory
-     */
-    protected function cacheData($data, $directory) {
-        foreach ($data as $id => $value) {
-            $fileName = $id . '.json';
-
-            $this->fileSystem->put(
-                trim($directory, DIRECTORY_SEPARATOR)
-                . DIRECTORY_SEPARATOR . $fileName,
-                json_encode($value)
-            );
-        }
     }
 
     protected function retrieveCatalogsArray(

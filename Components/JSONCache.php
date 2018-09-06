@@ -10,6 +10,7 @@ namespace Shopware\FatchipShopware2Afterbuy\Components;
 
 
 use League\Flysystem\Adapter\Local;
+use League\Flysystem\File;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 
@@ -81,12 +82,12 @@ class JSONCache {
 
     public function deleteCache($directory = '') {
         $files = $this->fileSystem->listContents(
-            trim(DIRECTORY_SEPARATOR, $directory)
+            trim($directory, DIRECTORY_SEPARATOR)
         );
 
         foreach ($files as $file) {
             try {
-                $this->fileSystem->delete($file);
+                $this->fileSystem->delete($file['path']);
             } catch (FileNotFoundException $e) {
             }
         }

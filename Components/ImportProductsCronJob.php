@@ -66,9 +66,9 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
-        $this->importCatalogs();
+        // $this->importCatalogs();
         $this->importProducts();
-        $this->importImages();
+        // $this->importImages();
     }
 
     // TODO: remove in productive
@@ -83,41 +83,55 @@ class ImportProductsCronJob {
 
     protected function importProducts() {
         /** @var int[] $productIds */
+        // $categoryId = $this->createCategory();
+        $converter = new ProductsToArticlesConverter();
         $productIds = [];
         $pageIndex = 0;
-        $categoryId = $this->createCategory();
-        $converter = new ProductsToArticlesConverter();
+        $strategy = $this->pluginConfig->getMissingProductsStrategy();
+
+        $mainProducts = [];
+        $variants = [];
 
         $this->caching->deleteCache('products');
 
+        // pull products from AB and cache to files
         do {
             $productsResult = $this->retrieveProductsArray(250, $pageIndex++);
 
             $products = $productsResult['Result']['Products']['Product'];
 
             foreach ($products as $product) {
+                if (
+                    isset($product['BaseProductFlag'])
+                    && $product['BaseProductFlag'] == 3
+                ) {
+                    $variants[$product['ProductID']] = $product;
+                } else {
+                    $mainProducts[$product['ProductID']] = $product;
+                }
+
                 $product = [
                     $product['ProductID'] => $product,
                 ];
                 $this->caching->cacheData($product, 'products');
             }
-
-            $importArticles = $converter->convertProducts2Articles(
-                $products,
-                $categoryId
-            );
-
-            $productIds = array_merge(
-                $productIds,
-                $this->writeArticles($importArticles)
-            );
-
-            $strategy = $this->pluginConfig->getMissingProductsStrategy();
         } while ($productsResult['Result']['HasMoreProducts']);
 
-        if ($strategy === 'delete') {
-            $this->deleteSurplus($productIds);
-        }
+        //
+        // $importArticles = $converter->convertProducts2Articles(
+        //     $products,
+        //     $categoryId
+        // );
+        //
+        // $productIds = array_merge(
+        //     $productIds,
+        //     $this->writeArticles($importArticles)
+        // );
+        //
+
+        // if ($strategy === 'delete') {
+        //     $this->deleteSurplus($productIds);
+        // }
     }
 
     protected function importCatalogs() {

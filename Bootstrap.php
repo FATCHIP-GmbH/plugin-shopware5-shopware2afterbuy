@@ -290,7 +290,7 @@ class Shopware_Plugins_Frontend_viaebShopware2Afterbuy_Bootstrap extends Shopwar
         $this->registerMyComponents();
         $this->registerCustomModels();
         $this->Application()->Events()->addSubscriber(
-            new \Shopware\FatchipShopware2Afterbuy\Subscribers\Service()
+            new \Shopware\viaebShopware2Afterbuy\Subscribers\Service()
         );
 
         $cronjob = new CronJob();

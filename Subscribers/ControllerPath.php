@@ -21,7 +21,7 @@ class ControllerPath implements SubscriberInterface
         return [
             'Enlight_Controller_Dispatcher_ControllerPath_Backend_viaebShopware2AfterbuyAdmin' =>
                 'onGetControllerPathBackendAdmin',
-            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_FatchipShopware2AfterbuyTriggerCronJob'
+            'Enlight_Controller_Dispatcher_ControllerPath_Frontend_viaebShopware2AfterbuyTriggerCronJob'
             => 'onGetFrontendControllerPath',
         ];
     }

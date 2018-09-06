@@ -6,7 +6,7 @@
  * Time: 14:46
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 
 class ImageCrawler {

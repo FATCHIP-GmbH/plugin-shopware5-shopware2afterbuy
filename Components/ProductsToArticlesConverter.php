@@ -6,7 +6,7 @@
  * Time: 10:09
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 
 class ProductsToArticlesConverter {
@@ -217,7 +217,7 @@ class ProductsToArticlesConverter {
         $ordernumberMapping = Shopware()
             ->Models()
             ->getRepository(
-                'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
+                'Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig'
             )
             ->findOneBy(['id' => '1'])
             ->getOrdernumberMapping();

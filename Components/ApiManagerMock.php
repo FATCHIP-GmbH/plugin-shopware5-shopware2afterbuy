@@ -6,7 +6,7 @@
  * Time: 13:08
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 /**
  * API Manger Mock
@@ -21,7 +21,7 @@ class ApiManagerMock
     public static function getResource($name)
     {
         $name = ucfirst($name);
-        $class = 'Shopware\\FatchipShopware2Afterbuy\\Components\\'
+        $class = 'Shopware\\viaebShopware2Afterbuy\\Components\\'
             . ucfirst($name)
             . 'ResourceMock';
 

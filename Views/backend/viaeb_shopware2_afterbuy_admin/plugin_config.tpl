@@ -6,7 +6,7 @@
 {/block}
 
 {block name='backend_admin_afterbuy_content'}
-    {namespace name="frontend/FatchipShopware2Afterbuy/backend_config"}
+    {namespace name="frontend/viaebShopware2Afterbuy/backend_config"}
     <div class="row">
         <div class="col-sm-6">
             <div class="panel panel-default">

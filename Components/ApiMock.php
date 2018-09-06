@@ -6,7 +6,7 @@
  * Time: 18:00
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 
 class ApiMock {

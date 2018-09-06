@@ -6,7 +6,7 @@
  * Time: 10:19
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 use Exception;
 
@@ -21,7 +21,7 @@ use Shopware\Components\Api\Resource\Category as CategoryResource;
 use Shopware\Components\Api\Resource\Variant as VariantResource;
 use Shopware\Components\Api\Manager as ApiManager;
 
-use Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig;
+use Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig;
 
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Detail as ArticleDetail;
@@ -35,7 +35,7 @@ use Fatchip\Afterbuy\ApiClient;
 /**
  * Import products from AfterBuy API and import them into shopware
  *
- * @package Shopware\FatchipShopware2Afterbuy\Components
+ * @package Shopware\viaebShopware2Afterbuy\Components
  */
 class ImportProductsCronJob {
     /** @var PluginConfig pluginConfig */
@@ -52,7 +52,7 @@ class ImportProductsCronJob {
         $this->pluginConfig = Shopware()
             ->Models()
             ->getRepository(
-                'Shopware\CustomModels\FatchipShopware2Afterbuy\PluginConfig'
+                'Shopware\CustomModels\viaebShopware2Afterbuy\PluginConfig'
             )
             ->findOneBy(['id' => '1']);
 

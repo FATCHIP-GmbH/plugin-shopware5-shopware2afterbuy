@@ -6,7 +6,7 @@
  * Time: 16:58
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 
 use League\Flysystem\Adapter\Local;
@@ -24,7 +24,7 @@ class JSONCache {
     . DIRECTORY_SEPARATOR . '..'
     . DIRECTORY_SEPARATOR . '..'
     . DIRECTORY_SEPARATOR . 'files'
-    . DIRECTORY_SEPARATOR . 'FatchipShopware2Afterbuy'
+    . DIRECTORY_SEPARATOR . 'viaebShopware2Afterbuy'
     . DIRECTORY_SEPARATOR . 'cache';
 
     /** @var Filesystem $fileSystem */

@@ -6,7 +6,7 @@
  * Time: 17:41
  */
 
-namespace Shopware\FatchipShopware2Afterbuy\Components;
+namespace Shopware\viaebShopware2Afterbuy\Components;
 
 
 class CatalogsToCategoriesConverter {

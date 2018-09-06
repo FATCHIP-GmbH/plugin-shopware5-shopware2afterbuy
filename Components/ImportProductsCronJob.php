@@ -66,9 +66,8 @@ class ImportProductsCronJob {
      * The entry point of this Class.
      */
     public function importProducts2Shopware() {
-        // $this->importCatalogs();
+        $this->importCatalogs();
         $this->importProducts();
-        // $this->importImages();
     }
 
     // TODO: remove in productive
@@ -81,13 +80,33 @@ class ImportProductsCronJob {
         return $this->retrieveCatalogsArray();
     }
 
+    protected function importCatalogs() {
+        $pageNumber = 0;
+
+        $this->caching->deleteCache('catalogs');
+
+        do {
+            $catalogsResult = $this->retrieveCatalogsArray(
+                200,
+                2,
+                $pageNumber++
+            );
+
+            $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
+
+            foreach ($catalogs as $catalog) {
+                $catalog = [
+                    $catalog['CatalogID'] => $catalog,
+                ];
+
+                $this->caching->cacheData($catalog, 'catalogs');
+            }
+        } while ($catalogsResult['Result']['HasMoreCatalogs']);
+    }
+
     protected function importProducts() {
         /** @var int[] $productIds */
-        // $categoryId = $this->createCategory();
-        $converter = new ProductsToArticlesConverter();
-        $productIds = [];
         $pageIndex = 0;
-        $strategy = $this->pluginConfig->getMissingProductsStrategy();
 
         $mainProducts = [];
         $variants = [];
@@ -117,6 +136,7 @@ class ImportProductsCronJob {
             }
         } while ($productsResult['Result']['HasMoreProducts']);
 
+        // $strategy = $this->pluginConfig->getMissingProductsStrategy();
         //
         // $importArticles = $converter->convertProducts2Articles(
         //     $products,
@@ -134,27 +154,6 @@ class ImportProductsCronJob {
         // }
     }
 
-    protected function importCatalogs() {
-        $converter = new CatalogsToCategoriesConverter();
-        $pageNumber = 0;
-
-        do {
-            $catalogsResult = $this->retrieveCatalogsArray(
-                200,
-                2,
-                $pageNumber++
-            );
-
-            $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
-
-            foreach ($catalogs as $catalog) {
-                $category = $converter->convertCatalogsToCategories($catalog);
-
-                $this->caching->cacheData($category, 'categories');
-            }
-        } while ($catalogsResult['Result']['HasMoreCatalogs']);
-    }
-
     protected function retrieveCatalogsArray(
         $maxCatalogs = 200,
         $detailLevel = 2,
@@ -169,6 +168,51 @@ class ImportProductsCronJob {
         );
 
         return $catalogs;
+    }
+
+    /**
+     * Call the AfterBuy API and retrieve all the products as array.
+     *
+     * @param int    $iMaxShopItems
+     * @param int    $iPage
+     * @param string $timestamp
+     *
+     * @return array
+     */
+    protected function retrieveProductsArray(
+        $iMaxShopItems = 250,
+        $iPage = 0,
+        $timestamp = ''
+    ) {
+        // Get SDK object
+        /** @var ApiClient $apiClient */
+        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
+        // $apiClient = new ApiMock();
+
+        $dataFilter = [
+            [
+                'FilterName'   => 'DateFilter',
+                'FilterValues' => [
+                    'DateFrom'    => date('d.m.Y H:i:s', $timestamp),
+                    'FilterValue' => 'ModDate',
+                ],
+            ],
+        ];
+
+        // Get all products from AfterbuyAPI
+        $productsResult = $apiClient->getShopProductsFromAfterbuy(
+            $iMaxShopItems,
+            $iPage,
+            $dataFilter
+        );
+        if ($productsResult['CallStatus'] != 'Success') {
+            // TODO: fix error handling
+            die('GetShopProducts: CallStatus: ['
+                . $productsResult['CallStatus']
+                . '] Awaited: [Success].');
+        }
+
+        return $productsResult;
     }
 
     protected function importImages() {
@@ -269,51 +313,6 @@ class ImportProductsCronJob {
         );
 
         return $category->getId();
-    }
-
-    /**
-     * Call the AfterBuy API and retrieve all the products as array.
-     *
-     * @param int    $iMaxShopItems
-     * @param int    $iPage
-     * @param string $timestamp
-     *
-     * @return array
-     */
-    protected function retrieveProductsArray(
-        $iMaxShopItems = 250,
-        $iPage = 0,
-        $timestamp = ''
-    ) {
-        // Get SDK object
-        /** @var ApiClient $apiClient */
-        $apiClient = Shopware()->Container()->get('afterbuy_api_client');
-        // $apiClient = new ApiMock();
-
-        $dataFilter = [
-            [
-                'FilterName'   => 'DateFilter',
-                'FilterValues' => [
-                    'DateFrom'    => date('d.m.Y H:i:s', $timestamp),
-                    'FilterValue' => 'ModDate',
-                ],
-            ],
-        ];
-
-        // Get all products from AfterbuyAPI
-        $productsResult = $apiClient->getShopProductsFromAfterbuy(
-            $iMaxShopItems,
-            $iPage,
-            $dataFilter
-        );
-        if ($productsResult['CallStatus'] != 'Success') {
-            // TODO: fix error handling
-            die('GetShopProducts: CallStatus: ['
-                . $productsResult['CallStatus']
-                . '] Awaited: [Success].');
-        }
-
-        return $productsResult;
     }
 
     /**

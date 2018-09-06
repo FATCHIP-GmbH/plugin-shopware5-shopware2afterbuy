@@ -104,6 +104,14 @@ class ImportProductsCronJob {
         } while ($catalogsResult['Result']['HasMoreCatalogs']);
     }
 
+    /**
+     * @return array
+     * [
+     *     'variantSetParents'  => [],
+     *     'variantSetChildren' => [],
+     *     'singleProducts'     => []
+     * ]
+     */
     protected function importProducts() {
         /** @var int[] $productIds */
         $pageIndex = 0;

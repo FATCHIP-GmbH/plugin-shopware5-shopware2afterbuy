@@ -62,14 +62,6 @@ class ImportProductsCronJob {
     }
 
 
-    /**
-     * The entry point of this Class.
-     */
-    public function importProducts2Shopware() {
-        $this->importCatalogs();
-        $this->importProducts();
-    }
-
     // TODO: remove in productive
     public function callProducts() {
         return $this->retrieveProductsArray();
@@ -78,6 +70,14 @@ class ImportProductsCronJob {
     // TODO: remove in productive
     public function callCatalogs() {
         return $this->retrieveCatalogsArray();
+    }
+
+    /**
+     * The entry point of this Class.
+     */
+    public function importProducts2Shopware() {
+        $this->importCatalogs();
+        $productIds = $this->importProducts();
     }
 
     protected function importCatalogs() {
@@ -108,8 +108,9 @@ class ImportProductsCronJob {
         /** @var int[] $productIds */
         $pageIndex = 0;
 
-        $mainProducts = [];
-        $variants = [];
+        $variantSetParents = [];
+        $variantSetChildren = [];
+        $singleProducts = [];
 
         $this->caching->deleteCache('products');
 
@@ -120,21 +121,43 @@ class ImportProductsCronJob {
             $products = $productsResult['Result']['Products']['Product'];
 
             foreach ($products as $product) {
-                if (
-                    isset($product['BaseProductFlag'])
-                    && $product['BaseProductFlag'] == 3
-                ) {
-                    $variants[$product['ProductID']] = $product;
+                $productID = $product['ProductID'];
+
+                // set related?
+                if (isset($product['BaseProductFlag'])) {
+                    // variantSet parent?
+                    switch ($product['BaseProductFlag']) {
+                        case 1:
+                            // variationSet parent
+                            $variantSetParents[$productID] = $product;
+                            break;
+                        case 2:
+                            // productSet parent
+                            // TODO: ProductSet
+                            break;
+                        case 3:
+                            // set children
+                            $variantSetChildren[$productID] = $product;
+                            break;
+                        default:
+                            // TODO: error handling on wrong BaseProductFlag
+                    }
                 } else {
-                    $mainProducts[$product['ProductID']] = $product;
+                    $singleProducts[$productID] = $product;
                 }
 
                 $product = [
-                    $product['ProductID'] => $product,
+                    $productID => $product,
                 ];
                 $this->caching->cacheData($product, 'products');
             }
         } while ($productsResult['Result']['HasMoreProducts']);
+
+        return [
+            'variantSetParents'  => $variantSetParents,
+            'variantSetChildren' => $variantSetChildren,
+            'singleProducts'     => $singleProducts,
+        ];
 
         // $strategy = $this->pluginConfig->getMissingProductsStrategy();
         //

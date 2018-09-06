@@ -64,6 +64,14 @@ class JSONCache {
         }
     }
 
+    public function listFiles($directory) {
+        $list = $this->fileSystem->listContents(
+            trim($directory, DIRECTORY_SEPARATOR)
+        );
+
+        return $list;
+    }
+
     public function getLatestCacheDate($directory) {
         $list = $this->fileSystem->listContents(
             trim($directory, DIRECTORY_SEPARATOR)

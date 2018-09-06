@@ -78,6 +78,20 @@ class ImportProductsCronJob {
     public function importProducts2Shopware() {
         $this->importCatalogs();
         $productIds = $this->importProducts();
+
+        $list = $this->caching->listFiles('products');
+
+        $fileNames = array_column($list, 'filename');
+
+        // for every singleProduct
+        //   convert to Article
+        //   add DefaultProduct as mainVariant
+        //   import to SW
+        // for every variantSetParent
+        //   convert to Article
+        //   add DefaultProduct as mainVariant
+        //   add other variationSetChildren as variants
+        //   import to SW
     }
 
     protected function importCatalogs() {

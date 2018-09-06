@@ -6,6 +6,7 @@
 {/block}
 
 {block name='backend_admin_afterbuy_content'}
+    {namespace name="frontend/FatchipShopware2Afterbuy/backend_config"}
     <div class="row">
         <div class="col-sm-6">
             <div class="panel panel-default">
@@ -24,12 +25,20 @@
                         {/if}
                     {/if}
                     <form id="pluginConfig" method="post" action="{url action=savePluginConfig}">
-                        <h5>Verbindung zur Schnittstelle</h5>
+                        <h3>
+                            {s name="heading/connection_data"}
+                                Verbindung zur Schnittstelle
+                            {/s}
+                        </h3>
                         <hr/>
 
-                        <p>{s name=fieldlabel/AfterbuyShopInterfaceBaseUrl}AfterbuyShopInterfaceBaseUrl{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyShopInterfaceBaseUrl"}
+                                AfterbuyShopInterfaceBaseUrl
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyShopInterfaceBaseUrl">{s name=fieldlabel/AfterbuyShopInterfaceBaseUrl}AfterbuyShopInterfaceBaseUrl{/s}</label>
+                            <label class="sr-only" for="AfterbuyShopInterfaceBaseUrl"></label>
                             <input name="AfterbuyShopInterfaceBaseUrl"
                                    type="text"
                                    class="form-control field-wide"
@@ -39,9 +48,13 @@
                                    id="AfterbuyShopInterfaceBaseUrl">
                         </div>
 
-                        <p>{s name=fieldlabel/AfterbuyAbiUrl}AfterbuyAbiUrl{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyAbiUrl"}
+                                AfterbuyAbiUrl
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyAbiUrl">{s name=fieldlabel/AfterbuyAbiUrl}AfterbuyAbiUrl{/s}</label>
+                            <label class="sr-only" for="AfterbuyAbiUrl"></label>
                             <input name="AfterbuyAbiUrl"
                                    type="text"
                                    class="form-control field-wide"
@@ -51,9 +64,13 @@
                                    id="AfterbuyAbiUrl">
                         </div>
 
-                        <p>{s name=fieldlabel/AfterbuyPartnerId}AfterbuyPartnerId{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyPartnerId"}
+                                AfterbuyPartnerId
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyPartnerId">{s name=fieldlabel/AfterbuyPartnerId}AfterbuyPartnerId{/s}</label>
+                            <label class="sr-only" for="AfterbuyPartnerId"></label>
                             <input name="AfterbuyPartnerId"
                                    type="text"
                                    class="form-control field-wide"
@@ -63,9 +80,13 @@
                                    id="AfterbuyPartnerId">
                         </div>
 
-                        <p>{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyPartnerPassword"}
+                                AfterbuyPartnerPassword
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyPartnerPassword">{s name=fieldlabel/AfterbuyPartnerPassword}AfterbuyPartnerPassword{/s}</label>
+                            <label class="sr-only" for="AfterbuyPartnerPassword"></label>
                             <input name="AfterbuyPartnerPassword"
                                    type="password"
                                    class="form-control field-wide"
@@ -77,9 +98,13 @@
 
                         <hr/>
 
-                        <p>{s name=fieldlabel/AfterbuyUsername}AfterbuyUsername{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyUsername"}
+                                AfterbuyUsername
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyUsername">{s name=fieldlabel/AfterbuyUsername}AfterbuyUsername{/s}</label>
+                            <label class="sr-only" for="AfterbuyUsername"></label>
                             <input name="AfterbuyUsername"
                                    type="text"
                                    class="form-control field-wide"
@@ -89,9 +114,13 @@
                                    id="AfterbuyUsername">
                         </div>
 
-                        <p>{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/AfterbuyUserPassword"}
+                                AfterbuyUserPassword
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="AfterbuyUserPassword">{s name=fieldlabel/AfterbuyUserPassword}AfterbuyUserPassword{/s}</label>
+                            <label class="sr-only" for="AfterbuyUserPassword"></label>
                             <input name="AfterbuyUserPassword"
                                    type="password"
                                    class="form-control field-wide"
@@ -102,10 +131,98 @@
                         </div>
 
                         <hr/>
+                        <h3>
+                            {s name="heading/additional_settings"}
+                                Zusätzliche Einstellungen
+                            {/s}
+                        </h3>
+                        <hr/>
 
-                        <p>{s name=fieldlabel/LogLevel}LogLevel{/s}</p>
+                        <h4>
+                            {s name="fieldlabel/OrdernumberMapping"}
+                                OrdernumberMapping
+                            {/s}
+                        </h4>
                         <div class="form-group">
-                            <label class="sr-only" for="LogLevel">{s name=fieldlabel/LogLevel}LogLevel{/s}</label>
+                            <label class="sr-only" for="OrdernumberMapping"></label>
+                            <select id="OrdernumberMapping" name="OrdernumberMapping" form="pluginConfig">
+                                {if !empty($config)}
+                                    {foreach $ordernumberMapping as $key => $value}
+                                        <option
+                                                {if $config->getOrdernumberMapping() === $key}
+                                                    selected
+                                                {/if}
+                                                value="{$key}">
+                                            {$value}
+                                        </option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                        </div>
+
+                        <hr/>
+
+                        <h4>
+                            {s name="fieldlabel/Category"}
+                                Kategorie
+                            {/s}
+                        </h4>
+                        <div class="form-group">
+                            <label class="sr-only" for="Category"></label>
+                            <input
+                                    id="Category"
+                                    name="Category"
+                                    type="text"
+                                    value="{$config->getCategory()}"
+                            />
+                            <div>
+                                {s name="fieldlabel/Category/description"}
+                                    Alle Artikel werden der oben genannten Kategorie zugeordnet.
+                                    Wenn die Kategorie nicht existiert,
+                                    wird sie direkt unter der Kategorie "Deutsch" angelegt.
+                                    Wenn keine Kategorie angegeben, müssen alle importierten Artikel
+                                    per Hand im Backend einer Kategorie zugeordnet werden.
+                                {/s}
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <h4>
+                            {s name="fieldlabel/MissingProductsStrategies"}
+                                Fehlende Produkte
+                            {/s}
+                        </h4>
+                        <div class="form-group">
+                            <div>{s name="fieldlabel/MissingProductsStrategies/description"}
+                                    Wenn in Afterbuy ein Artikel gelöscht wurde, der in Shopware noch existiert,
+                                    folgende Strategie anwenden:
+                                {/s}</div>
+                            <label class="sr-only" for="MissingProducts"></label>
+                            <select id="MissingProductsStrategy" name="MissingProductsStrategy" form="pluginConfig">
+                                {if !empty($config)}
+                                    {foreach $missingProductsStrategies as $key => $value}
+                                        <option
+                                                {if $config->getMissingProductsStrategy() === $key}
+                                                    selected
+                                                {/if}
+                                                value="{$key}">
+                                            {$value}
+                                        </option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                        </div>
+
+                        <hr/>
+
+                        <h4>
+                            {s name="fieldlabel/LogLevel"}
+                                LogLevel
+                            {/s}
+                        </h4>
+                        <div class="form-group">
+                            <label class="sr-only" for="LogLevel"></label>
                             <input name="LogLevel"
                                    type="text"
                                    class="form-control field-wide"
@@ -118,7 +235,9 @@
                         <hr/>
 
                         <button id="savePluginConfig" type="submit" class="btn btn-default pull-right">
-                            {s name=fieldlabel/saveButton}Speichern{/s}
+                            {s name="fieldlabel/saveButton"}
+                                Speichern
+                            {/s}
                         </button>
                     </form>
                 </div>

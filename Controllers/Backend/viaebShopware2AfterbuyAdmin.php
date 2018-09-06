@@ -36,6 +36,17 @@ class Shopware_Controllers_Backend_viaebShopware2AfterbuyAdmin extends Enlight_C
             'config' => $this->get('models')->createQueryBuilder()
                 ->select('c')->from($this->configModel, 'c')->where('c.id = 1')
                 ->getQuery()->execute()[0],
+            // TODO: translate (snippets)
+            'ordernumberMapping' => [
+                'ProductID' => 'ProductID',
+                'Anr' => 'Interne Artikelnummer (Anr)',
+                'EAN' => 'Externe Artikelnummer (Afterbuy EAN)',
+                'EuAN' => 'Europäische Artikelnummer (EAN)'
+            ],
+            'missingProductsStrategies' => [
+                'delete' => 'Lösche Artikel in Shopware',
+                'keep' => 'Behalte Artikel in Shopware',
+            ]
         ];
         $this->View()->assign($context);
     }
@@ -63,6 +74,9 @@ class Shopware_Controllers_Backend_viaebShopware2AfterbuyAdmin extends Enlight_C
         $config->setAfterbuyShopInterfaceBaseUrl(trim($params['AfterbuyShopInterfaceBaseUrl']));
         $config->setAfterbuyUsername(trim($params['AfterbuyUsername']));
         $config->setAfterbuyUserpassword(trim($params['AfterbuyUserPassword']));
+        $config->setOrdernumberMapping(trim($params['OrdernumberMapping']));
+        $config->setMissingProductsStrategy(trim($params['MissingProductsStrategy']));
+        $config->setCategory(trim($params['Category']));
         $config->setLogLevel(trim($params['LogLevel']));
         $this->get('models')->persist($config);
         $this->get('models')->flush($config);

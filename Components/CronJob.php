@@ -9,8 +9,6 @@ use Fatchip\Afterbuy\Types\Product\ProductIdent;
 use Fatchip\Afterbuy\Types\Product\ProductPicture;
 use Fatchip\Afterbuy\Types\Product\ProductPictures;
 use Shopware\Bundle\StoreFrontBundle\Struct\ShopContext;
-use Shopware\Models\Article\Article;
-use Shopware\Models\Article\Detail;
 use Shopware\Models\Country\Country;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
@@ -626,7 +624,7 @@ class CronJob
         $params = [];
 
         // All parameters are REQUIRED!
-        
+
         $params['customerId'] = $this->getCreateOrderCustomerId($afterbuyOrder);
         $params['paymentId'] = $this->getCreateOrderPaymentId($afterbuyOrder);
         $params['dispatchId'] = $this->getCreateOrderDispatchId($afterbuyOrder);

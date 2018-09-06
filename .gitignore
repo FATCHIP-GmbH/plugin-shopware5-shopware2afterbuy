@@ -1,3 +1,5 @@
 # Include the build files
 !Build/
 
+.DS_Store
+.idea

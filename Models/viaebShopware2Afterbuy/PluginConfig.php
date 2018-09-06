@@ -65,6 +65,27 @@ class PluginConfig extends ModelEntity
     private $afterbuyUserpassword;
 
     /**
+     * @var string $ordernumberMapping
+     *
+     * @ORM\Column(name="ordernumber_mapping", type="string", nullable=true)
+     */
+    private $ordernumberMapping;
+
+    /**
+     * @var string $category
+     *
+     * @ORM\Column(name="category", type="string", nullable=true)
+     */
+    private $category;
+
+    /**
+     * @var string $missingProductsStrategy
+     *
+     * @ORM\Column(name="missing_products_strategy", type="string", nullable=true)
+     */
+    private $missingProductsStrategy;
+
+    /**
      * @var string $logLevel
      *
      * @ORM\Column(name="log_level", type="string", nullable=true)
@@ -178,6 +199,48 @@ class PluginConfig extends ModelEntity
     /**
      * @return string
      */
+    public function getOrdernumberMapping() {
+        return $this->ordernumberMapping;
+    }
+
+    /**
+     * @param string $ordernumberMapping
+     */
+    public function setOrdernumberMapping($ordernumberMapping) {
+        $this->ordernumberMapping = $ordernumberMapping;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategory() {
+        return $this->category;
+    }
+
+    /**
+     * @param string $category
+     */
+    public function setCategory($category) {
+        $this->category = $category;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMissingProductsStrategy() {
+        return $this->missingProductsStrategy;
+    }
+
+    /**
+     * @param string $missingProductsStrategy
+     */
+    public function setMissingProductsStrategy($missingProductsStrategy) {
+        $this->missingProductsStrategy = $missingProductsStrategy;
+    }
+
+    /**
+     * @return string
+     */
     public function getLogLevel()
     {
         return $this->logLevel;
@@ -214,6 +277,8 @@ class PluginConfig extends ModelEntity
             'afterbuyPartnerPassword' => $this->getAfterbuyPartnerPassword(),
             'afterbuyUsername' => $this->getAfterbuyUsername(),
             'afterbuyUserPassword' => $this->getAfterbuyUserpassword(),
+            'ordernumberMapping' => $this->getOrdernumberMapping(),
+            'category' => $this->getCategory(),
             'logLevel' => $this->getLogLevel(),
             'afterbuyLogFilepath' => $this->getAfterbuyLogfilePath(),
         ];

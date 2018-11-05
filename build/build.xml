@@ -64,7 +64,7 @@
 
 
 	<!-- replace Comment vars -->
-  	<replace dir="${buildtmp}">
+  	<replace dir="${buildtmp}" encoding="UTF-8">
   		<replacefilter token="%%VERSION%%" value="${version}"/>
 		<include name="Frontend/${pluginname}/plugin.json"/>
 	</replace>

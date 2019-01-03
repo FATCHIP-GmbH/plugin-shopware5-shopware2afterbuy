@@ -2,22 +2,28 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
-use Shopware\Components\DependencyInjection\Bridge\Models;
+use Shopware\Components\Model\ModelManager;
 
 class ShopwareCategoryHelper {
 
     protected $entityManager;
 
-    public function __construct(Models $entityManager) {
+    protected $entity;
+
+    protected $entityAttributes;
+
+    public function __construct(ModelManager $entityManager, string $entity, string $entityAttributes) {
         $this->entityManager = $entityManager;
+        $this->entity = $entity;
+        $this->entityAttributes = $entityAttributes;
     }
 
     public function getCategory(string $identifier, string $field, $isAttribute = false) {
         if($isAttribute === true) {
-
+            $category = $this->getCategoryByAttribute($identifier, $field);
         }
         else {
-            $this->entityManager->findOneBy();
+            $category = $this->entityManager->getRepository($this->entity)->findOneBy(array($field => $identifier));
         }
 
         if(!$category) {
@@ -28,7 +34,7 @@ class ShopwareCategoryHelper {
     }
 
     public function getCategoryByAttribute(string $identifier, string $field) {
-
+        return $this->entityManager->getRepository($this->entityAttributes)->findOneBy(array($field => $identifier));
     }
 
     public function createCategory(string $identifier, string $field, $isAttribute = false) {

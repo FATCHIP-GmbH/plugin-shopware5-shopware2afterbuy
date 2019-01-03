@@ -63,7 +63,9 @@ EOF
          * Should look everywhere the same.
          * Dependenciies are handeld via services.xml
          */
-        $data = $this->readDataService->get();
+        $filter = array();
+
+        $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);
     }
 }

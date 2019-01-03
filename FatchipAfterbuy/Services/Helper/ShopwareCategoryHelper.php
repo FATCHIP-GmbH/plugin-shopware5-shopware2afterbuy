@@ -2,9 +2,11 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
+use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
+use Shopware\Models\Category\Category;
 
-class ShopwareCategoryHelper {
+class ShopwareCategoryHelper extends AbstractHelper {
 
     protected $entityManager;
 
@@ -34,14 +36,39 @@ class ShopwareCategoryHelper {
     }
 
     public function getCategoryByAttribute(string $identifier, string $field) {
-        return $this->entityManager->getRepository($this->entityAttributes)->findOneBy(array($field => $identifier));
+        $attribute = $this->entityManager->getRepository($this->entityAttributes)->findOneBy(array($field => $identifier));
+
+        if($attribute === null) {
+            return null;
+        }
+        return $attribute->getCategory();
     }
 
     public function createCategory(string $identifier, string $field, $isAttribute = false) {
+        /**
+         * @var Category $category
+         */
+        $category = new $this->entity();
 
+        //we have to create attributes manually
+        $attribute = new $this->entityAttributes();
+        $category->setAttribute($attribute);
+
+        $this->setIdentifier($identifier, $field, $category, $isAttribute);
+
+        return $category;
     }
 
-    public function setIdentifierAttribute(string $identifier, string $field) {
+    public function setIdentifier(string $identifier, string $field, ModelEntity $category, $isAttribute) {
 
+        $setter = 'set' . strtoupper($field[0]) . substr($field, 1);
+
+        if($isAttribute) {
+            $category->getAttribute()->$setter($identifier);
+        } else {
+            $category->$setter($identifier);
+        }
     }
+
+
 }

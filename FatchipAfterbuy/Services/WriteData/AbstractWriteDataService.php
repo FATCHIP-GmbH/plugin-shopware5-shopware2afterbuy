@@ -9,10 +9,7 @@ class AbstractWriteDataService {
 
     protected $entityManager;
 
-    protected $targetEntity;
-
-    public function __construct(ModelManager $entityManager = null, string $targetEntity = "") {
+    public function __construct(ModelManager $entityManager = null) {
         $this->entityManager = $entityManager;
-        $this->targetEntity = $targetEntity;
     }
 }

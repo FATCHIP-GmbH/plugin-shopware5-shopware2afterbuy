@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services\ReadData\External;
 
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
+use FatchipAfterbuy\ValueObjects\Category;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -22,7 +23,19 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         $targetData = array();
 
         foreach($data as $entity) {
+
+            /**
+             * @var Category $value
+             */
             $value = new $this->targetEntity();
+
+            //mappings for valueObject
+
+            $value->setName($entity["Name"]);
+            $value->setExternalIdentifier($entity["CatalogID"]);
+            $value->setDescription($entity["Description"]);
+
+
 
             array_push($targetData, $value);
         }

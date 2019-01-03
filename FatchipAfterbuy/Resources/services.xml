@@ -8,11 +8,26 @@
         <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\getCategories">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
+            <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
         <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service">
             <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
         </service>
+
+        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service">
+            <argument id="models" type="service"/>
+              <call method="initHelper">
+                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Category\Category</argument>
+            <argument type="string">\Shopware\Models\Attribute\Category</argument>
+        </service>
+
 
 
     </services>

@@ -5,13 +5,13 @@
 
     <services>
 
-
-
-
-
-
-        <service id="fatchip_afterbuy.commands.afterbuy" class="FatchipAfterbuy\Commands\Afterbuy">
+        <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\getCategories">
             <tag name="console.command" />
+            <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
+        </service>
+
+        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service">
+            <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
         </service>
 
 

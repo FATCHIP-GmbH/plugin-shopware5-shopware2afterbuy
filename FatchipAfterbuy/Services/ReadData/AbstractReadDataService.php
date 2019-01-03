@@ -2,12 +2,10 @@
 
 namespace FatchipAfterbuy\Services\ReadData;
 
-use FatchipAfterbuy\ValueObjects\AbstractValueObject;
-
 class AbstractReadDataService {
     protected $targetEntity;
 
-    public function __construct(AbstractValueObject $targetEntity) {
+    public function __construct(string $targetEntity) {
         $this->targetEntity = $targetEntity;
     }
 }

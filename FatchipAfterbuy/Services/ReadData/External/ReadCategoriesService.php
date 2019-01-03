@@ -12,8 +12,22 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         return $this->transform($data);
     }
 
+    //TODO: inject target entity
     public function transform(array $data) {
+        if($this->targetEntity === null) {
+            return null;
+        }
 
+        //TODO: naming?
+        $targetData = array();
+
+        foreach($data as $entity) {
+            $value = new $this->targetEntity();
+
+            array_push($targetData, $value);
+        }
+
+        return $targetData;
     }
 
     //TODO: just a dummy as it will be used by tests (injected)

@@ -3,10 +3,22 @@
 namespace FatchipAfterbuy\Services\WriteData;
 
 interface WriteDataInterface {
-    //TODO: params missing
+
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function put(array $data);
 
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function transform(array $data);
 
+    /**
+     * @param $targetData
+     * @return mixed
+     */
     public function send($targetData);
 }

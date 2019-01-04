@@ -8,7 +8,6 @@ use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
 
-
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface {
 
     /**
@@ -16,30 +15,57 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     protected $categoryHelper;
 
-    public function initHelper(AbstractHelper $helper) {
+    /**
+     * @var string $identifier
+     */
+    protected $identifier;
+
+    /**
+     * @var bool $isAttribute
+     */
+    protected $isAttribute;
+
+    /**
+     * @param AbstractHelper $helper
+     * @param string $identifier
+     * @param bool $isAttribute
+     */
+    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute) {
         $this->categoryHelper = $helper;
+        $this->identifier = $identifier;
+        $this->isAttribute = $isAttribute;
     }
 
+    /**
+     * @param array $data
+     * @return mixed|void
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function put(array $data) {
         $data = $this->transform($data);
         return $this->send($data);
     }
 
-    //TODO: transform handler?
+    /**
+     * transforms valueObject into final structure for storage
+     *
+     * @param array $data
+     * @return mixed|void
+     */
     public function transform(array $data) {
-        //TODO: into component
 
         foreach($data as $value) {
             /**
              * @var Category $value
              */
-            //TODO: get category
-            //TODO: set category values
-            //TODO: inject category field
+
+            // define variable
+            $parent = null;
+
             /**
              * @var \Shopware\Models\Category\Category $category
              */
-            $category = $this->categoryHelper->getCategory($value->getExternalIdentifier(), 'afterbuyCatalogId', true);
+            $category = $this->categoryHelper->getCategory($value->getExternalIdentifier(), $this->identifier, $this->isAttribute);
 
             /**
              * set category values
@@ -47,17 +73,25 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $category->setName($value->getName());
             $category->setMetaDescription($value->getDescription());
 
-            //TODO: add correct parent
-            $category->setParent($this->categoryHelper->getCategory(3, 'id'));
+            if($value->getParentIdentifier()) {
+                $parent = $this->categoryHelper->getCategoryByAttribute($value->getParentIdentifier(), $this->identifier);
+            }
+
+            if(!$parent) {
+                $parent = $this->categoryHelper->getMainCategory();
+            }
+
+            $category->setParent($parent);
 
             $this->entityManager->persist($category);
         }
     }
 
+
     /**
-     *
-     * Type varies depending on target plattform
      * @param $targetData
+     * @return mixed|void
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
         $this->entityManager->flush();

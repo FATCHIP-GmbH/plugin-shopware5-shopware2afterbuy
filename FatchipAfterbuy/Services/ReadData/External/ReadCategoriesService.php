@@ -18,6 +18,8 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
     }
 
     /**
+     * transforms api input into valueObject (targetEntity)
+     *
      * @param array $data
      * @return array|null
      */
@@ -48,7 +50,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
 
 
     /**
-     * 
+     * provides api data. dummy data as used here can be used in tests
      *
      * @param array $filter
      * @return array

@@ -13,17 +13,27 @@ use Shopware\Commands\ShopwareCommand;
 
 class getCategories extends ShopwareCommand
 {
+    /**
+     * @var ReadDataInterface
+     */
     protected $readDataService;
 
+    /**
+     * @var WriteDataInterface
+     */
     protected $writeDataService;
 
+    /**
+     * getCategories constructor.
+     * @param ReadDataInterface $readDataService
+     * @param WriteDataInterface $writeDataService
+     */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
         parent::__construct(null);
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;
     }
-
 
     /**
      * {@inheritdoc}
@@ -56,12 +66,14 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //TODO: implement filters if needed
-
         /**
          * Structure for receiving and writing data
          * Should look everywhere the same.
          * Dependenciies are handeld via services.xml
+         */
+
+        /**
+         * filter array is unused yet but can be implemented
          */
         $filter = array();
 

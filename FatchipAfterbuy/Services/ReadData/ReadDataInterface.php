@@ -3,10 +3,21 @@
 namespace FatchipAfterbuy\Services\ReadData;
 
 interface ReadDataInterface {
+    /**
+     * @param array $filter
+     * @return mixed
+     */
     public function get(array $filter);
 
-    //TODO: inject target entity
+    /**
+     * @param array $data
+     * @return mixed
+     */
     public function transform(array $data);
 
+    /**
+     * @param array $filter
+     * @return mixed
+     */
     public function read(array $filter);
 }

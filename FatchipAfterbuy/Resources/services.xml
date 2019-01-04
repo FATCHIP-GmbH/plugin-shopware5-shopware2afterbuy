@@ -19,6 +19,8 @@
             <argument id="models" type="service"/>
               <call method="initHelper">
                 <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument type="string">true</argument>
             </call>
         </service>
 

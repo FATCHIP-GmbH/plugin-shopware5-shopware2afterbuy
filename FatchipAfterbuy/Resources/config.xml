@@ -3,13 +3,42 @@
         xsi:noNamespaceSchemaLocation="../../../../engine/Shopware/Components/Plugin/schema/config.xsd">
 
     <elements>
-        <element type="text">
-            <name>demoConfig</name>
-            <label lang="de">Demo Konfiguration</label>
-            <label lang="en">Demo configuration</label>
-            <value>Just a demo configuration, without any effects.</value>
-            <description lang="de">Nur ein hoffentlich hilfreicher Text.</description>
-            <description lang="en">Hopefully this text will help you.</description>
+        <element type="select" >
+            <name>mainSystem</name>
+            <label lang="de">datenführendes System</label>
+            <label lang="en">data-carrying system</label>
+            <store>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Shopware</label>
+                    <label lang="en">Shopware</label>
+                </option>
+                <option>
+                    <value>2</value>
+                    <label lang="de">Afterbuy</label>
+                    <label lang="en">Afterbuy</label>
+                </option>
+            </store>
+        </element>
+        <element type="text" >
+            <name>partnerId</name>
+            <label lang="de">Afterbuy Partner-ID</label>
+            <label lang="en">Afterbuy Partner-ID</label>
+        </element>
+        <element type="text" >
+            <name>partnerPassword</name>
+            <label lang="de">Afterbuy Partner-Passwort</label>
+            <label lang="en">Afterbuy Partner-Password</label>
+        </element>
+        <element type="text" >
+            <name>userName</name>
+            <label lang="de">Afterbuy User</label>
+            <label lang="en">Afterbuy User</label>
+        </element>
+        <element type="text" >
+            <name>userPassword</name>
+            <label lang="de">Afterbuy User-Passwort</label>
+            <label lang="en">Afterbuy User-Password</label>
         </element>
     </elements>
 

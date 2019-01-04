@@ -48,6 +48,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
     /**
      * transforms valueObject into final structure for storage
+     * could may be moved into separate helper
      *
      * @param array $data
      * @return mixed|void

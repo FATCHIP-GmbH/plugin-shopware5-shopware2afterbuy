@@ -41,6 +41,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value->setName($entity["Name"]);
             $value->setExternalIdentifier($entity["CatalogID"]);
             $value->setDescription($entity["Description"]);
+            $value->setParentIdentifier($entity["ParentID"]);
 
             array_push($targetData, $value);
         }

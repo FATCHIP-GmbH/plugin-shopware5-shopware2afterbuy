@@ -13,13 +13,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         return $this->transform($data);
     }
 
-    //TODO: inject target entity
     public function transform(array $data) {
         if($this->targetEntity === null) {
             return null;
         }
 
-        //TODO: naming?
         $targetData = array();
 
         foreach($data as $entity) {
@@ -35,8 +33,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value->setExternalIdentifier($entity["CatalogID"]);
             $value->setDescription($entity["Description"]);
 
-
-
             array_push($targetData, $value);
         }
 
@@ -46,7 +42,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
     //TODO: just a dummy as it will be used by tests (injected)
     public function read(array $filter) {
 
-        //TODO: add attribute for catalogid
         return array(
             array('Name' => 'Testkategorie1',
                 'CatalogID' => 1,

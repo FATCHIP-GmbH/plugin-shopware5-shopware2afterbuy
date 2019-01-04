@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
+use FatchipAfterbuy\Components\Helper;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Category\Category;
@@ -59,9 +60,10 @@ class ShopwareCategoryHelper extends AbstractHelper {
         return $category;
     }
 
+
     public function setIdentifier(string $identifier, string $field, ModelEntity $category, $isAttribute) {
 
-        $setter = 'set' . strtoupper($field[0]) . substr($field, 1);
+        $setter = Helper::getSetterByField($field);
 
         if($isAttribute) {
             $category->getAttribute()->$setter($identifier);

@@ -3,30 +3,56 @@
 namespace FatchipAfterbuy\ValueObjects;
 
 class Category extends AbstractValueObject {
+    /**
+     * @var string $name
+     */
     public $name;
 
     /**
-     * @var
+     * we cannot define external identifier types, we have to handle those as strings
+     *
+     * @var string $externalIdentifier
      */
     public $externalIdentifier;
 
     /**
-     * @var
+     * integer works with category ids, articles use strings (ordernumber)
+     *
+     * @var int $internalIdentifier
      */
     public $internalIdentifier;
 
+    /**
+     * in that case we do refer the external id
+     *
+     * @var string $parentIdentifier
+     */
     public $parentIdentifier;
 
+    /**
+     * metadescription
+     *
+     * @var string $description
+     */
     public $description;
 
+    /**
+     * @var int $position
+     */
     public $position;
 
+    /**
+     * @var bool $active
+     */
     public $active;
 
+    /**
+     * @var string $image
+     */
     public $image;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getName()
     {
@@ -34,7 +60,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $name
+     * @param $name
      */
     public function setName($name): void
     {
@@ -42,7 +68,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getExternalIdentifier()
     {
@@ -50,7 +76,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $externalIdentifier
+     * @param $externalIdentifier
      */
     public function setExternalIdentifier($externalIdentifier): void
     {
@@ -58,7 +84,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getInternalIdentifier()
     {
@@ -66,7 +92,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $internalIdentifier
+     * @param $internalIdentifier
      */
     public function setInternalIdentifier($internalIdentifier): void
     {
@@ -74,7 +100,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getParentIdentifier()
     {
@@ -82,7 +108,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $parentIdentifier
+     * @param $parentIdentifier
      */
     public function setParentIdentifier($parentIdentifier): void
     {
@@ -90,7 +116,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDescription()
     {
@@ -98,7 +124,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $description
+     * @param $description
      */
     public function setDescription($description): void
     {
@@ -106,7 +132,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getPosition()
     {
@@ -114,7 +140,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $position
+     * @param $position
      */
     public function setPosition($position): void
     {
@@ -122,7 +148,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getActive()
     {
@@ -130,7 +156,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $active
+     * @param $active
      */
     public function setActive($active): void
     {
@@ -138,7 +164,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getImage()
     {
@@ -146,7 +172,7 @@ class Category extends AbstractValueObject {
     }
 
     /**
-     * @param mixed $image
+     * @param $image
      */
     public function setImage($image): void
     {

@@ -8,11 +8,19 @@ use FatchipAfterbuy\ValueObjects\Category;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface {
 
+    /**
+     * @param array $filter
+     * @return array|null
+     */
     public function get(array $filter) {
         $data = $this->read($filter);
         return $this->transform($data);
     }
 
+    /**
+     * @param array $data
+     * @return array|null
+     */
     public function transform(array $data) {
         if($this->targetEntity === null) {
             return null;
@@ -28,7 +36,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value = new $this->targetEntity();
 
             //mappings for valueObject
-
             $value->setName($entity["Name"]);
             $value->setExternalIdentifier($entity["CatalogID"]);
             $value->setDescription($entity["Description"]);
@@ -39,7 +46,13 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         return $targetData;
     }
 
-    //TODO: just a dummy as it will be used by tests (injected)
+
+    /**
+     * 
+     *
+     * @param array $filter
+     * @return array
+     */
     public function read(array $filter) {
 
         return array(

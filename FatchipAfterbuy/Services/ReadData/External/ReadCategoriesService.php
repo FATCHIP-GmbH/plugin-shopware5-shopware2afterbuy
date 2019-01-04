@@ -25,8 +25,13 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function transform(array $data) {
         if($this->targetEntity === null) {
+
+            $this->logger->error("No target entity defined!", array("Categories", "Read", "External"));
+
             return null;
         }
+
+        $this->logger->info("Got " . count($data) . " items", array("Categories", "Read", "External"));
 
         $targetData = array();
 
@@ -58,7 +63,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter) {
 
-        return array(
+        $data = array(
             array('Name' => 'Testkategorie1',
                 'CatalogID' => 1,
                 'ParentID' => 0,
@@ -84,5 +89,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
                 'Picture1' => ''
             )
         );
+
+        if(!$data) {
+            $this->logger->error("No data received", array("Categories", "Read", "External"));
+        }
+
+        return $data;
     }
 }

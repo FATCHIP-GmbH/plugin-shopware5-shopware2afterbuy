@@ -5,17 +5,21 @@
 
     <services>
 
+        <!-- Commands -->
+
         <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\getCategories">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
-        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service">
+        <!-- Categories -->
+
+        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service" parent="fatchip_afterbuy.services.read_data.abstract_read_data_service">
             <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service">
+        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" parent="fatchip_afterbuy.services.write_data.abstract_write_data_service">
             <argument id="models" type="service"/>
               <call method="initHelper">
                 <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
@@ -24,10 +28,43 @@
             </call>
         </service>
 
+        <!-- Abstracts -->
+
+        <service id="fatchip_afterbuy.services.read_data.abstract_read_data_service" class="FatchipAfterbuy\Services\ReadData\AbstractReadDataService" abstract="true">
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
+        <service id="fatchip_afterbuy.services.write_data.abstract_write_data_service" class="FatchipAfterbuy\Services\WriteData\AbstractWriteDataService" abstract="true">
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
+        <!-- Helper -->
+
         <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
+        </service>
+
+        <!-- Logger -->
+
+        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\StreamHandler" public="false">
+            <argument>./var/log/afterbuy.log</argument>
+            <argument>-1</argument>
+            <call method="pushProcessor">
+                <argument type="service" id="monolog.processor.uid" />
+            </call>
+        </service>
+
+        <service id="afterbuy.logger" class="Shopware\Components\Logger">
+            <argument>Afterbuy</argument>
+            <call method="pushHandler">
+                <argument type="service" id="monolog.handler.afterbuy_file"/>
+            </call>
         </service>
 
 

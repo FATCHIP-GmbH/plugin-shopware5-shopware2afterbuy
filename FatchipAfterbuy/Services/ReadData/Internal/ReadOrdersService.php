@@ -5,6 +5,8 @@ namespace FatchipAfterbuy\Services\ReadData\Internal;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
+use FatchipAfterbuy\ValueObjects\Order;
+use Shopware\Models\Order\Repository;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -36,12 +38,16 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         foreach($data as $entity) {
 
             /**
-             * @var Category $value
+             * @var \Shopware\Models\Order\Order $entity
+             */
+
+            /**
+             * @var Order $value
              */
             $value = new $this->targetEntity();
 
             //mappings for valueObject
-
+            $value->setInternalIdentifier($entity->getId());
 
             array_push($targetData, $value);
         }
@@ -59,6 +65,12 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     public function read(array $filter) {
 
         //TODO: implement read data
+        $repo = $this->entityManager->getRepository($this->sourceRepository);
+
+        /**
+         * @var Repository $repo
+         */
+        $data = $repo->getOrdersQuery($filter)->getResult();
 
         if(!$data) {
             $this->logger->error("No data received", array("Orders", "Read", "Internal"));

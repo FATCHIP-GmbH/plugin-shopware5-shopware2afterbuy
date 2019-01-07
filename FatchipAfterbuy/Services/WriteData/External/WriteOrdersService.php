@@ -58,29 +58,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             // define variable
             $parent = null;
-
-            /**
-             * @var \Shopware\Models\Category\Category $category
-             */
-            $category = $this->categoryHelper->getCategory($value->getExternalIdentifier(), $this->identifier, $this->isAttribute);
-
-            /**
-             * set category values
-             */
-            $category->setName($value->getName());
-            $category->setMetaDescription($value->getDescription());
-
-            if($value->getParentIdentifier()) {
-                $parent = $this->categoryHelper->getCategoryByAttribute($value->getParentIdentifier(), $this->identifier);
-            }
-
-            if(!$parent) {
-                $parent = $this->categoryHelper->getMainCategory();
-            }
-
-            $category->setParent($parent);
-
-            $this->entityManager->persist($category);
         }
     }
 
@@ -91,6 +68,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-        $this->entityManager->flush();
+
     }
 }

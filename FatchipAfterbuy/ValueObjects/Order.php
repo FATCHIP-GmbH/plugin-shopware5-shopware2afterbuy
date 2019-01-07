@@ -2,7 +2,9 @@
 
 namespace FatchipAfterbuy\ValueObjects;
 
-class Orders extends AbstractValueObject {
+use Doctrine\Common\Collections\ArrayCollection;
+
+class Order extends AbstractValueObject {
 
     /**
      * we cannot define external identifier types, we have to handle those as strings
@@ -19,9 +21,59 @@ class Orders extends AbstractValueObject {
     public $internalIdentifier;
 
     /**
-     * @var OrderPosition
+     * @var ArrayCollection
      */
     public $positions;
+
+    /**
+     * @return string
+     */
+    public function getExternalIdentifier(): string
+    {
+        return $this->externalIdentifier;
+    }
+
+    /**
+     * @param string $externalIdentifier
+     */
+    public function setExternalIdentifier(string $externalIdentifier): void
+    {
+        $this->externalIdentifier = $externalIdentifier;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInternalIdentifier(): int
+    {
+        return $this->internalIdentifier;
+    }
+
+    /**
+     * @param int $internalIdentifier
+     */
+    public function setInternalIdentifier(int $internalIdentifier): void
+    {
+        $this->internalIdentifier = $internalIdentifier;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getPositions(): ArrayCollection
+    {
+        return $this->positions;
+    }
+
+    /**
+     * @param ArrayCollection $positions
+     */
+    public function setPositions(ArrayCollection $positions): void
+    {
+        $this->positions = $positions;
+    }
+
+
 
 
 }

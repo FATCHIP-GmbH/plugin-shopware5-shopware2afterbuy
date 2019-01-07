@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
+use Shopware\Components\Plugin\CachedConfigReader;
 
 class AbstractDataService {
 
@@ -16,6 +17,8 @@ class AbstractDataService {
      * @var ModelManager
      */
     protected $entityManager;
+
+    protected $config;
 
     /**
      * provides the target entity (valueObject) given via services.xml
@@ -34,5 +37,9 @@ class AbstractDataService {
      */
     public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
+    }
+
+    public function setConfig(CachedConfigReader $configReader, string $pluginName) {
+        $this->config = $configReader->getByPluginName($pluginName);
     }
 }

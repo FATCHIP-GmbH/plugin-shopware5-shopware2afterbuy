@@ -21,7 +21,7 @@
 
         <!-- Orders -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" parent="fatchip_afterbuy.services.read_data.abstract_read_data_service">
+        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
@@ -31,19 +31,19 @@
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\External\WriteOrdersService" id="fatchip_afterbuy.services.write_data.external.write_orders_service" parent="fatchip_afterbuy.services.write_data.abstract_write_data_service">
+        <service class="FatchipAfterbuy\Services\WriteData\External\WriteOrdersService" id="fatchip_afterbuy.services.write_data.external.write_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
 
         </service>
 
         <!-- Categories -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service" parent="fatchip_afterbuy.services.read_data.abstract_read_data_service">
+        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <call method="setTarget">
                 <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" parent="fatchip_afterbuy.services.write_data.abstract_write_data_service">
+        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
               <call method="initHelper">
                 <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
@@ -54,15 +54,13 @@
 
         <!-- Abstracts -->
 
-        <service id="fatchip_afterbuy.services.read_data.abstract_read_data_service" class="FatchipAfterbuy\Services\ReadData\AbstractReadDataService" abstract="true">
+        <service id="fatchip_afterbuy.services.abstract_data_service" class="FatchipAfterbuy\Services\AbstractDataService" abstract="true">
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>
-        </service>
-
-        <service id="fatchip_afterbuy.services.write_data.abstract_write_data_service" class="FatchipAfterbuy\Services\WriteData\AbstractWriteDataService" abstract="true">
-            <call method="setLogger">
-                <argument type="service" id="afterbuy.logger" />
+            <call method="setConfig">
+                <argument type="service" id="shopware.plugin.cached_config_reader" />
+                <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
             </call>
         </service>
 

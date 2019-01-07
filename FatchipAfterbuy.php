@@ -20,6 +20,7 @@ class FatchipAfterbuy extends Plugin
     public function build(ContainerBuilder $container)
     {
         $container->setParameter('fatchip_afterbuy.plugin_dir', $this->getPath());
+        $container->setParameter('fatchip_afterbuy.plugin_name', $this->getName());
         parent::build($container);
     }
 

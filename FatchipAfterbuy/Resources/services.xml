@@ -13,6 +13,22 @@
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
+        <service id="fatchip_afterbuy.commands.send_orders" class="FatchipAfterbuy\Commands\sendOrders">
+            <tag name="console.command" />
+            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" />
+            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_orders_service" />
+        </service>
+
+        <!-- Orders -->
+
+        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" parent="fatchip_afterbuy.services.read_data.abstract_read_data_service">
+            <argument type="string">FatchipAfterbuy\ValueObjects\Orders</argument>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\WriteData\External\WriteOrdersService" id="fatchip_afterbuy.services.write_data.external.write_orders_service" parent="fatchip_afterbuy.services.write_data.abstract_write_data_service">
+            <argument id="models" type="service"/>
+        </service>
+
         <!-- Categories -->
 
         <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service" parent="fatchip_afterbuy.services.read_data.abstract_read_data_service">
@@ -58,16 +74,19 @@
             <call method="pushProcessor">
                 <argument type="service" id="monolog.processor.uid" />
             </call>
+            <!--
+            <call method="setFormatter">
+                <argument type="service" id="myproject_mycommand.logger.formatter"/>
+            </call>
+            -->
         </service>
 
         <service id="afterbuy.logger" class="Shopware\Components\Logger">
             <argument>Afterbuy</argument>
-            <call method="pushHandler">
-                <argument type="service" id="monolog.handler.afterbuy_file"/>
-            </call>
+            <argument type="collection">
+                    <argument type="service" id="monolog.handler.afterbuy_file"/>
+            </argument>
         </service>
-
-
 
     </services>
 </container>

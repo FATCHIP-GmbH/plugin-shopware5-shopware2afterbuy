@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\ReadData\External;
 
+use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
@@ -58,10 +59,11 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      */
     public function read(array $filter) {
 
+        $resource = new ApiClient($this->apiConfig);
+        $data = $resource->getOrdersFromAfterbuy();
 
-
-        if(!$data) {
-            $this->logger->error("No data received", array("Categories", "Read", "External"));
+        if(!$data || !$data["Result"]) {
+            return null;
         }
 
         return $data;

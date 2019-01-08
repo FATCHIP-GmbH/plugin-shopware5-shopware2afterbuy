@@ -24,25 +24,25 @@
             <name>partnerId</name>
             <label lang="de">Afterbuy Partner-ID</label>
             <label lang="en">Afterbuy Partner-ID</label>
-            <value>fatchip</value>
+            <value>110931</value>
         </element>
         <element type="text" >
             <name>partnerPassword</name>
             <label lang="de">Afterbuy Partner-Passwort</label>
             <label lang="en">Afterbuy Partner-Password</label>
-            <value>fc2afterbuy</value>
+            <value>h=wRLW)WGW(z7o=XcytHe9ZUZ</value>
         </element>
         <element type="text" >
             <name>userName</name>
             <label lang="de">Afterbuy User</label>
             <label lang="en">Afterbuy User</label>
-            <value>110931</value>
+            <value>fatchip</value>
         </element>
         <element type="text" >
             <name>userPassword</name>
             <label lang="de">Afterbuy User-Passwort</label>
             <label lang="en">Afterbuy User-Password</label>
-            <value>h=wRLW)WGW(z7o=XcytHe9ZUZ</value>
+            <value>fc2afterbuy</value>
         </element>
     </elements>
 

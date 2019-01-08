@@ -20,6 +20,8 @@ class AbstractDataService {
 
     protected $config;
 
+    public $apiConfig;
+
     /**
      * provides the target entity (valueObject) given via services.xml
      * !!! if different services etc are needed, we will make use of factories (symfony) !!!
@@ -41,6 +43,16 @@ class AbstractDataService {
 
     public function setConfig(CachedConfigReader $configReader, string $pluginName) {
         $this->config = $configReader->getByPluginName($pluginName);
+
+        $this->apiConfig = [
+            'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
+            'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
+            'afterbuyPartnerId'            => $this->config["partnerId"],
+            'afterbuyPartnerPassword'      => $this->config["partnerPassword"],
+            'afterbuyUsername'             => $this->config["userName"],
+            'afterbuyUserPassword'         => $this->config["userPassword"],
+            'logLevel'                     => '1',
+        ];
     }
 
     public function registerAPINamespaces(string $path) {

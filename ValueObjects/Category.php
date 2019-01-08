@@ -2,57 +2,58 @@
 
 namespace FatchipAfterbuy\ValueObjects;
 
-class Category extends AbstractValueObject {
+class Category extends AbstractValueObject
+{
     /**
      * @var string $name
      */
-    public $name;
+    private $name;
 
     /**
      * we cannot define external identifier types, we have to handle those as strings
      *
      * @var string $externalIdentifier
      */
-    public $externalIdentifier;
+    private $externalIdentifier;
 
     /**
      * integer works with category ids, articles use strings (ordernumber)
      *
      * @var int $internalIdentifier
      */
-    public $internalIdentifier;
+    private $internalIdentifier;
 
     /**
      * in that case we do refer the external id
      *
      * @var string $parentIdentifier
      */
-    public $parentIdentifier;
+    private $parentIdentifier;
 
     /**
      * metadescription
      *
      * @var string $description
      */
-    public $description;
+    private $description = '';
 
     /**
      * @var int $position
      */
-    public $position;
+    private $position = 0;
 
     /**
      * @var bool $active
      */
-    public $active;
+    private $active;
 
     /**
      * @var string $image
      */
-    public $image;
+    private $image = '';
 
     /** @var string */
-    private $cmsText;
+    private $cmsText = '';
 
     /**
      * @return string
@@ -198,5 +199,18 @@ class Category extends AbstractValueObject {
         $this->cmsText = $cmsText;
     }
 
+    /**
+     * @return bool
+     */
+    public function isValid(): bool
+    {
+        $isValid = true;
 
+        $isValid = $isValid && isset($this->name);
+        $isValid = $isValid && isset($this->externalIdentifier);
+        $isValid = $isValid && isset($this->parentIdentifier);
+        $isValid = $isValid && isset($this->active);
+
+        return $isValid;
+    }
 }

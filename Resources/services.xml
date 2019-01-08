@@ -62,6 +62,9 @@
                 <argument type="service" id="shopware.plugin.cached_config_reader" />
                 <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
             </call>
+            <call method="registerAPINamespaces">
+                <argument type="string">%fatchip_afterbuy.plugin_dir%</argument>
+            </call>
         </service>
 
         <!-- Helper -->

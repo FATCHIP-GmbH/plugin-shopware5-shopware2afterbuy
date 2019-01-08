@@ -42,4 +42,11 @@ class AbstractDataService {
     public function setConfig(CachedConfigReader $configReader, string $pluginName) {
         $this->config = $configReader->getByPluginName($pluginName);
     }
+
+    public function registerAPINamespaces(string $path) {
+        Shopware()->Container()->get('loader')->registerNamespace(
+            'Fatchip\Afterbuy',
+            $path . '/API/'
+        );
+    }
 }

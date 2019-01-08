@@ -34,4 +34,11 @@ class FatchipAfterbuy extends Plugin
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes']);
     }
 
+    public function afterInit()
+    {
+
+
+
+    }
+
 }

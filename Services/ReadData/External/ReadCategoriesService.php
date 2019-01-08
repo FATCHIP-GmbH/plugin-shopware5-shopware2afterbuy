@@ -81,26 +81,24 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             'logLevel'                     => '1',
         ];
 
-        $pageNumber = 0;
+        // $pageNumber = 0;
         $data = [];
 
         /** @var ApiClientAlias $api */
         $api = new ApiClientAlias($config);
 
-        do {
-            $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, $pageNumber++);
-            var_dump($catalogsResult);
-            $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
-            foreach ($catalogs as $catalog) {
-                $data[] = $catalog;
-            }
-        } while ($catalogsResult['Result']['HasMoreCatalogs']);
+        // do {
+        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
+        var_dump($catalogsResult);
+        $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
+        foreach ($catalogs as $catalog) {
+            $data[] = $catalog;
+        }
+        // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 
         if ( ! $data) {
             $this->logger->error('No data received', array('Categories', 'Read', 'External'));
         }
-
-        var_dump($data);
 
         return $data;
     }

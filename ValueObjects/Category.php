@@ -51,10 +51,13 @@ class Category extends AbstractValueObject {
      */
     public $image;
 
+    /** @var string */
+    private $cmsText;
+
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -70,7 +73,7 @@ class Category extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getExternalIdentifier()
+    public function getExternalIdentifier(): string
     {
         return $this->externalIdentifier;
     }
@@ -86,7 +89,7 @@ class Category extends AbstractValueObject {
     /**
      * @return int
      */
-    public function getInternalIdentifier()
+    public function getInternalIdentifier(): int
     {
         return $this->internalIdentifier;
     }
@@ -102,7 +105,7 @@ class Category extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getParentIdentifier()
+    public function getParentIdentifier(): string
     {
         return $this->parentIdentifier;
     }
@@ -118,7 +121,7 @@ class Category extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -134,7 +137,7 @@ class Category extends AbstractValueObject {
     /**
      * @return int
      */
-    public function getPosition()
+    public function getPosition(): int
     {
         return $this->position;
     }
@@ -150,7 +153,7 @@ class Category extends AbstractValueObject {
     /**
      * @return bool
      */
-    public function getActive()
+    public function getActive(): bool
     {
         return $this->active;
     }
@@ -166,7 +169,7 @@ class Category extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getImage()
+    public function getImage(): string
     {
         return $this->image;
     }
@@ -177,6 +180,22 @@ class Category extends AbstractValueObject {
     public function setImage($image): void
     {
         $this->image = $image;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCmsText(): string
+    {
+        return $this->cmsText;
+    }
+
+    /**
+     * @param string $cmsText
+     */
+    public function setCmsText(string $cmsText): void
+    {
+        $this->cmsText = $cmsText;
     }
 
 

@@ -46,7 +46,7 @@ class AbstractDataService {
     public function registerAPINamespaces(string $path) {
         Shopware()->Container()->get('loader')->registerNamespace(
             'Fatchip\Afterbuy',
-            $path . '/API/'
+            $path . '/Library/API/'
         );
     }
 }

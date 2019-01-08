@@ -1,0 +1,17 @@
+{
+    "require": {
+        "symfony/property-access": "^3.4.8",
+        "symfony/serializer": "^3.4.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fatchip\\Afterbuy\\": ""
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php --colors=always --testdox Tests"
+    }
+}

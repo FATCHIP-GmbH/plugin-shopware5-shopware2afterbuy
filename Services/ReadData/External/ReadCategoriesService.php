@@ -6,6 +6,7 @@ use Fatchip\Afterbuy\ApiClient as ApiClientAlias;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
+use RuntimeException;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -50,14 +51,27 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value = new $this->targetEntity();
 
             //mappings for valueObject
-            $value->setExternalIdentifier($entity['CatalogID']);
-            $value->setName($entity['Name']);
-            $value->setDescription($entity['Description']);
-            $value->setParentIdentifier($entity['ParentID']);
-            $value->setPosition($entity['Position']);
-            $value->setCmsText($entity['AdditionalText']);
-            $value->setActive($entity['Show']);
-            $value->setImage($entity['Picture1']);
+            $fieldMappings = [
+                ['CatalogID', 'ExternalIdentifier'],
+                ['Name', 'Name'],
+                ['Description', 'Description'],
+                ['ParentID', 'ParentIdentifier'],
+                ['Position', 'Position'],
+                ['AdditionalText', 'CmsText'],
+                ['Show', 'Active'],
+                ['Picture1', 'Image'],
+            ];
+
+            foreach ($fieldMappings as [$afterbuyVar, $valueObjVar]) {
+                if (isset($entity[$afterbuyVar])) {
+                    $setter = 'set' . $valueObjVar;
+                    $value->$setter($entity[$afterbuyVar]);
+                }
+            }
+
+            if ( ! $value->isValid()) {
+                throw new RuntimeException('value is not valid');
+            }
 
             $targetData[] = $value;
         }

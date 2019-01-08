@@ -28,8 +28,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             return null;
         }
 
-
-
         $targetData = array();
 
         foreach($data as $entity) {
@@ -60,32 +58,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      */
     public function read(array $filter) {
 
-        /*$data = array(
-            array('Name' => 'Testkategorie1',
-                'CatalogID' => 1,
-                'ParentID' => 0,
-                'Description' => 'Eine Beispielkategporie',
-                'Position' => 1,
-                'Show' => true,
-                'Picture1' => ''
-            ),
-            array('Name' => 'Tochterkategorie1',
-                'CatalogID' => 2,
-                'ParentID' => 1,
-                'Description' => 'Eine Beispielkategporie',
-                'Position' => 1,
-                'Show' => true,
-                'Picture1' => ''
-            ),
-            array('Name' => 'Testkategorie2',
-                'CatalogID' => 3,
-                'ParentID' => 0,
-                'Description' => 'Eine Beispielkategporie',
-                'Position' => 1,
-                'Show' => true,
-                'Picture1' => ''
-            )
-        );*/
+
 
         if(!$data) {
             $this->logger->error("No data received", array("Categories", "Read", "External"));

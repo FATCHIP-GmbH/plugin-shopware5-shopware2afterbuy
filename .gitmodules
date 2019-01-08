@@ -1,3 +1,3 @@
 [submodule "Library/API"]
-	path = API
+	path = Library/API
 	url = git@github.com:FATCHIP-GmbH/library-afterbuy.git

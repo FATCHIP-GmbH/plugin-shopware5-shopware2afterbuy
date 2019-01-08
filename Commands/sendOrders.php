@@ -76,8 +76,6 @@ EOF
          */
         $filter = array();
 
-        $test = new \Fatchip\Afterbuy\ApiClient(array());
-
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);
     }

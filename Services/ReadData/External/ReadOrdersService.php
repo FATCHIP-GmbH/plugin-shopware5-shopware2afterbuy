@@ -5,7 +5,8 @@ namespace FatchipAfterbuy\Services\ReadData\External;
 use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
+use FatchipAfterbuy\ValueObjects\Address;
+use FatchipAfterbuy\ValueObjects\Order;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -31,18 +32,73 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
         $targetData = array();
 
-        foreach($data as $entity) {
+        foreach($data["Result"]["Orders"]["Order"] as $entity) {
 
             /**
-             * @var Category $value
+             * @var Order $value
              */
             $value = new $this->targetEntity();
 
-            /*//mappings for valueObject
-            $value->setName($entity["Name"]);
-            $value->setExternalIdentifier($entity["CatalogID"]);
-            $value->setDescription($entity["Description"]);
-            $value->setParentIdentifier($entity["ParentID"]);*/
+            //mappings for valueObject
+            $value->setExternalIdentifier($entity["OrderID"]);
+            $value->setAmount($entity["PaymentInfo"]["FullAmount"]);
+
+            //Status
+            //TODO: set status
+
+            //Positions
+            //TODO: set positions
+
+            //Addresses
+            $billingAddress = new Address();
+
+            $billingAddress->setFirstname($entity["BuyerInfo"]["BillingAddress"]["FirstName"]);
+            $billingAddress->setLastname($entity["BuyerInfo"]["BillingAddress"]["LastName"]);
+
+            if($entity["BuyerInfo"]["BillingAddress"]["Title"] == "Frau") {
+                $billingAddress->getSalutation('mrs');
+            } else {
+                $billingAddress->getSalutation('mr');
+            }
+
+            $billingAddress->setCompany($entity["BuyerInfo"]["BillingAddress"]["Company"]);
+            $billingAddress->setStreet($entity["BuyerInfo"]["BillingAddress"]["Street"]);
+            $billingAddress->setAdditionalAddressLine1($entity["BuyerInfo"]["BillingAddress"]["Street2"]);
+            $billingAddress->setZipcode($entity["BuyerInfo"]["BillingAddress"]["PostalCode"]);
+            $billingAddress->setCity($entity["BuyerInfo"]["BillingAddress"]["City"]);
+            $billingAddress->setCountry($entity["BuyerInfo"]["BillingAddress"]["CountryISO"]);
+            $billingAddress->setPhone($entity["BuyerInfo"]["BillingAddress"]["Phone"]);
+            $billingAddress->setVatId($entity["BuyerInfo"]["BillingAddress"]["TaxIDNumber"]);
+            $billingAddress->setEmail($entity["BuyerInfo"]["BillingAddress"]["Mail"]);
+
+            $value->setBillingAddress($billingAddress);
+
+            if($entity["BuyerInfo"]["ShippingAddress"]) {
+                $shippingAddress = new Address();
+
+                $shippingAddress->setFirstname($entity["BuyerInfo"]["ShippingAddress"]["FirstName"]);
+                $shippingAddress->setLastname($entity["BuyerInfo"]["ShippingAddress"]["LastName"]);
+
+                if($entity["BuyerInfo"]["ShippingAddress"]["Title"] == "Frau") {
+                    $shippingAddress->getSalutation('mrs');
+                } else {
+                    $shippingAddress->getSalutation('mr');
+                }
+
+                $shippingAddress->setCompany($entity["BuyerInfo"]["ShippingAddress"]["Company"]);
+                $shippingAddress->setStreet($entity["BuyerInfo"]["ShippingAddress"]["Street"]);
+                $shippingAddress->setAdditionalAddressLine1($entity["BuyerInfo"]["ShippingAddress"]["Street2"]);
+                $shippingAddress->setZipcode($entity["BuyerInfo"]["ShippingAddress"]["PostalCode"]);
+                $shippingAddress->setCity($entity["BuyerInfo"]["ShippingAddress"]["City"]);
+                $shippingAddress->setCountry($entity["BuyerInfo"]["ShippingAddress"]["CountryISO"]);
+                $shippingAddress->setPhone($entity["BuyerInfo"]["ShippingAddress"]["Phone"]);
+                $shippingAddress->setVatId($entity["BuyerInfo"]["ShippingAddress"]["TaxIDNumber"]);
+                $shippingAddress->setEmail($entity["BuyerInfo"]["ShippingAddress"]["Mail"]);
+
+                $value->setShippingAddress($billingAddress);
+            }
+
+
 
             array_push($targetData, $value);
         }

@@ -116,18 +116,16 @@ class Address extends AbstractValueObject
     protected $additionalAddressLine2 = null;
 
     /**
-     * Contains the id of the country.
+     * Contains the iso of the country.
      *
-     * @var int
+     * @var string
      */
-    protected $countryId;
+    protected $country;
 
     /**
-     * Contains the id of the state.
-     *
-     * @var int
+     * @var string
      */
-    protected $stateId = null;
+    protected $email;
 
     /**
      * @return string
@@ -338,35 +336,35 @@ class Address extends AbstractValueObject
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getCountryId(): int
+    public function getCountry(): string
     {
-        return $this->countryId;
+        return $this->country;
     }
 
     /**
-     * @param int $countryId
+     * @param string $country
      */
-    public function setCountryId(int $countryId): void
+    public function setCountry(string $country): void
     {
-        $this->countryId = $countryId;
+        $this->country = $country;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getStateId(): int
+    public function getEmail(): string
     {
-        return $this->stateId;
+        return $this->email;
     }
 
     /**
-     * @param int $stateId
+     * @param string $email
      */
-    public function setStateId(int $stateId): void
+    public function setEmail(string $email): void
     {
-        $this->stateId = $stateId;
+        $this->email = $email;
     }
 
 

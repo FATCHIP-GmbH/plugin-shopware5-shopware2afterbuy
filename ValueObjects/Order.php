@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
 
 class Order extends AbstractValueObject {
 
@@ -24,6 +25,21 @@ class Order extends AbstractValueObject {
      * @var ArrayCollection
      */
     public $positions;
+
+    /**
+     * @var AddressAlias
+     */
+    public $shippingAddress;
+
+    /**
+     * @var AddressAlias
+     */
+    public $billingAddress;
+
+    /**
+     * @var
+     */
+    public $amount;
 
     /**
      * @return string
@@ -73,7 +89,51 @@ class Order extends AbstractValueObject {
         $this->positions = $positions;
     }
 
+    /**
+     * @return Address
+     */
+    public function getShippingAddress(): Address
+    {
+        return $this->shippingAddress;
+    }
 
+    /**
+     * @param Address $shippingAddress
+     */
+    public function setShippingAddress(Address $shippingAddress): void
+    {
+        $this->shippingAddress = $shippingAddress;
+    }
 
+    /**
+     * @return Address
+     */
+    public function getBillingAddress(): Address
+    {
+        return $this->billingAddress;
+    }
 
+    /**
+     * @param Address $billingAddress
+     */
+    public function setBillingAddress(Address $billingAddress): void
+    {
+        $this->billingAddress = $billingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param mixed $amount
+     */
+    public function setAmount($amount): void
+    {
+        $this->amount = $amount;
+    }
 }

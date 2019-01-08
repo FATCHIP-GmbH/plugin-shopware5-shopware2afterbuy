@@ -2,10 +2,11 @@
 
 namespace FatchipAfterbuy\ValueObjects;
 
-use Shopware\Models\Customer\Address;
+use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
 
 class OrderPosition extends AbstractValueObject {
 
+    //TODO: add shipping costs
     /**
      * @var string
      */
@@ -19,23 +20,12 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @var string
      */
-    public $oderId;
+    public $orderId;
 
     /**
      * @var string
      */
     public $name;
-
-    //TODO: use different adress valueObject
-    /**
-     * @var Address
-     */
-    public $shippingAddress;
-
-    /**
-     * @var Address
-     */
-    public $billingAddress;
 
     /**
      * @return string
@@ -72,17 +62,17 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getOderId(): string
+    public function getOrderId(): string
     {
-        return $this->oderId;
+        return $this->orderId;
     }
 
     /**
-     * @param string $oderId
+     * @param string $orderId
      */
-    public function setOderId(string $oderId): void
+    public function setOrderId(string $orderId): void
     {
-        $this->oderId = $oderId;
+        $this->orderId = $orderId;
     }
 
     /**
@@ -102,33 +92,33 @@ class OrderPosition extends AbstractValueObject {
     }
 
     /**
-     * @return Address
+     * @return AddressAlias
      */
-    public function getShippingAddress(): Address
+    public function getShippingAddress(): AddressAlias
     {
         return $this->shippingAddress;
     }
 
     /**
-     * @param Address $shippingAddress
+     * @param AddressAlias $shippingAddress
      */
-    public function setShippingAddress(Address $shippingAddress): void
+    public function setShippingAddress(AddressAlias $shippingAddress): void
     {
         $this->shippingAddress = $shippingAddress;
     }
 
     /**
-     * @return Address
+     * @return AddressAlias
      */
-    public function getBillingAddress(): Address
+    public function getBillingAddress(): AddressAlias
     {
         return $this->billingAddress;
     }
 
     /**
-     * @param Address $billingAddress
+     * @param AddressAlias $billingAddress
      */
-    public function setBillingAddress(Address $billingAddress): void
+    public function setBillingAddress(AddressAlias $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
     }

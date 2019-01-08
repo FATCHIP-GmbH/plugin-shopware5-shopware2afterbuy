@@ -41,6 +41,14 @@ class Order extends AbstractValueObject {
      */
     public $amount;
 
+    /*    public $paymentType;
+
+    public $paymentStatus;
+
+    public $shippingType;
+
+    public $shippingStatus;*/
+
     /**
      * @return string
      */

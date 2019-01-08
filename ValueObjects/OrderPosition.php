@@ -6,11 +6,14 @@ use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
 
 class OrderPosition extends AbstractValueObject {
 
-    //TODO: add shipping costs
     /**
      * @var string
      */
-    public $articleId;
+    public $internalIdentifier;
+    /**
+     * @var string
+     */
+    public $externalIdentifier;
 
     /**
      * @var float
@@ -27,21 +30,10 @@ class OrderPosition extends AbstractValueObject {
      */
     public $name;
 
-    /**
-     * @return string
-     */
-    public function getArticleId(): string
-    {
-        return $this->articleId;
-    }
+    public $tax;
 
-    /**
-     * @param string $articleId
-     */
-    public function setArticleId(string $articleId): void
-    {
-        $this->articleId = $articleId;
-    }
+    public $quantity;
+
 
     /**
      * @return float
@@ -92,44 +84,67 @@ class OrderPosition extends AbstractValueObject {
     }
 
     /**
-     * @return AddressAlias
+     * @return string
      */
-    public function getShippingAddress(): AddressAlias
+    public function getInternalIdentifier(): string
     {
-        return $this->shippingAddress;
+        return $this->internalIdentifier;
     }
 
     /**
-     * @param AddressAlias $shippingAddress
+     * @param string $internalIdentifier
      */
-    public function setShippingAddress(AddressAlias $shippingAddress): void
+    public function setInternalIdentifier(string $internalIdentifier): void
     {
-        $this->shippingAddress = $shippingAddress;
+        $this->internalIdentifier = $internalIdentifier;
     }
 
     /**
-     * @return AddressAlias
+     * @return string
      */
-    public function getBillingAddress(): AddressAlias
+    public function getExternalIdentifier(): string
     {
-        return $this->billingAddress;
+        return $this->externalIdentifier;
     }
 
     /**
-     * @param AddressAlias $billingAddress
+     * @param string $externalIdentifier
      */
-    public function setBillingAddress(AddressAlias $billingAddress): void
+    public function setExternalIdentifier(string $externalIdentifier): void
     {
-        $this->billingAddress = $billingAddress;
+        $this->externalIdentifier = $externalIdentifier;
     }
 
-/*    public $paymentType;
+    /**
+     * @return mixed
+     */
+    public function getTax()
+    {
+        return $this->tax;
+    }
 
-    public $paymentStatus;
+    /**
+     * @param mixed $tax
+     */
+    public function setTax($tax): void
+    {
+        $this->tax = $tax;
+    }
 
-    public $shippingType;
+    /**
+     * @return mixed
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
 
-    public $shippingStatus;*/
-
+    /**
+     * @param mixed $quantity
+     */
+    public function setQuantity($quantity): void
+    {
+        $this->quantity = $quantity;
+    }
 
 }

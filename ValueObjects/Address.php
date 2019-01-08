@@ -298,8 +298,12 @@ class Address extends AbstractValueObject
     /**
      * @param string $vatId
      */
-    public function setVatId(string $vatId): void
+    public function setVatId(?string $vatId): void
     {
+        if(!$vatId) {
+            $vatId = "";
+        }
+
         $this->vatId = $vatId;
     }
 
@@ -362,8 +366,12 @@ class Address extends AbstractValueObject
     /**
      * @param string $email
      */
-    public function setEmail(string $email): void
+    public function setEmail(?string $email): void
     {
+        if(!$email) {
+            $email = "";
+        }
+
         $this->email = $email;
     }
 

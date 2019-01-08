@@ -7,6 +7,7 @@ use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Order;
+use FatchipAfterbuy\ValueObjects\OrderPosition;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -48,8 +49,30 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             //Positions
             //TODO: set positions
+            //TODO: structure differs is multiple articles per order / need to handle
+            if(intval($entity["SoldItems"]) > 1) {
+                foreach($entity["SoldItems"]["SoldItem"] as $position) {
+                    $orderPosition = new OrderPosition();
+
+                    $orderPosition->setName($position["ItemTitle"]);
+                    $orderPosition->setPrice(floatval($position["ItemPrice"]));
+
+                }
+            } else {
+                //TODO: handle single item / use component
+            }
+
+
+
+            //Shipping
+
+            //Payment
+
+            //Shipping Costs
+            //TODO: set shippingCosts
 
             //Addresses
+            //TODO: add validation
             $billingAddress = new Address();
 
             $billingAddress->setFirstname($entity["BuyerInfo"]["BillingAddress"]["FirstName"]);
@@ -73,7 +96,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $value->setBillingAddress($billingAddress);
 
-            if($entity["BuyerInfo"]["ShippingAddress"]) {
+            if(array_key_exists("ShippingAddress", $entity["BuyerInfo"])) {
                 $shippingAddress = new Address();
 
                 $shippingAddress->setFirstname($entity["BuyerInfo"]["ShippingAddress"]["FirstName"]);
@@ -97,8 +120,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                 $value->setShippingAddress($billingAddress);
             }
-
-
 
             array_push($targetData, $value);
         }

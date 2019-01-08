@@ -50,11 +50,12 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value = new $this->targetEntity();
 
             //mappings for valueObject
-            $value->setName($entity['Name']);
             $value->setExternalIdentifier($entity['CatalogID']);
+            $value->setName($entity['Name']);
             $value->setDescription($entity['Description']);
             $value->setParentIdentifier($entity['ParentID']);
             $value->setPosition($entity['Position']);
+            $value->setCmsText($entity['AdditionalText']);
             $value->setActive($entity['Show']);
             $value->setImage($entity['Picture1']);
 
@@ -74,21 +75,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter): array
     {
-        $config = [
-            'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
-            'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
-            'afterbuyPartnerId'            => '110931',
-            'afterbuyPartnerPassword'      => 'h=wRLW)WGW(z7o=XcytHe9ZUZ',
-            'afterbuyUsername'             => 'fatchip',
-            'afterbuyUserPassword'         => 'fc2afterbuy',
-            'logLevel'                     => '1',
-        ];
-
         // $pageNumber = 0;
         $data = [];
 
         /** @var ApiClientAlias $api */
-        $api = new ApiClientAlias($config);
+        $api = new ApiClientAlias($this->apiConfig);
 
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);

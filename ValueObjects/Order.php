@@ -37,9 +37,14 @@ class Order extends AbstractValueObject {
     public $billingAddress;
 
     /**
-     * @var
+     * @var string
      */
     public $amount;
+
+    /**
+     * @var string
+     */
+    public $shipping;
 
     /*    public $paymentType;
 
@@ -48,6 +53,10 @@ class Order extends AbstractValueObject {
     public $shippingType;
 
     public $shippingStatus;*/
+
+    public function __construct() {
+        $this->positions = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -144,4 +153,22 @@ class Order extends AbstractValueObject {
     {
         $this->amount = $amount;
     }
+
+    /**
+     * @return float
+     */
+    public function getShipping(): string
+    {
+        return $this->shipping;
+    }
+
+    /**
+     * @param float $shipping
+     */
+    public function setShipping(string $shipping): void
+    {
+        $this->shipping = $shipping;
+    }
+
+
 }

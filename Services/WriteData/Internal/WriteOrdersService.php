@@ -7,6 +7,8 @@ use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
+use FatchipAfterbuy\ValueObjects\Order;
+use Shopware\Models\Customer\Address;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
@@ -50,9 +52,56 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     public function transform(array $data) {
 
         foreach($data as $value) {
+            /**
+             * @var Order $value
+             */
+
+            /**
+             * @var \Shopware\Models\Order\Order $order
+             */
+
+            $order = $this->entityManager->getRepository($this->targetRepository)->findOneBy(array($this->identifier => $value->getExternalIdentifier()));
+
+            if(!$order) {
+                $order = new $this->targetRepository();
+
+                //TODO: set identifier
+            }
+
+            $order->setNumber($value->getExternalIdentifier());
+            $order->setInvoiceAmount($value->getAmount());
+
+            if(!$order->getBilling()) {
+                $order->setBilling(new Address());
+            }
+
+            $order->getBilling()->setVatId($value->getBillingAddress()->getVatId());
+            $order->getBilling()->setSalutation($value->getBillingAddress()->getSalutation());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
 
 
-            //$this->entityManager->persist($order);
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+            $order->getBilling()->setStreet($value->getBillingAddress()->getStreet());
+
+
+            //TODO: set amount
+            //TODO: set billing
+            //TODO: set shipping
+            //TODO: set positions
+
+            $this->entityManager->persist($order);
         }
     }
 
@@ -63,6 +112,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-        //$this->entityManager->flush();
+        $this->entityManager->flush();
     }
 }

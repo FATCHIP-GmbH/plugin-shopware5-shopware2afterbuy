@@ -48,19 +48,37 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             //TODO: set status
 
             //Positions
-            //TODO: set positions
-            //TODO: structure differs is multiple articles per order / need to handle
-            if(intval($entity["SoldItems"]) > 1) {
+            /**
+             * structure differs is multiple articles per order / need to handle
+             */
+
+            if(intval($entity["SoldItems"]["ItemsInOrder"]) > 1) {
                 foreach($entity["SoldItems"]["SoldItem"] as $position) {
                     $orderPosition = new OrderPosition();
 
                     $orderPosition->setName($position["ItemTitle"]);
-                    $orderPosition->setPrice(floatval($position["ItemPrice"]));
+                    $orderPosition->setPrice($position["ItemPrice"]);
+                    $orderPosition->setExternalIdentifier($position["ItemID"]);
+                    $orderPosition->setQuantity($position["ItemQuantity"]);
+                    $orderPosition->setPrice($position["ItemPrice"]);
+                    $orderPosition->setTax($position["TaxRate"]);
 
+                    $value->getPositions()->add($orderPosition);
                 }
             } else {
-                //TODO: handle single item / use component
+                $orderPosition = new OrderPosition();
+
+                $orderPosition->setName($entity["SoldItems"]["SoldItem"]["ItemTitle"]);
+                $orderPosition->setPrice($entity["SoldItems"]["SoldItem"]["ItemPrice"]);
+                $orderPosition->setExternalIdentifier($entity["OrderID"]);
+                $orderPosition->setQuantity($entity["SoldItems"]["SoldItem"]["ItemQuantity"]);
+                $orderPosition->setPrice($entity["SoldItems"]["SoldItem"]["ItemPrice"]);
+                $orderPosition->setTax($entity["SoldItems"]["SoldItem"]["TaxRate"]);
+
+                $value->getPositions()->add($orderPosition);
             }
+
+
 
 
 
@@ -68,8 +86,31 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             //Payment
 
+/*
+            ...PaymentInfo.PaymentID
+            INVOICE - Vorkasse/Überweisung
+            CREDIT_CARD - Kreditkarte
+            DIRECT_DEBIT - Bankeinzug
+
+            ...PaymentInfo.PaymentFunction
+            TRANSFER - Überweisung
+            CASH_PAID - Bar/Abholung
+            CASH_ON_DELIVERY - Nachnahme
+            PAYPAL - PayPal
+            INVOICE_TRANSFER - Überweisung/Rechnung
+            DIRECT_DEBIT - Bankeinzug
+            CLICKANDBUY - ClickAndBuy
+            EXPRESS_CREDITWORTHINESS - Expresskauf/Bonicheck
+            PAYNET - Sofortüberweisung (PayNet)
+            COD_CREDITWORTHINESS - Nachnahme/Bonicheck
+            EBAY_EXPRESS - Ebay Express
+            MONEYBOOKERS - Moneybookers
+            CREDIT_CARD_MB - Kreditkarte Moneybookers
+            DIRECT_DEBIT_MB - Lastschrift Moneybookers
+            OTHERS - Sonstige*/
+
             //Shipping Costs
-            //TODO: set shippingCosts
+            $value->setShipping(floatval($entity["ShippingInfo"]["ShippingCost"]));
 
             //Addresses
             //TODO: add validation
@@ -79,9 +120,9 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setLastname($entity["BuyerInfo"]["BillingAddress"]["LastName"]);
 
             if($entity["BuyerInfo"]["BillingAddress"]["Title"] == "Frau") {
-                $billingAddress->getSalutation('mrs');
+                $billingAddress->setSalutation('mrs');
             } else {
-                $billingAddress->getSalutation('mr');
+                $billingAddress->setSalutation('mr');
             }
 
             $billingAddress->setCompany($entity["BuyerInfo"]["BillingAddress"]["Company"]);
@@ -102,10 +143,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $shippingAddress->setFirstname($entity["BuyerInfo"]["ShippingAddress"]["FirstName"]);
                 $shippingAddress->setLastname($entity["BuyerInfo"]["ShippingAddress"]["LastName"]);
 
-                if($entity["BuyerInfo"]["ShippingAddress"]["Title"] == "Frau") {
-                    $shippingAddress->getSalutation('mrs');
+                if(isset($entity["BuyerInfo"]["ShippingAddress"]["Title"]) && $entity["BuyerInfo"]["ShippingAddress"]["Title"] == "Frau") {
+                    $shippingAddress->setSalutation('mrs');
                 } else {
-                    $shippingAddress->getSalutation('mr');
+                    $shippingAddress->setSalutation('mr');
                 }
 
                 $shippingAddress->setCompany($entity["BuyerInfo"]["ShippingAddress"]["Company"]);
@@ -115,9 +156,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $shippingAddress->setCity($entity["BuyerInfo"]["ShippingAddress"]["City"]);
                 $shippingAddress->setCountry($entity["BuyerInfo"]["ShippingAddress"]["CountryISO"]);
                 $shippingAddress->setPhone($entity["BuyerInfo"]["ShippingAddress"]["Phone"]);
-                $shippingAddress->setVatId($entity["BuyerInfo"]["ShippingAddress"]["TaxIDNumber"]);
-                $shippingAddress->setEmail($entity["BuyerInfo"]["ShippingAddress"]["Mail"]);
 
+                $value->setShippingAddress($shippingAddress);
+            }
+            else {
                 $value->setShippingAddress($billingAddress);
             }
 

@@ -5,6 +5,7 @@ namespace FatchipAfterbuy\Services;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
+use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 class AbstractDataService {
 

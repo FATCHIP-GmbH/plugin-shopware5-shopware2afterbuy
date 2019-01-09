@@ -97,7 +97,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
 
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
-        var_dump($catalogsResult);
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
         foreach ($catalogs as $catalog) {
             $data[] = $catalog;

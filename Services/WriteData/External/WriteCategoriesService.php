@@ -2,7 +2,7 @@
 
 namespace FatchipAfterbuy\Services\WriteData\External;
 
-use Doctrine\ORM\OptimisticLockException;
+use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -40,40 +40,68 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     }
 
     /**
-     * @param array $data
+     * @param ValueCategory[] $valueCategories
      *
-     * @return mixed|void
-     * @throws OptimisticLockException
+     * @return string
      */
-    public function put(array $data)
+    public function put(array $valueCategories): string
     {
-        $data = $this->transform($data);
+        $catalogs = $this->transform($valueCategories);
 
-        return $this->send($data);
+        return $this->send($catalogs);
     }
 
     /**
      * transforms valueObject into final structure for storage
      * could may be moved into separate helper
      *
-     * @param ValueCategory[] $data
+     * @param ValueCategory[] $valueCategories
      *
-     * @return mixed|void
+     * @return array
      */
-    public function transform(array $data)
+    public function transform(array $valueCategories): array
     {
-        return $data;
+        $this->logger->info('Got ' . count($valueCategories) . ' items', ['Categories', 'Write', 'External']);
+
+        //mappings for valueObject
+        $fieldMappings = [
+            ['CatalogID', 'ExternalIdentifier'],
+            ['Name', 'Name'],
+            ['Description', 'Description'],
+            ['ParentID', 'ParentIdentifier'],
+            ['Position', 'Position'],
+            ['AdditionalText', 'CmsText'],
+            ['Show', 'Active'],
+            ['Picture1', 'Image'],
+        ];
+
+        $catalogs = [];
+
+        foreach ($valueCategories as $valueCategory) {
+            $catalog = [];
+            foreach ($fieldMappings as [$afterbuyField, $valueObjVar]) {
+                $getter = 'get' . $valueObjVar;
+                $catalog[$afterbuyField] = $valueCategory->$getter();
+            }
+
+            $catalogs[] = $catalog;
+        }
+
+        return $catalogs;
     }
 
-
     /**
-     * @param $targetData
+     * @param [] $catalogs
      *
-     * @return mixed|void
-     * @throws OptimisticLockException
+     * @return string
      */
-    public function send($targetData)
+    public function send($catalogs): string
     {
-        return $targetData;
+        /** @var ApiClient $api */
+        $api = new ApiClient($this->apiConfig);
+
+        // TODO: send data to afterbuy
+
+        return $catalogs;
     }
 }

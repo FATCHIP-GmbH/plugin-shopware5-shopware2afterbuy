@@ -82,7 +82,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $valueCategory->setActive($shopwareCategory->getActive());
             // TODO: handle media
 
-            $valueCategories[] = $valueCategory;
+            if ($valueCategory->isValid()) {
+                $valueCategories[] = $valueCategory;
+            } else {
+                // TODO: log error message
+            }
         }
 
         return $valueCategories;

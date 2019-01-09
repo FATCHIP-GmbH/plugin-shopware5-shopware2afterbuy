@@ -70,6 +70,13 @@ class ShopwareCategoryHelper extends AbstractHelper {
     }
 
     /**
+     * @return Category[]
+     */
+    public function getAllCategories(): array {
+        return $this->entityManager->getRepository($this->entity)->findAll();
+    }
+
+    /**
      * @return Category|null
      */
     public function getMainCategory() {

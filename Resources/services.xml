@@ -79,6 +79,11 @@
             <call method="setTarget">
                 <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
             </call>
+            <call method="initHelper">
+                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument type="string">true</argument>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\WriteData\External\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.external.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">

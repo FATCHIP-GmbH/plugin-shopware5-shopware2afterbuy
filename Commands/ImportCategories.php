@@ -5,13 +5,11 @@ namespace FatchipAfterbuy\Commands;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Commands\ShopwareCommand;
 
-class getCategories extends ShopwareCommand
+class ImportCategories extends ShopwareCommand
 {
     /**
      * @var ReadDataInterface
@@ -24,12 +22,12 @@ class getCategories extends ShopwareCommand
     protected $writeDataService;
 
     /**
-     * getCategories constructor.
+     * ImportCategories constructor.
      * @param ReadDataInterface $readDataService
      * @param WriteDataInterface $writeDataService
      */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;
@@ -41,7 +39,7 @@ class getCategories extends ShopwareCommand
     protected function configure()
     {
         $this
-            ->setName('Afterbuy:Get:Categories')
+            ->setName('Afterbuy:Import:Categories')
             ->setDescription('Import Categories from Afterbuy')
             /*->addArgument(
                 'my-argument',
@@ -69,7 +67,7 @@ EOF
         /**
          * Structure for receiving and writing data
          * Should look everywhere the same.
-         * Dependenciies are handeld via services.xml
+         * Dependencies are handled via services.xml
          */
 
         /**

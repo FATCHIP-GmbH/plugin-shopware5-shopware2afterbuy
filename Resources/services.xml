@@ -7,7 +7,7 @@
 
         <!-- Commands -->
 
-        <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\getCategories">
+        <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\ImportCategories">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />

@@ -3,8 +3,6 @@
 namespace FatchipAfterbuy;
 
 use Shopware\Components\Plugin;
-use Shopware\Components\Console\Application;
-use FatchipAfterbuy\Commands\getCategories;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

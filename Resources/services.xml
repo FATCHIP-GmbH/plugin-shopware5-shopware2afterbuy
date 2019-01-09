@@ -7,10 +7,16 @@
 
         <!-- Commands -->
 
-        <service id="fatchip_afterbuy.commands.get_categories" class="FatchipAfterbuy\Commands\ImportCategories">
+        <service id="fatchip_afterbuy.commands.import_categories" class="FatchipAfterbuy\Commands\ImportCategories">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />
+        </service>
+
+        <service id="fatchip_afterbuy.commands.export_categories" class="FatchipAfterbuy\Commands\ExportCategories">
+            <tag name="console.command" />
+            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_categories_service" />
+            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
         <service id="fatchip_afterbuy.commands.send_orders" class="FatchipAfterbuy\Commands\sendOrders">
@@ -61,6 +67,21 @@
         </service>
 
         <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+              <call method="initHelper">
+                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument type="string">true</argument>
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.internal.read_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <call method="setTarget">
+                <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\WriteData\External\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.external.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
               <call method="initHelper">
                 <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>

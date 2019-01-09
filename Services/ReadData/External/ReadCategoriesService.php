@@ -2,11 +2,10 @@
 
 namespace FatchipAfterbuy\Services\ReadData\External;
 
-use Fatchip\Afterbuy\ApiClient as ApiClientAlias;
+use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
-use RuntimeException;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -92,8 +91,8 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
     {
         // $pageNumber = 0;
 
-        /** @var ApiClientAlias $api */
-        $api = new ApiClientAlias($this->apiConfig);
+        /** @var ApiClient $api */
+        $api = new ApiClient($this->apiConfig);
 
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);

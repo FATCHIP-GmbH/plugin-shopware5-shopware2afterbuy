@@ -90,7 +90,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
     public function read(array $filter): array
     {
         // $pageNumber = 0;
-        $data = [];
 
         /** @var ApiClientAlias $api */
         $api = new ApiClientAlias($this->apiConfig);
@@ -98,15 +97,12 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
-        foreach ($catalogs as $catalog) {
-            $data[] = $catalog;
-        }
         // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 
-        if ( ! $data) {
+        if ( ! $catalogs) {
             $this->logger->error('No data received', array('Categories', 'Read', 'External'));
         }
 
-        return $data;
+        return $catalogs;
     }
 }

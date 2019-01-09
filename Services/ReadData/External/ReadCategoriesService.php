@@ -69,11 +69,12 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
                 }
             }
 
-            if ( ! $value->isValid()) {
-                throw new RuntimeException('value is not valid');
+            if ($value->isValid()) {
+                $targetData[] = $value;
+            } else {
+                // TODO: log error message
+                // throw new RuntimeException('value is not valid');
             }
-
-            $targetData[] = $value;
         }
 
         return $targetData;

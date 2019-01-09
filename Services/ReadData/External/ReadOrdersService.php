@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
+use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
@@ -42,7 +43,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             //mappings for valueObject
             $value->setExternalIdentifier($entity["OrderID"]);
-            $value->setAmount($entity["PaymentInfo"]["FullAmount"]);
+            $value->setAmount(Helper::convertDeString2Float($entity["PaymentInfo"]["FullAmount"]));
 
             //Status
             //TODO: set status
@@ -52,30 +53,35 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
              * structure differs is multiple articles per order / need to handle
              */
 
+            $netAmount = 0;
+
             if(intval($entity["SoldItems"]["ItemsInOrder"]) > 1) {
                 foreach($entity["SoldItems"]["SoldItem"] as $position) {
                     $orderPosition = new OrderPosition();
 
                     $orderPosition->setName($position["ItemTitle"]);
-                    $orderPosition->setPrice($position["ItemPrice"]);
-                    $orderPosition->setExternalIdentifier($position["ItemID"]);
+                    $orderPosition->setExternalIdentifier($position["ShopProductDetails"]["ProductID"]);
                     $orderPosition->setQuantity($position["ItemQuantity"]);
-                    $orderPosition->setPrice($position["ItemPrice"]);
-                    $orderPosition->setTax($position["TaxRate"]);
+                    $orderPosition->setPrice(Helper::convertDeString2Float($position["ItemPrice"]));
+                    $orderPosition->setTax(Helper::convertDeString2Float($position["TaxRate"]));
 
                     $value->getPositions()->add($orderPosition);
+
+                    //TODO: fix
+                    $netAmount += $position["ItemQuantity"] * (Helper::convertDeString2Float($position["ItemPrice"]) / (1 + Helper::convertDeString2Float($position["TaxRate"]) / 100));
                 }
             } else {
                 $orderPosition = new OrderPosition();
 
                 $orderPosition->setName($entity["SoldItems"]["SoldItem"]["ItemTitle"]);
-                $orderPosition->setPrice($entity["SoldItems"]["SoldItem"]["ItemPrice"]);
-                $orderPosition->setExternalIdentifier($entity["OrderID"]);
+                $orderPosition->setPrice(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]));
+                $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ShopProductDetails"]["ProductID"]);
                 $orderPosition->setQuantity($entity["SoldItems"]["SoldItem"]["ItemQuantity"]);
-                $orderPosition->setPrice($entity["SoldItems"]["SoldItem"]["ItemPrice"]);
-                $orderPosition->setTax($entity["SoldItems"]["SoldItem"]["TaxRate"]);
+                $orderPosition->setTax(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]));
 
                 $value->getPositions()->add($orderPosition);
+
+                $netAmount += Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]) / (1 + Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]) / 100);
             }
 
 
@@ -110,7 +116,11 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             OTHERS - Sonstige*/
 
             //Shipping Costs
-            $value->setShipping(floatval($entity["ShippingInfo"]["ShippingCost"]));
+            //TODO: set shipping net
+            $value->setShipping(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingCost"]));
+
+            $netAmount += Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingCost"]) / (1 + Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]) / 100);
+            $value->setAmountNet($netAmount);
 
             //Addresses
             //TODO: add validation

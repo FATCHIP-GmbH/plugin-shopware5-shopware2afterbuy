@@ -36,9 +36,9 @@ class OrderPosition extends AbstractValueObject {
 
 
     /**
-     * @return string
+     * @return float
      */
-    public function getPrice(): string
+    public function getPrice(): float
     {
         return $this->price;
     }
@@ -46,7 +46,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param float $price
      */
-    public function setPrice(string $price): void
+    public function setPrice(float $price): void
     {
         $this->price = $price;
     }

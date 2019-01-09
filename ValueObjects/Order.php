@@ -46,6 +46,12 @@ class Order extends AbstractValueObject {
      */
     public $shipping;
 
+
+    /**
+     * @var float
+     */
+    public $amountNet;
+
     /*    public $paymentType;
 
     public $paymentStatus;
@@ -169,6 +175,23 @@ class Order extends AbstractValueObject {
     {
         $this->shipping = $shipping;
     }
+
+    /**
+     * @return float
+     */
+    public function getAmountNet(): float
+    {
+        return $this->amountNet;
+    }
+
+    /**
+     * @param float $amountNet
+     */
+    public function setAmountNet(float $amountNet): void
+    {
+        $this->amountNet = $amountNet;
+    }
+
 
 
 }

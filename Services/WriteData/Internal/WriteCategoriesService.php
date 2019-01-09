@@ -2,13 +2,16 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
+use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
+use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use Shopware\Models\Category\Category as ShopwareCategory;
 
-class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface {
+class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
+{
 
     /**
      * @var ShopwareCategoryHelper $categoryHelper
@@ -27,10 +30,11 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
     /**
      * @param AbstractHelper $helper
-     * @param string $identifier
-     * @param bool $isAttribute
+     * @param string         $identifier
+     * @param bool           $isAttribute
      */
-    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute) {
+    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute)
+    {
         $this->categoryHelper = $helper;
         $this->identifier = $identifier;
         $this->isAttribute = $isAttribute;
@@ -38,11 +42,14 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
     /**
      * @param array $data
+     *
      * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      */
-    public function put(array $data) {
+    public function put(array $data)
+    {
         $data = $this->transform($data);
+
         return $this->send($data);
     }
 
@@ -50,53 +57,67 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * transforms valueObject into final structure for storage
      * could may be moved into separate helper
      *
-     * @param array $data
+     * @param ValueCategory[] $data
+     *
      * @return mixed|void
      */
-    public function transform(array $data) {
+    public function transform(array $data)
+    {
+        $this->logger->info('Storing ' . count($data) . ' items.', array('Categories', 'Write', 'Internal'));
 
-        $this->logger->info("Storing " . count($data) . " items.", array("Categories", "Write", "Internal"));
-
-        foreach($data as $value) {
+        foreach ($data as $category) {
             /**
-             * @var Category $value
+             * @var ShopwareCategory $shopwareCategory
              */
+            $shopwareCategory = $this->categoryHelper->getCategory(
+                $category->getExternalIdentifier(),
+                $this->identifier,
+                $this->isAttribute
+            );
 
-            // define variable
-            $parent = null;
+            $shopwareCategory->setName($category->getName());
+            $shopwareCategory->setMetaDescription($category->getDescription());
+            $shopwareCategory->setParent($this->findParent($category));
+            $shopwareCategory->setPosition($category->getPosition());
+            $shopwareCategory->setCmsText($category->getCmsText());
+            $shopwareCategory->setActive($category->getActive());
 
-            /**
-             * @var \Shopware\Models\Category\Category $category
-             */
-            $category = $this->categoryHelper->getCategory($value->getExternalIdentifier(), $this->identifier, $this->isAttribute);
-
-            /**
-             * set category values
-             */
-            $category->setName($value->getName());
-            $category->setMetaDescription($value->getDescription());
-
-            if($value->getParentIdentifier()) {
-                $parent = $this->categoryHelper->getCategoryByAttribute($value->getParentIdentifier(), $this->identifier);
-            }
-
-            if(!$parent) {
-                $parent = $this->categoryHelper->getMainCategory();
-            }
-
-            $category->setParent($parent);
-
-            $this->entityManager->persist($category);
+            $this->entityManager->persist($shopwareCategory);
         }
     }
 
 
     /**
      * @param $targetData
+     *
      * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws OptimisticLockException
      */
-    public function send($targetData) {
+    public function send($targetData)
+    {
         $this->entityManager->flush();
+    }
+
+    /**
+     * @param ValueCategory $category
+     *
+     * @return ShopwareCategory
+     */
+    private function findParent(ValueCategory $category): ShopwareCategory
+    {
+        $parent = null;
+
+        if ($category->getParentIdentifier()) {
+            $parent = $this->categoryHelper->getCategoryByAttribute(
+                $category->getParentIdentifier(),
+                $this->identifier
+            );
+        }
+
+        if ( ! $parent) {
+            $parent = $this->categoryHelper->getMainCategory();
+        }
+
+        return $parent;
     }
 }

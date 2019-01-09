@@ -6,6 +6,7 @@ use Fatchip\Afterbuy\ApiClient as ApiClientAlias;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category;
+use RuntimeException;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -50,10 +51,27 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $value = new $this->targetEntity();
 
             //mappings for valueObject
-            $value->setName($entity['Name']);
-            $value->setExternalIdentifier($entity['CatalogID']);
-            $value->setDescription($entity['Description']);
-            $value->setParentIdentifier($entity['ParentID']);
+            $fieldMappings = [
+                ['CatalogID', 'ExternalIdentifier'],
+                ['Name', 'Name'],
+                ['Description', 'Description'],
+                ['ParentID', 'ParentIdentifier'],
+                ['Position', 'Position'],
+                ['AdditionalText', 'CmsText'],
+                ['Show', 'Active'],
+                ['Picture1', 'Image'],
+            ];
+
+            foreach ($fieldMappings as [$afterbuyVar, $valueObjVar]) {
+                if (isset($entity[$afterbuyVar])) {
+                    $setter = 'set' . $valueObjVar;
+                    $value->$setter($entity[$afterbuyVar]);
+                }
+            }
+
+            if ( ! $value->isValid()) {
+                throw new RuntimeException('value is not valid');
+            }
 
             $targetData[] = $value;
         }
@@ -71,36 +89,24 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter): array
     {
-        $config = [
-            'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
-            'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
-            'afterbuyPartnerId'            => '110931',
-            'afterbuyPartnerPassword'      => 'h=wRLW)WGW(z7o=XcytHe9ZUZ',
-            'afterbuyUsername'             => 'fatchip',
-            'afterbuyUserPassword'         => 'fc2afterbuy',
-            'logLevel'                     => '1',
-        ];
-
-        $pageNumber = 0;
+        // $pageNumber = 0;
         $data = [];
 
         /** @var ApiClientAlias $api */
-        $api = new ApiClientAlias($config);
+        $api = new ApiClientAlias($this->apiConfig);
 
-        do {
-            $catalogsResult = $api->getCatalogsFromAfterbuy(0, 2, $pageNumber++);
-            var_dump($catalogsResult);
-            $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
-            foreach ($catalogs as $catalog) {
-                $data[] = $catalog;
-            }
-        } while ($catalogsResult['Result']['HasMoreCatalogs']);
+        // do {
+        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
+        var_dump($catalogsResult);
+        $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
+        foreach ($catalogs as $catalog) {
+            $data[] = $catalog;
+        }
+        // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 
         if ( ! $data) {
             $this->logger->error('No data received', array('Categories', 'Read', 'External'));
         }
-
-        var_dump($data);
 
         return $data;
     }

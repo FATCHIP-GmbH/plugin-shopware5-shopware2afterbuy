@@ -17,26 +17,6 @@ use Shopware\Models\Order\Shipping;
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
     /**
-     * @var string $identifier
-     */
-    protected $identifier;
-
-    /**
-     * @var bool $isAttribute
-     */
-    protected $isAttribute;
-
-    /**
-     * @param AbstractHelper $helper
-     * @param string $identifier
-     * @param bool $isAttribute
-     */
-    public function initHelper(string $identifier, bool $isAttribute) {
-        $this->identifier = $identifier;
-        $this->isAttribute = $isAttribute;
-    }
-
-    /**
      * @param array $data
      * @return mixed|void
      * @throws \Doctrine\ORM\OptimisticLockException

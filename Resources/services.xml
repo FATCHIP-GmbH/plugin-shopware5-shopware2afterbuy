@@ -47,6 +47,7 @@
         <service class="FatchipAfterbuy\Services\WriteData\External\WriteOrdersService" id="fatchip_afterbuy.services.write_data.external.write_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument type="string">false</argument>
             </call>
@@ -96,6 +97,12 @@
         </service>
 
         <!-- Helper -->
+
+        <service class="FatchipAfterbuy\Services\Helper\ShopwareEntityHelper" id="fatchip_afterbuy.services.helper.shopware_order_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Order\Order</argument>
+            <argument type="string">\Shopware\Models\Attribute\Order</argument>
+        </service>
 
         <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">
             <argument id="models" type="service"/>

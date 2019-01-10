@@ -34,6 +34,9 @@ class AbstractDataService {
 
     public $apiConfig;
 
+    /**
+     * @var AbstractHelper $helper
+     */
     public $helper;
 
      /**

@@ -67,7 +67,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                     $value->getPositions()->add($orderPosition);
 
-                    //TODO: fix
                     $netAmount += $position["ItemQuantity"] * (Helper::convertDeString2Float($position["ItemPrice"]) / (1 + Helper::convertDeString2Float($position["TaxRate"]) / 100));
                 }
             } else {
@@ -123,7 +122,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $value->setAmountNet($netAmount);
 
             //Addresses
-            //TODO: add validation
             $billingAddress = new Address();
 
             $billingAddress->setFirstname($entity["BuyerInfo"]["BillingAddress"]["FirstName"]);
@@ -168,9 +166,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $shippingAddress->setPhone($entity["BuyerInfo"]["ShippingAddress"]["Phone"]);
 
                 $value->setShippingAddress($shippingAddress);
-            }
-            else {
-                $value->setShippingAddress($billingAddress);
             }
 
             array_push($targetData, $value);

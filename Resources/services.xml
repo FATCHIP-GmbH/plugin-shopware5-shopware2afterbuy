@@ -58,6 +58,11 @@
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
         </service>
 
         <!-- Categories -->

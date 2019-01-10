@@ -115,7 +115,7 @@ class Order extends AbstractValueObject {
     /**
      * @return Address
      */
-    public function getShippingAddress(): Address
+    public function getShippingAddress(): ?Address
     {
         return $this->shippingAddress;
     }

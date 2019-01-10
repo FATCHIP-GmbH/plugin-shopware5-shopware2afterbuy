@@ -9,7 +9,7 @@ use Shopware\Models\Category\Category;
 
 class ShopwareOrderHelper extends AbstractHelper {
 
-
-
-
+    public function getShop(int $id) {
+        return $this->entityManager->getRepository('\Shopware\Models\Shop\Shop')->find($id);
+    }
 }

@@ -4,17 +4,26 @@ namespace FatchipAfterbuy\Services\WriteData\Internal;
 
 use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
-use Shopware\Models\Customer\Address;
 use Shopware\Models\Order\Billing;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Shipping;
+use Shopware\Models\Shop\Shop;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
+
+    /**
+     * @var ShopwareOrderHelper $helper
+     */
+
+    /**
+     * @var Shop
+     */
+    protected $targetShop;
 
     /**
      * @param array $data
@@ -34,6 +43,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @return mixed|void
      */
     public function transform(array $data) {
+        $this->targetShop = $this->helper->getShop($this->config['targetShop']);
 
         foreach($data as $value) {
             /**
@@ -43,22 +53,17 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             /**
              * @var \Shopware\Models\Order\Order $order
              */
-            //TODO: move to helper
-            $order = $this->entityManager->getRepository($this->targetRepository)->findOneBy(array($this->identifier => $value->getExternalIdentifier()));
+            $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
 
-            if(!$order) {
-                $order = new $this->targetRepository();
-
-                //TODO: set identifier
-            }
-
-            //TODO: set date
-
-            $order->setNumber($value->getExternalIdentifier());
+            /**
+             * set main order values
+             */
             $order->setInvoiceAmount($value->getAmount());
             $order->setInvoiceAmountNet($value->getAmountNet());
-
             $order->setInvoiceShipping($value->getShipping());
+            $order->setShop($this->targetShop);
+            $order->setLanguageSubShop($this->targetShop);
+            $order->setReferer("Afterbuy");
 
             //TODO: set correct values
             $order->setInvoiceShippingNet($value->getShipping());
@@ -67,13 +72,17 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $order->setCustomerComment("");
             $order->setInternalComment("");
             $order->setNet(0);
-            $order->setTaxFree(1);
+            $order->setTaxFree(0);
             $order->setTemporaryId($value->getExternalIdentifier());
-            $order->setReferer("Afterbuy");
+
             $order->setTrackingCode("");
-            $order->setLanguageIso('DE');
+
             $order->setCurrency('EUR');
             $order->setCurrencyFactor(1);
+
+            /**
+             * set billing address
+             */
 
             $billingAddress = $order->getBilling();
 
@@ -92,37 +101,51 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $billingAddress->setCity($value->getBillingAddress()->getCity());
             $billingAddress->setCompany($value->getBillingAddress()->getCompany());
             $billingAddress->setDepartment($value->getBillingAddress()->getDepartment());
+
+
             $billingAddress->setCountry($this->entityManager->getRepository('\Shopware\Models\Country\Country')->find(2));
+
+            $order->setBilling($billingAddress);
+
+            //TODO: what if we got no customer?
             $billingAddress->setCustomer($this->entityManager->getRepository('\Shopware\Models\Customer\Customer')->find(1));
             //TODO: phone, vatID, country, mail
 
+            /**
+             * set shipping address
+             */
 
+            $shippingAddress = $order->getShipping();
 
-            if($value->getBillingAddress() === $value->getShippingAddress()) {
-                $order->setShipping($order->getBilling());
+            if($shippingAddress === null) {
+                $shippingAddress = new Shipping();
+            }
+
+            if($value->getShippingAddress()) {
+                $getter = "getShippingAddress";
             }
             else {
-                $shippingAddress = $order->getShipping();
-
-                if($shippingAddress === null) {
-                    $shippingAddress = new Shipping();
-                }
-
-                //$shippingAddress->setVatId($value->getShippingAddress()->getVatId());
-                $shippingAddress->setSalutation($value->getShippingAddress()->getSalutation());
-                $shippingAddress->setFirstName($value->getShippingAddress()->getFirstname());
-                $shippingAddress->setLastName($value->getShippingAddress()->getLastname());
-                $shippingAddress->setStreet($value->getShippingAddress()->getStreet());
-                $shippingAddress->setAdditionalAddressLine1($value->getShippingAddress()->getAdditionalAddressLine1());
-                $shippingAddress->setAdditionalAddressLine2($value->getShippingAddress()->getAdditionalAddressLine2());
-                $shippingAddress->setZipcode($value->getShippingAddress()->getZipcode());
-                $shippingAddress->setCity($value->getShippingAddress()->getCity());
-                $shippingAddress->setCompany($value->getShippingAddress()->getCompany());
-                $shippingAddress->setDepartment($value->getShippingAddress()->getDepartment());
-                //TODO: phone, vatID, country, mail
+                $getter = "getBillingAddress";
             }
 
-            //TODO: set order details
+            $shippingAddress->setSalutation($value->$getter()->getSalutation());
+            $shippingAddress->setFirstName($value->$getter()->getFirstname());
+            $shippingAddress->setLastName($value->$getter()->getLastname());
+            $shippingAddress->setStreet($value->$getter()->getStreet());
+            $shippingAddress->setAdditionalAddressLine1($value->$getter()->getAdditionalAddressLine1());
+            $shippingAddress->setAdditionalAddressLine2($value->$getter()->getAdditionalAddressLine2());
+            $shippingAddress->setZipcode($value->$getter()->getZipcode());
+            $shippingAddress->setCity($value->$getter()->getCity());
+            $shippingAddress->setCompany($value->$getter()->getCompany());
+            $shippingAddress->setDepartment($value->$getter()->getDepartment());
+            //TODO: phone, country, mail
+
+            $order->setShipping($shippingAddress);
+
+            /**
+             * set and update positions
+             */
+
             $details = $order->getDetails();
             $details->clear();
 
@@ -146,32 +169,29 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 //TODO: cache and helper / create new if needed
                 $tax = $this->entityManager->getRepository('\Shopware\Models\Tax\Tax')->findOneBy(array('tax' => $tax));
 
+                $detail->setTaxRate($position->getTax());
+
                 $detail->setTax($tax);
                 $detail->setOrder($order);
                 $detail->setArticleId(0);
 
-
                 $details->add($detail);
             }
 
-            //TODO: set amount
-            //TODO: set positions
+            //TODO: taxfree
             //TODO: set shipping
             $order->setDispatch($this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')->find(9));
 
             //TODO: set payment
             $order->setPayment($this->entityManager->getRepository('\Shopware\Models\Payment\Payment')->find(5));
 
-            //TODO: config target subshop
-            $order->setShop($this->entityManager->getRepository('\Shopware\Models\Shop\Shop')->find(1));
+
 
             //TODO: set status
             //TODO: set payment status / only import paid
             $order->setOrderStatus($this->entityManager->getRepository('\Shopware\Models\Order\Status')->find(1));
             $order->setPaymentStatus($this->entityManager->getRepository('\Shopware\Models\Order\Status')->find(1));
 
-            $this->entityManager->persist($billingAddress);
-            $order->setBilling($billingAddress);
             $this->entityManager->persist($order);
         }
     }

@@ -44,6 +44,12 @@
             <label lang="en">Afterbuy User-Password</label>
             <value>fc2afterbuy</value>
         </element>
+        <element type="combo" >
+            <name>targetShop</name>
+            <label lang="de">Zielshop für Bestellungen</label>
+            <label lang="en">target shop for orders</label>
+            <store>Shopware.apps.Base.store.Shop</store>
+        </element>
     </elements>
 
 </config>

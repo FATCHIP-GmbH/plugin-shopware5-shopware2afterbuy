@@ -35,6 +35,7 @@ class AbstractHelper {
      * @param ModelManager $entityManager
      * @param string $entity
      * @param string $entityAttributes
+     * @param string $attributeGetter
      */
     public function __construct(ModelManager $entityManager, string $entity, string $entityAttributes, string $attributeGetter) {
         $this->entityManager = $entityManager;

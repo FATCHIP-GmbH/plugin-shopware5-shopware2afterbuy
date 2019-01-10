@@ -26,6 +26,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     protected $targetShop;
 
     /**
+     * @var array
+     */
+    protected $countries;
+
+    /**
      * @param array $data
      * @return mixed|void
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -44,6 +49,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
     public function transform(array $data) {
         $this->targetShop = $this->helper->getShop($this->config['targetShop']);
+        $this->countries = $this->helper->getCountries();
 
         foreach($data as $value) {
             /**
@@ -102,8 +108,18 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $billingAddress->setCompany($value->getBillingAddress()->getCompany());
             $billingAddress->setDepartment($value->getBillingAddress()->getDepartment());
 
+            /**
+             * maybe country does not exist in shopware
+             */
+            try {
+                $billingAddress->setCountry($this->countries[strtoupper($value->getBillingAddress()->getCountry())]);
+            }
+            catch (\Exception $e) {
+                $this->logger->error("Country could not have been set.", array($value->getBillingAddress()->getCountry()));
+            }
+            finally {
 
-            $billingAddress->setCountry($this->entityManager->getRepository('\Shopware\Models\Country\Country')->find(2));
+            }
 
             $order->setBilling($billingAddress);
 
@@ -138,6 +154,18 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $shippingAddress->setCity($value->$getter()->getCity());
             $shippingAddress->setCompany($value->$getter()->getCompany());
             $shippingAddress->setDepartment($value->$getter()->getDepartment());
+
+            try {
+                $shippingAddress->setCountry($this->countries[strtoupper($value->$getter()->getCountry())]);
+            }
+            catch (\Exception $e) {
+                $this->logger->error("Country could not have been set.", array($value->$getter()->getCountry()));
+            }
+            finally {
+
+            }
+
+
             //TODO: phone, country, mail
 
             $order->setShipping($shippingAddress);
@@ -167,7 +195,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $detail->setArticleName($position->getName());
 
                 //TODO: cache and helper / create new if needed
-                $tax = $this->entityManager->getRepository('\Shopware\Models\Tax\Tax')->findOneBy(array('tax' => $tax));
+                $tax = $this->helper->getTax($position->getTax());
 
                 $detail->setTaxRate($position->getTax());
 

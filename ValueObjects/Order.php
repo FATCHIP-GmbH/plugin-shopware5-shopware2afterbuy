@@ -37,20 +37,68 @@ class Order extends AbstractValueObject {
     public $billingAddress;
 
     /**
-     * @var string
+     * @var float
      */
     public $amount;
 
     /**
-     * @var string
+     * @var float
      */
     public $shipping;
-
 
     /**
      * @var float
      */
     public $amountNet;
+
+    /**
+     * @var float
+     */
+    public $paid;
+
+    /**
+     * @var string
+     */
+    public $currency;
+
+    /**
+     * @var string
+     */
+    public $transactionId = "";
+
+    /**
+     * @var bool
+     */
+    public $taxFree;
+
+    /**
+     * @var float
+     */
+    public $shippingNet;
+
+    /**
+     * @var float
+     */
+    public $shippingTax;
+
+    /**
+     * @var bool
+     */
+    public $shipped = false;
+
+    /**
+     * @var \DateTime
+     */
+    public $createDate;
+
+    /**
+     * @var \DateTime
+     */
+    public $updateDate;
+
+
+
+
 
     /*    public $paymentType;
 
@@ -145,7 +193,7 @@ class Order extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getAmount()
     {
@@ -155,7 +203,7 @@ class Order extends AbstractValueObject {
     /**
      * @param mixed $amount
      */
-    public function setAmount($amount): void
+    public function setAmount(float $amount): void
     {
         $this->amount = $amount;
     }
@@ -163,7 +211,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getShipping(): string
+    public function getShipping(): float
     {
         return $this->shipping;
     }
@@ -171,7 +219,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $shipping
      */
-    public function setShipping(string $shipping): void
+    public function setShipping(float $shipping): void
     {
         $this->shipping = $shipping;
     }
@@ -191,6 +239,152 @@ class Order extends AbstractValueObject {
     {
         $this->amountNet = $amountNet;
     }
+
+    /**
+     * @return float
+     */
+    public function getPaid(): float
+    {
+        return $this->paid;
+    }
+
+    /**
+     * @param float $paid
+     */
+    public function setPaid(float $paid): void
+    {
+        $this->paid = $paid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransactionId(): string
+    {
+        return $this->transactionId;
+    }
+
+    /**
+     * @param string $transactionId
+     */
+    public function setTransactionId(string $transactionId): void
+    {
+        $this->transactionId = $transactionId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTaxFree(): bool
+    {
+        return $this->taxFree;
+    }
+
+    /**
+     * @param bool $taxFree
+     */
+    public function setTaxFree(bool $taxFree): void
+    {
+        $this->taxFree = $taxFree;
+    }
+
+    /**
+     * @return float
+     */
+    public function getShippingNet()
+    {
+        return $this->shippingNet;
+    }
+
+    /**
+     * @param float $shippingNet
+     */
+    public function setShippingNet(float $shippingNet): void
+    {
+        $this->shippingNet = $shippingNet;
+    }
+
+    /**
+     * @return float
+     */
+    public function getShippingTax(): float
+    {
+        return $this->shippingTax;
+    }
+
+    /**
+     * @param float $shippingTax
+     */
+    public function setShippingTax(float $shippingTax): void
+    {
+        $this->shippingTax = $shippingTax;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShipped(): bool
+    {
+        return $this->shipped;
+    }
+
+    /**
+     * @param bool $shipped
+     */
+    public function setShipped(bool $shipped): void
+    {
+        $this->shipped = $shipped;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreateDate(): \DateTime
+    {
+        return $this->createDate;
+    }
+
+    /**
+     * @param \DateTime $createDate
+     */
+    public function setCreateDate(\DateTime $createDate): void
+    {
+        $this->createDate = $createDate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdateDate(): \DateTime
+    {
+        return $this->updateDate;
+    }
+
+    /**
+     * @param \DateTime $updateDate
+     */
+    public function setUpdateDate(\DateTime $updateDate): void
+    {
+        $this->updateDate = $updateDate;
+    }
+
+
 
 
 

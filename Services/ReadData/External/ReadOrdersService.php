@@ -44,9 +44,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             //mappings for valueObject
             $value->setExternalIdentifier($entity["OrderID"]);
             $value->setAmount(Helper::convertDeString2Float($entity["PaymentInfo"]["FullAmount"]));
-
-            //Status
-            //TODO: set status
+            $value->setCreateDate(new \DateTime($entity["OrderDate"]));
 
             //Positions
             /**
@@ -67,7 +65,9 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                     $value->getPositions()->add($orderPosition);
 
-                    $netAmount += $position["ItemQuantity"] * (Helper::convertDeString2Float($position["ItemPrice"]) / (1 + Helper::convertDeString2Float($position["TaxRate"]) / 100));
+                    if(Helper::convertDeString2Float($position["TaxRate"])) {
+                        $netAmount += $position["ItemQuantity"] * (Helper::convertDeString2Float($position["ItemPrice"]) / (1 + Helper::convertDeString2Float($position["TaxRate"]) / 100));
+                    }
                 }
             } else {
                 $orderPosition = new OrderPosition();
@@ -80,13 +80,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                 $value->getPositions()->add($orderPosition);
 
-                $netAmount += Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]) / (1 + Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]) / 100);
+                if(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"])) {
+                    $netAmount += Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]) / (1 + Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]) / 100);
+                }
             }
-
-
-
-
-
             //Shipping
 
             //Payment
@@ -115,11 +112,27 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             OTHERS - Sonstige*/
 
             //Shipping Costs
-            //TODO: set shipping net
-            $value->setShipping(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingCost"]));
+            $shippingNet = Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTotalCost"]) / (1 + Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]) / 100);
 
-            $netAmount += Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingCost"]) / (1 + Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]) / 100);
+            $value->setShippingNet($shippingNet);
+            $value->setShipping(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTotalCost"]));
+            $value->setShippingTax(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]));
+
+            if(array_key_exists("DeliveryDate", $entity["ShippingInfo"])) {
+                $value->setShipped(true);
+            }
+
+            if($shippingNet) {
+                $netAmount += $shippingNet;
+            }
+
             $value->setAmountNet($netAmount);
+            $value->setPaid(Helper::convertDeString2Float($entity["PaymentInfo"]["AlreadyPaid"]));
+
+            if(array_key_exists("PaymentTransactionID", $entity["PaymentInfo"])) {
+                $value->setTransactionId($entity["PaymentInfo"]["PaymentTransactionID"]);
+            }
+
 
             //Addresses
             $billingAddress = new Address();

@@ -61,5 +61,40 @@ class ShopwareOrderHelper extends AbstractHelper {
         $this->entityManager->flush();
     }
 
+    public function getPaymentStates() {
+        $states = $this->entityManager->createQueryBuilder()
+            ->select('states')
+            ->from('\Shopware\Models\Order\Status', 'states', 'states.name')
+            ->where('states.group = :group')
+            ->setParameters(array('group' => 'payment'))
+            ->getQuery()
+            ->getResult();
+
+        return $states;
+    }
+
+    public function getShippingStates() {
+        $states = $this->entityManager->createQueryBuilder()
+            ->select('states')
+            ->from('\Shopware\Models\Order\Status', 'states', 'states.name')
+            ->where('states.group = :group')
+            ->setParameters(array('group' => 'state'))
+            ->getQuery()
+            ->getResult();
+
+        return $states;
+    }
+
+    public function getDetailStates() {
+        $states = $this->entityManager->createQueryBuilder()
+            ->select('states')
+            ->from('\Shopware\Models\Order\DetailStatus', 'states', 'states.id')
+            ->getQuery()
+            ->getResult();
+
+        return $states;
+    }
+
+
 
 }

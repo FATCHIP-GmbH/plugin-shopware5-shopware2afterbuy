@@ -18,6 +18,36 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     protected $taxes;
 
+    protected $paymentStates;
+
+    protected $shippingStates;
+
+    public function preFetch() {
+        $this->paymentStates = $this->getPaymentStates();
+        $this->shippingStates = $this->getShippingStates();
+
+    }
+
+    public function setShippingStatus(Order $value, \Shopware\Models\Order\Order &$order) {
+        if($value->isShipped()) {
+            $order->setOrderStatus($this->shippingStates["completed"]);
+        } else {
+            $order->setOrderStatus($this->shippingStates["open"]);
+        }
+    }
+
+    public function setPaymentStatus(Order $value, \Shopware\Models\Order\Order &$order) {
+        if($value->getPaid() > 0) {
+            $order->setPaymentStatus($this->paymentStates['partially_paid']);
+        }
+        if($value->getPaid() >= $value->getAmount()) {
+            $order->setPaymentStatus($this->paymentStates["completely_paid"]);
+        }
+        if($value->getPaid() <= 0) {
+            $order->setPaymentStatus($this->paymentStates["open"]);
+        }
+    }
+
     public function getShop(int $id) {
         return $this->entityManager->getRepository('\Shopware\Models\Shop\Shop')->find($id);
     }

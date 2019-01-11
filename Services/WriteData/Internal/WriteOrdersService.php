@@ -76,8 +76,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     public function transform(array $data) {
         $this->targetShop = $this->helper->getShop($this->config['targetShop']);
         $this->countries = $this->helper->getCountries();
-        $this->paymentStates = $this->helper->getPaymentStates();
-        $this->shippingStates = $this->helper->getShippingStates();
+
+
         $this->detailStates = $this->helper->getDetailStates();
         $this->paymentTypes = $this->helper->getPaymentTypes();
         $this->targetGroup = $this->helper->getDefaultGroup();
@@ -115,24 +115,13 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             /**
              * set payment status
              */
-            if($value->getPaid() > 0) {
-                $order->setPaymentStatus($this->paymentStates['partially_paid']);
-            }
-            if($value->getPaid() >= $value->getAmount()) {
-                $order->setPaymentStatus($this->paymentStates["completely_paid"]);
-            }
-            if($value->getPaid() <= 0) {
-                $order->setPaymentStatus($this->paymentStates["open"]);
-            }
+            $this->helper->setPaymentStatus($value, $order);
 
             /**
              * set shipping status
              */
-            if($value->isShipped()) {
-                $order->setOrderStatus($this->shippingStates["completed"]);
-            } else {
-                $order->setOrderStatus($this->shippingStates["open"]);
-            }
+            $this->helper->setShippingStatus($value, $order);
+
 
             /**
              * set payment type

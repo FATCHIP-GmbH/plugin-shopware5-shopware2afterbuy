@@ -104,6 +104,9 @@
             <argument type="string">\Shopware\Models\Order\Order</argument>
             <argument type="string">\Shopware\Models\Attribute\Order</argument>
             <argument type="string">getOrder</argument>
+            <call method="preFetch">
+
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">

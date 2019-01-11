@@ -51,7 +51,7 @@ class AbstractHelper {
      * @param bool $isAttribute
      * @return ModelEntity|null
      */
-    public function getEntity(string $identifier, string $field, $isAttribute = false) {
+    public function getEntity(string $identifier, string $field, $isAttribute = false, $create = true) {
         if($isAttribute === true) {
             $entity = $this->getEntityByAttribute($identifier, $field);
         }
@@ -59,7 +59,7 @@ class AbstractHelper {
             $entity = $this->getEntityByField($identifier, $field);
         }
 
-        if(!$entity) {
+        if(!$entity && $create === true) {
             $entity = $this->createEntity($identifier, $field, $isAttribute);
         }
 

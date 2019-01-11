@@ -2,17 +2,10 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Order;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
-use Shopware\Models\Customer\Group;
-use Shopware\Models\Order\Billing;
-use Shopware\Models\Order\Detail;
-use Shopware\Models\Order\Shipping;
 use Shopware\Models\Shop\Shop;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
@@ -22,39 +15,14 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
 
     /**
-     * @var Shop
-     */
-    protected $targetShop;
-
-    /**
      * @var array
      */
     protected $countries;
 
     /**
-     * @var array
+     * @var Shop
      */
-    protected $paymentStates;
-
-    /**
-     * @var array
-     */
-    protected $shippingStates;
-
-    /**
-     * @var array
-     */
-    protected $detailStates;
-
-    /**
-     * @var array
-     */
-    protected $paymentTypes;
-
-    /**
-     * @var Group
-     */
-    protected $targetGroup;
+    protected $targetShop;
 
     /**
      * @param array $data
@@ -77,12 +45,18 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $this->targetShop = $this->helper->getShop($this->config['targetShop']);
         $this->countries = $this->helper->getCountries();
 
-
-        $this->detailStates = $this->helper->getDetailStates();
-        $this->paymentTypes = $this->helper->getPaymentTypes();
-        $this->targetGroup = $this->helper->getDefaultGroup();
-
         foreach($data as $value) {
+            //log and ignore order if country is not setup in shop
+            if(!$this->countries[strtoupper($value->getBillingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($value->getBillingAddress()->getCountry()));
+                continue;
+            }
+
+            if($value->getShippingAddress() && !$this->countries[strtoupper($value->getShippingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($value->getShippingAddress()->getCountry()));
+                continue;
+            }
+
             /**
              * @var Order $value
              */
@@ -92,25 +66,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
              */
             $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
 
-            /**
-             * set main order values
-             */
-            $order->setInvoiceAmount($value->getAmount());
-            $order->setInvoiceShipping($value->getShipping());
-            $order->setInvoiceShippingTaxRate($value->getShippingTax());
-            $order->setOrderTime($value->getCreateDate());
-            $order->setTransactionId($value->getTransactionId());
-
-            if(!$value->getAmountNet()) {
-                $order->setTaxFree(1);
-                $order->setInvoiceAmountNet($value->getAmount());
-                $order->setInvoiceShippingNet($value->getShipping());
-            }
-            else {
-                $order->setTaxFree(0);
-                $order->setInvoiceAmountNet($value->getAmountNet());
-                $order->setInvoiceShippingNet($value->getShippingNet());
-            }
+            $this->helper->setOrderMainValues($value, $order, $this->targetShop);
+            $this->helper->setOrderTaxValues($value, $order);
 
             /**
              * set payment status
@@ -122,146 +79,28 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
              */
             $this->helper->setShippingStatus($value, $order);
 
-
             /**
              * set payment type
              */
-            if($this->config["payment" . $value->getPaymentType()]) {
-                $order->setPayment($this->paymentTypes[$this->config["payment" . $value->getPaymentType()]]);
-            }
-            else {
-                //fallback: set first available payment type
-                $order->setPayment(array_values($this->paymentTypes)[0]);
-            }
+            $this->helper->setPaymentType($value, $order, $this->config);
 
-            $order->setShop($this->targetShop);
-            $order->setLanguageSubShop($this->targetShop);
-            $order->setReferer("Afterbuy");
-            $order->setTemporaryId($value->getExternalIdentifier());
-
-
-            $order->setTransactionId($value->getTransactionId());
-            $order->setCurrency($value->getCurrency());
-            $order->setNet(0);
-
-            //TODO: set correct values
-            $order->setComment("");
-            $order->setCustomerComment("");
-            $order->setInternalComment("");
-            $order->setTrackingCode("");
-            $order->setCurrencyFactor(1);
-
-            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop, $this->targetGroup, $this->countries[strtoupper($value->getBillingAddress()->getCountry())]);
+            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop);
             $order->setCustomer($customer);
 
             /**
              * set billing address
              */
-
-            $billingAddress = $order->getBilling();
-
-            if($billingAddress === null) {
-                $billingAddress = new Billing();
-            }
-
-            $billingAddress->setVatId($value->getBillingAddress()->getVatId());
-            $billingAddress->setSalutation($value->getBillingAddress()->getSalutation());
-            $billingAddress->setFirstName($value->getBillingAddress()->getFirstname());
-            $billingAddress->setLastName($value->getBillingAddress()->getLastname());
-            $billingAddress->setStreet($value->getBillingAddress()->getStreet());
-            $billingAddress->setAdditionalAddressLine1($value->getBillingAddress()->getAdditionalAddressLine1());
-            $billingAddress->setAdditionalAddressLine2($value->getBillingAddress()->getAdditionalAddressLine2());
-            $billingAddress->setZipcode($value->getBillingAddress()->getZipcode());
-            $billingAddress->setCity($value->getBillingAddress()->getCity());
-            $billingAddress->setCompany($value->getBillingAddress()->getCompany());
-            $billingAddress->setDepartment($value->getBillingAddress()->getDepartment());
-            $billingAddress->setCountry($this->countries[strtoupper($value->getBillingAddress()->getCountry())]);
-            $billingAddress->setCustomer($customer);
-            //TODO: phone,
-
-            $order->setBilling($billingAddress);
+            $this->helper->setAddress($value, $order, $customer);
 
             /**
              * set shipping address
              */
-
-            $shippingAddress = $order->getShipping();
-
-            if($shippingAddress === null) {
-                $shippingAddress = new Shipping();
-            }
-
-            if($value->getShippingAddress()) {
-                $getter = "getShippingAddress";
-            }
-            else {
-                $getter = "getBillingAddress";
-            }
-
-            $shippingAddress->setSalutation($value->$getter()->getSalutation());
-            $shippingAddress->setFirstName($value->$getter()->getFirstname());
-            $shippingAddress->setLastName($value->$getter()->getLastname());
-            $shippingAddress->setStreet($value->$getter()->getStreet());
-            $shippingAddress->setAdditionalAddressLine1($value->$getter()->getAdditionalAddressLine1());
-            $shippingAddress->setAdditionalAddressLine2($value->$getter()->getAdditionalAddressLine2());
-            $shippingAddress->setZipcode($value->$getter()->getZipcode());
-            $shippingAddress->setCity($value->$getter()->getCity());
-            $shippingAddress->setCompany($value->$getter()->getCompany());
-            $shippingAddress->setDepartment($value->$getter()->getDepartment());
-            $shippingAddress->setCustomer($customer);
-            //TODO: phone, mail
-
-            //log and ignore order if country is not setup in shop
-            if(!$this->countries[strtoupper($value->getBillingAddress()->getCountry())] || !$this->countries[strtoupper($value->$getter()->getCountry())]) {
-                $this->logger->error('Country is not available in Shop config.', array($value->getBillingAddress()->getCountry(), $value->$getter()->getCountry()));
-                continue;
-            }
-
-            $shippingAddress->setCountry($this->countries[strtoupper($value->$getter()->getCountry())]);
-
-            $order->setShipping($shippingAddress);
+            $this->helper->setAddress($value, $order, $customer, "shipping");
 
             /**
              * set and update positions
              */
-
-            $details = $order->getDetails();
-            $details->clear();
-
-            foreach($value->getPositions() as $position) {
-                /**
-                 * @var OrderPosition $position
-                 */
-
-                $detail = new Detail();
-                $detail->setNumber($value->getExternalIdentifier());
-                $detail->setTax($position->getTax());
-                $detail->setQuantity($position->getQuantity());
-                $detail->setPrice($position->getPrice());
-
-                $tax = number_format($position->getTax(), 2);
-                $detail->setTaxRate($tax);
-
-                if($value->isShipped()) {
-                    $detail->setStatus($this->detailStates["3"]);
-                } else {
-                    $detail->setStatus($this->detailStates["1"]);
-                }
-
-                $detail->setArticleNumber($position->getExternalIdentifier());
-                $detail->setArticleName($position->getName());
-
-                //TODO: cache and helper / create new if needed
-                $tax = $this->helper->getTax($position->getTax());
-
-                $detail->setTaxRate($position->getTax());
-
-                $detail->setTax($tax);
-                $detail->setOrder($order);
-                $detail->setArticleId(0);
-
-                $details->add($detail);
-            }
+            $this->helper->setPositions($value, $order);
 
             //TODO: set shipping
             $order->setDispatch($this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')->find(9));

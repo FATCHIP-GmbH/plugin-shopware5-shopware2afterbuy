@@ -153,6 +153,12 @@
             <label lang="en">Payment OTHERS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
+        <element type="combo" >
+            <name>shipping</name>
+            <label lang="de">Versandart</label>
+            <label lang="en">Shipping type</label>
+            <store>Shopware.apps.Base.store.Dispatch</store>
+        </element>
     </elements>
 
 </config>

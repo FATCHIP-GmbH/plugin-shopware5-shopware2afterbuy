@@ -31,6 +31,8 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     protected $targetGroup;
 
+    protected $shippingType;
+
     public function preFetch() {
         $this->paymentStates = $this->getPaymentStates();
         $this->shippingStates = $this->getShippingStates();
@@ -38,6 +40,21 @@ class ShopwareOrderHelper extends AbstractHelper {
         $this->countries = $this->getCountries();
         $this->detailStates = $this->getDetailStates();
         $this->targetGroup = $this->getDefaultGroup();
+    }
+
+    public function setShippingType(\Shopware\Models\Order\Order &$order, int $id) {
+       $order->setShipping($this->getShippingType($id));
+    }
+
+    public function getShippingType(int $id) {
+        if($this->shippingType) {
+            return $this->shippingType;
+        }
+
+        $this->shippingType = $this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')
+            ->find($id);
+
+        return $this->shippingType;
     }
 
     public function setPositions(Order $value, \Shopware\Models\Order\Order &$order) {

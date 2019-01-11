@@ -102,8 +102,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
              */
             $this->helper->setPositions($value, $order);
 
-            //TODO: set shipping
-            $order->setDispatch($this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')->find(9));
+            $this->helper->setShippingType($order, $this->config["shipping"]);
 
             $this->entityManager->persist($order);
         }

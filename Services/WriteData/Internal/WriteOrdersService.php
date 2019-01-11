@@ -9,6 +9,7 @@ use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
+use Shopware\Models\Customer\Group;
 use Shopware\Models\Order\Billing;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Shipping;
@@ -46,6 +47,16 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     protected $detailStates;
 
     /**
+     * @var array
+     */
+    protected $paymentTypes;
+
+    /**
+     * @var Group
+     */
+    protected $targetGroup;
+
+    /**
      * @param array $data
      * @return mixed|void
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -68,6 +79,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $this->paymentStates = $this->helper->getPaymentStates();
         $this->shippingStates = $this->helper->getShippingStates();
         $this->detailStates = $this->helper->getDetailStates();
+        $this->paymentTypes = $this->helper->getPaymentTypes();
+        $this->targetGroup = $this->helper->getDefaultGroup();
 
         foreach($data as $value) {
             /**
@@ -121,25 +134,36 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $order->setOrderStatus($this->shippingStates["open"]);
             }
 
+            /**
+             * set payment type
+             */
+            if($this->config["payment" . $value->getPaymentType()]) {
+                $order->setPayment($this->paymentTypes[$this->config["payment" . $value->getPaymentType()]]);
+            }
+            else {
+                //fallback: set first available payment type
+                $order->setPayment(array_values($this->paymentTypes)[0]);
+            }
 
             $order->setShop($this->targetShop);
             $order->setLanguageSubShop($this->targetShop);
             $order->setReferer("Afterbuy");
             $order->setTemporaryId($value->getExternalIdentifier());
 
+
+            $order->setTransactionId($value->getTransactionId());
+            $order->setCurrency($value->getCurrency());
+            $order->setNet(0);
+
             //TODO: set correct values
-            $order->setTransactionId("");
             $order->setComment("");
             $order->setCustomerComment("");
             $order->setInternalComment("");
-            $order->setNet(0);
-
-
-
             $order->setTrackingCode("");
-
-            $order->setCurrency('EUR');
             $order->setCurrencyFactor(1);
+
+            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop, $this->targetGroup, $this->countries[strtoupper($value->getBillingAddress()->getCountry())]);
+            $order->setCustomer($customer);
 
             /**
              * set billing address
@@ -163,7 +187,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $billingAddress->setCompany($value->getBillingAddress()->getCompany());
             $billingAddress->setDepartment($value->getBillingAddress()->getDepartment());
             $billingAddress->setCountry($this->countries[strtoupper($value->getBillingAddress()->getCountry())]);
-            //TODO: phone, vatID, mail
+            $billingAddress->setCustomer($customer);
+            //TODO: phone,
 
             $order->setBilling($billingAddress);
 
@@ -194,6 +219,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $shippingAddress->setCity($value->$getter()->getCity());
             $shippingAddress->setCompany($value->$getter()->getCompany());
             $shippingAddress->setDepartment($value->$getter()->getDepartment());
+            $shippingAddress->setCustomer($customer);
             //TODO: phone, mail
 
             //log and ignore order if country is not setup in shop
@@ -233,8 +259,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                     $detail->setStatus($this->detailStates["1"]);
                 }
 
-
-                //$detail->setStatus($this->entityManager->getRepository('\Shopware\Models\Order\DetailStatus')->find(1));
                 $detail->setArticleNumber($position->getExternalIdentifier());
                 $detail->setArticleName($position->getName());
 
@@ -250,13 +274,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $details->add($detail);
             }
 
-            //TODO: taxfree
             //TODO: set shipping
             $order->setDispatch($this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')->find(9));
-
-            //TODO: set payment
-            $order->setPayment($this->entityManager->getRepository('\Shopware\Models\Payment\Payment')->find(5));
-
 
             $this->entityManager->persist($order);
         }

@@ -125,7 +125,7 @@ class Address extends AbstractValueObject
     /**
      * @var string
      */
-    protected $email;
+    protected $email = 'no.mail@set.org';
 
     /**
      * @return string
@@ -373,7 +373,7 @@ class Address extends AbstractValueObject
     public function setEmail(?string $email): void
     {
         if(!$email) {
-            $email = "";
+            return;
         }
 
         $this->email = $email;

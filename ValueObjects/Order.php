@@ -49,7 +49,7 @@ class Order extends AbstractValueObject {
     /**
      * @var float
      */
-    public $amountNet;
+    public $amountNet = 0;
 
     /**
      * @var float
@@ -59,7 +59,7 @@ class Order extends AbstractValueObject {
     /**
      * @var string
      */
-    public $currency;
+    public $currency = 'EUR';
 
     /**
      * @var string
@@ -96,17 +96,46 @@ class Order extends AbstractValueObject {
      */
     public $updateDate;
 
+    public $paymentType = 'OTHERS';
 
+    public $customerNumber;
 
+    /**
+     * @return mixed
+     */
+    public function getCustomerNumber()
+    {
+        return $this->customerNumber;
+    }
 
+    /**
+     * @param mixed $customerNumber
+     */
+    public function setCustomerNumber($customerNumber): void
+    {
+        $this->customerNumber = $customerNumber;
+    }
 
-    /*    public $paymentType;
+    public function addNetAmount(float $value, int $quantity) {
+        $this->amountNet += $value * $quantity;
+    }
 
-    public $paymentStatus;
+    /**
+     * @return string
+     */
+    public function getPaymentType(): string
+    {
+        return $this->paymentType;
+    }
 
-    public $shippingType;
+    /**
+     * @param string $paymentType
+     */
+    public function setPaymentType(string $paymentType): void
+    {
+        $this->paymentType = $paymentType;
+    }
 
-    public $shippingStatus;*/
 
     public function __construct() {
         $this->positions = new ArrayCollection();

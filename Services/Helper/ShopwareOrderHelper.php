@@ -3,9 +3,15 @@
 namespace FatchipAfterbuy\Services\Helper;
 
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\ValueObjects\Order;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Category\Category;
+use Shopware\Models\Country\Country;
+use Shopware\Models\Customer\Address;
+use Shopware\Models\Customer\Customer;
+use Shopware\Models\Customer\Group;
+use Shopware\Models\Shop\Shop;
 use Shopware\Models\Tax\Tax;
 
 class ShopwareOrderHelper extends AbstractHelper {
@@ -93,6 +99,73 @@ class ShopwareOrderHelper extends AbstractHelper {
             ->getResult();
 
         return $states;
+    }
+
+    public function getPaymentTypes() {
+        $types = $this->entityManager->createQueryBuilder()
+            ->select('types')
+            ->from('\Shopware\Models\Payment\Payment', 'types', 'types.id')
+            ->getQuery()
+            ->getResult();
+
+        return $types;
+    }
+
+    public function getCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
+                                Shop $shop, Group $group, Country $country) {
+        $customer = $this->entityManager->getRepository('\Shopware\Models\Customer\Customer')
+            ->findOneBy(array('email' => $billingAddress->getEmail(), 'accountMode' => 1));
+
+        if($customer) {
+            return $customer;
+        }
+
+        return $this->createCustomer($order, $billingAddress, $shop, $group, $country);
+    }
+
+    public function createCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
+                                   Shop $shop, Group $group, Country $country) {
+        $customer = new Customer();
+
+        $customer->setSalutation($billingAddress->getSalutation());
+        $customer->setFirstname($billingAddress->getFirstname());
+        $customer->setLastname($billingAddress->getLastname());
+        $customer->setEmail($billingAddress->getEmail());
+        $customer->setShop($shop);
+        $customer->setAccountMode(1);
+        $customer->setActive(true);
+        $customer->setGroup($group);
+        $customer->setNumber($order->getCustomerNumber());
+
+        $address = new Address();
+
+        $address->setFirstname($billingAddress->getFirstname());
+        $address->setLastname($billingAddress->getLastname());
+        $address->setSalutation($billingAddress->getSalutation());
+        $address->setCountry($country);
+        $address->setCompany($billingAddress->getCompany());
+        $address->setDepartment($billingAddress->getDepartment());
+        $address->setCity($billingAddress->getCity());
+        $address->setZipcode($billingAddress->getZipcode());
+        $address->setAdditionalAddressLine1($billingAddress->getAdditionalAddressLine1());
+        $address->setCustomer($customer);
+
+        $this->entityManager->persist($customer);
+        $this->entityManager->persist($address);
+
+        $customer->setDefaultBillingAddress($address);
+        $customer->setDefaultShippingAddress($address);
+        $this->entityManager->persist($customer);
+
+        $this->entityManager->flush();
+
+        return $customer;
+    }
+
+    public function getDefaultGroup() {
+        $group = $this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array());
+
+        return $group;
     }
 
 

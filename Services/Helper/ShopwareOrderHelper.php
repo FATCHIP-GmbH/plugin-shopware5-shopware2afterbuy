@@ -42,6 +42,19 @@ class ShopwareOrderHelper extends AbstractHelper {
         $this->targetGroup = $this->getDefaultGroup();
     }
 
+    public function getUnexportedOrders() {
+        $orders = $this->entityManager->createQueryBuilder()
+            ->select(['orders'])
+            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->leftJoin('\Shopware\Models\Attribute\Order', 'attributes')
+            ->where('orders.clearedDate > attributes.')
+            ->getQuery()
+            ->getResult();
+
+        return $orders;
+
+    }
+
     public function setShippingType(\Shopware\Models\Order\Order &$order, int $id) {
        $order->setShipping($this->getShippingType($id));
     }

@@ -31,25 +31,11 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             return null;
         }
 
-        $this->logger->info("Got " . count($data) . " items", array("Orders", "Read", "Internal"));
-
         $targetData = array();
 
         foreach($data as $entity) {
 
-            /**
-             * @var \Shopware\Models\Order\Order $entity
-             */
 
-            /**
-             * @var Order $value
-             */
-            $value = new $this->targetEntity();
-
-            //mappings for valueObject
-            $value->setInternalIdentifier($entity->getId());
-
-            array_push($targetData, $value);
         }
 
         return $targetData;
@@ -70,7 +56,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         /**
          * @var Repository $repo
          */
-        $data = $repo->getOrdersQuery($filter)->getResult();
+        $data = $this->helper->getUnexportedOrders();
 
         if(!$data) {
             $this->logger->error("No data received", array("Orders", "Read", "Internal"));

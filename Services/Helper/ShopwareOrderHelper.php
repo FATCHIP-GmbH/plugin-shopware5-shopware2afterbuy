@@ -56,7 +56,7 @@ class ShopwareOrderHelper extends AbstractHelper {
     }
 
     public function setShippingType(\Shopware\Models\Order\Order &$order, int $id) {
-       $order->setShipping($this->getShippingType($id));
+       $order->setDispatch($this->getShippingType($id));
     }
 
     public function getShippingType(int $id) {

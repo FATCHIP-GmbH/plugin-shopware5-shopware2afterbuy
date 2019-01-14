@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
+use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
@@ -24,11 +25,12 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * transforms api input into valueObject (targetEntity)
      *
      * @param array $data
-     * @return array|null
+     * @return array
+     * @throws \Exception
      */
     public function transform(array $data) {
         if($this->targetEntity === null) {
-            return null;
+            return array();
         }
 
         $targetData = array();
@@ -42,46 +44,92 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             //mappings for valueObject
             $value->setExternalIdentifier($entity["OrderID"]);
-            $value->setAmount($entity["PaymentInfo"]["FullAmount"]);
+            $value->setAmount(Helper::convertDeString2Float($entity["PaymentInfo"]["FullAmount"]));
+            $value->setCreateDate(new \DateTime($entity["OrderDate"]));
+            $value->setCustomerNumber("AB" . $entity["BuyerInfo"]["BillingAddress"]["AfterbuyUserID"]);
 
-            //Status
-            //TODO: set status
+            /**
+             * set payment type
+             */
+            if(array_key_exists("PaymentFunction", $entity["PaymentInfo"])) {
+                $value->setPaymentType($entity["PaymentInfo"]["PaymentFunction"]);
+            }
+
+            if(array_key_exists("PaymentID", $entity["PaymentInfo"])) {
+                $value->setPaymentType($entity["PaymentInfo"]["PaymentID"]);
+            }
+
 
             //Positions
-            //TODO: set positions
-            //TODO: structure differs is multiple articles per order / need to handle
-            if(intval($entity["SoldItems"]) > 1) {
+            /**
+             * structure differs is multiple articles per order / need to handle
+             */
+
+            if(intval($entity["SoldItems"]["ItemsInOrder"]) > 1) {
                 foreach($entity["SoldItems"]["SoldItem"] as $position) {
                     $orderPosition = new OrderPosition();
 
                     $orderPosition->setName($position["ItemTitle"]);
-                    $orderPosition->setPrice(floatval($position["ItemPrice"]));
+                    $orderPosition->setExternalIdentifier($position["ShopProductDetails"]["ProductID"]);
+                    $orderPosition->setQuantity($position["ItemQuantity"]);
+                    $orderPosition->setPrice(Helper::convertDeString2Float($position["ItemPrice"]));
+                    $orderPosition->setTax(Helper::convertDeString2Float($position["TaxRate"]));
 
+                    $value->getPositions()->add($orderPosition);
+
+                    if(Helper::convertDeString2Float($position["TaxRate"])) {
+                        $value->addNetAmount(Helper::convertDeString2Float($position["ItemPrice"]) / (1 + Helper::convertDeString2Float($position["TaxRate"]) / 100), $position["ItemQuantity"]);
+                    }
                 }
             } else {
-                //TODO: handle single item / use component
+                $orderPosition = new OrderPosition();
+
+                $orderPosition->setName($entity["SoldItems"]["SoldItem"]["ItemTitle"]);
+                $orderPosition->setPrice(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]));
+                $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ShopProductDetails"]["ProductID"]);
+                $orderPosition->setQuantity($entity["SoldItems"]["SoldItem"]["ItemQuantity"]);
+                $orderPosition->setTax(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]));
+
+                $value->getPositions()->add($orderPosition);
+
+                if(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"])) {
+                    $value->addNetAmount(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]) / (1 + Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]) / 100),
+                        $entity["SoldItems"]["SoldItem"]["ItemQuantity"]);
+                }
+            }
+
+            //Shipping Costs
+            $shippingNet = Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTotalCost"]) / (1 + Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]) / 100);
+
+            $value->setShippingNet($shippingNet);
+            $value->setShipping(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTotalCost"]));
+            $value->setShippingTax(Helper::convertDeString2Float($entity["ShippingInfo"]["ShippingTaxRate"]));
+
+            if(array_key_exists("DeliveryDate", $entity["ShippingInfo"])) {
+                $value->setShipped(true);
+            }
+
+            if($shippingNet) {
+                 $value->addNetAmount($shippingNet, 1);
+            }
+
+            $value->setPaid(Helper::convertDeString2Float($entity["PaymentInfo"]["AlreadyPaid"]));
+
+            if(array_key_exists("PaymentTransactionID", $entity["PaymentInfo"])) {
+                $value->setTransactionId($entity["PaymentInfo"]["PaymentTransactionID"]);
             }
 
 
-
-            //Shipping
-
-            //Payment
-
-            //Shipping Costs
-            //TODO: set shippingCosts
-
             //Addresses
-            //TODO: add validation
             $billingAddress = new Address();
 
             $billingAddress->setFirstname($entity["BuyerInfo"]["BillingAddress"]["FirstName"]);
             $billingAddress->setLastname($entity["BuyerInfo"]["BillingAddress"]["LastName"]);
 
             if($entity["BuyerInfo"]["BillingAddress"]["Title"] == "Frau") {
-                $billingAddress->getSalutation('mrs');
+                $billingAddress->setSalutation('mrs');
             } else {
-                $billingAddress->getSalutation('mr');
+                $billingAddress->setSalutation('mr');
             }
 
             $billingAddress->setCompany($entity["BuyerInfo"]["BillingAddress"]["Company"]);
@@ -97,28 +145,33 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $value->setBillingAddress($billingAddress);
 
             if(array_key_exists("ShippingAddress", $entity["BuyerInfo"])) {
-                $shippingAddress = new Address();
 
-                $shippingAddress->setFirstname($entity["BuyerInfo"]["ShippingAddress"]["FirstName"]);
-                $shippingAddress->setLastname($entity["BuyerInfo"]["ShippingAddress"]["LastName"]);
+                if($entity["BuyerInfo"]["ShippingAddress"]["FirstName"] && !$entity["BuyerInfo"]["ShippingAddress"]["LastName"] &&
+                    $entity["BuyerInfo"]["ShippingAddress"]["Street"] && $entity["BuyerInfo"]["ShippingAddress"]["CountryISO"] && $entity["BuyerInfo"]["ShippingAddress"]["PostalCode"]) {
+                    $shippingAddress = new Address();
 
-                if($entity["BuyerInfo"]["ShippingAddress"]["Title"] == "Frau") {
-                    $shippingAddress->getSalutation('mrs');
-                } else {
-                    $shippingAddress->getSalutation('mr');
+                    $shippingAddress->setFirstname($entity["BuyerInfo"]["ShippingAddress"]["FirstName"]);
+                    $shippingAddress->setLastname($entity["BuyerInfo"]["ShippingAddress"]["LastName"]);
+
+
+
+                    if(isset($entity["BuyerInfo"]["ShippingAddress"]["Title"]) && $entity["BuyerInfo"]["ShippingAddress"]["Title"] == "Frau") {
+                        $shippingAddress->setSalutation('mrs');
+                    } else {
+                        $shippingAddress->setSalutation('mr');
+                    }
+
+                    $shippingAddress->setCompany($entity["BuyerInfo"]["ShippingAddress"]["Company"]);
+                    $shippingAddress->setStreet($entity["BuyerInfo"]["ShippingAddress"]["Street"]);
+                    $shippingAddress->setAdditionalAddressLine1($entity["BuyerInfo"]["ShippingAddress"]["Street2"]);
+                    $shippingAddress->setZipcode($entity["BuyerInfo"]["ShippingAddress"]["PostalCode"]);
+                    $shippingAddress->setCity($entity["BuyerInfo"]["ShippingAddress"]["City"]);
+                    $shippingAddress->setCountry($entity["BuyerInfo"]["ShippingAddress"]["CountryISO"]);
+                    $shippingAddress->setPhone($entity["BuyerInfo"]["ShippingAddress"]["Phone"]);
+
+                    $value->setShippingAddress($shippingAddress);
                 }
 
-                $shippingAddress->setCompany($entity["BuyerInfo"]["ShippingAddress"]["Company"]);
-                $shippingAddress->setStreet($entity["BuyerInfo"]["ShippingAddress"]["Street"]);
-                $shippingAddress->setAdditionalAddressLine1($entity["BuyerInfo"]["ShippingAddress"]["Street2"]);
-                $shippingAddress->setZipcode($entity["BuyerInfo"]["ShippingAddress"]["PostalCode"]);
-                $shippingAddress->setCity($entity["BuyerInfo"]["ShippingAddress"]["City"]);
-                $shippingAddress->setCountry($entity["BuyerInfo"]["ShippingAddress"]["CountryISO"]);
-                $shippingAddress->setPhone($entity["BuyerInfo"]["ShippingAddress"]["Phone"]);
-                $shippingAddress->setVatId($entity["BuyerInfo"]["ShippingAddress"]["TaxIDNumber"]);
-                $shippingAddress->setEmail($entity["BuyerInfo"]["ShippingAddress"]["Mail"]);
-
-                $value->setShippingAddress($billingAddress);
             }
 
             array_push($targetData, $value);

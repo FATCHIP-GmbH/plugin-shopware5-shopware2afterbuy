@@ -44,6 +44,121 @@
             <label lang="en">Afterbuy User-Password</label>
             <value>fc2afterbuy</value>
         </element>
+        <element type="combo" >
+            <name>targetShop</name>
+            <label lang="de">Zielshop für Bestellungen</label>
+            <label lang="en">target shop for orders</label>
+            <store>Shopware.apps.Base.store.Shop</store>
+        </element>
+        <element type="combo" >
+            <name>paymentINVOICE</name>
+            <label lang="de">Zahlungsart INVOICE</label>
+            <label lang="en">Payment INVOICE</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCREDIT_CARD</name>
+            <label lang="de">Zahlungsart CREDIT_CARD</label>
+            <label lang="en">Payment CREDIT_CARD</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentDIRECT_DEBIT</name>
+            <label lang="de">Zahlungsart DIRECT_DEBIT</label>
+            <label lang="en">Payment DIRECT_DEBIT</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+
+        <element type="combo" >
+            <name>paymentTRANSFER</name>
+            <label lang="de">Zahlungsart TRANSFER</label>
+            <label lang="en">Payment TRANSFER</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCASH_PAID</name>
+            <label lang="de">Zahlungsart CASH_PAID</label>
+            <label lang="en">Payment CASH_PAID</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCASH_ON_DELIVERY</name>
+            <label lang="de">Zahlungsart CASH_ON_DELIVERY</label>
+            <label lang="en">Payment CASH_ON_DELIVERY</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentPAYPAL</name>
+            <label lang="de">Zahlungsart PAYPAL</label>
+            <label lang="en">Payment PAYPAL</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentINVOICE_TRANSFER</name>
+            <label lang="de">Zahlungsart INVOICE_TRANSFER</label>
+            <label lang="en">Payment INVOICE_TRANSFER</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCLICKANDBUY</name>
+            <label lang="de">Zahlungsart CLICKANDBUY</label>
+            <label lang="en">Payment CLICKANDBUY</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentEXPRESS_CREDITWORTHINESS</name>
+            <label lang="de">Zahlungsart EXPRESS_CREDITWORTHINESS</label>
+            <label lang="en">Payment EXPRESS_CREDITWORTHINESS</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentPAYNET</name>
+            <label lang="de">Zahlungsart PAYNET</label>
+            <label lang="en">Payment PAYNET</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCOD_CREDITWORTHINESS</name>
+            <label lang="de">Zahlungsart COD_CREDITWORTHINESS</label>
+            <label lang="en">Payment COD_CREDITWORTHINESS</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentEBAY_EXPRESS</name>
+            <label lang="de">Zahlungsart EBAY_EXPRESS</label>
+            <label lang="en">Payment EBAY_EXPRESS</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentMONEYBOOKERS</name>
+            <label lang="de">Zahlungsart MONEYBOOKERS</label>
+            <label lang="en">Payment MONEYBOOKERS</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentCREDIT_CARD_MB</name>
+            <label lang="de">Zahlungsart CREDIT_CARD_MB</label>
+            <label lang="en">Payment CREDIT_CARD_MB</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentDIRECT_DEBIT_MB</name>
+            <label lang="de">Zahlungsart DIRECT_DEBIT_MB</label>
+            <label lang="en">Payment DIRECT_DEBIT_MB</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>paymentOTHERS</name>
+            <label lang="de">Zahlungsart OTHERS</label>
+            <label lang="en">Payment OTHERS</label>
+            <store>Shopware.apps.Base.store.Payment</store>
+        </element>
+        <element type="combo" >
+            <name>shipping</name>
+            <label lang="de">Versandart</label>
+            <label lang="en">Shipping type</label>
+            <store>Shopware.apps.Base.store.Dispatch</store>
+        </element>
     </elements>
 
 </config>

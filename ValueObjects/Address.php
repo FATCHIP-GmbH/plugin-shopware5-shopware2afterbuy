@@ -31,14 +31,14 @@ class Address extends AbstractValueObject
      *
      * @var string
      */
-    protected $company = null;
+    protected $company = "";
 
     /**
      * Contains the department name of the address address company
      *
      * @var string
      */
-    protected $department = null;
+    protected $department = "";
 
     /**
      * Contains the customer salutation (Mr, Ms, Company)
@@ -92,28 +92,28 @@ class Address extends AbstractValueObject
      *
      * @var string
      */
-    protected $phone = null;
+    protected $phone = "";
 
     /**
      * Contains the vat id of the address
      *
      * @var string
      */
-    protected $vatId = null;
+    protected $vatId = "";
 
     /**
      * Contains the additional address line data
      *
      * @var string
      */
-    protected $additionalAddressLine1 = null;
+    protected $additionalAddressLine1 = "";
 
     /**
      * Contains the additional address line data 2
      *
      * @var string
      */
-    protected $additionalAddressLine2 = null;
+    protected $additionalAddressLine2 = "";
 
     /**
      * Contains the iso of the country.
@@ -125,7 +125,7 @@ class Address extends AbstractValueObject
     /**
      * @var string
      */
-    protected $email;
+    protected $email = 'no.mail@set.org';
 
     /**
      * @return string
@@ -336,6 +336,10 @@ class Address extends AbstractValueObject
      */
     public function setAdditionalAddressLine2(string $additionalAddressLine2): void
     {
+        if(!$additionalAddressLine2) {
+            $additionalAddressLine2 = "";
+        }
+
         $this->additionalAddressLine2 = $additionalAddressLine2;
     }
 
@@ -369,7 +373,7 @@ class Address extends AbstractValueObject
     public function setEmail(?string $email): void
     {
         if(!$email) {
-            $email = "";
+            return;
         }
 
         $this->email = $email;

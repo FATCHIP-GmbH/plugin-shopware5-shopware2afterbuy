@@ -9,5 +9,16 @@ use Shopware\Components\Model\ModelManager;
 
 class AbstractWriteDataService extends AbstractDataService {
 
+    /**
+     * @var ModelEntity
+     */
+    protected $targetRepository;
 
+
+    /**
+     * @param string $repo
+     */
+    public function setRepo(string $repo) {
+        $this->targetRepository = $repo;
+    }
 }

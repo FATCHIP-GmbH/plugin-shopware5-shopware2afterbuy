@@ -14,4 +14,11 @@ class Helper {
     public static function getSetterByField(string $field) {
         return 'set' . strtoupper($field[0]) . substr($field, 1);
     }
+
+    public static function convertDeString2Float(string $value) {
+        $value = str_replace(".", "", $value);
+        $value = str_replace(",", ".", $value);
+
+        return floatval($value);
+    }
 }

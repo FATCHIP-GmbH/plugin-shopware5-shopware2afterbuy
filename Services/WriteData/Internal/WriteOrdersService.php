@@ -2,33 +2,27 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
+use FatchipAfterbuy\ValueObjects\Order;
+use Shopware\Models\Shop\Shop;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
     /**
-     * @var string $identifier
+     * @var ShopwareOrderHelper $helper
      */
-    protected $identifier;
 
     /**
-     * @var bool $isAttribute
+     * @var array
      */
-    protected $isAttribute;
+    protected $countries;
 
     /**
-     * @param AbstractHelper $helper
-     * @param string $identifier
-     * @param bool $isAttribute
+     * @var Shop
      */
-    public function initHelper(string $identifier, bool $isAttribute) {
-        $this->identifier = $identifier;
-        $this->isAttribute = $isAttribute;
-    }
+    protected $targetShop;
 
     /**
      * @param array $data
@@ -48,11 +42,69 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @return mixed|void
      */
     public function transform(array $data) {
+        $this->targetShop = $this->helper->getShop($this->config['targetShop']);
+        $this->countries = $this->helper->getCountries();
 
         foreach($data as $value) {
+            //log and ignore order if country is not setup in shop
+            if(!$this->countries[strtoupper($value->getBillingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($value->getBillingAddress()->getCountry()));
+                continue;
+            }
 
+            if($value->getShippingAddress() && !$this->countries[strtoupper($value->getShippingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($value->getShippingAddress()->getCountry()));
+                continue;
+            }
 
-            //$this->entityManager->persist($order);
+            /**
+             * @var Order $value
+             */
+
+            /**
+             * @var \Shopware\Models\Order\Order $order
+             */
+            $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
+
+            $this->helper->setOrderMainValues($value, $order, $this->targetShop);
+            $this->helper->setOrderTaxValues($value, $order);
+
+            /**
+             * set payment status
+             */
+            $this->helper->setPaymentStatus($value, $order);
+
+            /**
+             * set shipping status
+             */
+            $this->helper->setShippingStatus($value, $order);
+
+            /**
+             * set payment type
+             */
+            $this->helper->setPaymentType($value, $order, $this->config);
+
+            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop);
+            $order->setCustomer($customer);
+
+            /**
+             * set billing address
+             */
+            $this->helper->setAddress($value, $order, $customer);
+
+            /**
+             * set shipping address
+             */
+            $this->helper->setAddress($value, $order, $customer, "shipping");
+
+            /**
+             * set and update positions
+             */
+            $this->helper->setPositions($value, $order);
+
+            $this->helper->setShippingType($order, $this->config["shipping"]);
+
+            $this->entityManager->persist($order);
         }
     }
 
@@ -63,6 +115,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-        //$this->entityManager->flush();
+        $this->entityManager->flush();
     }
 }

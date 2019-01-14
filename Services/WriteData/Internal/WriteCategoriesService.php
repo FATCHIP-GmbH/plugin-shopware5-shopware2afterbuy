@@ -69,7 +69,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             /**
              * @var ShopwareCategory $shopwareCategory
              */
-            $shopwareCategory = $this->categoryHelper->getCategory(
+            $shopwareCategory = $this->categoryHelper->getEntity(
                 $category->getExternalIdentifier(),
                 $this->identifier,
                 $this->isAttribute
@@ -77,7 +77,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
             $shopwareCategory->setName($category->getName());
             $shopwareCategory->setMetaDescription($category->getDescription());
-            $shopwareCategory->setParent($this->findParent($category));
+            $shopwareCategory->setParent($this->categoryHelper->findParentCategory($category, $this->identifier));
             $shopwareCategory->setPosition($category->getPosition());
             $shopwareCategory->setCmsText($category->getCmsText());
             $shopwareCategory->setActive($category->getActive());
@@ -102,15 +102,18 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @param ValueCategory $category
      *
      * @return ShopwareCategory
+     *
+     * moved to helper, made public for reusability
      */
-    private function findParent(ValueCategory $category): ShopwareCategory
+/*    private function findParent(ValueCategory $category): ShopwareCategory
     {
         $parent = null;
 
         if ($category->getParentIdentifier()) {
-            $parent = $this->categoryHelper->getCategoryByAttribute(
+            $parent = $this->categoryHelper->getCategory(
                 $category->getParentIdentifier(),
-                $this->identifier
+                $this->identifier,
+                true
             );
         }
 
@@ -119,5 +122,5 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         }
 
         return $parent;
-    }
+    }*/
 }

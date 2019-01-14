@@ -37,17 +37,109 @@ class Order extends AbstractValueObject {
     public $billingAddress;
 
     /**
-     * @var
+     * @var float
      */
     public $amount;
 
-    /*    public $paymentType;
+    /**
+     * @var float
+     */
+    public $shipping;
 
-    public $paymentStatus;
+    /**
+     * @var float
+     */
+    public $amountNet = 0;
 
-    public $shippingType;
+    /**
+     * @var float
+     */
+    public $paid;
 
-    public $shippingStatus;*/
+    /**
+     * @var string
+     */
+    public $currency = 'EUR';
+
+    /**
+     * @var string
+     */
+    public $transactionId = "";
+
+    /**
+     * @var bool
+     */
+    public $taxFree;
+
+    /**
+     * @var float
+     */
+    public $shippingNet;
+
+    /**
+     * @var float
+     */
+    public $shippingTax;
+
+    /**
+     * @var bool
+     */
+    public $shipped = false;
+
+    /**
+     * @var \DateTime
+     */
+    public $createDate;
+
+    /**
+     * @var \DateTime
+     */
+    public $updateDate;
+
+    public $paymentType = 'OTHERS';
+
+    public $customerNumber;
+
+    /**
+     * @return mixed
+     */
+    public function getCustomerNumber()
+    {
+        return $this->customerNumber;
+    }
+
+    /**
+     * @param mixed $customerNumber
+     */
+    public function setCustomerNumber($customerNumber): void
+    {
+        $this->customerNumber = $customerNumber;
+    }
+
+    public function addNetAmount(float $value, int $quantity) {
+        $this->amountNet += $value * $quantity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentType(): string
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * @param string $paymentType
+     */
+    public function setPaymentType(string $paymentType): void
+    {
+        $this->paymentType = $paymentType;
+    }
+
+
+    public function __construct() {
+        $this->positions = new ArrayCollection();
+    }
 
     /**
      * @return string
@@ -100,7 +192,7 @@ class Order extends AbstractValueObject {
     /**
      * @return Address
      */
-    public function getShippingAddress(): Address
+    public function getShippingAddress(): ?Address
     {
         return $this->shippingAddress;
     }
@@ -130,7 +222,7 @@ class Order extends AbstractValueObject {
     }
 
     /**
-     * @return mixed
+     * @return float
      */
     public function getAmount()
     {
@@ -140,8 +232,189 @@ class Order extends AbstractValueObject {
     /**
      * @param mixed $amount
      */
-    public function setAmount($amount): void
+    public function setAmount(float $amount): void
     {
         $this->amount = $amount;
     }
+
+    /**
+     * @return float
+     */
+    public function getShipping(): float
+    {
+        return $this->shipping;
+    }
+
+    /**
+     * @param float $shipping
+     */
+    public function setShipping(float $shipping): void
+    {
+        $this->shipping = $shipping;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAmountNet(): float
+    {
+        return $this->amountNet;
+    }
+
+    /**
+     * @param float $amountNet
+     */
+    public function setAmountNet(float $amountNet): void
+    {
+        $this->amountNet = $amountNet;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPaid(): float
+    {
+        return $this->paid;
+    }
+
+    /**
+     * @param float $paid
+     */
+    public function setPaid(float $paid): void
+    {
+        $this->paid = $paid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     */
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransactionId(): string
+    {
+        return $this->transactionId;
+    }
+
+    /**
+     * @param string $transactionId
+     */
+    public function setTransactionId(string $transactionId): void
+    {
+        $this->transactionId = $transactionId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTaxFree(): bool
+    {
+        return $this->taxFree;
+    }
+
+    /**
+     * @param bool $taxFree
+     */
+    public function setTaxFree(bool $taxFree): void
+    {
+        $this->taxFree = $taxFree;
+    }
+
+    /**
+     * @return float
+     */
+    public function getShippingNet()
+    {
+        return $this->shippingNet;
+    }
+
+    /**
+     * @param float $shippingNet
+     */
+    public function setShippingNet(float $shippingNet): void
+    {
+        $this->shippingNet = $shippingNet;
+    }
+
+    /**
+     * @return float
+     */
+    public function getShippingTax(): float
+    {
+        return $this->shippingTax;
+    }
+
+    /**
+     * @param float $shippingTax
+     */
+    public function setShippingTax(float $shippingTax): void
+    {
+        $this->shippingTax = $shippingTax;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isShipped(): bool
+    {
+        return $this->shipped;
+    }
+
+    /**
+     * @param bool $shipped
+     */
+    public function setShipped(bool $shipped): void
+    {
+        $this->shipped = $shipped;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreateDate(): \DateTime
+    {
+        return $this->createDate;
+    }
+
+    /**
+     * @param \DateTime $createDate
+     */
+    public function setCreateDate(\DateTime $createDate): void
+    {
+        $this->createDate = $createDate;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdateDate(): \DateTime
+    {
+        return $this->updateDate;
+    }
+
+    /**
+     * @param \DateTime $updateDate
+     */
+    public function setUpdateDate(\DateTime $updateDate): void
+    {
+        $this->updateDate = $updateDate;
+    }
+
+
+
+
+
 }

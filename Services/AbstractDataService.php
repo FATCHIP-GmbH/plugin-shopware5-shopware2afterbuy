@@ -2,11 +2,23 @@
 
 namespace FatchipAfterbuy\Services;
 
+use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
+use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 class AbstractDataService {
+
+    /**
+     * @var string $identifier
+     */
+    protected $identifier;
+
+    /**
+     * @var bool $isAttribute
+     */
+    protected $isAttribute;
 
     /**
      * @var LoggerInterface
@@ -23,6 +35,11 @@ class AbstractDataService {
     public $apiConfig;
 
     /**
+     * @var AbstractHelper $helper
+     */
+    public $helper;
+
+     /**
      * provides the target entity (valueObject) given via services.xml
      * !!! if different services etc are needed, we will make use of factories (symfony) !!!
      *
@@ -60,5 +77,16 @@ class AbstractDataService {
             'Fatchip\Afterbuy',
             $path . '/Library/API/'
         );
+    }
+
+    /**
+     * @param AbstractHelper $helper
+     * @param string $identifier
+     * @param bool $isAttribute
+     */
+    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute) {
+        $this->helper = $helper;
+        $this->identifier = $identifier;
+        $this->isAttribute = $isAttribute;
     }
 }

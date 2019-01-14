@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Commands\ShopwareCommand;
 
-class getCategories extends ShopwareCommand
+class ImportCategories extends ShopwareCommand
 {
     /**
      * @var ReadDataInterface
@@ -41,7 +41,7 @@ class getCategories extends ShopwareCommand
     protected function configure()
     {
         $this
-            ->setName('Afterbuy:Get:Categories')
+            ->setName('Afterbuy:Import:Categories')
             ->setDescription('Import Categories from Afterbuy')
             /*->addArgument(
                 'my-argument',

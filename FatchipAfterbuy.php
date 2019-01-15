@@ -28,8 +28,9 @@ class FatchipAfterbuy extends Plugin
 
         $service = $this->container->get('shopware_attribute.crud_service');
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
+        $service->update('s_order_attributes', 'afterbuy_export_time', 'datetime');
 
-        Shopware()->Models()->generateAttributeModels(['s_categories_attributes']);
+        Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes']);
     }
 
     public function afterInit()

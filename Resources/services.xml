@@ -19,22 +19,54 @@
             <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.send_orders" class="FatchipAfterbuy\Commands\sendOrders">
+        <service id="fatchip_afterbuy.commands.export_orders" class="FatchipAfterbuy\Commands\ExportOrders">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_orders_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.get_orders" class="FatchipAfterbuy\Commands\getOrders">
+        <service id="fatchip_afterbuy.commands.import_orders" class="FatchipAfterbuy\Commands\ImportOrders">
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_orders_service" />
+        </service>
+
+        <service id="fatchip_afterbuy.commands.import_products" class="FatchipAfterbuy\Commands\ImportProducts">
+            <tag name="console.command" />
+            <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_products_service" />
+            <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_products_service" />
+        </service>
+
+        <!-- Products -->
+
+        <service class="FatchipAfterbuy\Services\ReadData\External\ReadProductsService" id="fatchip_afterbuy.services.read_data.external.read_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setTarget">
+                <argument type="string">FatchipAfterbuy\ValueObjects\Article</argument>
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteProductsService" id="fatchip_afterbuy.services.write_data.internal.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Article\Article</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
         </service>
 
         <!-- Orders -->
 
         <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
@@ -140,6 +172,13 @@
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
             <argument type="string">getCategory</argument>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\Helper\ShopwareArticleHelper" id="fatchip_afterbuy.services.helper.shopware_article_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Article\Article</argument>
+            <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
+            <argument type="string">getArticle</argument>
         </service>
 
         <!-- Logger -->

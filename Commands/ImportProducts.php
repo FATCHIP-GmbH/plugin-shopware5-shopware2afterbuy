@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Commands\ShopwareCommand;
 
-class getOrders extends ShopwareCommand
+class ImportProducts extends ShopwareCommand
 {
     /**
      * @var ReadDataInterface
@@ -40,8 +40,8 @@ class getOrders extends ShopwareCommand
     protected function configure()
     {
         $this
-            ->setName('Afterbuy:Get:Orders')
-            ->setDescription('Receive orders from Afterbuy')
+            ->setName('Afterbuy:Import:Products')
+            ->setDescription('Receive products from Afterbuy')
             /*->addArgument(
                 'my-argument',
                 InputArgument::REQUIRED,

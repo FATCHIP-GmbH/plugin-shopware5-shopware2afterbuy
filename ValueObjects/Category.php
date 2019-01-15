@@ -55,6 +55,9 @@ class Category extends AbstractValueObject
     /** @var string */
     private $cmsText = '';
 
+    /** @var string */
+    private $path;
+
     /**
      * @return string
      */
@@ -197,6 +200,22 @@ class Category extends AbstractValueObject
     public function setCmsText(?string $cmsText): void
     {
         $this->cmsText = $cmsText;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
     /**

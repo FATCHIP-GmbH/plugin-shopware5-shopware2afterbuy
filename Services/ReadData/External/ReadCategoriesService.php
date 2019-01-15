@@ -42,24 +42,23 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
 
         $targetData = array();
 
-        foreach ($data as $entity) {
+        //mappings for valueObject
+        $fieldMappings = [
+            ['CatalogID', 'ExternalIdentifier'],
+            ['Name', 'Name'],
+            ['Description', 'Description'],
+            ['ParentID', 'ParentIdentifier'],
+            ['Position', 'Position'],
+            ['AdditionalText', 'CmsText'],
+            ['Show', 'Active'],
+            ['Picture1', 'Image'],
+        ];
 
+        foreach ($data as $entity) {
             /**
              * @var Category $value
              */
             $value = new $this->targetEntity();
-
-            //mappings for valueObject
-            $fieldMappings = [
-                ['CatalogID', 'ExternalIdentifier'],
-                ['Name', 'Name'],
-                ['Description', 'Description'],
-                ['ParentID', 'ParentIdentifier'],
-                ['Position', 'Position'],
-                ['AdditionalText', 'CmsText'],
-                ['Show', 'Active'],
-                ['Picture1', 'Image'],
-            ];
 
             foreach ($fieldMappings as [$afterbuyVar, $valueObjVar]) {
                 if (isset($entity[$afterbuyVar])) {

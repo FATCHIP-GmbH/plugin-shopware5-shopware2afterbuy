@@ -2,7 +2,8 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
-use Shopware\Models\Category\Category;
+use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use Shopware\Models\Category\Category as ShopwareCategory;
 
 /**
  *
@@ -13,14 +14,14 @@ use Shopware\Models\Category\Category;
 class ShopwareCategoryHelper extends AbstractHelper {
 
     /**
-     * @return Category[]
+     * @return ShopwareCategory[]
      */
     public function getAllCategories(): array {
         return $this->entityManager->getRepository($this->entity)->findAll();
     }
 
     /**
-     * @return Category|null
+     * @return ShopwareCategory|null
      */
     public function getMainCategory() {
         return $this->entityManager->getRepository($this->entity)->findOneBy(array('id' => 1));
@@ -28,11 +29,13 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
     /**
      * moved here
-     * @param \FatchipAfterbuy\ValueObjects\Category $category
-     * @param string $identifier
-     * @return Category
+     *
+     * @param ValueCategory $category
+     * @param string        $identifier
+     *
+     * @return ShopwareCategory
      */
-    public function findParentCategory(\FatchipAfterbuy\ValueObjects\Category $category, string $identifier): Category
+    public function findParentCategory(ValueCategory $category, string $identifier): ShopwareCategory
     {
         $parent = null;
 

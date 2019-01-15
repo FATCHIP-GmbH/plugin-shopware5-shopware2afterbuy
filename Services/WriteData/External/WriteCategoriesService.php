@@ -3,7 +3,6 @@
 namespace FatchipAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -11,11 +10,6 @@ use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
 {
-
-    /**
-     * @var ShopwareCategoryHelper $categoryHelper
-     */
-    protected $categoryHelper;
 
     /**
      * @var string $identifier
@@ -26,18 +20,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @var bool $isAttribute
      */
     protected $isAttribute;
-
-    /**
-     * @param AbstractHelper $helper
-     * @param string         $identifier
-     * @param bool           $isAttribute
-     */
-    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute)
-    {
-        $this->categoryHelper = $helper;
-        $this->identifier = $identifier;
-        $this->isAttribute = $isAttribute;
-    }
 
     /**
      * @param ValueCategory[] $valueCategories
@@ -63,7 +45,10 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     {
         $this->logger->info('Got ' . count($valueCategories) . ' items', ['Categories', 'Write', 'External']);
 
-        return $this->categoryHelper->buildAfterbuyCatalogStructure($valueCategories);
+        /** @var ShopwareCategoryHelper $helper */
+        $helper = $this->helper;
+
+        return $helper->buildAfterbuyCatalogStructure($valueCategories);
     }
 
     /**

@@ -97,30 +97,4 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     {
         $this->entityManager->flush();
     }
-
-    /**
-     * @param ValueCategory $category
-     *
-     * @return ShopwareCategory
-     *
-     * moved to helper, made public for reusability
-     */
-/*    private function findParent(ValueCategory $category): ShopwareCategory
-    {
-        $parent = null;
-
-        if ($category->getParentIdentifier()) {
-            $parent = $this->categoryHelper->getCategory(
-                $category->getParentIdentifier(),
-                $this->identifier,
-                true
-            );
-        }
-
-        if ( ! $parent) {
-            $parent = $this->categoryHelper->getMainCategory();
-        }
-
-        return $parent;
-    }*/
 }

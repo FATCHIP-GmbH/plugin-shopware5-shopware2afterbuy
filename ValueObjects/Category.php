@@ -19,7 +19,7 @@ class Category extends AbstractValueObject
     /**
      * integer works with category ids, articles use strings (ordernumber)
      *
-     * @var int $internalIdentifier
+     * @var string $internalIdentifier
      */
     private $internalIdentifier;
 
@@ -38,7 +38,7 @@ class Category extends AbstractValueObject
     private $description = '';
 
     /**
-     * @var int $position
+     * @var string $position
      */
     private $position = 0;
 
@@ -56,7 +56,7 @@ class Category extends AbstractValueObject
     private $cmsText = '';
 
     /** @var string */
-    private $path;
+    private $path = '';
 
     /**
      * @return string
@@ -91,9 +91,9 @@ class Category extends AbstractValueObject
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getInternalIdentifier(): int
+    public function getInternalIdentifier(): string
     {
         return $this->internalIdentifier;
     }
@@ -141,19 +141,21 @@ class Category extends AbstractValueObject
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getPosition(): int
+    public function getPosition(): string
     {
         return $this->position;
     }
 
     /**
-     * @param int $position
+     * @param string $position
      */
-    public function setPosition(?int $position): void
+    public function setPosition(?string $position): void
     {
-        $this->position = $position;
+        if ($position !== null) {
+            $this->position = $position;
+        }
     }
 
     /**
@@ -217,9 +219,11 @@ class Category extends AbstractValueObject
     /**
      * @param string $path
      */
-    public function setPath(string $path): void
+    public function setPath(?string $path): void
     {
-        $this->path = $path;
+        if ($path !== null) {
+            $this->path = $path;
+        }
     }
 
     /**

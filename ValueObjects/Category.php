@@ -207,7 +207,6 @@ class Category extends AbstractValueObject
         $isValid = true;
 
         $isValid = $isValid && isset($this->name);
-        $isValid = $isValid && isset($this->externalIdentifier);
         $isValid = $isValid && isset($this->parentIdentifier);
         $isValid = $isValid && isset($this->active);
 

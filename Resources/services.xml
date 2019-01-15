@@ -51,13 +51,11 @@
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Article\Article</argument>
             </call>
-            <!--
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
                 <argument type="string">number</argument>
                 <argument type="string">false</argument>
             </call>
-            -->
         </service>
 
         <!-- Orders -->
@@ -174,6 +172,13 @@
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
             <argument type="string">getCategory</argument>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\Helper\ShopwareArticleHelper" id="fatchip_afterbuy.services.helper.shopware_article_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Article\Article</argument>
+            <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
+            <argument type="string">getArticle</argument>
         </service>
 
         <!-- Logger -->

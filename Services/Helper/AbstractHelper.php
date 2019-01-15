@@ -31,6 +31,8 @@ class AbstractHelper {
 
     protected $attributeGetter;
 
+    protected $taxes;
+
     /**
      * @param ModelManager $entityManager
      * @param string $entity
@@ -65,6 +67,33 @@ class AbstractHelper {
 
         return $entity;
     }
+
+    public function getTax(float $rate) {
+
+        $rate = number_format($rate, 2);
+
+        if(!$this->taxes) {
+            $this->getTaxes();
+        }
+
+        if(array_key_exists((string) $rate, $this->taxes)) {
+            return $this->taxes[$rate];
+        }
+
+        $this->createTax($rate);
+        $this->getTaxes();
+    }
+
+    public function getTaxes() {
+        $taxes = $this->entityManager->createQueryBuilder()
+            ->select('taxes')
+            ->from('\Shopware\Models\Tax\Tax', 'taxes', 'taxes.tax')
+            ->getQuery()
+            ->getResult();
+
+        $this->taxes = $taxes;
+    }
+
 
     /**
      * @param string $identifier

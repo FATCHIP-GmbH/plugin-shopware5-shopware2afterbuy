@@ -6,7 +6,9 @@ use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Order;
+use Shopware\Components\Api\Manager;
 use Shopware\Components\Api\Resource\Article;
+use Shopware\Models\Article\Price;
 use Shopware\Models\Shop\Shop;
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface {
@@ -29,15 +31,19 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @return mixed|void
      */
     public function transform(array $data) {
-        $article = new $this->targetRepository();
+        //$article = new $this->targetRepository();
 
-        $minimalTestArticle = array(
-            'name' => 'Sport Shoes',
+        $_Article = array(
+            'name' => 'ConfiguratorTest',
+            'description' => 'A test article',
+            'descriptionLong' => '<p>I\'m a <b>test article</b></p>',
             'active' => true,
-            'taxId' => 1,
-            'supplier' => 'Sport Shoes Inc.',
+            'tax' => 19.00,
+            'supplier' => '',
+
+            //TODO: only set if main
             'mainDetail' => array(
-                'number' => 'turn',
+                'number' => 'swTEST' . uniqid(),
                 'active' => true,
                 'laststock' => 0,
                 'prices' => array(
@@ -47,41 +53,88 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     ),
                 )
             ),
+
+            /*'variants' => array(
+                array(
+                    'isMain' => true,
+                    'number' => 'swTEST' . uniqid(),
+                    'inStock' => 15,
+                    'additionaltext' => 'S / Schwarz',
+                    'configuratorOptions' => array(
+                        array('group' => 'Size', 'option' => 'S'),
+                        array('group' => 'Color', 'option' => 'Black'),
+                    ),
+                    'prices' => array(
+                        array(
+                            'customerGroupKey' => 'EK',
+                            'price' => 999,
+                        ),
+                    )
+                ),
+
+            ),*/
         );
         /**
          * @var \Shopware\Models\Article\Article $article
          */
 
-        $article = $article->fromArray($minimalTestArticle);
+        //$article = $article->fromArray($_Article);
 
-        //TODO: assign tax
+        //TODO: set / create configurator group
+        //TODO: set create configurator options
+        //TODO: set / create supplier
+
         //TODO: assign customergroup
         //TODO: assign pricegroupid
+        //TODO: price net or brut based on customer group
 
-        $article->setTax($this->entityManager->find('\Shopware\Models\Tax\Tax', 1));
+      /*  $article->setTax($this->helper->getTax($_Article["tax"]));
+
         $article->setPriceGroup($this->entityManager->find('\Shopware\Models\Price\Group', 1));
         $article->setSupplier($this->entityManager->find('\Shopware\Models\Article\Supplier', 1));
+        //$article->getMainDetail()->setArticle($article);
+        $prices = $article->getMainDetail()->getPrices();
+
+        $article->getMainDetail()->setAttribute(new \Shopware\Models\Attribute\Article());
+
+        foreach($prices as $price) {
+
+            $price->setArticle($article);
+            $price->setCustomerGroup($this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array('key' => 'EK')));
+        }
 
 
+*/
 
-/*        $violations = $this->getManager()->validate($article);
-        if ($violations->count() > 0) {
-            throw new ApiException\ValidationException($violations);
-        }*/
 
-        Shopware()->Models()->persist($article);
-        Shopware()->Models()->flush();
+        foreach($data as $value) {
+            //TODO: get article
 
-        //foreach($data as $value) {
-            //log and ignore order if country is not setup in shop
-            //TODO: use entity component
+            $article = $this->helper->getMainArticle($value->externalIdentifier);
+
+            //TODO: get detail
+            $detail = $this->helper->getDetail($value->externalIdentifier, $article);
+
+            //set main values
+            $detail->setLastStock(0);
+
+            //TODO: price + group + tax
+
+            //TODO: supplier
+            $article->setSupplier($this->helper->getSupplier('Hersteller2'));
+
+
+            $this->entityManager->persist($article);
+            $i++;
+
+
 
             /**
              * @var \Shopware\Models\Article\Article $article
              */
 
 
-        //}
+        }
     }
 
 
@@ -91,6 +144,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-       // $this->entityManager->flush();
+       $this->entityManager->flush();
     }
 }

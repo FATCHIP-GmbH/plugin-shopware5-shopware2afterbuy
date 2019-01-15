@@ -2,12 +2,14 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
+use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Order;
 use Shopware\Components\Api\Manager;
 use Shopware\Components\Api\Resource\Article;
+use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Shop\Shop;
 
@@ -20,7 +22,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      */
     public function put(array $data) {
         $data = $this->transform($data);
-        //return $this->send($data);
+        return $this->send($data);
     }
 
     /**
@@ -31,28 +33,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @return mixed|void
      */
     public function transform(array $data) {
-        //$article = new $this->targetRepository();
+        //TODO: get from config
+        $customerGroup = $this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array('key' => 'EK'));
 
-        $_Article = array(
-            'name' => 'ConfiguratorTest',
-            'description' => 'A test article',
-            'descriptionLong' => '<p>I\'m a <b>test article</b></p>',
-            'active' => true,
-            'tax' => 19.00,
-            'supplier' => '',
 
-            //TODO: only set if main
-            'mainDetail' => array(
-                'number' => 'swTEST' . uniqid(),
-                'active' => true,
-                'laststock' => 0,
-                'prices' => array(
-                    array(
-                        'customerGroupKey' => 'EK',
-                        'price' => 999,
-                    ),
-                )
-            ),
 
             /*'variants' => array(
                 array(
@@ -73,61 +57,48 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 ),
 
             ),*/
-        );
+
         /**
          * @var \Shopware\Models\Article\Article $article
          */
 
-        //$article = $article->fromArray($_Article);
 
         //TODO: set / create configurator group
         //TODO: set create configurator options
-        //TODO: set / create supplier
 
-        //TODO: assign customergroup
-        //TODO: assign pricegroupid
+
         //TODO: price net or brut based on customer group
 
-      /*  $article->setTax($this->helper->getTax($_Article["tax"]));
-
-        $article->setPriceGroup($this->entityManager->find('\Shopware\Models\Price\Group', 1));
-        $article->setSupplier($this->entityManager->find('\Shopware\Models\Article\Supplier', 1));
-        //$article->getMainDetail()->setArticle($article);
-        $prices = $article->getMainDetail()->getPrices();
-
-        $article->getMainDetail()->setAttribute(new \Shopware\Models\Attribute\Article());
-
-        foreach($prices as $price) {
-
-            $price->setArticle($article);
-            $price->setCustomerGroup($this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array('key' => 'EK')));
-        }
-
-
-*/
-
-
         foreach($data as $value) {
-            //TODO: get article
+            /**
+             * @var \FatchipAfterbuy\ValueObjects\Article $value
+             */
 
-            $article = $this->helper->getMainArticle($value->externalIdentifier);
+            $article = $this->helper->getMainArticle($value->getExternalIdentifier(), $value->getMainArticleId());
 
-            //TODO: get detail
-            $detail = $this->helper->getDetail($value->externalIdentifier, $article);
+            /**
+             * @var Detail $detail
+             */
+            $detail = $this->helper->getDetail($value->getExternalIdentifier(), $article);
 
             //set main values
-            $detail->setLastStock(0);
+            $detail->setLastStock($value->getStockMin());
+            $article->setName($value->getName());
 
-            //TODO: price + group + tax
+            $this->helper->storePrices($detail, $customerGroup, $value->getPrice());
 
-            //TODO: supplier
-            $article->setSupplier($this->helper->getSupplier('Hersteller2'));
+            $article->setSupplier($this->helper->getSupplier($value->getManufacturer()));
+
+            $attr = $this->helper->getArticleAttributes($article, $detail);
+
+            $article->setTax($this->helper->getTax($value->getTax()));
 
 
             $this->entityManager->persist($article);
+
+            $groups = $this->helper->getAssignableConfiguratorGroups($value->getVariants());
+
             $i++;
-
-
 
             /**
              * @var \Shopware\Models\Article\Article $article
@@ -145,5 +116,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      */
     public function send($targetData) {
        $this->entityManager->flush();
+
+       //TODO: update modDate
     }
 }

@@ -7,6 +7,7 @@ use FatchipAfterbuy\ValueObjects\Order;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Price;
 use Shopware\Models\Article\Supplier;
 use Shopware\Models\Attribute\ArticleSupplier;
 use Shopware\Models\Category\Category;
@@ -21,6 +22,83 @@ use Shopware\Models\Tax\Tax;
 class ShopwareArticleHelper extends AbstractHelper {
 
     protected $suppliers;
+
+    protected $customerGroup;
+
+    protected $configuratorGroups;
+
+    public function getArticleAttributes(Article $article, Detail &$detail)
+    {
+        if(is_null($detail->getAttribute())) {
+            $attr = $this->createAttributes($article, $detail);
+            $detail->setAttribute($attr);
+        } else return $detail->getAttribute();
+
+        return $attr;
+    }
+
+    /**
+     * create attributes for price if not existing
+     *
+     * @param Price $price
+     * @return \Shopware\Models\Attribute\ArticlePrice
+     */
+    public function createPriceAttributes(Price &$price)
+    {
+        if(is_null($price->getAttribute()))
+        {
+            $priceAttr = new \Shopware\Models\Attribute\ArticlePrice();
+            $price->setAttribute($priceAttr);
+        } else return $price->getAttribute();
+
+        return $priceAttr;
+    }
+
+    /**
+     * creates article attributes and assign to detail
+     *
+     * @param ArticleModel $article
+     * @param Detail $detail
+     * @return \Shopware\Models\Attribute\Article
+     */
+    public function createAttributes(Article $article, Detail $detail)
+    {
+        $attr = new \Shopware\Models\Attribute\Article();
+
+        $attr->setArticle($article);
+        $attr->setArticleDetail($detail);
+
+        return $attr;
+    }
+
+
+    public function storePrices(Detail &$detail, Group $group, float $value, $pseudoPrice = 0.00)
+    {
+        $price = $detail->getPrices()->filter(function(Price $price) {
+            return $price->getCustomerGroup() === $this->customerGroup;
+        })->first();
+
+        if(!$price)
+        {
+            $price = new Price();
+            $price->setArticle($detail->getArticle());
+            $price->setDetail($detail);
+            $price->setCustomerGroup($group);
+
+            $this->createPriceAttributes($price);
+        }
+
+        $price->setPrice($value);
+        $price->setPseudoPrice($pseudoPrice);
+
+
+
+        //assign price to variant
+        if(!$detail->getPrices()->contains($price)) $detail->getPrices()->add($price);
+
+        return $price;
+    }
+
 
     public function getSupplier(string $supplier) {
         if(!$this->suppliers) {
@@ -67,9 +145,17 @@ class ShopwareArticleHelper extends AbstractHelper {
      *
      * @return \Shopware\Models\Article\Article
      */
-    public function getMainArticle(string $number)
+    public function getMainArticle(string $number, $parent = '')
     {
-        $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $number));
+        $article = null;
+
+        if($parent) {
+            $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $parent));
+        }
+
+        if(!$article) {
+            $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $number));
+        }
 
         if(!is_null($article)) return $article->getArticle();
         else return $this->createMainArticle($number);
@@ -131,7 +217,48 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $detail;
     }
 
+    public function getAssignableConfiguratorGroups(array $variants) {
+        if(!$this->configuratorGroups) {
+            $this->getConfiguratorGroups();
+        }
 
+        $groups = [];
+
+        foreach($variants as $variant) {
+            if(array_key_exists($variant['option'] , $this->configuratorGroups)) {
+                array_push($groups, $this->configuratorGroups[$variant['option']]);
+            }
+            else {
+                array_push($groups, $this->createConfiguratorGroup($variant['option']));
+                $this->getConfiguratorGroups();
+            }
+
+        }
+
+        return $groups;
+    }
+
+    public function createConfiguratorGroup(string $name) {
+        $group = new \Shopware\Models\Article\Configurator\Group();
+        $group->setName($name);
+        $group->setDescription($name);
+        $group->setPosition(1337);
+
+        $this->entityManager->persist($group);
+        $this->entityManager->flush($group);
+
+        return $group;
+    }
+
+    public function getConfiguratorGroups() {
+        $groups = $this->entityManager->createQueryBuilder()
+            ->select('groups')
+            ->from('\Shopware\Models\Article\Configurator\Group', 'groups', 'groups.name')
+            ->getQuery()
+            ->getResult();
+
+        $this->configuratorGroups = $groups;
+    }
 
     /**
      * returns available variant. if not available variant is gonna be created

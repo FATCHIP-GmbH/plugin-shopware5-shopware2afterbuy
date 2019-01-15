@@ -46,6 +46,98 @@ class Article extends AbstractValueObject {
      */
     public $ean;
 
+    public $stockMin;
+
+    public $pseudoPrice;
+
+    public $tax;
+
+    public $variants = [];
+
+    public $mainArticleId;
+
+    /**
+     * @return mixed
+     */
+    public function getMainArticleId()
+    {
+        return $this->mainArticleId;
+    }
+
+    /**
+     * @param mixed $mainArticleId
+     */
+    public function setMainArticleId($mainArticleId): void
+    {
+        $this->mainArticleId = $mainArticleId;
+    }
+
+    /**
+     * @return array
+     */
+    public function getVariants(): array
+    {
+        return $this->variants;
+    }
+
+    /**
+     * @param array $variants
+     */
+    public function setVariants(array $variants): void
+    {
+        $this->variants = $variants;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPseudoPrice()
+    {
+        return $this->pseudoPrice;
+    }
+
+    /**
+     * @param mixed $pseudoPrice
+     */
+    public function setPseudoPrice($pseudoPrice): void
+    {
+        $this->pseudoPrice = $pseudoPrice;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTax()
+    {
+        return $this->tax;
+    }
+
+    /**
+     * @param mixed $tax
+     */
+    public function setTax($tax): void
+    {
+        $this->tax = $tax;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStockMin()
+    {
+        return $this->stockMin;
+    }
+
+    /**
+     * @param mixed $stockMin
+     */
+    public function setStockMin($stockMin): void
+    {
+        $this->stockMin = $stockMin;
+    }
+
+
+
     /**
      * @return string
      */

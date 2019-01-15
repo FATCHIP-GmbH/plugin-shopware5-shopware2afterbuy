@@ -38,6 +38,10 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
         foreach($data as $entity) {
 
+            if(empty($entity)) {
+                continue;
+            }
+
             /**
              * @var Article $value
              */
@@ -48,6 +52,38 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $value->setPrice(Helper::convertDeString2Float($entity["SellingPrice"]));
             $value->setManufacturer($entity["ProductBrand"]);
             $value->setStock($entity["Quantity"]);
+            $value->setStockMin(intval($entity["MinimumStock"]));
+            $value->setTax(Helper::convertDeString2Float($entity["TaxRate"]));
+
+
+
+            //TODO: test if no variant
+            if(array_key_exists('Attributes', $entity)) {
+                $value->setMainArticleId($entity["BaseProducts"]["BaseProduct"]["BaseProductID"]);
+
+
+                if (array_key_exists('AttributName', $entity["Attributes"]["Attribut"])) {
+                    $variants = array(
+                        'option' => $entity["Attributes"]["Attribut"]["AttributName"],
+                        'value' => $entity["Attributes"]["Attribut"]["AttributValue"]
+                    );
+                } else {
+                    $variants = [];
+
+                    foreach ($entity["Attributes"]["Attribut"] as $option) {
+                        $variant = array(
+                            'option' => $option["AttributName"],
+                            'value' => $option["AttributValue"]
+                        );
+
+                        array_push($variants, $variant);
+                    }
+                }
+
+                if (!empty($variants)) {
+                    $value->setVariants($variants);
+                }
+            }
 
             array_push($targetData, $value);
         }

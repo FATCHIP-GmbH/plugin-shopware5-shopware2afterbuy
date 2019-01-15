@@ -80,6 +80,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $valueCategory->setDescription($shopwareCategory->getMetaDescription() || '');
             $valueCategory->setCmsText($shopwareCategory->getCmsText() || '');
             $valueCategory->setActive($shopwareCategory->getActive());
+            $valueCategory->setInternalIdentifier($shopwareCategory->getId());
             // TODO: handle media
 
             if ($valueCategory->isValid()) {

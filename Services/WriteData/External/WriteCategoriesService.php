@@ -79,8 +79,8 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
         foreach ($valueCategories as $valueCategory) {
             $catalog = [];
-            foreach ($fieldMappings as [$afterbuyField, $valueObjVar]) {
-                $getter = 'get' . $valueObjVar;
+            foreach ($fieldMappings as [$afterbuyField, $valueObjField]) {
+                $getter = 'get' . $valueObjField;
                 $catalog[$afterbuyField] = $valueCategory->$getter();
             }
 

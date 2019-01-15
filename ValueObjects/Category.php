@@ -74,7 +74,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getExternalIdentifier(): string
+    public function getExternalIdentifier(): ?string
     {
         return $this->externalIdentifier;
     }
@@ -82,7 +82,7 @@ class Category extends AbstractValueObject
     /**
      * @param $externalIdentifier
      */
-    public function setExternalIdentifier($externalIdentifier): void
+    public function setExternalIdentifier(?string $externalIdentifier): void
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -138,15 +138,15 @@ class Category extends AbstractValueObject
     /**
      * @return int
      */
-    public function getPosition(): int
+    public function getPosition(): ?int
     {
         return $this->position;
     }
 
     /**
-     * @param $position
+     * @param int $position
      */
-    public function setPosition($position): void
+    public function setPosition(?int $position): void
     {
         $this->position = $position;
     }
@@ -186,7 +186,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCmsText(): string
+    public function getCmsText(): ?string
     {
         return $this->cmsText;
     }
@@ -194,7 +194,7 @@ class Category extends AbstractValueObject
     /**
      * @param string $cmsText
      */
-    public function setCmsText(string $cmsText): void
+    public function setCmsText(?string $cmsText): void
     {
         $this->cmsText = $cmsText;
     }

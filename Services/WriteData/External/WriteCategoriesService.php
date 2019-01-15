@@ -63,31 +63,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     {
         $this->logger->info('Got ' . count($valueCategories) . ' items', ['Categories', 'Write', 'External']);
 
-        //mappings for valueObject
-        $fieldMappings = [
-            ['CatalogName', 'Name'],
-            ['CatalogDescription', 'Description'],
-            ['ParentID', 'ParentIdentifier'],
-            ['Position', 'Position'],
-            ['AdditionalText', 'CmsText'],
-            ['ShowCatalog', 'Active'],
-            ['Picture', 'Image'],
-            ['InternalIdentifier', 'InternalIdentifier'],
-        ];
-
-        $catalogs = [];
-
-        foreach ($valueCategories as $valueCategory) {
-            $catalog = [];
-            foreach ($fieldMappings as [$afterbuyField, $valueObjField]) {
-                $getter = 'get' . $valueObjField;
-                $catalog[$afterbuyField] = $valueCategory->$getter();
-            }
-
-            $catalogs[] = $catalog;
-        }
-
-        return $catalogs;
+        return $this->categoryHelper->buildAfterbuyCatalogStructure($valueCategories);
     }
 
     /**
@@ -100,8 +76,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
 
-        // TODO: send data to afterbuy
-
-        return $catalogs;
+        return $api->updateCatalogs($catalogs);
     }
 }

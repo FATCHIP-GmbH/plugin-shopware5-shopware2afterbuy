@@ -52,4 +52,69 @@ class ShopwareCategoryHelper extends AbstractHelper {
         return $parent;
     }
 
+    /**
+     * @param ValueCategory[] $valueCategories
+     *
+     * @return array
+     */
+    public function buildAfterbuyCatalogStructure(array $valueCategories): array
+    {
+        usort($valueCategories, [$this, 'compare']);
+
+        $catalogs = [];
+
+        foreach ($valueCategories as $valueCategory) {
+            $catalog = [
+                'CatalogName' => $valueCategory->getName(),
+                'CatalogDescription' => $valueCategory->getDescription(),
+                'Position' => $valueCategory->getPosition(),
+                'AdditionalText' => $valueCategory->getCmsText(),
+                'ShowCatalog' => $valueCategory->getActive(),
+                'Picture' => $valueCategory->getImage(),
+                'InternalIdentifier' => $valueCategory->getInternalIdentifier(),
+            ];
+
+            $parentPath = array_reverse(explode('|', trim($valueCategory->getPath(), '|')));
+            if ($parentPath === ['']) {
+                $catalogs[] = $catalog;
+
+                continue;
+            }
+
+            $currentParents = &$catalogs;
+            foreach ($parentPath as $parentID) {
+                foreach ($currentParents as &$currentParent) {
+                    if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
+                        $currentParent['Catalog'][] = $catalog;
+
+                        // next valueCategory
+                        continue 3;
+                    }
+
+                    if ($currentParent['InternalIdentifier'] === $parentID) {
+                        // if ( ! isset($currentParent['Catalog'])) {
+                        //     $currentParent['Catalog'] = [];
+                        // }
+                        $currentParents = &$currentParent['Catalog'];
+
+                        // next level
+                        continue 2;
+                    }
+                }
+            }
+        }
+
+        return $catalogs;
+    }
+
+    /**
+     * @param ValueCategory $cat1
+     * @param ValueCategory $cat2
+     *
+     * @return int
+     */
+    private function compare($cat1, $cat2): int
+    {
+        return ($cat1->getParentIdentifier() > $cat2->getParentIdentifier()) ? 1 : -1;
+    }
 }

@@ -133,15 +133,17 @@ class Category extends AbstractValueObject
     /**
      * @param $description
      */
-    public function setDescription($description): void
+    public function setDescription(?string $description): void
     {
-        $this->description = $description;
+        if ($description !== null) {
+            $this->description = $description;
+        }
     }
 
     /**
      * @return int
      */
-    public function getPosition(): ?int
+    public function getPosition(): int
     {
         return $this->position;
     }
@@ -189,7 +191,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCmsText(): ?string
+    public function getCmsText(): string
     {
         return $this->cmsText;
     }
@@ -199,7 +201,9 @@ class Category extends AbstractValueObject
      */
     public function setCmsText(?string $cmsText): void
     {
-        $this->cmsText = $cmsText;
+        if ($cmsText !== null) {
+           $this->cmsText = $cmsText;
+        }
     }
 
     /**

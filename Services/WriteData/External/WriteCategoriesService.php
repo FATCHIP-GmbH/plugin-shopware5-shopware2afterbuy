@@ -65,14 +65,14 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
         //mappings for valueObject
         $fieldMappings = [
-            ['CatalogID', 'ExternalIdentifier'],
-            ['Name', 'Name'],
-            ['Description', 'Description'],
+            ['CatalogName', 'Name'],
+            ['CatalogDescription', 'Description'],
             ['ParentID', 'ParentIdentifier'],
             ['Position', 'Position'],
             ['AdditionalText', 'CmsText'],
-            ['Show', 'Active'],
-            ['Picture1', 'Image'],
+            ['ShowCatalog', 'Active'],
+            ['Picture', 'Image'],
+            ['InternalIdentifier', 'InternalIdentifier'],
         ];
 
         $catalogs = [];

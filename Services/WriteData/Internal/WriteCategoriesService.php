@@ -71,6 +71,12 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $shopwareCategory->setActive($valueCategory->getActive());
 
             $this->entityManager->persist($shopwareCategory);
+
+            try {
+                $this->entityManager->flush($shopwareCategory);
+            } catch (OptimisticLockException $e) {
+                // TODO: log error
+            }
         }
     }
 
@@ -79,10 +85,8 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @param $targetData
      *
      * @return mixed|void
-     * @throws OptimisticLockException
      */
     public function send($targetData)
     {
-        $this->entityManager->flush();
     }
 }

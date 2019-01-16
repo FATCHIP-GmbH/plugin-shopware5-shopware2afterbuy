@@ -27,18 +27,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
     protected $isAttribute;
 
     /**
-     * @param AbstractHelper $helper
-     * @param string         $identifier
-     * @param bool           $isAttribute
-     */
-    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute)
-    {
-        $this->categoryHelper = $helper;
-        $this->identifier = $identifier;
-        $this->isAttribute = $isAttribute;
-    }
-
-    /**
      * @param array $filter
      *
      * @return ValueCategory[]

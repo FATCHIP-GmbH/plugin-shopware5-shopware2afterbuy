@@ -55,10 +55,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $value->setStockMin(intval($entity["MinimumStock"]));
             $value->setTax(Helper::convertDeString2Float($entity["TaxRate"]));
 
-
-
-            //TODO: test if no variant
-            if(array_key_exists('Attributes', $entity)) {
+            if(array_key_exists('Attributes', $entity) && array_key_exists('BaseProducts', $entity)) {
                 $value->setMainArticleId($entity["BaseProducts"]["BaseProduct"]["BaseProductID"]);
 
 
@@ -99,18 +96,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @return array
      */
     public function read(array $filter) {
-
-        //TODO: add datefilter
-        //TODO: add pagination
-        $filter = array(
-            'Filter' => array(
-                'FilterName' => 'DateFilter',
-                'FilterValues' => array(
-                    'DateFrom' => '10.01.2019',
-                    'FilterValue' => 'ModDate'
-                )
-            )
-        );
 
         $resource = new ApiClient($this->apiConfig);
         $data = $resource->getAllShopProductsFromAfterbuy($filter);

@@ -42,18 +42,12 @@ class ImportProducts extends ShopwareCommand
         $this
             ->setName('Afterbuy:Import:Products')
             ->setDescription('Receive products from Afterbuy')
-            /*->addArgument(
-                'my-argument',
-                InputArgument::REQUIRED,
-                'An required argument (positional)'
-            )
             ->addOption(
-                'my-option',
+                'force',
                 null,
-                InputOption::VALUE_OPTIONAL,
-                'An optional *option*',
-                'My-Default-Value'
-            )*/
+                InputOption::VALUE_NONE,
+                'Use to import all'
+            )
             ->setHelp(<<<EOF
 The <info>%command.name%</info> implements a command.
 EOF
@@ -74,7 +68,21 @@ EOF
         /**
          * filter array is unused yet but can be implemented
          */
-        $filter = array();
+
+        if($input->getOption('force')) {
+            $filter = array();
+        }
+        else {
+            $filter = array(
+                'Filter' => array(
+                    'FilterName' => 'DateFilter',
+                    'FilterValues' => array(
+                        'DateFrom' => '10.01.2019',
+                        'FilterValue' => 'ModDate'
+                    )
+                )
+            );
+        }
 
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);

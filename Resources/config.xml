@@ -159,6 +159,12 @@
             <label lang="en">Shipping type</label>
             <store>Shopware.apps.Base.store.Dispatch</store>
         </element>
+        <element type="combo" >
+            <name>customerGroup</name>
+            <label lang="de">Kundengruppe</label>
+            <label lang="en">Customer group</label>
+            <store>Shopware.apps.Base.store.CustomerGroup</store>
+        </element>
     </elements>
 
 </config>

@@ -2,22 +2,16 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\Order;
-use Shopware\Components\Model\ModelEntity;
-use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Article\Article;
+use Shopware\Models\Article\Configurator\Option;
+use Shopware\Models\Article\Configurator\Set;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Article\Supplier;
 use Shopware\Models\Attribute\ArticleSupplier;
-use Shopware\Models\Category\Category;
-use Shopware\Models\Country\Country;
-use Shopware\Models\Customer\Address;
-use Shopware\Models\Customer\Customer;
+use Shopware\Models\Attribute\ConfiguratorOption;
 use Shopware\Models\Customer\Group;
 use Shopware\Models\Article\Detail;
-use Shopware\Models\Shop\Shop;
-use Shopware\Models\Tax\Tax;
+
 
 class ShopwareArticleHelper extends AbstractHelper {
 
@@ -27,10 +21,90 @@ class ShopwareArticleHelper extends AbstractHelper {
 
     protected $configuratorGroups;
 
-    public function getArticleAttributes(Article $article, Detail &$detail)
+    protected $configuratorOptions;
+
+    public function assignVariants(Article &$article, Detail $detail, array $variants) {
+        if(!empty($variants)) {
+            $groups = $this->getAssignableConfiguratorGroups($variants);
+            $options = $this->getAssignableConfiguratorOptions($article, $variants);
+
+            $set = $this->getAssignableConfiguratorSet($article, $variants);
+
+            if($set) {
+                $this->addSetGroups($set, $groups);
+                $this->addSetOptions($set, $options);
+            }
+
+            $detail->setConfiguratorOptions($options);
+        }
+    }
+
+    public function getAssignableConfiguratorOptions(Article &$article, array $variants) {
+        if(!$this->configuratorOptions) {
+            $this->getConfiguratorOptions();
+        }
+
+        $options = [];
+
+        foreach($variants as $variant) {
+            if(array_key_exists($variant["value"], $this->configuratorOptions)) {
+                $option = $this->configuratorOptions[$variant["value"]];
+            }
+            else {
+                $option = new Option();
+                $option->setName($variant["value"]);
+                $option->setGroup($this->configuratorGroups[$variant["option"]]);
+                $option->setPosition(0);
+
+                $attr = new ConfiguratorOption();
+                $option->setAttribute($attr);
+
+                $this->entityManager->persist($option);
+                $this->entityManager->flush($option);
+
+                $this->getConfiguratorOptions();
+            }
+
+            array_push($options, $option);
+        }
+
+        return $options;
+    }
+
+    public function getConfiguratorOptions() {
+        $options = $this->entityManager->createQueryBuilder()
+            ->select('options')
+            ->from('\Shopware\Models\Article\Configurator\Option', 'options', 'options.name')
+            ->getQuery()
+            ->getResult();
+
+        $this->configuratorOptions = $options;
+    }
+
+    public function getAssignableConfiguratorSet(Article &$article, array $variants) {
+        $configuratorSet = null;
+
+        if(empty($variants)) {
+           return null;
+        }
+
+        $configuratorSet = $article->getConfiguratorSet();
+
+        if(!$configuratorSet) {
+            $configuratorSet = new Set();
+
+            $article->setConfiguratorSet($configuratorSet);
+            $configuratorSet->setName($article->getMainDetail()->getNumber());
+
+        }
+
+        return $configuratorSet;
+    }
+
+    public function getArticleAttributes(Article $article, Detail &$detail, $parent = '')
     {
         if(is_null($detail->getAttribute())) {
-            $attr = $this->createAttributes($article, $detail);
+            $attr = $this->createAttributes($article, $detail, $parent);
             $detail->setAttribute($attr);
         } else return $detail->getAttribute();
 
@@ -57,16 +131,21 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * creates article attributes and assign to detail
      *
-     * @param ArticleModel $article
+     * @param Article $article
      * @param Detail $detail
+     * @param string $parent
      * @return \Shopware\Models\Attribute\Article
      */
-    public function createAttributes(Article $article, Detail $detail)
+    public function createAttributes(Article $article, Detail $detail, $parent = '')
     {
         $attr = new \Shopware\Models\Attribute\Article();
 
         $attr->setArticle($article);
         $attr->setArticleDetail($detail);
+
+        if($parent) {
+            $attr->setAfterbuyParentId($parent);
+        }
 
         return $attr;
     }
@@ -74,6 +153,8 @@ class ShopwareArticleHelper extends AbstractHelper {
 
     public function storePrices(Detail &$detail, Group $group, float $value, $pseudoPrice = 0.00)
     {
+        $this->customerGroup = $group;
+
         $price = $detail->getPrices()->filter(function(Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
@@ -140,25 +221,45 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $supplier;
     }
 
+    public function getArticleFromAttribute(string $number) {
+        $article = $this->entityManager->getRepository('Shopware\Models\Attribute\Article')->findOneBy(array('afterbuyParentId' => $number));
+        return $article;
+    }
+
     /**
      * returns article. if not available article is needs to be created
      *
      * @return \Shopware\Models\Article\Article
      */
-    public function getMainArticle(string $number, $parent = '')
+    public function getMainArticle(string $number, string $name, $parent = '')
     {
         $article = null;
 
         if($parent) {
-            $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $parent));
+            $article = $this->getArticleFromAttribute($parent);
+        } else {
+            /**
+             * @var Article $article
+             */
+            $article = $this->getArticleFromAttribute($number);
+
+            if(!$article) {
+                $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $number));
+            }
+            else {
+                //If Baseproduct we just will set the name
+                $article->getArticle()->setName($name);
+                $this->entityManager->persist($article);
+                return null;
+            }
         }
 
-        if(!$article) {
-            $article = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $number));
+        if(!is_null($article)) {
+            return $article->getArticle();
         }
-
-        if(!is_null($article)) return $article->getArticle();
-        else return $this->createMainArticle($number);
+        else {
+            return $this->createMainArticle($number, $parent);
+        }
     }
 
     /**
@@ -192,7 +293,7 @@ class ShopwareArticleHelper extends AbstractHelper {
      *
      * @return \Shopware\Models\Article\Article
      */
-    public function createMainArticle()
+    public function createMainArticle(string $parent)
     {
         $article = new Article();
 
@@ -261,76 +362,22 @@ class ShopwareArticleHelper extends AbstractHelper {
     }
 
     /**
-     * returns available variant. if not available variant is gonna be created
-     *
-     * @return array Shopware\Models\Article\Configurator\Option
-     */
-    public function getConfiguratorOption(array $groups, Detail &$detail)
-    {
-
-        $options = array();
-
-        foreach($groups as $group)
-        {
-            if($entity->{"get" . $group}()) {
-                //TODO: create group if not exists
-                $configGroup = Shopware()->Models()->getRepository('Shopware\Models\Article\Configurator\Group')->findOneBy(array('name' => $group));
-
-                $option = Shopware()->Models()->getRepository('Shopware\Models\Article\Configurator\Option')->findOneBy(array('name' => $entity->{"get" . $group}(), 'groupId' => $configGroup->getId()));
-
-                if(is_null($option) && $entity->{"get" . $group}()) {
-                    $option = new Option();
-                    $option->setName($entity->{"get" . $group}());
-                    $option->setPosition(0);
-                    $option->setGroup($configGroup);
-
-                    Shopware()->Models()->persist($option);
-                }
-
-                array_push($options, $option);
-            }
-        }
-
-        $detail->setConfiguratorOptions($options);
-
-        return $options;
-    }
-
-
-    /**
-     * creates a configurator set
-     *
-     * @param \Acid21Connector\Services\Acid21\DTO\Article $entity
-     * @param $options
-     * @param $groups
-     * @return Set
-     */
-    public function createConfiguratorSet(\Acid21Connector\Services\Acid21\DTO\Article $entity, $options, $groups)
-    {
-        $set = new Set();
-
-        $set->setOptions($options);
-        $set->setGroups($groups);
-        $set->setName($entity->getSupplierNumber());
-
-        return $set;
-    }
-
-    /**
      * add an option to a given set
      *
      * @param Set $set
      * @param $options
      * @return Set
      */
-    public function addSetOptions(Set $set, $options)
+    public function addSetOptions(Set &$set, $options)
     {
         $setOptions = $set->getOptions();
 
         foreach($options as $option)
         {
             // add missing options
-            if(!$setOptions->contains($option)) $setOptions->add($option);
+            if(!$setOptions->contains($option)) {
+                $setOptions->add($option);
+            }
         }
 
         return $set;
@@ -343,7 +390,7 @@ class ShopwareArticleHelper extends AbstractHelper {
      * @param $groups
      * @return Set
      */
-    public function addSetGroups(Set $set, $groups)
+    public function addSetGroups(Set &$set, $groups)
     {
         $setGroups = $set->getGroups();
 
@@ -356,31 +403,6 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $set;
     }
 
-    /**
-     * get or create configurator set for given article
-     *
-     * @param ArticleModel $article
-     * @param \Acid21Connector\Services\Acid21\DTO\Article $entity
-     * @param $options
-     * @param $groups
-     * @return Set
-     */
-    public function getConfiguratorSet(ArticleModel &$article, \Acid21Connector\Services\Acid21\DTO\Article $entity, $options, $groups)
-    {
-        $set = $article->getConfiguratorSet();
 
-        if(is_null($set))
-        {
-            $set = $this->createConfiguratorSet($entity, $options, $groups);
-            $article->setConfiguratorSet($set);
-        }
-        else
-        {
-            $this->addSetOptions($set, $options);
-            $this->addSetGroups($set, $groups);
-        }
-
-        return $set;
-    }
 
 }

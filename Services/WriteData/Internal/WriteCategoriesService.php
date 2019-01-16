@@ -45,15 +45,15 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * transforms valueObject into final structure for storage
      * could may be moved into separate helper
      *
-     * @param ValueCategory[] $data
+     * @param ValueCategory[] $valueCategories
      *
      * @return mixed|void
      */
-    public function transform(array $data)
+    public function transform(array $valueCategories)
     {
-        $this->logger->info('Storing ' . count($data) . ' items.', array('Categories', 'Write', 'Internal'));
+        $this->logger->info('Storing ' . count($valueCategories) . ' items.', array('Categories', 'Write', 'Internal'));
 
-        foreach ($data as $valueCategory) {
+        foreach ($valueCategories as $valueCategory) {
             /**
              * @var ShopwareCategory $shopwareCategory
              */

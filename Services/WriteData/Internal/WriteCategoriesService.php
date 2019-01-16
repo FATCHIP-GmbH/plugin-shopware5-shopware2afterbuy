@@ -3,7 +3,6 @@
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -12,12 +11,6 @@ use Shopware\Models\Category\Category as ShopwareCategory;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
 {
-
-    /**
-     * @var ShopwareCategoryHelper $categoryHelper
-     */
-    protected $categoryHelper;
-
     /**
      * @var string $identifier
      */
@@ -51,13 +44,20 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     public function transform(array $valueCategories)
     {
+        /**
+         * @var ShopwareCategoryHelper $categoryHelper
+         */
+        $categoryHelper = $this->helper;
+
         $this->logger->info('Storing ' . count($valueCategories) . ' items.', array('Categories', 'Write', 'Internal'));
+
+        $valueCategories = $categoryHelper->sortValueCategoriesByParentID($valueCategories);
 
         foreach ($valueCategories as $valueCategory) {
             /**
              * @var ShopwareCategory $shopwareCategory
              */
-            $shopwareCategory = $this->categoryHelper->getEntity(
+            $shopwareCategory = $categoryHelper->getEntity(
                 $valueCategory->getExternalIdentifier(),
                 $this->identifier,
                 $this->isAttribute
@@ -65,7 +65,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
             $shopwareCategory->setName($valueCategory->getName());
             $shopwareCategory->setMetaDescription($valueCategory->getDescription());
-            $shopwareCategory->setParent($this->categoryHelper->findParentCategory($valueCategory, $this->identifier));
+            $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
             $shopwareCategory->setPosition($valueCategory->getPosition());
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());

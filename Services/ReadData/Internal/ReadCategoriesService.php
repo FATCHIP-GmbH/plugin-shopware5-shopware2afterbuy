@@ -12,11 +12,6 @@ use Shopware\Models\Category\Category as ShopwareCategory;
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {
     /**
-     * @var ShopwareCategoryHelper $categoryHelper
-     */
-    protected $categoryHelper;
-
-    /**
      * @var string $identifier
      */
     protected $identifier;
@@ -92,6 +87,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter): array
     {
-        return $this->categoryHelper->getAllCategories();
+        /**
+         * @var ShopwareCategoryHelper $categoryHelper
+         */
+        $categoryHelper = $this->helper;
+
+        return $categoryHelper->getAllCategories();
     }
 }

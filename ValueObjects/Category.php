@@ -19,7 +19,7 @@ class Category extends AbstractValueObject
     /**
      * integer works with category ids, articles use strings (ordernumber)
      *
-     * @var int $internalIdentifier
+     * @var string $internalIdentifier
      */
     private $internalIdentifier;
 
@@ -38,7 +38,7 @@ class Category extends AbstractValueObject
     private $description = '';
 
     /**
-     * @var int $position
+     * @var string $position
      */
     private $position = 0;
 
@@ -54,6 +54,9 @@ class Category extends AbstractValueObject
 
     /** @var string */
     private $cmsText = '';
+
+    /** @var string */
+    private $path = '';
 
     /**
      * @return string
@@ -74,7 +77,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getExternalIdentifier(): string
+    public function getExternalIdentifier(): ?string
     {
         return $this->externalIdentifier;
     }
@@ -82,15 +85,15 @@ class Category extends AbstractValueObject
     /**
      * @param $externalIdentifier
      */
-    public function setExternalIdentifier($externalIdentifier): void
+    public function setExternalIdentifier(?string $externalIdentifier): void
     {
         $this->externalIdentifier = $externalIdentifier;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getInternalIdentifier(): int
+    public function getInternalIdentifier(): string
     {
         return $this->internalIdentifier;
     }
@@ -130,25 +133,29 @@ class Category extends AbstractValueObject
     /**
      * @param $description
      */
-    public function setDescription($description): void
+    public function setDescription(?string $description): void
     {
-        $this->description = $description;
+        if ($description !== null) {
+            $this->description = $description;
+        }
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getPosition(): int
+    public function getPosition(): string
     {
         return $this->position;
     }
 
     /**
-     * @param $position
+     * @param string $position
      */
-    public function setPosition($position): void
+    public function setPosition(?string $position): void
     {
-        $this->position = $position;
+        if ($position !== null) {
+            $this->position = $position;
+        }
     }
 
     /**
@@ -194,9 +201,29 @@ class Category extends AbstractValueObject
     /**
      * @param string $cmsText
      */
-    public function setCmsText(string $cmsText): void
+    public function setCmsText(?string $cmsText): void
     {
-        $this->cmsText = $cmsText;
+        if ($cmsText !== null) {
+           $this->cmsText = $cmsText;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @param string $path
+     */
+    public function setPath(?string $path): void
+    {
+        if ($path !== null) {
+            $this->path = $path;
+        }
     }
 
     /**
@@ -207,7 +234,6 @@ class Category extends AbstractValueObject
         $isValid = true;
 
         $isValid = $isValid && isset($this->name);
-        $isValid = $isValid && isset($this->externalIdentifier);
         $isValid = $isValid && isset($this->parentIdentifier);
         $isValid = $isValid && isset($this->active);
 

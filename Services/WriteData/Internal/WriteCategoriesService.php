@@ -65,22 +65,22 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     {
         $this->logger->info('Storing ' . count($data) . ' items.', array('Categories', 'Write', 'Internal'));
 
-        foreach ($data as $category) {
+        foreach ($data as $valueCategory) {
             /**
              * @var ShopwareCategory $shopwareCategory
              */
             $shopwareCategory = $this->categoryHelper->getEntity(
-                $category->getExternalIdentifier(),
+                $valueCategory->getExternalIdentifier(),
                 $this->identifier,
                 $this->isAttribute
             );
 
-            $shopwareCategory->setName($category->getName());
-            $shopwareCategory->setMetaDescription($category->getDescription());
-            $shopwareCategory->setParent($this->categoryHelper->findParentCategory($category, $this->identifier));
-            $shopwareCategory->setPosition($category->getPosition());
-            $shopwareCategory->setCmsText($category->getCmsText());
-            $shopwareCategory->setActive($category->getActive());
+            $shopwareCategory->setName($valueCategory->getName());
+            $shopwareCategory->setMetaDescription($valueCategory->getDescription());
+            $shopwareCategory->setParent($this->categoryHelper->findParentCategory($valueCategory, $this->identifier));
+            $shopwareCategory->setPosition($valueCategory->getPosition());
+            $shopwareCategory->setCmsText($valueCategory->getCmsText());
+            $shopwareCategory->setActive($valueCategory->getActive());
 
             $this->entityManager->persist($shopwareCategory);
         }
@@ -97,30 +97,4 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     {
         $this->entityManager->flush();
     }
-
-    /**
-     * @param ValueCategory $category
-     *
-     * @return ShopwareCategory
-     *
-     * moved to helper, made public for reusability
-     */
-/*    private function findParent(ValueCategory $category): ShopwareCategory
-    {
-        $parent = null;
-
-        if ($category->getParentIdentifier()) {
-            $parent = $this->categoryHelper->getCategory(
-                $category->getParentIdentifier(),
-                $this->identifier,
-                true
-            );
-        }
-
-        if ( ! $parent) {
-            $parent = $this->categoryHelper->getMainCategory();
-        }
-
-        return $parent;
-    }*/
 }

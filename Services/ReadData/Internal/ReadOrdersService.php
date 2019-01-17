@@ -7,6 +7,8 @@ use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Category;
 use FatchipAfterbuy\ValueObjects\Order;
+use FatchipAfterbuy\ValueObjects\OrderPosition;
+use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
@@ -43,6 +45,24 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             /**
              * @var \Shopware\Models\Order\Order $entity
              */
+
+            $positions = [];
+
+            foreach($entity->getDetails() as $position) {
+                /**
+                 * @var Detail $position
+                 */
+                $orderPosition = new OrderPosition();
+                $orderPosition->setExternalIdentifier($position->getEan());
+                $orderPosition->setInternalIdentifier($position->getNumber());
+                $orderPosition->setName($position->getArticleName());
+                $orderPosition->setPrice($position->getPrice());
+                $orderPosition->setQuantity($position->getQuantity());
+                $orderPosition->setTax($position->getTaxRate());
+
+                array_push($positions, $orderPosition);
+            }
+
 
             $billingAddress = new Address();
             $billingAddress->setFirstname($entity->getBilling()->getFirstName());

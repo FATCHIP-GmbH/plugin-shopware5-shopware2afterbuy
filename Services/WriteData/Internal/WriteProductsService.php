@@ -69,6 +69,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             //set main values
             $detail->setLastStock($value->getStockMin());
             $article->setName($value->getName());
+            $article->setDescriptionLong($value->getDescription());
+            $detail->setInStock($value->getStock());
 
             if($netInput && $value->getTax()) {
                 $price = $value->getPrice() / (1+ ($value->getTax() / 100));

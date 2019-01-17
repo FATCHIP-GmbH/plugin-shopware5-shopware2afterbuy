@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services\ReadData\Internal;
 
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
+use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Category;
 use FatchipAfterbuy\ValueObjects\Order;
 use Shopware\Models\Order\Repository;
@@ -34,8 +35,63 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         $targetData = array();
 
         foreach($data as $entity) {
+            /**
+             * @var Order $order
+             */
+            $order = new $this->targetEntity();
 
+            /**
+             * @var \Shopware\Models\Order\Order $entity
+             */
 
+            $billingAddress = new Address();
+            $billingAddress->setFirstname($entity->getBilling()->getFirstName());
+            $billingAddress->setLastname($entity->getBilling()->getLastName());
+            $billingAddress->setCompany($entity->getBilling()->getCompany());
+            $billingAddress->setStreet($entity->getBilling()->getStreet());
+            $billingAddress->setAdditionalAddressLine1($entity->getBilling()->getAdditionalAddressLine1());
+            $billingAddress->setZipcode($entity->getBilling()->getZipCode());
+            $billingAddress->setCity($entity->getBilling()->getCity());
+            $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
+            $billingAddress->setPhone($entity->getBilling()->getPhone());
+            $billingAddress->setEmail($entity->getCustomer()->getEmail());
+            $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+
+            $shippingAddress = new Address();
+            $shippingAddress->setFirstname($entity->getShipping()->getFirstName());
+            $shippingAddress->setLastname($entity->getShipping()->getLastName());
+            $shippingAddress->setCompany($entity->getShipping()->getCompany());
+            $shippingAddress->setStreet($entity->getShipping()->getStreet());
+            $shippingAddress->setAdditionalAddressLine1($entity->getShipping()->getAdditionalAddressLine1());
+            $shippingAddress->setZipcode($entity->getShipping()->getZipCode());
+            $shippingAddress->setCity($entity->getShipping()->getCity());
+            $shippingAddress->setCountry($entity->getShipping()->getCountry()->getIso());
+
+            $order->setBillingAddress($billingAddress);
+            $order->setShippingAddress($shippingAddress);
+
+            $order->setCreateDate($entity->getOrderTime());
+
+            $order->setShipping($entity->getInvoiceShipping());
+            $order->setShippingType($entity->getDispatch()->getName());
+
+            $order->setPaymentType($entity->getPayment()->getName());
+            $order->setPaymentTypeId($entity->getPayment()->getId());
+
+            if($entity->getTaxFree()) {
+                $order->setTaxFree(true);
+            }
+
+            $order->setCustomerNumber($entity->getCustomer()->getNumber());
+            $order->setInternalIdentifier($entity->getNumber());
+
+            $order->setCurrency($entity->getCurrency());
+
+            if($entity->getPaymentStatus()->getId() == 12) {
+                $order->setPaid(true);
+            }
+
+            $order->setTransactionId($entity->getTransactionId());
         }
 
         return $targetData;

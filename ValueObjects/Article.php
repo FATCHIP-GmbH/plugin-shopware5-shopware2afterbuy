@@ -56,6 +56,46 @@ class Article extends AbstractValueObject {
 
     public $mainArticleId;
 
+    public $description;
+
+    /**
+     * @var bool
+     */
+    public $active = false;
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description): void
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
+    }
+
+
     /**
      * @return mixed
      */

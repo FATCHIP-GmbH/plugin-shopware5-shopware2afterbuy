@@ -128,6 +128,29 @@ class Address extends AbstractValueObject
     protected $email = 'no.mail@set.org';
 
     /**
+     * @var \DateTime
+     */
+    protected $birthday;
+
+    /**
+     * @return \DateTime
+     */
+    public function getBirthday(): \DateTime
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @param \DateTime $birthday
+     */
+    public function setBirthday(\DateTime $birthday): void
+    {
+        $this->birthday = $birthday;
+    }
+
+
+
+    /**
      * @return string
      */
     public function getCompany(): string

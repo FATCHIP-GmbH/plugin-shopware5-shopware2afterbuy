@@ -54,6 +54,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $value->setStock($entity["Quantity"]);
             $value->setStockMin(intval($entity["MinimumStock"]));
             $value->setTax(Helper::convertDeString2Float($entity["TaxRate"]));
+            $value->setDescription($entity["Description"]);
+
+            if(intval($entity["Quantity"]) > intval($entity["MinimumStock"])) {
+                $value->setActive(true);
+            }
+
 
             if(array_key_exists('Attributes', $entity) && array_key_exists('BaseProducts', $entity)) {
                 $value->setMainArticleId($entity["BaseProducts"]["BaseProduct"]["BaseProductID"]);

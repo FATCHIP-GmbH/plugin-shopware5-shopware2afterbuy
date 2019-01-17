@@ -17,7 +17,7 @@ class Order extends AbstractValueObject {
     /**
      * integer works with category ids, articles use strings (ordernumber)
      *
-     * @var int $internalIdentifier
+     * @var string $internalIdentifier
      */
     public $internalIdentifier;
 
@@ -69,7 +69,7 @@ class Order extends AbstractValueObject {
     /**
      * @var bool
      */
-    public $taxFree;
+    public $taxFree = false;
 
     /**
      * @var float
@@ -99,6 +99,70 @@ class Order extends AbstractValueObject {
     public $paymentType = 'OTHERS';
 
     public $customerNumber;
+
+    public $shippingType = 'Standard';
+
+    /**
+     * @var bool
+     */
+    public $cleared = false;
+
+    /**
+     * @var int
+     */
+    public $paymentTypeId;
+
+    /**
+     * @return bool
+     */
+    public function isCleared(): bool
+    {
+        return $this->cleared;
+    }
+
+    /**
+     * @param bool $cleared
+     */
+    public function setCleared(bool $cleared): void
+    {
+        $this->cleared = $cleared;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPaymentTypeId(): int
+    {
+        return $this->paymentTypeId;
+    }
+
+    /**
+     * @param int $paymentTypeId
+     */
+    public function setPaymentTypeId(int $paymentTypeId): void
+    {
+        $this->paymentTypeId = $paymentTypeId;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getShippingType(): string
+    {
+        return $this->shippingType;
+    }
+
+    /**
+     * @param string $shippingType
+     */
+    public function setShippingType(string $shippingType): void
+    {
+        $this->shippingType = $shippingType;
+    }
+
+
 
     /**
      * @return mixed

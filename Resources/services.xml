@@ -77,6 +77,11 @@
 
         <service class="FatchipAfterbuy\Services\ReadData\External\ReadOrdersService" id="fatchip_afterbuy.services.read_data.external.read_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
             <call method="setTarget">
                 <argument type="string">FatchipAfterbuy\ValueObjects\Order</argument>
             </call>

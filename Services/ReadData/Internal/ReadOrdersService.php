@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\ReadData\Internal;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
@@ -46,22 +47,26 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
              * @var \Shopware\Models\Order\Order $entity
              */
 
-            $positions = [];
+            $positions = new ArrayCollection();
 
             foreach($entity->getDetails() as $position) {
                 /**
                  * @var Detail $position
                  */
                 $orderPosition = new OrderPosition();
-                $orderPosition->setExternalIdentifier($position->getEan());
+                if($position->getEan()) {
+                    $orderPosition->setExternalIdentifier($position->getEan());
+                }
                 $orderPosition->setInternalIdentifier($position->getNumber());
                 $orderPosition->setName($position->getArticleName());
                 $orderPosition->setPrice($position->getPrice());
                 $orderPosition->setQuantity($position->getQuantity());
                 $orderPosition->setTax($position->getTaxRate());
 
-                array_push($positions, $orderPosition);
+                $positions->add($orderPosition);
             }
+
+            $order->setPositions($positions);
 
 
             $billingAddress = new Address();
@@ -69,20 +74,28 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setLastname($entity->getBilling()->getLastName());
             $billingAddress->setCompany($entity->getBilling()->getCompany());
             $billingAddress->setStreet($entity->getBilling()->getStreet());
-            $billingAddress->setAdditionalAddressLine1($entity->getBilling()->getAdditionalAddressLine1());
+
+            if($entity->getBilling()->getAdditionalAddressLine1()) {
+                $billingAddress->setAdditionalAddressLine1($entity->getBilling()->getAdditionalAddressLine1());
+            }
             $billingAddress->setZipcode($entity->getBilling()->getZipCode());
             $billingAddress->setCity($entity->getBilling()->getCity());
             $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
             $billingAddress->setPhone($entity->getBilling()->getPhone());
             $billingAddress->setEmail($entity->getCustomer()->getEmail());
-            $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+
+            if($entity->getCustomer()->getBirthday()) {
+                $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+            }
 
             $shippingAddress = new Address();
             $shippingAddress->setFirstname($entity->getShipping()->getFirstName());
             $shippingAddress->setLastname($entity->getShipping()->getLastName());
             $shippingAddress->setCompany($entity->getShipping()->getCompany());
             $shippingAddress->setStreet($entity->getShipping()->getStreet());
-            $shippingAddress->setAdditionalAddressLine1($entity->getShipping()->getAdditionalAddressLine1());
+            if($entity->getShipping()->getAdditionalAddressLine1()) {
+                $shippingAddress->setAdditionalAddressLine1($entity->getShipping()->getAdditionalAddressLine1());
+            }
             $shippingAddress->setZipcode($entity->getShipping()->getZipCode());
             $shippingAddress->setCity($entity->getShipping()->getCity());
             $shippingAddress->setCountry($entity->getShipping()->getCountry()->getIso());
@@ -112,6 +125,8 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             }
 
             $order->setTransactionId($entity->getTransactionId());
+
+            array_push($targetData, $order);
         }
 
         return $targetData;
@@ -125,9 +140,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @return array
      */
     public function read(array $filter) {
-
-        //TODO: implement read data
-        $repo = $this->entityManager->getRepository($this->sourceRepository);
 
         /**
          * @var Repository $repo

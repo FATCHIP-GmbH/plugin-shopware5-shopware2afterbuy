@@ -21,4 +21,12 @@ class Helper {
 
         return floatval($value);
     }
+
+    public static function convertNumberToABString($value) {
+        $value = number_format($value, 2);
+        $value = str_replace(",", "", $value);
+        $value = str_replace(".", ",", $value);
+
+        return $value;
+    }
 }

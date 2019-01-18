@@ -102,7 +102,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getExternalIdentifier(): string
+    public function getExternalIdentifier(): ?string
     {
         return $this->externalIdentifier;
     }

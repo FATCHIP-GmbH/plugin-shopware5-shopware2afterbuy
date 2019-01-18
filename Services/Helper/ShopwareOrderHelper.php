@@ -293,12 +293,42 @@ class ShopwareOrderHelper extends AbstractHelper {
         );
     }
 
+
+    /**
+     * @param array $values
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function setAfterBuyIds(array $values) {
+        $orders = $this->entityManager->createQueryBuilder()
+            ->select(['orders'])
+            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->where('orders.number IN(:numbers)')
+            ->setParameter('numbers', array_keys($values))
+            ->getQuery()
+            ->getResult();
+
+        foreach($orders as $order) {
+            /**
+             * @var \Shopware\Models\Order\Order $order
+             */
+            $order->getAttribute()->setAfterbuyOrderId($values[$order->getNumber()]);
+
+            $this->entityManager->persist($order);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @return array
+     */
     public function getUnexportedOrders() {
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders'])
             ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
-            ->leftJoin('\Shopware\Models\Attribute\Order', 'attributes')
-            ->where('orders.clearedDate > attributes.')
+            ->leftJoin('orders.attribute', 'attributes')
+            ->where('attributes.afterbuyOrderId IS NULL')
+            ->orWhere("attributes.afterbuyOrderId = ''")
             ->getQuery()
             ->getResult();
 
@@ -306,10 +336,18 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     }
 
+    /**
+     * @param \Shopware\Models\Order\Order $order
+     * @param int $id
+     */
     public function setShippingType(\Shopware\Models\Order\Order &$order, int $id) {
        $order->setDispatch($this->getShippingType($id));
     }
 
+    /**
+     * @param int $id
+     * @return object|\Shopware\Models\Dispatch\Dispatch|null
+     */
     public function getShippingType(int $id) {
         if($this->shippingType) {
             return $this->shippingType;
@@ -459,6 +497,10 @@ class ShopwareOrderHelper extends AbstractHelper {
         $order->setCurrencyFactor(1);
     }
 
+    /**
+     * @param Order $value
+     * @param \Shopware\Models\Order\Order $order
+     */
     public function setShippingStatus(Order $value, \Shopware\Models\Order\Order &$order) {
         if($value->isShipped()) {
             $order->setOrderStatus($this->shippingStates["completed"]);
@@ -514,6 +556,9 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $states;
     }
 
+    /**
+     * @return array
+     */
     public function getShippingStates() {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
@@ -536,6 +581,9 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $states;
     }
 
+    /**
+     * @return array
+     */
     public function getPaymentTypes() {
         $types = $this->entityManager->createQueryBuilder()
             ->select('types')

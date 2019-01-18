@@ -2,6 +2,8 @@
 
 namespace FatchipAfterbuy\Services\WriteData\External;
 
+use Fatchip\Afterbuy\ApiClient;
+use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
@@ -37,7 +39,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         //TODO: url generation for send into library
         //TODO: url encode values
-        //TODO: convert float to ,values
 
         $orders = [];
 
@@ -76,14 +77,13 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 
                 'Ktelefon' => $value->getBillingAddress()->getPhone(),
                 'Kemail' => $value->getBillingAddress()->getEmail(),
-                //TODO: format date
-                'KBirthday' => $value->getBillingAddress()->getBirthday(),
-                'BuyDate' => $value->getCreateDate(),
+
+                'KBirthday' => ($value->getBillingAddress()->getBirthday()) ? date_format($value->getBillingAddress()->getBirthday(), 'd.m.Y H:i:s') : '',
+                'BuyDate' => date_format($value->getCreateDate(), 'd.m.Y H:i:s'),
 
                 'Versandart' => $value->getShippingType(),
 
-                //TODO: format value
-                'Versandkosten' => $value->getShipping(),
+                'Versandkosten' => Helper::convertNumberToABString($value->getShipping()),
 
                 //TODO: parse, may use ZFunktionsID
                 'Zahlart' => $value->getPaymentType(),
@@ -114,15 +114,15 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                  * @var OrderPosition $position
                  */
 
-                //TODO: set numbers
-                $orders[$value->getInternalIdentifier()]['Artikelnr_' . $i] = '';
-                $orders[$value->getInternalIdentifier()]['Artikelnr1_' . $i] = '';
-                $orders[$value->getInternalIdentifier()]['Artikelnr2_' . $i] = '';
+                $orders[$value->getInternalIdentifier()]['Artikelnr_' . $i] = $position->getInternalIdentifier();
+                $orders[$value->getInternalIdentifier()]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
+                $orders[$value->getInternalIdentifier()]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
 
                 $orders[$value->getInternalIdentifier()]['Artikelname_' . $i] = $position->getName();
-                //TODO: format price, tax
-                $orders[$value->getInternalIdentifier()]['ArtikelEpreis_' . $i] = $position->getPrice();
-                $orders[$value->getInternalIdentifier()]['ArtikelMwSt_' . $i] = $position->getTax();
+
+                $orders[$value->getInternalIdentifier()]['ArtikelEpreis_' . $i] = Helper::convertNumberToABString($position->getPrice());
+                $orders[$value->getInternalIdentifier()]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString($position->getTax());
+
                 $orders[$value->getInternalIdentifier()]['ArtikelMenge_' . $i] = $position->getQuantity();
 
 
@@ -142,5 +142,21 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
     public function send($targetData) {
         //TODO: update attribute for submission
+        $api = new ApiClient($this->apiConfig);
+
+        $submitted = [];
+
+        foreach ($targetData as $order) {
+            $response = $api->sendOrdersToAfterbuy($order);
+
+            if(!empty($response)) {
+                $submitted[$response["ordernumber"]] = $response["afterbuyId"];
+            }
+        }
+
+        $this->helper->setAfterBuyIds($submitted);
+
+        return $submitted;
+
     }
 }

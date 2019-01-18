@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy;
 
+use FatchipAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,6 +33,18 @@ class FatchipAfterbuy extends Plugin
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
 
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
+
+        $em = $this->container->get('models');
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $classes = [$em->getClassMetadata(Status::class)];
+
+        $tableNames = array('afterbuy_status');
+
+        $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
+        if (!$schemaManager->tablesExist($tableNames)) {
+            $tool->createSchema($classes);
+        }
+
     }
 
     public function afterInit()

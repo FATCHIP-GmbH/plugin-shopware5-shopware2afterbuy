@@ -35,7 +35,15 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
         $targetData = array();
 
-        foreach($data["Result"]["Orders"]["Order"] as $entity) {
+        if(is_array($data["Result"]["Orders"]["Order"][0])) {
+            $orders = $data["Result"]["Orders"];
+        }
+        else {
+            $orders = $data["Result"]["Orders"]["Order"];
+        }
+
+        //TODO: handle single rresult
+        foreach($orders as $entity) {
 
             /**
              * @var Order $value
@@ -70,7 +78,13 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                     $orderPosition = new OrderPosition();
 
                     $orderPosition->setName($position["ItemTitle"]);
-                    $orderPosition->setExternalIdentifier($position["ShopProductDetails"]["ProductID"]);
+
+                    if(array_key_exists('ShopProductDetails', $position)) {
+                        $orderPosition->setExternalIdentifier($position["ShopProductDetails"]["ProductID"]);
+                    } else {
+                        $orderPosition->setExternalIdentifier($position["ItemID"]);
+                    }
+
                     $orderPosition->setQuantity($position["ItemQuantity"]);
                     $orderPosition->setPrice(Helper::convertDeString2Float($position["ItemPrice"]));
                     $orderPosition->setTax(Helper::convertDeString2Float($position["TaxRate"]));
@@ -86,7 +100,13 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                 $orderPosition->setName($entity["SoldItems"]["SoldItem"]["ItemTitle"]);
                 $orderPosition->setPrice(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]));
-                $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ShopProductDetails"]["ProductID"]);
+
+                if(array_key_exists('ShopProductDetails', $entity["SoldItems"]["SoldItem"])) {
+                    $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ShopProductDetails"]["ProductID"]);
+                } else {
+                    $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ItemID"]);
+                }
+
                 $orderPosition->setQuantity($entity["SoldItems"]["SoldItem"]["ItemQuantity"]);
                 $orderPosition->setTax(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["TaxRate"]));
 
@@ -189,8 +209,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      */
     public function read(array $filter) {
 
+
+
         $resource = new ApiClient($this->apiConfig);
-        $data = $resource->getOrdersFromAfterbuy();
+        $data = $resource->getOrdersFromAfterbuy($filter);
 
         if(!$data || !$data["Result"]) {
             return null;

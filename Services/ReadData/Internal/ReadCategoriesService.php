@@ -7,6 +7,7 @@ use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
@@ -65,6 +66,13 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $valueCategory->setActive($shopwareCategory->getActive());
             $valueCategory->setInternalIdentifier($shopwareCategory->getId());
             $valueCategory->setPath($shopwareCategory->getPath());
+            if (($media = $shopwareCategory->getMedia()) && $media->getId() > 0) {
+                /** @var MediaService $mediaService */
+                $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+                $image = $mediaService->getUrl($media->getPath());
+
+                $valueCategory->setImage($image);
+            }
             // TODO: handle media
 
             if ($valueCategory->isValid()) {

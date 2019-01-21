@@ -65,6 +65,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());
 
+            // TODO: create config for album name
             $media = $this->helper->createMediaImage(
                 $valueCategory->getName(),
                 $valueCategory->getImage(),

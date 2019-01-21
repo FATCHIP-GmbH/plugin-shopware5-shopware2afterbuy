@@ -5,6 +5,7 @@ namespace FatchipAfterbuy\Commands;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 
+use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -68,20 +69,8 @@ EOF
         /**
          * filter array is unused yet but can be implemented
          */
-        if($input->getOption('force')) {
-            $filter = array();
-        }
-        else {
-            $filter = array(
-                'Filter' => array(
-                    'FilterName' => 'DateFilter',
-                    'FilterValues' => array(
-                        'DateFrom' => '18.01.2018 16:00:00',
-                        'FilterValue' => 'ModDate'
-                    )
-                )
-            );
-        }
+
+        $filter = $this->writeDataService->getOrderImportDateFilter($input->getOption('force'));
 
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);

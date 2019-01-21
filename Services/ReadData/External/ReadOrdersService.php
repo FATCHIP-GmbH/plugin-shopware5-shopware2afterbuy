@@ -35,14 +35,17 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
         $targetData = array();
 
-        if(is_array($data["Result"]["Orders"]["Order"][0])) {
-            $orders = $data["Result"]["Orders"];
+        if(!array_key_exists("Orders", $data["Result"])) {
+            return array();
         }
-        else {
+
+        //handle single result
+        if(array_key_exists("OrderID", $data["Result"]["Orders"]["Order"])) {
+            $orders = $data["Result"]["Orders"];
+        } else {
             $orders = $data["Result"]["Orders"]["Order"];
         }
 
-        //TODO: handle single rresult
         foreach($orders as $entity) {
 
             /**

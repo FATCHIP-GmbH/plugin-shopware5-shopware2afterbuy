@@ -13,7 +13,6 @@ class Status extends ModelEntity {
 
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -24,6 +23,22 @@ class Status extends ModelEntity {
      * @var \DateTime
      */
     private $lastOrderImport;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return \DateTime

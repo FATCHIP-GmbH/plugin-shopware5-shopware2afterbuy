@@ -29,6 +29,8 @@
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_orders_service" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
         </service>
 
         <service id="fatchip_afterbuy.commands.import_products" class="FatchipAfterbuy\Commands\ImportProducts">

@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
+use FatchipAfterbuy\Models\Status;
 use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -116,5 +117,58 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
     public function send($targetData) {
         $this->entityManager->flush();
+
+        $this->storeOrderImportDate();
+    }
+
+    public function storeOrderImportDate() {
+        $importStatus = new Status();
+        $importStatus->setLastOrderImport(new \DateTime());
+        $importStatus->setId(1);
+
+        $this->entityManager->merge($importStatus);
+        $this->entityManager->flush();
+    }
+
+    public function getOrderImportDateFilter(bool $force) {
+
+        if($force) {
+            return array();
+        }
+
+        /**
+         * @var $lastDate Status
+         */
+        $lastDate = $this->entityManager->getRepository("FatchipAfterbuy\Models\Status")->find(1);
+
+        if(!$lastDate) {
+            return array();
+        }
+
+        if(!$lastDate->getLastOrderImport()) {
+            return array();
+        }
+
+        //if the shop is the data carrying system, we do only import new orders,
+        //otherwise we will receive states from afterbuy for update
+        if($this->config["mainSystem"] != 1) {
+            $filterField = 'ModDate';
+        } else {
+            $filterField = 'AuctionEndDate';
+        }
+
+        $filterDate = date_format($lastDate->getLastOrderImport(), 'd.m.Y H:i:s');
+
+        $filter = array(
+            'Filter' => array(
+                'FilterName' => 'DateFilter',
+                'FilterValues' => array(
+                    'DateFrom' => $filterDate,
+                    'FilterValue' => $filterField
+                )
+            )
+        );
+
+        return $filter;
     }
 }

@@ -39,6 +39,12 @@
             <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_products_service" />
         </service>
 
+        <service id="fatchip_afterbuy.commands.export_products" class="FatchipAfterbuy\Commands\ExportProducts">
+            <tag name="console.command" />
+            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_products_service" />
+            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_products_service" />
+        </service>
+
         <!-- Products -->
 
         <service class="FatchipAfterbuy\Services\ReadData\External\ReadProductsService" id="fatchip_afterbuy.services.read_data.external.read_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
@@ -58,6 +64,22 @@
                 <argument type="string">number</argument>
                 <argument type="string">false</argument>
             </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadProductsService" id="fatchip_afterbuy.services.read_data.internal.read_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setTarget">
+                <argument type="string">FatchipAfterbuy\ValueObjects\Article</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\WriteData\External\WriteProductsService" id="fatchip_afterbuy.services.write_data.external.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
         </service>
 
         <!-- Orders -->
@@ -190,9 +212,10 @@
 
         <!-- Logger -->
 
-        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\StreamHandler" public="false">
-            <argument>./var/log/afterbuy.log</argument>
-            <argument>-1</argument>
+        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="false">
+            <argument>%kernel.logs_dir%/afterbuy_%kernel.environment%.log</argument>
+            <argument>14</argument>
+            <argument>%kernel.default_error_level%</argument>
             <call method="pushProcessor">
                 <argument type="service" id="monolog.processor.uid" />
             </call>

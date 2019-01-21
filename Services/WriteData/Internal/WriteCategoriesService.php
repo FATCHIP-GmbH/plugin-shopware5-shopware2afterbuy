@@ -65,7 +65,11 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());
 
-            $media = $this->helper->createMediaImage($valueCategory->getName(), $valueCategory->getImage());
+            $media = $this->helper->createMediaImage(
+                $valueCategory->getName(),
+                $valueCategory->getImage(),
+                'Categories'
+            );
 
             $shopwareCategory->setMedia($media);
 

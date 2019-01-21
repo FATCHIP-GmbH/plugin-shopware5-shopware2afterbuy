@@ -185,7 +185,7 @@ class AbstractHelper {
         /** @var Repository $albumRepo */
         $albumRepo = $models->getRepository(Album::class);
         /** @var Album $album */
-        $album = $albumRepo->findOneBy(['name', $albumName]);
+        $album = $albumRepo->findOneBy(['name' => $albumName]);
 
         $media = new Media();
         $media->setAlbumId($album->getId());

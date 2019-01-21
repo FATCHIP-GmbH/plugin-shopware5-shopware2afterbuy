@@ -62,7 +62,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      */
     public function buildAfterbuyCatalogStructure(array $valueCategories): array
     {
-        usort($valueCategories, [$this, 'compare']);
+        $valueCategories = $this->sortValueCategoriesByParentID($valueCategories);
 
         $catalogs = [];
 
@@ -108,6 +108,18 @@ class ShopwareCategoryHelper extends AbstractHelper {
         }
 
         return $catalogs;
+    }
+
+    /**
+     * @param ValueCategory[] $valueCategories
+     *
+     * @return ValueCategory[]
+     */
+    public function sortValueCategoriesByParentID(array $valueCategories): array
+    {
+        usort($valueCategories, [$this, 'compare']);
+
+        return $valueCategories;
     }
 
     /**

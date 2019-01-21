@@ -7,15 +7,11 @@ use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {
-    /**
-     * @var ShopwareCategoryHelper $categoryHelper
-     */
-    protected $categoryHelper;
-
     /**
      * @var string $identifier
      */
@@ -25,18 +21,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      * @var bool $isAttribute
      */
     protected $isAttribute;
-
-    /**
-     * @param AbstractHelper $helper
-     * @param string         $identifier
-     * @param bool           $isAttribute
-     */
-    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute)
-    {
-        $this->categoryHelper = $helper;
-        $this->identifier = $identifier;
-        $this->isAttribute = $isAttribute;
-    }
 
     /**
      * @param array $filter
@@ -82,6 +66,13 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             $valueCategory->setActive($shopwareCategory->getActive());
             $valueCategory->setInternalIdentifier($shopwareCategory->getId());
             $valueCategory->setPath($shopwareCategory->getPath());
+            if (($media = $shopwareCategory->getMedia()) && $media->getId() > 0) {
+                /** @var MediaService $mediaService */
+                $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+                $image = $mediaService->getUrl($media->getPath());
+
+                $valueCategory->setImage($image);
+            }
             // TODO: handle media
 
             if ($valueCategory->isValid()) {
@@ -104,6 +95,11 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter): array
     {
-        return $this->categoryHelper->getAllCategories();
+        /**
+         * @var ShopwareCategoryHelper $categoryHelper
+         */
+        $categoryHelper = $this->helper;
+
+        return $categoryHelper->getAllCategories();
     }
 }

@@ -2,9 +2,16 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
+use Doctrine\ORM\OptimisticLockException;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
 use FatchipAfterbuy\Components\Helper;
+use DateTime;
+use Exception;
+use Shopware\Bundle\MediaBundle\MediaService;
+use Shopware\Models\Media\Album;
+use Shopware\Models\Media\Media;
+use Shopware\Models\Media\Repository;
 
 
 /**
@@ -157,4 +164,50 @@ class AbstractHelper {
         }
     }
 
+    /**
+     * @param $name
+     * @param $url
+     * @param $albumName
+     *
+     * @return Media
+     */
+    public function createMediaImage($name, $url, $albumName): Media
+    {
+        $path = 'media/image/' . $name . '.jpg';
+        $contents = file_get_contents($url);
+
+        /** @var MediaService $mediaService */
+        $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+        $mediaService->write($path, $contents);
+
+        /** @var ModelManager $models */
+        $models = Shopware()->Container()->get('models');
+        /** @var Repository $albumRepo */
+        $albumRepo = $models->getRepository(Album::class);
+        /** @var Album $album */
+        $album = $albumRepo->findOneBy(['name', $albumName]);
+
+        $media = new Media();
+        $media->setAlbumId($album->getId());
+        $media->setDescription('');
+        try {
+            $media->setCreated(new DateTime());
+        } catch (Exception $e) {
+            // TODO: handle exception
+        }
+        $media->setUserId(0);
+        $media->setName($name);
+        $media->setPath($path);
+        $media->setFileSize($mediaService->getSize($path));
+        $media->setExtension('jpg');
+        $media->setType('image');
+
+        $this->entityManager->persist($media);
+        try {
+            $this->entityManager->flush($media);
+        } catch (OptimisticLockException $e) {
+        }
+
+        return $media;
+    }
 }

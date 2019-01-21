@@ -25,6 +25,24 @@ class Status extends ModelEntity {
     private $lastOrderImport;
 
     /**
+     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     */
+    private $lastProductImport;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     */
+    private $lastProductExport;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @var \DateTime
+     */
+    private $lastStatusExport;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -54,6 +72,54 @@ class Status extends ModelEntity {
     public function setLastOrderImport(\DateTime $lastOrderImport): void
     {
         $this->lastOrderImport = $lastOrderImport;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastProductImport(): \DateTime
+    {
+        return $this->lastProductImport;
+    }
+
+    /**
+     * @param \DateTime $lastProductImport
+     */
+    public function setLastProductImport(\DateTime $lastProductImport): void
+    {
+        $this->lastProductImport = $lastProductImport;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastStatusExport(): \DateTime
+    {
+        return $this->lastStatusExport;
+    }
+
+    /**
+     * @param \DateTime $lastStatusExport
+     */
+    public function setLastStatusExport(\DateTime $lastStatusExport): void
+    {
+        $this->lastStatusExport = $lastStatusExport;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastProductExport(): \DateTime
+    {
+        return $this->lastProductExport;
+    }
+
+    /**
+     * @param \DateTime $lastProductExport
+     */
+    public function setLastProductExport(\DateTime $lastProductExport): void
+    {
+        $this->lastProductExport = $lastProductExport;
     }
 
 

@@ -229,7 +229,11 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * returns article. if not available article is needs to be created
      *
+     * @param string $number
+     * @param string $name
+     * @param string $parent
      * @return \Shopware\Models\Article\Article
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getMainArticle(string $number, string $name, $parent = '')
     {
@@ -291,7 +295,9 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * creates and returns the main article
      *
+     * @param string $parent
      * @return \Shopware\Models\Article\Article
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createMainArticle(string $parent)
     {

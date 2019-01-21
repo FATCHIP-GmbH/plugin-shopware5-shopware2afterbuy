@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Commands\ShopwareCommand;
 
-class ImportProducts extends ShopwareCommand
+class ExportProducts extends ShopwareCommand
 {
     /**
      * @var ReadDataInterface
@@ -40,7 +40,7 @@ class ImportProducts extends ShopwareCommand
     protected function configure()
     {
         $this
-            ->setName('Afterbuy:Import:Products')
+            ->setName('Afterbuy:Export:Products')
             ->setDescription('Receive products from Afterbuy')
             ->addOption(
                 'force',
@@ -69,8 +69,8 @@ EOF
          * filter array is unused yet but can be implemented
          */
 
-        //TODO: set filter based on stored import date in service
-        if($input->getOption('force')) {
+        //TODO: implement filter
+/*        if($input->getOption('force')) {
             $filter = array();
         }
         else {
@@ -83,7 +83,7 @@ EOF
                     )
                 )
             );
-        }
+        }*/
 
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);

@@ -8,10 +8,10 @@ class ProductPicture
     public const PICTURE_ZOOM = 2;
     public const PICTURE_LIST = 3;
 
-    /** @var int Afterbuy internal number 1 - 6 */
+    /** @var string Afterbuy internal number 1 - 6 */
     private $nr;
 
-    /** @var int Thumb = 1, Zoom = 2, List = 3 */
+    /** @var string Thumb = 1, Zoom = 2, List = 3 */
     private $typ;
 
     /** @var string */
@@ -29,9 +29,9 @@ class ProductPicture
     /**
      * Afterbuy internal number 1 - 6
      *
-     * @return int
+     * @return string
      */
-    public function getNr(): int
+    public function getNr(): string
     {
         return $this->nr;
     }
@@ -39,9 +39,9 @@ class ProductPicture
     /**
      * Afterbuy internal number 1 - 6
      *
-     * @param int $nr
+     * @param string $nr
      */
-    public function setNr(int $nr): void
+    public function setNr(string $nr): void
     {
         $this->nr = $nr;
     }
@@ -49,9 +49,9 @@ class ProductPicture
     /**
      * Thumb = 1, Zoom = 2, List = 3
      *
-     * @return int
+     * @return string
      */
-    public function getTyp(): int
+    public function getTyp(): string
     {
         return $this->typ;
     }
@@ -59,9 +59,9 @@ class ProductPicture
     /**
      * Thumb = 1, Zoom = 2, List = 3
      *
-     * @param int $typ
+     * @param string $typ
      */
-    public function setTyp(int $typ): void
+    public function setTyp(string $typ): void
     {
         $this->typ = $typ;
     }

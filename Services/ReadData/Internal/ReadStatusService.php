@@ -8,8 +8,10 @@ use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use FatchipAfterbuy\ValueObjects\OrderStatus;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
+use Shopware\Models\Order\Order;
 
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -30,7 +32,18 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
         $values = [];
 
         foreach ($orders as $order) {
+            /**
+             * @var Order $order
+             */
 
+            $status = new OrderStatus();
+            $status->setAfterbuyOrderId($order->getAttribute()->getAfterbuyOrderId());
+
+            //should be replaced by values from status history
+            $status->setPaymentDate(new \DateTime());
+            $status->setShippingDate(new \DateTime());
+
+            $values[] = $status;
         }
 
         return $values;

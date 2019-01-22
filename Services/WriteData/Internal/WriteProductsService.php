@@ -2,43 +2,48 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
+use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use Shopware\Models\Article\Detail;
-use Shopware\Models\Customer\Group;
+use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use Shopware\Models\Article\Article as ShopwareArticle;
+use Shopware\Models\Article\Detail as ArticleDetail;
+use Shopware\Models\Customer\Group as CustomerGroup;
 
 
-class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface {
+class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
+{
 
     /**
      * @param array $data
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function put(array $data) {
-        $data = $this->transform($data);
-        return $this->send($data);
+    public function put(array $data)
+    {
+        $this->transform($data);
+        $this->send($data);
     }
 
     /**
      * transforms valueObject into final structure for storage
      * could may be moved into separate helper
      *
-     * @param array $data
-     * @return array
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @param ValueArticle[] $valueArticles
      */
-    public function transform(array $data) {
+    public function transform(array $valueArticles)
+    {
         /**
-         * @var Group $customerGroup
+         * @var CustomerGroup $customerGroup
          */
-        $customerGroup = $this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array('id' => $this->config["customerGroup"]));
+        $customerGroup = $this->entityManager->getRepository(CustomerGroup::class)->findOneBy(
+            array('id' => $this->config['customerGroup'])
+        );
         $netInput = $customerGroup->getTaxInput();
 
-        if(!$customerGroup) {
+        if ( ! $customerGroup) {
             $this->logger->error('Target customer group not set', array('Import', 'Articles'));
-            return array();
+
+            return;
         }
 
         /**
@@ -46,73 +51,82 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
          */
         $helper = $this->helper;
 
-        /**
-         * @var \Shopware\Models\Article\Article $article
-         */
+        foreach ($valueArticles as $valueArticle) {
 
-        foreach($data as $value) {
             /**
-             * @var \FatchipAfterbuy\ValueObjects\Article $value
+             * @var ShopwareArticle $shopwareArticle
              */
+            try {
+                $shopwareArticle = $helper->getMainArticle(
+                    $valueArticle->getExternalIdentifier(),
+                    $valueArticle->getName(),
+                    $valueArticle->getMainArticleId()
+                );
+            } catch (OptimisticLockException $e) {
+                // TODO: correct error handling. This is NOT the correct place to handle such kind of errors. This should be done directly where the flush takes place
+            }
 
-            $article = $helper->getMainArticle($value->getExternalIdentifier(), $value->getName(), $value->getMainArticleId());
-
-            if(!$article) {
+            if ( ! $shopwareArticle) {
                 continue;
             }
 
             /**
-             * @var Detail $detail
+             * @var ArticleDetail $articleDetail
              */
-            $detail = $helper->getDetail($value->getExternalIdentifier(), $article);
+            $articleDetail = $helper->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
 
             //set main values
-            $detail->setLastStock($value->getStockMin());
-            $article->setName($value->getName());
-            $article->setDescriptionLong($value->getDescription());
-            $detail->setInStock($value->getStock());
-            $detail->setEan($value->getEan());
+            $articleDetail->setLastStock($valueArticle->getStockMin());
+            $shopwareArticle->setName($valueArticle->getName());
+            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+            $articleDetail->setInStock($valueArticle->getStock());
+            $articleDetail->setEan($valueArticle->getEan());
 
-            if($value->isActive()) {
-                $detail->setActive(1);
-                $article->setActive(true);
+            if($valueArticle->isActive()) {
+                $articleDetail->setActive(1);
+                $shopwareArticle->setActive(true);
             }
 
-            if($netInput && $value->getTax()) {
-                $price = $value->getPrice() / (1+ ($value->getTax() / 100));
+            if ($netInput && $valueArticle->getTax()) {
+                $price = $valueArticle->getPrice() / (1 + ($valueArticle->getTax() / 100));
+            } else {
+                $price = $valueArticle->getPrice();
             }
-            else {
-                $price = $value->getPrice();
-            }
 
-            $helper->storePrices($detail, $customerGroup, $price);
+            $helper->storePrices($articleDetail, $customerGroup, $price);
 
-            $article->setSupplier($helper->getSupplier($value->getManufacturer()));
+            $shopwareArticle->setSupplier($helper->getSupplier($valueArticle->getManufacturer()));
 
-            $attr = $helper->getArticleAttributes($article, $detail, $value->getMainArticleId());
+            // $attr = $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
 
-            $article->setTax($helper->getTax($value->getTax()));
+            $shopwareArticle->setTax($helper->getTax($valueArticle->getTax()));
 
-            $helper->assignVariants($article, $detail, $value->variants);
+            $helper->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
 
-            $this->entityManager->persist($article);
+            $this->entityManager->persist($shopwareArticle);
 
             //have to flush cuz parent is not getting found otherwise
-            $this->entityManager->flush();
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+            }
 
         }
-        return array();
     }
 
 
     /**
      * @param $targetData
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function send($targetData) {
-       $this->entityManager->flush();
+    public function send($targetData)
+    {
+        // TODO: necessary? We flush already earlier
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle error
+        }
 
-       //TODO: update modDate
+        //TODO: update modDate
     }
 }

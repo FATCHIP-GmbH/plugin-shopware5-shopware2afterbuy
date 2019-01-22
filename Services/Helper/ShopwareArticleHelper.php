@@ -71,6 +71,19 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $options;
     }
 
+    // TODO: use identifier
+    public function getDetailIDsByExternalIdentifier(): array
+    {
+        $details = $this->entityManager->createQueryBuilder()
+            ->select('details.id')
+            ->from('\Shopware\Models\Article\Details', 'details', 'details.number')
+            ->getQuery()
+            ->getResult();
+
+        return $details;
+    }
+
+
     public function getConfiguratorOptions() {
         $options = $this->entityManager->createQueryBuilder()
             ->select('options')

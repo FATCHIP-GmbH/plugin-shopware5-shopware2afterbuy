@@ -85,7 +85,7 @@ EOF
             );
         }
 
-        $data = $this->readDataService->get($filter);
+        $data = $this->readDataService->get([]);
         $this->writeDataService->put($data);
     }
 }

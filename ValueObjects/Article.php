@@ -63,6 +63,9 @@ class Article extends AbstractValueObject {
      */
     public $active = false;
 
+    /** @var ProductPicture[] */
+    private $productPictures = [];
+
     /**
      * @return mixed
      */
@@ -290,7 +293,21 @@ class Article extends AbstractValueObject {
         $this->ean = $ean;
     }
 
+    /**
+     * @return ProductPicture[]
+     */
+    public function getProductPictures(): array
+    {
+        return $this->productPictures;
+    }
 
+    /**
+     * @param ProductPicture $productPicture
+     */
+    public function addProductPicture(ProductPicture $productPicture): void
+    {
+        $this->productPictures[] = $productPicture;
+    }
 
 
 }

@@ -60,6 +60,41 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
             $valueArticle->setDescription($product['Description']);
 
+            $productPictures = $product['ProductPictures']['ProductPicture'];
+
+            if ($productPictures && ! is_array($productPictures[0])) {
+                $productPictures = array($productPictures);
+            }
+
+            foreach ($productPictures as $productPicture) {
+
+                $valuePicture = new ProductPicture();
+                $valuePicture->setNr($productPicture['Nr']);
+                $valuePicture->setTyp($productPicture['Typ']);
+                $valuePicture->setUrl($productPicture['Url']);
+                $valuePicture->setAltText($productPicture['AltText']);
+
+                $productPictureChilds = $productPicture['Childs']['ProductPicture'];
+
+                if ($productPictureChilds && ! is_array($productPictureChilds[0])) {
+                    $productPictureChilds = array($productPictureChilds);
+                }
+
+                foreach ($productPictureChilds as $child) {
+
+                    $valuePictureChild = new ProductPicture();
+                    $valuePictureChild->setParent($valuePicture);
+                    $valuePictureChild->setTyp($child['Typ']);
+                    $valuePictureChild->setUrl($child['Url']);
+
+                    $valuePicture->addChild($valuePictureChild);
+
+                }
+
+                $valueArticle->addProductPicture($valuePicture);
+
+            }
+
             if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {
                 $valueArticle->setActive(true);
             }

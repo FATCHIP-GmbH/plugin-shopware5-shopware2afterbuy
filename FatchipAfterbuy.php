@@ -43,6 +43,16 @@ class FatchipAfterbuy extends Plugin
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         if (!$schemaManager->tablesExist($tableNames)) {
             $tool->createSchema($classes);
+
+            $status = new Status();
+            $status->setId(1);
+            $status->setLastProductExport(new \DateTime('1970-01-01'));
+            $status->setLastProductImport(new \DateTime('1970-01-01'));
+            $status->setLastOrderImport(new \DateTime('1970-01-01'));
+            $status->setLastStatusExport(new \DateTime('1970-01-01'));
+
+            $em->persist($status);
+            $em->flush();
         }
 
     }

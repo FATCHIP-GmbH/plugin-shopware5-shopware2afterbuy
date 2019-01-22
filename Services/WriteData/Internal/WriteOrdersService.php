@@ -118,7 +118,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     public function send($targetData) {
         $this->entityManager->flush();
 
-        $this->storeOrderImportDate();
+        $this->storeSubmissionDate('lastOrderImport');
     }
 
     public function storeOrderImportDate() {
@@ -126,7 +126,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $importStatus->setLastOrderImport(new \DateTime());
         $importStatus->setId(1);
 
-        $this->entityManager->merge($importStatus);
+        $this->entityManager->persist($importStatus);
         $this->entityManager->flush();
     }
 

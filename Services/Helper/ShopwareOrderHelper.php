@@ -336,6 +336,31 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     }
 
+    public function getNewFullfilledOrders() {
+        $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
+
+        if($lastExport) {
+            $lastExport = $lastExport->getLastStatusExport();
+        }
+
+        $orders = $this->entityManager->createQueryBuilder()
+            ->select(['orders', 'history'])
+            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->leftJoin('orders.attribute', 'attributes')
+            ->leftJoin('orders.history', 'history')
+            ->where('attributes.afterbuyOrderId IS NOT NULL')
+            ->andWhere("attributes.afterbuyOrderId != ''")
+            ->andWhere('history.changeDate  >= :lastExport')
+            ->andWhere('orders.status = 7')
+            ->orWhere('orders.status = 2')
+            ->andWhere('orders.cleared = 12')
+            ->setParameters(array('lastExport' => $lastExport))
+            ->getQuery()
+            ->getResult();
+
+        return $orders;
+    }
+
     /**
      * @param \Shopware\Models\Order\Order $order
      * @param int $id
@@ -488,6 +513,8 @@ class ShopwareOrderHelper extends AbstractHelper {
 
         $order->setShop($shop);
         $order->setLanguageSubShop($shop);
+
+        $order->getAttribute()->setAfterbuyOrderId($value->getExternalIdentifier());
 
         //TODO: set correct values
         $order->setComment("");

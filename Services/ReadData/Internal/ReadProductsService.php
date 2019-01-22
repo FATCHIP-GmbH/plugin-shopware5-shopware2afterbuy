@@ -59,7 +59,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
         $data = array();
 
-        $this->logger->error('test');
+
 
         if(!$data || empty($data)) {
             return array();

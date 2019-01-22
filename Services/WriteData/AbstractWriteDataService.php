@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\WriteData;
 
+use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\AbstractDataService;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\DependencyInjection\Bridge\ModelAnnotation;
@@ -20,5 +21,16 @@ class AbstractWriteDataService extends AbstractDataService {
      */
     public function setRepo(string $repo) {
         $this->targetRepository = $repo;
+    }
+
+    public function storeSubmissionDate(string $field) {
+        $status = $this->entityManager->getRepository('\FatchipAfterbuy\Models\Status')->find(1);
+
+        $setter = Helper::getSetterByField($field);
+
+        $status->$setter(new \DateTime());
+
+        $this->entityManager->persist($status);
+        $this->entityManager->flush();
     }
 }

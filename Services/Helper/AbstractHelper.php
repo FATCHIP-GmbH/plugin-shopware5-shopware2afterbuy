@@ -13,7 +13,6 @@ use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
 use Shopware\Models\Media\Repository;
 
-
 /**
  * Helper will extend this abstract helper. This class is defining the given type.
  *
@@ -36,8 +35,14 @@ class AbstractHelper {
      */
     protected $entityAttributes;
 
+    /**
+     * @var string
+     */
     protected $attributeGetter;
 
+    /**
+     * @var
+     */
     protected $taxes;
 
     /**
@@ -75,6 +80,10 @@ class AbstractHelper {
         return $entity;
     }
 
+    /**
+     * @param float $rate
+     * @return mixed
+     */
     public function getTax(float $rate) {
 
         $rate = number_format($rate, 2);
@@ -91,6 +100,9 @@ class AbstractHelper {
         $this->getTaxes();
     }
 
+    /**
+     *
+     */
     public function getTaxes() {
         $taxes = $this->entityManager->createQueryBuilder()
             ->select('taxes')
@@ -100,7 +112,6 @@ class AbstractHelper {
 
         $this->taxes = $taxes;
     }
-
 
     /**
      * @param string $identifier

@@ -10,6 +10,7 @@ use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Article;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
+use Shopware\Models\Customer\Group;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -33,6 +34,11 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
         if($this->targetEntity === null) {
             return array();
         }
+
+        $customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
+            array('id' => $this->config['customerGroup'])
+        );
+        $netInput = $customerGroup->getTaxInput();
 
         $targetData = array();
 
@@ -73,9 +79,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $article->setStock($detail->getInStock());
 
                 //TODO: get correct price for customergroup
-                //TODO: brut net calc in separate method
+                $price = Helper::convertPrice($detail->getPrices()->first()->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 
-                $article->setPrice($detail->getPrices()->first()->getPrice());
+                $article->setPrice($price);
 
                 //TODO: set afterbuy id if existing
                 //$article->setExternalIdentifier();
@@ -84,6 +90,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             }
             else {
                 //variant article
+                continue;
             }
 
             $targetData[] = $article;

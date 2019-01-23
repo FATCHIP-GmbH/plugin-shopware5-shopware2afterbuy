@@ -95,7 +95,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
             $shopwareArticle->setSupplier($helper->getSupplier($valueArticle->getManufacturer()));
 
-            // $attr = $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
+            $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
 
             $shopwareArticle->setTax($helper->getTax($valueArticle->getTax()));
 

@@ -67,6 +67,8 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
         $api = new ApiClient($this->apiConfig);
         $api->updateOrderStatus($orders);
 
+        $this->storeSubmissionDate('lastStatusExport');
+
         return null;
 
     }

@@ -38,9 +38,71 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
         foreach($data as $entity) {
 
+            /**
+             * @var \Shopware\Models\Article\Article $entity
+             */
+
             if(empty($entity)) {
                 continue;
             }
+
+            /**
+             * @var Article $article
+             */
+            $article = new $this->targetEntity();
+
+            $article->setActive($entity->getActive());
+            $article->setName($entity->getName());
+
+
+            $article->setDescription($entity->getDescription());
+            $article->setTax($entity->getTax()->getTax());
+
+            $article->setManufacturer($entity->getSupplier()->getName());
+
+            if(!$entity->getConfiguratorSet()) {
+                //simple article
+
+                $detail = $entity->getMainDetail();
+
+                if($detail->getEan()) {
+                    $article->setEan($detail->getEan());
+                }
+                $article->setInternalIdentifier($detail->getNumber());
+                $article->setStockMin($detail->getStockMin());
+                $article->setStock($detail->getInStock());
+
+                //TODO: get correct price for customergroup
+                //TODO: brut net calc in separate method
+
+                $article->setPrice($detail->getPrices()->first()->getPrice());
+
+                //TODO: set afterbuy id if existing
+                //$article->setExternalIdentifier();
+
+                $article->setVariantArticles(null);
+            }
+            else {
+                //variant article
+            }
+
+            $targetData[] = $article;
+
+
+            //if no variant article -> set here
+
+            //TODO: for variants
+           /* $article->setEan();
+            $article->setInternalIdentifier();
+            $article->setStockMin();
+            $article->setStock();
+            $article->setPrice();
+            $article->setExternalIdentifier();
+            $article->setPseudoPrice();
+            $article->setVariantArticles();*/
+
+
+
 
 
         }
@@ -57,9 +119,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      */
     public function read(array $filter) {
 
-        $data = array();
-
-
+        $data = $this->helper->getUnexportedArticles($filter['submitAll']);
 
         if(!$data || empty($data)) {
             return array();

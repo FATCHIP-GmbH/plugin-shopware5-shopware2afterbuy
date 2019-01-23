@@ -29,4 +29,21 @@ class Helper {
 
         return $value;
     }
+
+    public static function convertPrice(float $price, float $tax, $isNet = true, $toNet = false) {
+        if($isNet == $toNet) {
+            return $price;
+        }
+
+        if(!$tax) {
+            return $price;
+        }
+
+        if ($isNet) {
+            return $price * (1 + ($tax / 100));
+        }
+        else {
+            return $price / (1 + ($tax / 100));
+        }
+    }
 }

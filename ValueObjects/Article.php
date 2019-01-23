@@ -66,6 +66,29 @@ class Article extends AbstractValueObject {
     /** @var ProductPicture[] */
     private $productPictures = [];
 
+    protected $variantArticles;
+
+    public function __construct()
+    {
+        $this->variantArticles = new ArrayCollection();
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getVariantArticles(): ?ArrayCollection
+    {
+        return $this->variantArticles;
+    }
+
+    /**
+     * @param ArrayCollection $variantArticles
+     */
+    public function setVariantArticles(?ArrayCollection $variantArticles): void
+    {
+        $this->variantArticles = $variantArticles;
+    }
+
     /**
      * @return mixed
      */

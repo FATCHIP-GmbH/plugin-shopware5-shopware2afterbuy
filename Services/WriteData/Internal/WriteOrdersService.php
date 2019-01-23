@@ -121,15 +121,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $this->storeSubmissionDate('lastOrderImport');
     }
 
-    public function storeOrderImportDate() {
-        $importStatus = new Status();
-        $importStatus->setLastOrderImport(new \DateTime());
-        $importStatus->setId(1);
-
-        $this->entityManager->persist($importStatus);
-        $this->entityManager->flush();
-    }
-
     public function getOrderImportDateFilter(bool $force) {
 
         if($force) {

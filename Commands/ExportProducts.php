@@ -69,23 +69,11 @@ EOF
          * filter array is unused yet but can be implemented
          */
 
-        //TODO: implement filter
-/*        if($input->getOption('force')) {
-            $filter = array();
-        }
-        else {
-            $filter = array(
-                'Filter' => array(
-                    'FilterName' => 'DateFilter',
-                    'FilterValues' => array(
-                        'DateFrom' => '10.01.2019',
-                        'FilterValue' => 'ModDate'
-                    )
-                )
-            );
-        }*/
+        $filter['submitAll'] = false;
 
-        $filter = array();
+        if($input->getOption('force')) {
+            $filter['submitAll'] = true;
+        }
 
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);

@@ -409,6 +409,31 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $set;
     }
 
+    public function getUnexportedArticles($force = false) {
+        $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
+
+        if($lastExport) {
+            $lastExport = $lastExport->getLastProductExport();
+        }
+
+        $articles = $this->entityManager->createQueryBuilder()
+            ->select(['articles'])
+            ->from('\Shopware\Models\Article\Article', 'articles', 'articles.id')
+            ->leftJoin('articles.attribute', 'attributes');
+
+            //->where('attributes.afterbuyOrderId IS NOT NULL')
+
+        if(!$force) {
+            $articles = $articles->andWhere("articles.changed >= :lastExport")
+                ->setParameters(array('lastExport' => $lastExport));
+        }
+
+        $articles = $articles->getQuery()
+            ->getResult();
+
+        return $articles;
+    }
+
 
 
 }

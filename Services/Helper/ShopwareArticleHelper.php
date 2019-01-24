@@ -419,7 +419,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         $articles = $this->entityManager->createQueryBuilder()
             ->select(['articles'])
             ->from('\Shopware\Models\Article\Article', 'articles', 'articles.id')
-            ->leftJoin('articles.attribute', 'attributes');
+            ->leftJoin('articles.attribute', 'attributes')
+            //->where('articles.id = 6')
+        ;
 
             //->where('attributes.afterbuyOrderId IS NOT NULL')
 

@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\WriteData\External;
 
+use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -35,12 +36,17 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
          * @var Group $customerGroup
          */
 
+        $api = new ApiClient($this->apiConfig);
+
         $products = array(
             'Products' => array(
 
             )
         );
 
+        $afterbuyProductIds = [];
+
+        //1. add simple articles
         foreach($data as $value) {
             /**
              * @var \FatchipAfterbuy\ValueObjects\Article $value
@@ -53,13 +59,9 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
               'Product' => array(
                   'ProductIdent' => array(
                       'ProductInsert' => 1,
-                      //TODO: set
-                      'BaseProductType' => '',
-                      'UserProductID' => $value->getInternalIdentifier(),
-                      'ProductID' => $value->getExternalIdentifier(),
-                      'EAN' => $value->getEan()
+                      'EAN' => $value->getInternalIdentifier()
                   ),
-                  'EAN' => $value->getEan(),
+                  'EAN' => $value->getInternalIdentifier(),
                   'Name' => $value->getName(),
                   'ManufacturerPartNumber' => $value->getSupplierNumber(),
                   'Description' => $value->getDescription(),
@@ -73,16 +75,75 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                )
             );
 
-            //TODO: Varianten
-
             $products['Products'][] = $product;
 
 
         }
+        //TODO: store afterbuy product id
+        $response = $api->updateShopProducts($products);
+
+        //TODO: one or multiple result
+/*        if($response["Result"]["NewProducts"]["NewProduct"]["ProductID"]) {
+            $afterbuyProductIds[$value->getMainArticleId()] = $response["Result"]["NewProducts"]["NewProduct"]["ProductID"];
+            $value->setExternalIdentifier($response["Result"]["NewProducts"]["NewProduct"]["ProductID"]);
+        }
+        else {
+            $this->logger->error('Error storing Products', $response);
+        }*/
+
+        //2. base products from variant articles where no afterbuy id is stored
+
+        foreach ($data as $value) {
+            if(!$value->getVariantArticles()) {
+                continue;
+            }
+
+            if(!$value->getExternalIdentifier()) {
+
+                $products['Products'] = array(
+                    'Product' => array(
+                        'ProductIdent' => array(
+                            'ProductInsert' => 1,
+                            'EAN' => $value->getInternalIdentifier(),
+                            'BaseProductType' => 1
+                        ),
+                        //TODO: generate internal identifier for base variant
+                        'EAN' => $value->getInternalIdentifier(),
+                        'Name' => $value->getName(),
+                        'Description' => $value->getDescription(),
+                        'ShortDescription' => $value->getShortDescription(),
+                        'UnitOfQuantity' => 'Stk',
+                        'TaxRate' => Helper::convertNumberToABString($value->getTax()),
+                        'ProductBrand' => $value->getManufacturer(),
+                    )
+                );
+
+                $response = $api->updateShopProducts($products);
+
+                if($response["Result"]["NewProducts"]["NewProduct"]["ProductID"]) {
+                    $afterbuyProductIds[$value->getMainArticleId()] = $response["Result"]["NewProducts"]["NewProduct"]["ProductID"];
+                    $value->setExternalIdentifier($response["Result"]["NewProducts"]["NewProduct"]["ProductID"]);
+                }
+                else {
+                    continue;
+                    $this->logger->error('Error storing Product', $response);
+                }
+
+                //TODO: store to after buy id in db (all at once)
+
+            }
 
 
 
-        return array();
+            //TODO: store variants
+        }
+
+
+
+
+
+
+        return $products;
     }
 
 
@@ -92,7 +153,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-       $this->entityManager->flush();
+
 
        //TODO: update modDate
     }

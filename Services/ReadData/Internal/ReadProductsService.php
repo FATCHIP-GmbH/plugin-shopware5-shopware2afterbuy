@@ -64,6 +64,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             $article->setActive($entity->getActive());
             $article->setName($entity->getName());
+            $article->setMainArticleId($entity->getId());
 
 
             $article->setDescription($entity->getDescriptionLong());
@@ -93,7 +94,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
                 $article->setPrice($price);
 
-                //TODO: set afterbuy id if existing
                 $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
                 $article->setSupplierNumber($detail->getSupplierNumber());
 

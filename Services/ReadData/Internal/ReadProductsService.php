@@ -10,9 +10,13 @@ use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Article;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
+use Shopware\Models\Article\Configurator\Option;
+use Shopware\Models\Article\Price;
 use Shopware\Models\Customer\Group;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
+
+    protected $customerGroup;
 
     /**
      * @param array $filter
@@ -35,10 +39,11 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             return array();
         }
 
-        $customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
+        $this->customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
             array('id' => $this->config['customerGroup'])
         );
-        $netInput = $customerGroup->getTaxInput();
+
+        $netInput = $this->customerGroup->getTaxInput();
 
         $targetData = array();
 
@@ -61,7 +66,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $article->setName($entity->getName());
 
 
-            $article->setDescription($entity->getDescription());
+            $article->setDescription($entity->getDescriptionLong());
+            $article->setShortDescription($entity->getDescription());
+
             $article->setTax($entity->getTax()->getTax());
 
             $article->setManufacturer($entity->getSupplier()->getName());
@@ -78,39 +85,74 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $article->setStockMin($detail->getStockMin());
                 $article->setStock($detail->getInStock());
 
-                //TODO: get correct price for customergroup
-                $price = Helper::convertPrice($detail->getPrices()->first()->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+                $price = $detail->getPrices()->filter(function(Price $price) {
+                    return $price->getCustomerGroup() === $this->customerGroup;
+                })->first();
+
+                $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 
                 $article->setPrice($price);
 
                 //TODO: set afterbuy id if existing
-                //$article->setExternalIdentifier();
+                $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+                $article->setSupplierNumber($detail->getSupplierNumber());
 
                 $article->setVariantArticles(null);
             }
             else {
-                //variant article
-                continue;
+                $article->setInternalIdentifier('AB' . $entity->getMainDetail()->getNumber());
+
+                foreach ($entity->getDetails() as $detail) {
+
+                    /**
+                     * @var \Shopware\Models\Article\Detail $detail
+                     */
+
+                    /**
+                     * @var Article $variant
+                     */
+                    $variant = new $this->targetEntity();
+
+                    if($detail->getEan()) {
+                        $variant->setEan($detail->getEan());
+                    }
+                    $variant->setInternalIdentifier($detail->getNumber());
+                    $variant->setStockMin($detail->getStockMin());
+                    $variant->setStock($detail->getInStock());
+                    $variant->setSupplierNumber($detail->getSupplierNumber());
+
+                    $price = $detail->getPrices()->filter(function(Price $price) {
+                        return $price->getCustomerGroup() === $this->customerGroup;
+                    })->first();
+
+                    $options = [];
+
+                    foreach($detail->getConfiguratorOptions() as $option) {
+                        /**
+                         * @var Option $option
+                         */
+
+                        $values = array (
+                            $option->getGroup()->getName() => $option->getName()
+                        );
+
+                        $options[] = $values;
+
+                    }
+
+                    $variant->setVariants($options);
+
+                    $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+
+                    $variant->setPrice($price);
+
+                    $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+                    $article->getVariantArticles()->add($variant);
+                }
             }
 
             $targetData[] = $article;
-
-
-            //if no variant article -> set here
-
-            //TODO: for variants
-           /* $article->setEan();
-            $article->setInternalIdentifier();
-            $article->setStockMin();
-            $article->setStock();
-            $article->setPrice();
-            $article->setExternalIdentifier();
-            $article->setPseudoPrice();
-            $article->setVariantArticles();*/
-
-
-
-
 
         }
 

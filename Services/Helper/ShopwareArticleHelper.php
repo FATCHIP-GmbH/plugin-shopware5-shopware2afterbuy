@@ -424,11 +424,13 @@ class ShopwareArticleHelper extends AbstractHelper {
             //->where('attributes.afterbuyOrderId IS NOT NULL')
 
         if(!$force) {
-            $articles = $articles->andWhere("articles.changed >= :lastExport")
+            $articles = $articles->where("articles.changed >= :lastExport")
+                ->orWhere("attributes.afterbuyId IS NULL OR attributes.afterbuyId = ''")
                 ->setParameters(array('lastExport' => $lastExport));
         }
 
         $articles = $articles->getQuery()
+            ->setMaxResults(250)
             ->getResult();
 
         return $articles;

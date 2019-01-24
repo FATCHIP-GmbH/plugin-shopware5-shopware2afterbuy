@@ -31,6 +31,7 @@ class FatchipAfterbuy extends Plugin
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
         $service->update('s_order_attributes', 'afterbuy_order_id', 'string');
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
+        $service->update('s_articles_attributes', 'afterbuy_id', 'string');
 
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
 

@@ -62,6 +62,24 @@ class Article extends AbstractValueObject {
 
     public $shortDescription;
 
+    public $variantId;
+
+    /**
+     * @return mixed
+     */
+    public function getVariantId()
+    {
+        return $this->variantId;
+    }
+
+    /**
+     * @param mixed $variantId
+     */
+    public function setVariantId($variantId): void
+    {
+        $this->variantId = $variantId;
+    }
+
     /**
      * @var bool
      */

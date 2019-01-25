@@ -97,6 +97,8 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
                 $article->setSupplierNumber($detail->getSupplierNumber());
 
+                $article->setVariantId($detail->getId());
+
                 $article->setVariantArticles(null);
             }
             else {
@@ -120,6 +122,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     $variant->setStockMin($detail->getStockMin());
                     $variant->setStock($detail->getInStock());
                     $variant->setSupplierNumber($detail->getSupplierNumber());
+                    $variant->setVariantId($detail->getId());
 
                     $price = $detail->getPrices()->filter(function(Price $price) {
                         return $price->getCustomerGroup() === $this->customerGroup;

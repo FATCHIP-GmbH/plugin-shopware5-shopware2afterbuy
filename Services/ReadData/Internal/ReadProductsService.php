@@ -90,6 +90,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     return $price->getCustomerGroup() === $this->customerGroup;
                 })->first();
 
+                //TODO: images
+                //$entity->getImages()
+
                 $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 
                 $article->setPrice($price);
@@ -118,6 +121,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     if($detail->getEan()) {
                         $variant->setEan($detail->getEan());
                     }
+
+                    //$image = $detail->getImages()->first();
+
                     $variant->setInternalIdentifier($detail->getNumber());
                     $variant->setStockMin($detail->getStockMin());
                     $variant->setStock($detail->getInStock());

@@ -111,10 +111,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             );
 
             foreach($value->getVariantArticles() as $variant) {
-                //EAN for variant, Anr for main articles
 
                 $variants = [];
-                $variantName = "";
 
                 /**
                  * @var Article $variant
@@ -130,7 +128,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                         )
                     );
 
-                    $variantName .= reset($option) . " ";
                 }
 
                 $product = array(
@@ -141,7 +138,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                         ),
                         'Anr' => $variant->getVariantId(),
                         'EAN' => $variant->getInternalIdentifier(),
-                        'Name' => $value->getName() . " " . $variantName,
+                        'Name' => $variant->getName(),
                         'ManufacturerPartNumber' => $variant->getSupplierNumber(),
                         'Description' => $variant->getDescription(),
                         'ShortDescription' => $variant->getShortDescription(),
@@ -178,7 +175,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
             $afterbuyProductIds = $afterbuyProductIds + $variantIds;
 
-            //TODO: keep order of options
             //TODO: update functionality
             //TODO: set variant name in read service
 

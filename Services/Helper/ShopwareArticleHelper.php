@@ -420,6 +420,9 @@ class ShopwareArticleHelper extends AbstractHelper {
             ->select(['articles'])
             ->from('\Shopware\Models\Article\Article', 'articles', 'articles.id')
             ->leftJoin('articles.attribute', 'attributes')
+            ->leftJoin('articles.details', 'details')
+            ->leftJoin('details.configuratorOptions', 'options')
+            //->leftJoin('options.group', 'groups')
             //->where('articles.id = 6')
         ;
 
@@ -430,6 +433,9 @@ class ShopwareArticleHelper extends AbstractHelper {
                 ->orWhere("attributes.afterbuyId IS NULL OR attributes.afterbuyId = ''")
                 ->setParameters(array('lastExport' => $lastExport));
         }
+
+        $articles->orderBy('options.groupId');
+            //->addOrderBy();
 
         $articles = $articles->getQuery()
             ->setMaxResults(250)

@@ -135,15 +135,17 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                          * @var Option $option
                          */
 
-                        $values = array (
-                            $option->getGroup()->getName() => $option->getName()
-                        );
+                        $options[$option->getGroup()->getName()] = $option->getName();
 
-                        $options[] = $values;
+                        //TODO: verarbeitung anpassen
 
                     }
+                    // we have to take care that the order of variant options stays the same
+                    ksort($options);
 
                     $variant->setVariants($options);
+
+                    $variant->setName(implode(" ", array_values($options)));
 
                     $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 

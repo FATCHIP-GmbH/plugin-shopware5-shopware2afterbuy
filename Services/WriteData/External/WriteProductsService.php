@@ -121,13 +121,12 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 foreach ($variant->getVariants() as $group => $option) {
                     $variants[] = array(
                         'AddAttribute' => array(
-                            'AttributName' => key($option),
-                            'AttibutValue' => reset($option),
+                            'AttributName' => $group,
+                            'AttibutValue' => $option,
                             'AttributTyp' => 1,
                             'AttributRequired' => 1
                         )
                     );
-
                 }
 
                 $product = array(
@@ -176,7 +175,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $afterbuyProductIds = $afterbuyProductIds + $variantIds;
 
             //TODO: update functionality
-            //TODO: set variant name in read service
 
             $variantArticles = [];
 
@@ -188,20 +186,24 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $variantArticles[] = array(
                     'AddBaseProduct' => array(
                         'ProductID' => $variant->getExternalIdentifier(),
-                        'ProductLabel' => $value->getName(),
+                        'ProductLabel' => $variant->getName(),
                         'ProductQuantity' => $variant->getStock()
                     )
                 );
             }
 
+            // we have no unique base product identifier
+            // Anr 1,{$articleId}
+            // neccessary cuz articleIds and detailIds may collidate
+
             $products['Products'] = array(
                 'Product' => array(
                     'ProductIdent' => array(
                         'ProductInsert' => 1,
-                        'Anr' => $value->getMainArticleId(),
+                        'Anr' => '1,' . $value->getMainArticleId(),
                         'BaseProductType' => 1
                     ),
-                    'Anr' => $value->getMainArticleId(),
+                    'Anr' => '1,' . $value->getMainArticleId(),
                     'EAN' => $value->getInternalIdentifier(),
                     'Name' => $value->getName(),
                     'Description' => $value->getDescription(),
@@ -216,7 +218,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $response = $api->updateShopProducts($products);
         }
 
-        return $products;
+        return $afterbuyProductIds;
     }
 
 
@@ -226,6 +228,11 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
+        //TODO: into method
+
+        $this->helper->updateExternalIds($targetData);
+
+        $this->storeSubmissionDate('lastProductExport');
 
 
        //TODO: update modDate

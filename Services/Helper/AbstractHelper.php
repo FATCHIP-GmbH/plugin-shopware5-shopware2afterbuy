@@ -45,6 +45,8 @@ class AbstractHelper {
      */
     protected $taxes;
 
+    protected $db;
+
     /**
      * @param ModelManager $entityManager
      * @param string $entity
@@ -56,6 +58,10 @@ class AbstractHelper {
         $this->entity = $entity;
         $this->entityAttributes = $entityAttributes;
         $this->attributeGetter = $attributeGetter;
+    }
+
+    public function initDb(\Enlight_Components_Db_Adapter_Pdo_Mysql $db) {
+        $this->db = $db;
     }
 
     /**

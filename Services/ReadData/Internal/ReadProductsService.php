@@ -53,7 +53,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
              * @var \Shopware\Models\Article\Article $entity
              */
 
-            if(empty($entity)) {
+            if(empty($entity) || is_null($entity->getTax())) {
                 continue;
             }
 
@@ -123,6 +123,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     $variant->setStock($detail->getInStock());
                     $variant->setSupplierNumber($detail->getSupplierNumber());
                     $variant->setVariantId($detail->getId());
+                    $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
 
                     $price = $detail->getPrices()->filter(function(Price $price) {
                         return $price->getCustomerGroup() === $this->customerGroup;
@@ -136,16 +137,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                          */
 
                         $options[$option->getGroup()->getName()] = $option->getName();
-
-                        //TODO: verarbeitung anpassen
-
                     }
                     // we have to take care that the order of variant options stays the same
                     ksort($options);
 
                     $variant->setVariants($options);
 
-                    $variant->setName(implode(" ", array_values($options)));
+                    $variant->setName($entity->getName() . ' ' . implode(" ", array_values($options)));
 
                     $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 

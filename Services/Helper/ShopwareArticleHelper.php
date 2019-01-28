@@ -13,16 +13,60 @@ use Shopware\Models\Customer\Group;
 use Shopware\Models\Article\Detail;
 
 
+/**
+ * Class ShopwareArticleHelper
+ * @package FatchipAfterbuy\Services\Helper
+ */
 class ShopwareArticleHelper extends AbstractHelper {
 
+    /**
+     * @var
+     */
     protected $suppliers;
 
+    /**
+     * @var
+     */
     protected $customerGroup;
 
+    /**
+     * @var
+     */
     protected $configuratorGroups;
 
+    /**
+     * @var
+     */
     protected $configuratorOptions;
 
+    /**
+     * @var \Enlight_Components_Db_Adapter_Pdo_Mysql
+     */
+    protected $db;
+
+    /**
+     * @param array $ids
+     * @throws \Zend_Db_Adapter_Exception
+     */
+    public function updateExternalIds(array $ids) {
+        $sql = "";
+
+        foreach ($ids as $internalId=>$externalId) {
+            $sql .= "UPDATE s_articles_attributes SET afterbuy_id = $externalId WHERE articledetailsID = $internalId;";
+
+        }
+
+        if(!empty($sql)) {
+            $this->db->query($sql);
+        }
+    }
+
+    /**
+     * @param Article $article
+     * @param Detail $detail
+     * @param array $variants
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function assignVariants(Article &$article, Detail $detail, array $variants) {
         if(!empty($variants)) {
             $groups = $this->getAssignableConfiguratorGroups($variants);
@@ -39,6 +83,12 @@ class ShopwareArticleHelper extends AbstractHelper {
         }
     }
 
+    /**
+     * @param Article $article
+     * @param array $variants
+     * @return array
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function getAssignableConfiguratorOptions(Article &$article, array $variants) {
         if(!$this->configuratorOptions) {
             $this->getConfiguratorOptions();
@@ -71,6 +121,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $options;
     }
 
+    /**
+     *
+     */
     public function getConfiguratorOptions() {
         $options = $this->entityManager->createQueryBuilder()
             ->select('options')
@@ -81,6 +134,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         $this->configuratorOptions = $options;
     }
 
+    /**
+     * @param Article $article
+     * @param array $variants
+     * @return Set|null
+     */
     public function getAssignableConfiguratorSet(Article &$article, array $variants) {
         $configuratorSet = null;
 
@@ -101,6 +159,12 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $configuratorSet;
     }
 
+    /**
+     * @param Article $article
+     * @param Detail $detail
+     * @param string $parent
+     * @return \Shopware\Models\Attribute\Article
+     */
     public function getArticleAttributes(Article $article, Detail &$detail, $parent = '')
     {
         if(is_null($detail->getAttribute())) {
@@ -151,6 +215,13 @@ class ShopwareArticleHelper extends AbstractHelper {
     }
 
 
+    /**
+     * @param Detail $detail
+     * @param Group $group
+     * @param float $value
+     * @param float $pseudoPrice
+     * @return mixed|Price
+     */
     public function storePrices(Detail &$detail, Group $group, float $value, $pseudoPrice = 0.00)
     {
         $this->customerGroup = $group;
@@ -181,6 +252,10 @@ class ShopwareArticleHelper extends AbstractHelper {
     }
 
 
+    /**
+     * @param string $supplier
+     * @return Supplier|string
+     */
     public function getSupplier(string $supplier) {
         if(!$this->suppliers) {
             $this->suppliers = $this->getSuppliers();
@@ -197,6 +272,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         }
     }
 
+    /**
+     * @param string $name
+     * @return Supplier
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function createSupplier(string $name) {
         $supplier = new Supplier();
         $supplier->setName($name);
@@ -210,6 +290,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $supplier;
     }
 
+    /**
+     * @return array
+     */
     public function getSuppliers() {
         $supplier = $this->entityManager->createQueryBuilder()
             ->select('supplier')
@@ -221,6 +304,10 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $supplier;
     }
 
+    /**
+     * @param string $number
+     * @return object|\Shopware\Models\Attribute\Article|null
+     */
     public function getArticleFromAttribute(string $number) {
         $article = $this->entityManager->getRepository('Shopware\Models\Attribute\Article')->findOneBy(array('afterbuyParentId' => $number));
         return $article;
@@ -324,6 +411,10 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $detail;
     }
 
+    /**
+     * @param array $variants
+     * @return array
+     */
     public function getAssignableConfiguratorGroups(array $variants) {
         if(!$this->configuratorGroups) {
             $this->getConfiguratorGroups();
@@ -345,6 +436,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $groups;
     }
 
+    /**
+     * @param string $name
+     * @return \Shopware\Models\Article\Configurator\Group
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
     public function createConfiguratorGroup(string $name) {
         $group = new \Shopware\Models\Article\Configurator\Group();
         $group->setName($name);
@@ -357,6 +453,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $group;
     }
 
+    /**
+     *
+     */
     public function getConfiguratorGroups() {
         $groups = $this->entityManager->createQueryBuilder()
             ->select('groups')
@@ -409,6 +508,10 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $set;
     }
 
+    /**
+     * @param bool $force
+     * @return array|\Doctrine\ORM\QueryBuilder
+     */
     public function getUnexportedArticles($force = false) {
         $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
 
@@ -419,23 +522,17 @@ class ShopwareArticleHelper extends AbstractHelper {
         $articles = $this->entityManager->createQueryBuilder()
             ->select(['articles'])
             ->from('\Shopware\Models\Article\Article', 'articles', 'articles.id')
-            ->leftJoin('articles.attribute', 'attributes')
             ->leftJoin('articles.details', 'details')
-            ->leftJoin('details.configuratorOptions', 'options')
-            //->leftJoin('options.group', 'groups')
-            //->where('articles.id = 6')
+            ->leftJoin('details.attribute', 'attributes')
+
         ;
 
-            //->where('attributes.afterbuyOrderId IS NOT NULL')
-
         if(!$force) {
-            $articles = $articles->where("articles.changed >= :lastExport")
-                ->orWhere("attributes.afterbuyId IS NULL OR attributes.afterbuyId = ''")
-                ->setParameters(array('lastExport' => $lastExport));
+            $articles = $articles->where("attributes.afterbuyId IS NULL OR attributes.afterbuyId = ''")
+            ->orWhere("articles.changed >= :lastExport")
+            ->setParameters(array('lastExport' => $lastExport))
+            ;
         }
-
-        $articles->orderBy('options.groupId');
-            //->addOrderBy();
 
         $articles = $articles->getQuery()
             ->setMaxResults(250)

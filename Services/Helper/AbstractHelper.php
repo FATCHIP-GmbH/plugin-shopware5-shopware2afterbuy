@@ -12,6 +12,7 @@ use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
 use Shopware\Models\Media\Repository;
+use Shopware\Models\Tax\Tax;
 
 
 /**
@@ -89,6 +90,15 @@ class AbstractHelper {
 
         $this->createTax($rate);
         $this->getTaxes();
+    }
+
+    public function createTax(float $rate) {
+        $tax = new Tax();
+        $tax->setTax($rate);
+        $tax->setName($rate);
+
+        $this->entityManager->persist($tax);
+        $this->entityManager->flush();
     }
 
     public function getTaxes() {

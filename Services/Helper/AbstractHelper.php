@@ -9,9 +9,10 @@ use FatchipAfterbuy\Components\Helper;
 use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
+use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
-use Shopware\Models\Media\Repository;
+use Shopware\Models\Media\Repository as MediaRepository;
 use Shopware\Models\Tax\Tax;
 
 /**
@@ -205,12 +206,18 @@ class AbstractHelper {
 
         /** @var MediaService $mediaService */
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+        /** @var MediaRepository $mediaRepo */
+        $mediaRepo = $this->entityManager->getRepository(Media::class);
+        $medias = $mediaRepo->getMediaByPathQuery($path)->getResult();
+
+        if (count($medias) > 0) {
+            return $medias[0];
+        }
+
         $mediaService->write($path, $contents);
 
-        /** @var ModelManager $models */
-        $models = Shopware()->Container()->get('models');
-        /** @var Repository $albumRepo */
-        $albumRepo = $models->getRepository(Album::class);
+        /** @var ModelRepository $albumRepo */
+        $albumRepo = $this->entityManager->getRepository(Album::class);
         /** @var Album $album */
         $album = $albumRepo->findOneBy(['name' => $albumName]);
         // TODO: handle missing album
@@ -223,17 +230,24 @@ class AbstractHelper {
         } catch (Exception $e) {
             // TODO: handle exception
         }
+        $media->setAlbum($album);
         $media->setUserId(0);
         $media->setName($name);
         $media->setPath($path);
         $media->setFileSize($mediaService->getSize($path));
         $media->setExtension('jpg');
-        $media->setType('image');
+        $media->setType(Media::TYPE_IMAGE);
 
         $this->entityManager->persist($media);
         try {
             $this->entityManager->flush($media);
         } catch (OptimisticLockException $e) {
+        }
+
+        if ($media->getType() === Media::TYPE_IMAGE && // GD doesn't support the following image formats
+            !in_array($media->getExtension(), ['tif', 'tiff'], true)) {
+            $manager = Shopware()->Container()->get('thumbnail_manager');
+            $manager->createMediaThumbnail($media, [], true);
         }
 
         return $media;

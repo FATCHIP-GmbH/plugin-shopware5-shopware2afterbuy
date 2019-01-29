@@ -4,7 +4,7 @@ namespace FatchipAfterbuy\ValueObjects;
 
 class ProductPicture
 {
-    /** @var string Afterbuy internal number 1 - 6 */
+    /** @var string Afterbuy internal position 1 - 6 */
     private $nr;
 
     /** @var string */
@@ -14,7 +14,7 @@ class ProductPicture
     private $altText = '';
 
     /**
-     * Afterbuy internal number 1 - 6
+     * Afterbuy internal position 1 - 6
      *
      * @return string
      */
@@ -24,7 +24,7 @@ class ProductPicture
     }
 
     /**
-     * Afterbuy internal number 1 - 6
+     * Afterbuy internal position 1 - 6
      *
      * @param string $nr
      */

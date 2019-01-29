@@ -82,7 +82,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
 
-            if($valueArticle->isActive()) {
+            if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);
                 $shopwareArticle->setActive(true);
             }
@@ -97,7 +97,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
             $shopwareArticle->setSupplier($helper->getSupplier($valueArticle->getManufacturer()));
 
-            // $attr = $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
+            $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
 
             $shopwareArticle->setTax($helper->getTax($valueArticle->getTax()));
 
@@ -110,7 +110,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $this->entityManager->flush();
             } catch (OptimisticLockException $e) {
             }
-
         }
     }
 

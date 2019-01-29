@@ -14,7 +14,6 @@ use Shopware\Models\Media\Media;
 use Shopware\Models\Media\Repository;
 use Shopware\Models\Tax\Tax;
 
-
 /**
  * Helper will extend this abstract helper. This class is defining the given type.
  *
@@ -37,9 +36,17 @@ class AbstractHelper {
      */
     protected $entityAttributes;
 
+    /**
+     * @var string
+     */
     protected $attributeGetter;
 
+    /**
+     * @var
+     */
     protected $taxes;
+
+    protected $db;
 
     /**
      * @param ModelManager $entityManager
@@ -52,6 +59,10 @@ class AbstractHelper {
         $this->entity = $entity;
         $this->entityAttributes = $entityAttributes;
         $this->attributeGetter = $attributeGetter;
+    }
+
+    public function initDb(\Enlight_Components_Db_Adapter_Pdo_Mysql $db) {
+        $this->db = $db;
     }
 
     /**
@@ -76,6 +87,10 @@ class AbstractHelper {
         return $entity;
     }
 
+    /**
+     * @param float $rate
+     * @return mixed
+     */
     public function getTax(float $rate) {
 
         $rate = number_format($rate, 2);
@@ -92,6 +107,9 @@ class AbstractHelper {
         $this->getTaxes();
     }
 
+    /**
+     *
+     */
     public function createTax(float $rate) {
         $tax = new Tax();
         $tax->setTax($rate);
@@ -110,7 +128,6 @@ class AbstractHelper {
 
         $this->taxes = $taxes;
     }
-
 
     /**
      * @param string $identifier

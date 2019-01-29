@@ -2,7 +2,6 @@
 
 namespace FatchipAfterbuy\ValueObjects;
 
-
 /**
  * valueObject will extend this object
  *

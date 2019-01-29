@@ -10,8 +10,13 @@ use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Article;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
+use Shopware\Models\Article\Configurator\Option;
+use Shopware\Models\Article\Price;
+use Shopware\Models\Customer\Group;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
+
+    protected $customerGroup;
 
     /**
      * @param array $filter
@@ -34,14 +39,129 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             return array();
         }
 
+        $this->customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
+            array('id' => $this->config['customerGroup'])
+        );
+
+        $netInput = $this->customerGroup->getTaxInput();
+
         $targetData = array();
 
         foreach($data as $entity) {
 
-            if(empty($entity)) {
+            /**
+             * @var \Shopware\Models\Article\Article $entity
+             */
+
+            if(empty($entity) || is_null($entity->getTax())) {
                 continue;
             }
 
+            /**
+             * @var Article $article
+             */
+            $article = new $this->targetEntity();
+
+            $article->setActive($entity->getActive());
+            $article->setName($entity->getName());
+            $article->setMainArticleId($entity->getId());
+
+
+            $article->setDescription($entity->getDescriptionLong());
+            $article->setShortDescription($entity->getDescription());
+
+            $article->setTax($entity->getTax()->getTax());
+
+            $article->setManufacturer($entity->getSupplier()->getName());
+
+            if(!$entity->getConfiguratorSet()) {
+                //simple article
+
+                $detail = $entity->getMainDetail();
+
+                if($detail->getEan()) {
+                    $article->setEan($detail->getEan());
+                }
+                $article->setInternalIdentifier($detail->getNumber());
+                $article->setStockMin($detail->getStockMin());
+                $article->setStock($detail->getInStock());
+
+                $price = $detail->getPrices()->filter(function(Price $price) {
+                    return $price->getCustomerGroup() === $this->customerGroup;
+                })->first();
+
+                //TODO: images
+                //$entity->getImages()
+
+                $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+
+                $article->setPrice($price);
+
+                $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+                $article->setSupplierNumber($detail->getSupplierNumber());
+
+                $article->setVariantId($detail->getId());
+
+                $article->setVariantArticles(null);
+            }
+            else {
+                $article->setInternalIdentifier('AB' . $entity->getMainDetail()->getNumber());
+
+                foreach ($entity->getDetails() as $detail) {
+
+                    /**
+                     * @var \Shopware\Models\Article\Detail $detail
+                     */
+
+                    /**
+                     * @var Article $variant
+                     */
+                    $variant = new $this->targetEntity();
+
+                    if($detail->getEan()) {
+                        $variant->setEan($detail->getEan());
+                    }
+
+                    //$image = $detail->getImages()->first();
+
+                    $variant->setInternalIdentifier($detail->getNumber());
+                    $variant->setStockMin($detail->getStockMin());
+                    $variant->setStock($detail->getInStock());
+                    $variant->setSupplierNumber($detail->getSupplierNumber());
+                    $variant->setVariantId($detail->getId());
+                    $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+                    $price = $detail->getPrices()->filter(function(Price $price) {
+                        return $price->getCustomerGroup() === $this->customerGroup;
+                    })->first();
+
+                    $options = [];
+
+                    foreach($detail->getConfiguratorOptions() as $option) {
+                        /**
+                         * @var Option $option
+                         */
+
+                        $options[$option->getGroup()->getName()] = $option->getName();
+                    }
+                    // we have to take care that the order of variant options stays the same
+                    ksort($options);
+
+                    $variant->setVariants($options);
+
+                    $variant->setName($entity->getName() . ' ' . implode(" ", array_values($options)));
+
+                    $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+
+                    $variant->setPrice($price);
+
+                    $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+                    $article->getVariantArticles()->add($variant);
+                }
+            }
+
+            $targetData[] = $article;
 
         }
 
@@ -57,9 +177,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      */
     public function read(array $filter) {
 
-        $data = array();
-
-
+        $data = $this->helper->getUnexportedArticles($filter['submitAll']);
 
         if(!$data || empty($data)) {
             return array();

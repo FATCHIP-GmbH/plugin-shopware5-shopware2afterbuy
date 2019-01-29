@@ -86,6 +86,11 @@
 
         <service class="FatchipAfterbuy\Services\WriteData\External\WriteProductsService" id="fatchip_afterbuy.services.write_data.external.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument type="string">false</argument>
+            </call>
         </service>
 
         <!-- Orderstatus -->
@@ -233,6 +238,9 @@
             <argument type="string">\Shopware\Models\Article\Article</argument>
             <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
             <argument type="string">getArticle</argument>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
         </service>
 
         <!-- Logger -->

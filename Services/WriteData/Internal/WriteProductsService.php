@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
+use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -87,11 +88,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $shopwareArticle->setActive(true);
             }
 
-            if ($netInput && $valueArticle->getTax()) {
-                $price = $valueArticle->getPrice() / (1 + ($valueArticle->getTax() / 100));
-            } else {
-                $price = $valueArticle->getPrice();
-            }
+            $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
+
 
             $helper->storePrices($articleDetail, $customerGroup, $price);
 

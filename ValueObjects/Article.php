@@ -17,7 +17,7 @@ class Article extends AbstractValueObject {
     /**
      * integer works with category ids, articles use strings (ordernumber)
      *
-     * @var int $internalIdentifier
+     * @var string $internalIdentifier
      */
     public $internalIdentifier;
 
@@ -58,6 +58,28 @@ class Article extends AbstractValueObject {
 
     public $description;
 
+    public $supplierNumber;
+
+    public $shortDescription;
+
+    public $variantId;
+
+    /**
+     * @return mixed
+     */
+    public function getVariantId()
+    {
+        return $this->variantId;
+    }
+
+    /**
+     * @param mixed $variantId
+     */
+    public function setVariantId($variantId): void
+    {
+        $this->variantId = $variantId;
+    }
+
     /**
      * @var bool
      */
@@ -65,6 +87,63 @@ class Article extends AbstractValueObject {
 
     /** @var ProductPicture[] */
     private $productPictures = [];
+
+    protected $variantArticles;
+
+    /**
+     * @return mixed
+     */
+    public function getShortDescription()
+    {
+        return $this->shortDescription;
+    }
+
+    /**
+     * @param mixed $shortDescription
+     */
+    public function setShortDescription($shortDescription): void
+    {
+        $this->shortDescription = $shortDescription;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSupplierNumber()
+    {
+        return $this->supplierNumber;
+    }
+
+    /**
+     * @param mixed $supplierNumber
+     */
+    public function setSupplierNumber($supplierNumber): void
+    {
+        $this->supplierNumber = $supplierNumber;
+    }
+
+
+
+    public function __construct()
+    {
+        $this->variantArticles = new ArrayCollection();
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getVariantArticles(): ?ArrayCollection
+    {
+        return $this->variantArticles;
+    }
+
+    /**
+     * @param ArrayCollection $variantArticles
+     */
+    public function setVariantArticles(?ArrayCollection $variantArticles): void
+    {
+        $this->variantArticles = $variantArticles;
+    }
 
     /**
      * @return mixed
@@ -184,7 +263,7 @@ class Article extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getExternalIdentifier(): string
+    public function getExternalIdentifier(): ?string
     {
         return $this->externalIdentifier;
     }
@@ -192,23 +271,23 @@ class Article extends AbstractValueObject {
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(string $externalIdentifier): void
+    public function setExternalIdentifier(?string $externalIdentifier): void
     {
         $this->externalIdentifier = $externalIdentifier;
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getInternalIdentifier(): int
+    public function getInternalIdentifier(): string
     {
         return $this->internalIdentifier;
     }
 
     /**
-     * @param int $internalIdentifier
+     * @param string $internalIdentifier
      */
-    public function setInternalIdentifier(int $internalIdentifier): void
+    public function setInternalIdentifier(string $internalIdentifier): void
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -216,7 +295,7 @@ class Article extends AbstractValueObject {
     /**
      * @return int
      */
-    public function getStock(): int
+    public function getStock(): ?int
     {
         return $this->stock;
     }
@@ -224,7 +303,7 @@ class Article extends AbstractValueObject {
     /**
      * @param int $stock
      */
-    public function setStock(int $stock): void
+    public function setStock(?int $stock): void
     {
         $this->stock = $stock;
     }
@@ -280,7 +359,7 @@ class Article extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getEan(): string
+    public function getEan(): ?string
     {
         return $this->ean;
     }
@@ -288,7 +367,7 @@ class Article extends AbstractValueObject {
     /**
      * @param string $ean
      */
-    public function setEan(string $ean): void
+    public function setEan(?string $ean): void
     {
         $this->ean = $ean;
     }

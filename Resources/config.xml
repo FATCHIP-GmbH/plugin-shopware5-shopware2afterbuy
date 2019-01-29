@@ -50,6 +50,12 @@
             <label lang="en">target shop for orders</label>
             <store>Shopware.apps.Base.store.Shop</store>
         </element>
+        <element type="boolean">
+            <name>ExportAllArticles</name>
+            <label lang="de">Alle Artikel exportieren</label>
+            <label lang="en">exportAllArticles</label>
+        </element>
+
         <element type="combo" >
             <name>paymentINVOICE</name>
             <label lang="de">Zahlungsart INVOICE</label>

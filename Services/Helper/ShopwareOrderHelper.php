@@ -329,6 +329,7 @@ class ShopwareOrderHelper extends AbstractHelper {
             ->where('attributes.afterbuyOrderId IS NULL')
             ->orWhere("attributes.afterbuyOrderId = ''")
             ->getQuery()
+            ->setMaxResults(200)
             ->getResult();
 
         return $orders;
@@ -349,12 +350,15 @@ class ShopwareOrderHelper extends AbstractHelper {
             ->leftJoin('orders.history', 'history')
             ->where('attributes.afterbuyOrderId IS NOT NULL')
             ->andWhere("attributes.afterbuyOrderId != ''")
-            ->andWhere('history.changeDate  >= :lastExport')
+            ->andWhere('orders.cleared = 12')
             ->andWhere('orders.status = 7')
             ->orWhere('orders.status = 2')
-            ->andWhere('orders.cleared = 12')
+            ->having('history.changeDate  >= :lastExport')
+            ->andHaving('history.paymentStatusId = 12')
+            ->andHaving('history.orderStatusId = 2 OR history.orderStatusId = 7')
             ->setParameters(array('lastExport' => $lastExport))
             ->getQuery()
+            ->setMaxResults(145)
             ->getResult();
 
         return $orders;

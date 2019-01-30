@@ -67,7 +67,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
             // TODO: create config for album name
             $media = $this->helper->createMediaImage(
-                $valueCategory->getName(),
                 $valueCategory->getImage(),
                 'Categories'
             );

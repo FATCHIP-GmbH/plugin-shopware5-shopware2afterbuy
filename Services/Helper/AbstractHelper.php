@@ -193,15 +193,15 @@ class AbstractHelper {
     }
 
     /**
-     * @param $name
      * @param $url
      * @param $albumName
      *
      * @return Media
      */
-    public function createMediaImage($name, $url, $albumName): Media
+    public function createMediaImage($url, $albumName): Media
     {
-        $path = 'media/image/' . $name . '.jpg';
+        $path_info = pathinfo($url);
+        $path = 'media/image/' . $path_info['filename'] . '.' . $path_info['extension'];
         $contents = file_get_contents($url);
 
         /** @var MediaService $mediaService */
@@ -232,10 +232,10 @@ class AbstractHelper {
         }
         $media->setAlbum($album);
         $media->setUserId(0);
-        $media->setName($name);
+        $media->setName($path_info['filename']);
         $media->setPath($path);
         $media->setFileSize($mediaService->getSize($path));
-        $media->setExtension('jpg');
+        $media->setExtension($path_info['extension']);
         $media->setType(Media::TYPE_IMAGE);
 
         $this->entityManager->persist($media);

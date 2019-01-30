@@ -134,7 +134,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             foreach ($valueArticle->getProductPictures() as $productPicture) {
 
                 $media = $helper->createMediaImage(
-                    $valueArticle->getName() . '_' . $productPicture->getNr(),
                     $productPicture->getUrl(),
                     'Artikel'
                 );

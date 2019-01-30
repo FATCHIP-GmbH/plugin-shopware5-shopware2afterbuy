@@ -143,15 +143,13 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     ['number' => $valueArticle->getExternalIdentifier()]
                 );
 
-                $articleDetail->getArticle()->getImages();
-
                 /** @var ModelRepository $imageRepo */
                 $imageRepo = $this->entityManager->getRepository(ArticleImage::class);
 
                 // all images, assigned to current article with current media
                 /** @var ArticleImage[] $images */
                 $images = $imageRepo->findBy([
-                    'mediaId'  => $media->getId(),
+                    'mediaId'   => $media->getId(),
                     'articleId' => $mainDetail->getArticleId(),
                 ]);
 

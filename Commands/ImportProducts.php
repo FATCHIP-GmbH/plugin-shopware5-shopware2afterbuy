@@ -24,10 +24,11 @@ class ImportProducts extends ShopwareCommand
     protected $writeDataService;
 
     /**
-     * @param ReadDataInterface $readDataService
+     * @param ReadDataInterface  $readDataService
      * @param WriteDataInterface $writeDataService
      */
-    public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
+    public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService)
+    {
         parent::__construct(null);
 
         $this->readDataService = $readDataService;

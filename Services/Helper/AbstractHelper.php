@@ -244,8 +244,8 @@ class AbstractHelper {
         } catch (OptimisticLockException $e) {
         }
 
-        if ($media->getType() === Media::TYPE_IMAGE && // GD doesn't support the following image formats
-            !in_array($media->getExtension(), ['tif', 'tiff'], true)) {
+        if ($media->getType() === Media::TYPE_IMAGE && ! in_array($media->getExtension(), ['tif', 'tiff'], true)
+        ) {
             $manager = Shopware()->Container()->get('thumbnail_manager');
             $manager->createMediaThumbnail($media, [], true);
         }

@@ -114,6 +114,59 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             } catch (OptimisticLockException $e) {
             }
         }
+
+        foreach ($valueArticles as $valueArticle) {
+
+            $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+
+            /** @var ArticlesAttribute $attribute */
+            $attribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
+                ['afterbuyParentId' => $mainArticleId]
+            );
+
+            if ( ! $attribute) {
+                // no attribute with given mainArticleId
+                continue;
+            }
+
+            $mainDetail = $attribute->getArticle()->getMainDetail();
+
+            foreach ($valueArticle->getProductPictures() as $productPicture) {
+
+                $media = $helper->createMediaImage(
+                    $valueArticle->getName() . '_' . $productPicture->getNr(),
+                    $productPicture->getUrl(),
+                    'Artikel'
+                );
+
+                /** @var ArticleDetail $articleDetail */
+                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+                    ['number' => $valueArticle->getExternalIdentifier()]
+                );
+
+                $articleDetail->getArticle()->getImages();
+
+                /** @var ModelRepository $imageRepo */
+                $imageRepo = $this->entityManager->getRepository(ArticleImage::class);
+
+                // all images, assigned to current article with current media
+                /** @var ArticleImage[] $images */
+                $images = $imageRepo->findBy([
+                    'mediaId'  => $media->getId(),
+                    'articleId' => $mainDetail->getArticleId(),
+                ]);
+
+                if (count($images) === 0) {
+                    $image = $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
+                } else {
+                    $image = $images[0];
+                }
+
+                if ( ! $valueArticle->isMainProduct()) {
+                    $this->createChildImage($image, $articleDetail, $productPicture->getNr());
+                }
+            }
+        }
     }
 
 

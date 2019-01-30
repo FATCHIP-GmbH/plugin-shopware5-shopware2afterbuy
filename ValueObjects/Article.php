@@ -3,9 +3,9 @@
 namespace FatchipAfterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
 
-class Article extends AbstractValueObject {
+class Article extends AbstractValueObject
+{
 
     /**
      * we cannot define external identifier types, we have to handle those as strings
@@ -121,7 +121,6 @@ class Article extends AbstractValueObject {
     {
         $this->supplierNumber = $supplierNumber;
     }
-
 
 
     public function __construct()
@@ -257,7 +256,6 @@ class Article extends AbstractValueObject {
     {
         $this->stockMin = $stockMin;
     }
-
 
 
     /**

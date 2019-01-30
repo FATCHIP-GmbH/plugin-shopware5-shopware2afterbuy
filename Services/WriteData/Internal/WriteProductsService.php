@@ -8,9 +8,14 @@ use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use FatchipAfterbuy\ValueObjects\ProductPicture;
+use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Detail as ArticleDetail;
+use Shopware\Models\Article\Image as ArticleImage;
+use Shopware\Models\Attribute\Article as ArticlesAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
+use Shopware\Models\Media\Media;
 
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
@@ -125,5 +130,64 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         }
 
         //TODO: update modDate
+    }
+
+    /**
+     * @param Media           $media
+     * @param ProductPicture  $productPicture
+     * @param ShopwareArticle $article
+     *
+     * @return ArticleImage
+     */
+    public function createParentImage(
+        Media $media,
+        ProductPicture $productPicture,
+        ShopwareArticle $article
+    ): ArticleImage {
+        $image = new ArticleImage();
+
+        $image->setArticle($article);
+        $image->setPath($media->getName());
+        $image->setMain($productPicture->getNr() === '1' ? 1 : 2);
+        $image->setDescription($media->getDescription());
+        $image->setPosition($productPicture->getNr());
+        $image->setExtension($media->getExtension());
+        $image->setMedia($media);
+
+        $this->entityManager->persist($image);
+
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        }
+
+        return $image;
+    }
+
+    /**
+     * @param ArticleImage  $parent
+     * @param ArticleDetail $detail
+     * @param int           $position
+     *
+     * @return ArticleImage
+     */
+    public function createChildImage(ArticleImage $parent, ArticleDetail $detail, int $position): ArticleImage
+    {
+        $image = new ArticleImage();
+
+        $image->setMain($position === '1' ? 1 : 2);
+        $image->setPosition($position);
+        $image->setExtension($parent->getExtension());
+        $image->setParent($parent);
+        $image->setArticleDetail($detail);
+
+        $this->entityManager->persist($image);
+
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        }
+
+        return $image;
     }
 }

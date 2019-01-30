@@ -386,5 +386,8 @@ class Article extends AbstractValueObject
         $this->productPictures[] = $productPicture;
     }
 
-
+    public function isMainProduct(): bool
+    {
+        return $this->mainArticleId === null;
+    }
 }

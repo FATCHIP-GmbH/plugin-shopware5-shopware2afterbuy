@@ -162,7 +162,15 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 }
 
                 if ( ! $valueArticle->isMainProduct()) {
-                    $this->createChildImage($image, $articleDetail, $productPicture->getNr());
+                    $this->createChildImage($image, $articleDetail);
+                }
+
+                // reset preview image status
+                if ($valueArticle->isMainProduct() && $productPicture->getNr() === '0' && $image->getMain() !== 1) {
+                    foreach ($mainDetail->getArticle()->getImages() as $_image) {
+                        $_image->setMain(2);
+                    }
+                    $image->setMain(1);
                 }
             }
         }
@@ -200,7 +208,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $image->setArticle($article);
         $image->setPath($media->getName());
-        $image->setMain($productPicture->getNr() === '1' ? 1 : 2);
         $image->setDescription($media->getDescription());
         $image->setPosition($productPicture->getNr());
         $image->setExtension($media->getExtension());
@@ -219,16 +226,14 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
     /**
      * @param ArticleImage  $parent
      * @param ArticleDetail $detail
-     * @param int           $position
      *
      * @return ArticleImage
      */
-    public function createChildImage(ArticleImage $parent, ArticleDetail $detail, int $position): ArticleImage
+    public function createChildImage(ArticleImage $parent, ArticleDetail $detail): ArticleImage
     {
         $image = new ArticleImage();
 
-        $image->setMain($position === '1' ? 1 : 2);
-        $image->setPosition($position);
+        $image->setPosition($parent->getPosition());
         $image->setExtension($parent->getExtension());
         $image->setParent($parent);
         $image->setArticleDetail($detail);

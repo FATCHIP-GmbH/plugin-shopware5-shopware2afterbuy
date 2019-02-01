@@ -49,6 +49,8 @@ class AbstractHelper {
 
     protected $db;
 
+    protected $mediaService;
+
     /**
      * @param ModelManager $entityManager
      * @param string $entity
@@ -190,6 +192,10 @@ class AbstractHelper {
         } else {
             $entity->$setter($identifier);
         }
+    }
+
+    public function initMediaService(MediaService $mediaService) {
+        $this->mediaService = $mediaService;
     }
 
     /**

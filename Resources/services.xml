@@ -239,6 +239,9 @@
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
             <argument type="string">getCategory</argument>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\Helper\ShopwareArticleHelper" id="fatchip_afterbuy.services.helper.shopware_article_helper">
@@ -248,6 +251,9 @@
             <argument type="string">getArticle</argument>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
+            </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
             </call>
         </service>
 

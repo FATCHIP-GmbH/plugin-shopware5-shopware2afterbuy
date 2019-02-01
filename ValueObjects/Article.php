@@ -64,6 +64,8 @@ class Article extends AbstractValueObject
 
     public $variantId;
 
+    public $externalCategoryIds = [];
+
     /**
      * @var string
      */
@@ -73,6 +75,23 @@ class Article extends AbstractValueObject
      * @var string
      */
     public $mainImageThumbnailUrl;
+
+    /**
+     * @return array
+     */
+    public function getExternalCategoryIds(): array
+    {
+        return $this->externalCategoryIds;
+    }
+
+    /**
+     * @param array $externalCategoryIds
+     */
+    public function setExternalCategoryIds(array $externalCategoryIds): void
+    {
+        $this->externalCategoryIds = $externalCategoryIds;
+    }
+
 
     /**
      * @return string

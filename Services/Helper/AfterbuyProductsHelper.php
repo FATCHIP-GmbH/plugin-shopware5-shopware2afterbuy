@@ -139,7 +139,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'AddBaseProducts' => $variantArticles,
                 'ImageLargeURL' => $value->getMainImageUrl(),
                 'ImageSmallURL' => $value->getMainImageThumbnailUrl(),
-                'ProductPictures' => $productImages
+                'ProductPictures' => $productImages,
+                'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
             )
         );
 
@@ -169,6 +170,23 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         }
 
         return $variantArticles;
+    }
+
+    public function buildAfterbuyCatalogAssignment($ids) {
+        $catalogs = [];
+
+        foreach($ids as $value) {
+            $catalogs[] = array(
+                    'CatalogID' => $value
+            );
+        }
+
+        $assignment = array(
+            'UpdateAction' => 2,
+            'AddCatalog' => $catalogs
+        );
+
+        return $assignment;
     }
 
     public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
@@ -238,6 +256,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'ProductBrand' => $value->getManufacturer(),
                 'ImageLargeURL' => $value->getMainImageUrl(),
                 'ImageSmallURL' => $value->getMainImageThumbnailUrl(),
+                'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
             )
         );
 

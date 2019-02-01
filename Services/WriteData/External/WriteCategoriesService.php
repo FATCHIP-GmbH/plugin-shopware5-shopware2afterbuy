@@ -61,6 +61,14 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
 
-        return $api->updateCatalogs($catalogs);
+        $response = $api->updateCatalogs($catalogs);
+
+        $catalogIds = $this->helper->getCatalogIdsFromResponse($response);
+        $this->helper->updateExternalIds($catalogIds);
+
+        //TODO: set external identifier if available
+        //TODO: test nur auf unterster ebene
     }
+
+
 }

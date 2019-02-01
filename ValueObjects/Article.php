@@ -65,11 +65,53 @@ class Article extends AbstractValueObject {
     public $variantId;
 
     /**
+     * @var string
+     */
+    public $mainImageUrl;
+
+    /**
+     * @var string
+     */
+    public $mainImageThumbnailUrl;
+
+    /**
+     * @return string
+     */
+    public function getMainImageThumbnailUrl(): string
+    {
+        return $this->mainImageThumbnailUrl;
+    }
+
+    /**
+     * @param string $mainImageThumbnailUrl
+     */
+    public function setMainImageThumbnailUrl(string $mainImageThumbnailUrl): void
+    {
+        $this->mainImageThumbnailUrl = $mainImageThumbnailUrl;
+    }
+
+    /**
      * @return mixed
      */
     public function getVariantId()
     {
         return $this->variantId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainImageUrl(): string
+    {
+        return $this->mainImageUrl;
+    }
+
+    /**
+     * @param string $mainImageUrl
+     */
+    public function setMainImageUrl(string $mainImageUrl): void
+    {
+        $this->mainImageUrl = $mainImageUrl;
     }
 
     /**

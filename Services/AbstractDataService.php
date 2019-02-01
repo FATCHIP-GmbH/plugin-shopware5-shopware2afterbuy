@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services;
 
 use FatchipAfterbuy\Services\Helper\AbstractHelper;
 use Psr\Log\LoggerInterface;
+use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
@@ -33,6 +34,8 @@ class AbstractDataService {
     protected $config;
 
     public $apiConfig;
+
+    protected $mediaService;
 
     /**
      * @var AbstractHelper $helper
@@ -84,9 +87,13 @@ class AbstractDataService {
      * @param string $identifier
      * @param bool $isAttribute
      */
-    public function initHelper(AbstractHelper $helper, string $identifier, bool $isAttribute) {
+    public function initHelper(AbstractHelper $helper, $identifier = '', $isAttribute = false) {
         $this->helper = $helper;
         $this->identifier = $identifier;
         $this->isAttribute = $isAttribute;
+    }
+
+    public function initMediaService(MediaService $mediaService) {
+        $this->mediaService = $mediaService;
     }
 }

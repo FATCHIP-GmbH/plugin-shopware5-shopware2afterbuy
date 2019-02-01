@@ -10,6 +10,7 @@ use FatchipAfterbuy\ValueObjects\Address;
 use FatchipAfterbuy\ValueObjects\Article;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
+use FatchipAfterbuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Customer\Group;
@@ -35,6 +36,8 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @throws \Exception
      */
     public function transform(array $data) {
+        //TODO: refactor
+
         if($this->targetEntity === null) {
             return array();
         }
@@ -74,6 +77,46 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             $article->setManufacturer($entity->getSupplier()->getName());
 
+            /**
+             * article images
+             */
+
+            $images = $entity->getImages();
+
+            if($images->count()) {
+                foreach($images as $image) {
+                    $path = $image->getMedia()->getPath();
+                    $url = $this->mediaService->getUrl($path);
+
+                    if($image->getMain() == 1) {
+                        $article->setMainImageUrl($url);
+
+                        $thumbnails = $image->getMedia()->getThumbnails();
+
+                        if(is_array($thumbnails)) {
+                            $thumbnail = reset($thumbnails);
+                            $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
+                        }
+
+                        $article->setMainImageThumbnailUrl($thumbnailUrl);
+                    }
+
+                    if(is_null($image->getChildren()) || $image->getChildren()->count() === 0) {
+
+                        if($image->getMain() == 1) {
+                            continue;
+                        }
+
+                        $productPicture = new ProductPicture();
+                        $productPicture->setAltText($entity->getName() . '_' . ((int)$image->getPosition()));
+                        $productPicture->setNr($image->getPosition());
+                        $productPicture->setUrl($url);
+
+                        $article->addProductPicture($productPicture);
+                    }
+                }
+            }
+
             if(!$entity->getConfiguratorSet()) {
                 //simple article
 
@@ -90,8 +133,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     return $price->getCustomerGroup() === $this->customerGroup;
                 })->first();
 
-                //TODO: images
-                //$entity->getImages()
 
                 $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
 
@@ -121,8 +162,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     if($detail->getEan()) {
                         $variant->setEan($detail->getEan());
                     }
-
-                    //$image = $detail->getImages()->first();
 
                     $variant->setInternalIdentifier($detail->getNumber());
                     $variant->setStockMin($detail->getStockMin());
@@ -156,6 +195,39 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     $variant->setPrice($price);
 
                     $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+                    /**
+                     * variant images
+                     */
+
+                    $images = $detail->getImages();
+
+                    if($images->count()) {
+                        foreach($images as $index=>$image) {
+                            $path = $image->getParent()->getMedia()->getPath();
+                            $url = $this->mediaService->getUrl($path);
+
+                            if($index === 0) {
+                                $thumbnails = $image->getParent()->getMedia()->getThumbnails();
+
+                                if(is_array($thumbnails)) {
+                                    $thumbnail = reset($thumbnails);
+                                    $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
+                                }
+
+                                $variant->setMainImageUrl($url);
+                                $variant->setMainImageThumbnailUrl($thumbnailUrl);
+                                continue;
+                            }
+
+                            $productPicture = new ProductPicture();
+                            $productPicture->setAltText($variant->getName() . '_' . ( (int) $image->getPosition()));
+                            $productPicture->setNr($image->getPosition() +1);
+                            $productPicture->setUrl($url);
+
+                            $variant->addProductPicture($productPicture);
+                        }
+                    }
 
                     $article->getVariantArticles()->add($variant);
                 }

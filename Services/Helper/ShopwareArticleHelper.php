@@ -39,10 +39,6 @@ class ShopwareArticleHelper extends AbstractHelper {
      */
     protected $configuratorOptions;
 
-    /**
-     * @var \Enlight_Components_Db_Adapter_Pdo_Mysql
-     */
-    protected $db;
 
     /**
      * @param array $ids

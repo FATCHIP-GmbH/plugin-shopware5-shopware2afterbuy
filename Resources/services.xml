@@ -82,14 +82,15 @@
                 <argument type="string">number</argument>
                 <argument type="string">false</argument>
             </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\WriteData\External\WriteProductsService" id="fatchip_afterbuy.services.write_data.external.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
-                <argument type="string">number</argument>
-                <argument type="string">false</argument>
+                <argument type="service" id="fatchip_afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
@@ -223,6 +224,13 @@
             <argument type="string">getOrder</argument>
             <call method="preFetch">
 
+            </call>
+        </service>
+
+        <service class="FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper" id="fatchip_afterbuy.services.helper.afterbuy_products_helper">
+            <argument id="models" type="service"/>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
             </call>
         </service>
 

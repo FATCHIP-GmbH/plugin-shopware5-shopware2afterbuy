@@ -117,6 +117,17 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $options;
     }
 
+    // TODO: use identifier
+    public function getDetailIDsByExternalIdentifier(): array
+    {
+        return $this->entityManager->createQueryBuilder()
+            ->select(['detail.id', 'detail.articleId', 'detail.number'])
+            ->from(Detail::class, 'detail', 'detail.number')
+            ->getQuery()
+            ->getResult();
+    }
+
+
     /**
      *
      */

@@ -13,7 +13,6 @@ use Shopware\Models\Customer\Customer;
 use Shopware\Models\Customer\Group;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Shop\Shop;
-use Shopware\Models\Tax\Tax;
 
 class ShopwareOrderHelper extends AbstractHelper {
 
@@ -564,15 +563,6 @@ class ShopwareOrderHelper extends AbstractHelper {
             ->getResult();
 
         return $countries;
-    }
-
-    public function createTax(float $rate) {
-        $tax = new Tax();
-        $tax->setTax($rate);
-        $tax->setName($rate);
-
-        $this->entityManager->persist($tax);
-        $this->entityManager->flush();
     }
 
     public function getPaymentStates() {

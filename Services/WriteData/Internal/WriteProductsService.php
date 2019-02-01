@@ -8,9 +8,14 @@ use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use FatchipAfterbuy\ValueObjects\ProductPicture;
+use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Detail as ArticleDetail;
+use Shopware\Models\Article\Image as ArticleImage;
+use Shopware\Models\Attribute\Article as ArticlesAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
+use Shopware\Models\Media\Media;
 
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
@@ -83,7 +88,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
 
-            if($valueArticle->isActive()) {
+            if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);
                 $shopwareArticle->setActive(true);
             }
@@ -108,7 +113,64 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $this->entityManager->flush();
             } catch (OptimisticLockException $e) {
             }
+        }
 
+        foreach ($valueArticles as $valueArticle) {
+
+            $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+
+            /** @var ArticlesAttribute $attribute */
+            $attribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
+                ['afterbuyParentId' => $mainArticleId]
+            );
+
+            if ( ! $attribute) {
+                // no attribute with given mainArticleId
+                continue;
+            }
+
+            $mainDetail = $attribute->getArticle()->getMainDetail();
+
+            foreach ($valueArticle->getProductPictures() as $productPicture) {
+
+                $media = $helper->createMediaImage(
+                    $productPicture->getUrl(),
+                    'Artikel'
+                );
+
+                /** @var ArticleDetail $articleDetail */
+                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+                    ['number' => $valueArticle->getExternalIdentifier()]
+                );
+
+                /** @var ModelRepository $imageRepo */
+                $imageRepo = $this->entityManager->getRepository(ArticleImage::class);
+
+                // all images, assigned to current article with current media
+                /** @var ArticleImage[] $images */
+                $images = $imageRepo->findBy([
+                    'mediaId'   => $media->getId(),
+                    'articleId' => $mainDetail->getArticleId(),
+                ]);
+
+                if (count($images) === 0) {
+                    $image = $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
+                } else {
+                    $image = $images[0];
+                }
+
+                if ( ! $valueArticle->isMainProduct()) {
+                    $this->createChildImage($image, $articleDetail);
+                }
+
+                // reset preview image status
+                if ($valueArticle->isMainProduct() && $productPicture->getNr() === '0' && $image->getMain() !== 1) {
+                    foreach ($mainDetail->getArticle()->getImages() as $_image) {
+                        $_image->setMain(2);
+                    }
+                    $image->setMain(1);
+                }
+            }
         }
     }
 
@@ -126,5 +188,61 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         }
 
         //TODO: update modDate
+    }
+
+    /**
+     * @param Media           $media
+     * @param ProductPicture  $productPicture
+     * @param ShopwareArticle $article
+     *
+     * @return ArticleImage
+     */
+    public function createParentImage(
+        Media $media,
+        ProductPicture $productPicture,
+        ShopwareArticle $article
+    ): ArticleImage {
+        $image = new ArticleImage();
+
+        $image->setArticle($article);
+        $image->setPath($media->getName());
+        $image->setDescription($media->getDescription());
+        $image->setPosition($productPicture->getNr());
+        $image->setExtension($media->getExtension());
+        $image->setMedia($media);
+
+        $this->entityManager->persist($image);
+
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        }
+
+        return $image;
+    }
+
+    /**
+     * @param ArticleImage  $parent
+     * @param ArticleDetail $detail
+     *
+     * @return ArticleImage
+     */
+    public function createChildImage(ArticleImage $parent, ArticleDetail $detail): ArticleImage
+    {
+        $image = new ArticleImage();
+
+        $image->setPosition($parent->getPosition());
+        $image->setExtension($parent->getExtension());
+        $image->setParent($parent);
+        $image->setArticleDetail($detail);
+
+        $this->entityManager->persist($image);
+
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        }
+
+        return $image;
     }
 }

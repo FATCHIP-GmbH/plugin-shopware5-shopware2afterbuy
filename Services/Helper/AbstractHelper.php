@@ -9,9 +9,11 @@ use FatchipAfterbuy\Components\Helper;
 use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
+use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
-use Shopware\Models\Media\Repository;
+use Shopware\Models\Media\Repository as MediaRepository;
+use Shopware\Models\Tax\Tax;
 
 /**
  * Helper will extend this abstract helper. This class is defining the given type.
@@ -109,6 +111,15 @@ class AbstractHelper {
     /**
      *
      */
+    public function createTax(float $rate) {
+        $tax = new Tax();
+        $tax->setTax($rate);
+        $tax->setName($rate);
+
+        $this->entityManager->persist($tax);
+        $this->entityManager->flush();
+    }
+
     public function getTaxes() {
         $taxes = $this->entityManager->createQueryBuilder()
             ->select('taxes')
@@ -182,25 +193,31 @@ class AbstractHelper {
     }
 
     /**
-     * @param $name
      * @param $url
      * @param $albumName
      *
      * @return Media
      */
-    public function createMediaImage($name, $url, $albumName): Media
+    public function createMediaImage($url, $albumName): Media
     {
-        $path = 'media/image/' . $name . '.jpg';
+        $path_info = pathinfo($url);
+        $path = 'media/image/' . $path_info['filename'] . '.' . $path_info['extension'];
         $contents = file_get_contents($url);
 
         /** @var MediaService $mediaService */
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');
+        /** @var MediaRepository $mediaRepo */
+        $mediaRepo = $this->entityManager->getRepository(Media::class);
+        $medias = $mediaRepo->getMediaByPathQuery($path)->getResult();
+
+        if (count($medias) > 0) {
+            return $medias[0];
+        }
+
         $mediaService->write($path, $contents);
 
-        /** @var ModelManager $models */
-        $models = Shopware()->Container()->get('models');
-        /** @var Repository $albumRepo */
-        $albumRepo = $models->getRepository(Album::class);
+        /** @var ModelRepository $albumRepo */
+        $albumRepo = $this->entityManager->getRepository(Album::class);
         /** @var Album $album */
         $album = $albumRepo->findOneBy(['name' => $albumName]);
         // TODO: handle missing album
@@ -213,17 +230,24 @@ class AbstractHelper {
         } catch (Exception $e) {
             // TODO: handle exception
         }
+        $media->setAlbum($album);
         $media->setUserId(0);
-        $media->setName($name);
+        $media->setName($path_info['filename']);
         $media->setPath($path);
         $media->setFileSize($mediaService->getSize($path));
-        $media->setExtension('jpg');
-        $media->setType('image');
+        $media->setExtension($path_info['extension']);
+        $media->setType(Media::TYPE_IMAGE);
 
         $this->entityManager->persist($media);
         try {
             $this->entityManager->flush($media);
         } catch (OptimisticLockException $e) {
+        }
+
+        if ($media->getType() === Media::TYPE_IMAGE && ! in_array($media->getExtension(), ['tif', 'tiff'], true)
+        ) {
+            $manager = Shopware()->Container()->get('thumbnail_manager');
+            $manager->createMediaThumbnail($media, [], true);
         }
 
         return $media;

@@ -62,6 +62,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             $productPictures = $product['ProductPictures']['ProductPicture'];
 
+            $mainPicture = new ProductPicture();
+            $mainPicture->setNr(0);
+            $mainPicture->setUrl($product['ImageLargeURL']);
+
+            $valueArticle->addProductPicture($mainPicture);
+
             if ($productPictures && ! is_array($productPictures[0])) {
                 $productPictures = array($productPictures);
             }

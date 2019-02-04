@@ -62,8 +62,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $this->helper->updateExternalIds($targetData);
 
-        //$this->storeSubmissionDate('lastProductExport');
+        $this->storeSubmissionDate('lastProductExport');
 
-
+        return $targetData;
     }
 }

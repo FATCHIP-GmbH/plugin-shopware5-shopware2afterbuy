@@ -37,9 +37,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         $this->logger->info("Storing " . count($data) . " items.", array("Categories", "Write", "Internal"));
 
-        //TODO: url generation for send into library
-        //TODO: url encode values
-
         $orders = [];
 
         /**

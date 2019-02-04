@@ -42,6 +42,7 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
             //should be replaced by values from status history
             $status->setPaymentDate(new \DateTime());
             $status->setShippingDate(new \DateTime());
+            $status->setAmount($order->getInvoiceAmount());
 
             $values[] = $status;
         }

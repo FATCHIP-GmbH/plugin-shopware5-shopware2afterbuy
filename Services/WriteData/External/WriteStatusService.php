@@ -45,6 +45,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
                     'OrderID' => $order->getAfterbuyOrderId(),
                     'PaymentInfo' => array(
                         'PaymentDate' => date_format($order->getPaymentDate(), 'd.m.Y H:i:s'),
+                        'AlreadyPaid' => Helper::convertNumberToABString($order->getAmount())
                     ),
                     'ShippingInfo' => array(
                         'DeliveryDate' => date_format($order->getShippingDate(), 'd.m.Y H:i:s')
@@ -65,11 +66,14 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
-        $api->updateOrderStatus($orders);
+        $response = $api->updateOrderStatus($orders);
+
+        if ($response['CallStatus'] === 'Error') {
+            $this->logger->error('Error submitting data', $response);
+        }
 
         $this->storeSubmissionDate('lastStatusExport');
 
         return null;
-
     }
 }

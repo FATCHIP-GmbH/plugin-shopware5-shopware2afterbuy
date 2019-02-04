@@ -20,6 +20,27 @@ class OrderStatus extends AbstractValueObject {
     protected $shippingDate;
 
     /**
+     * @var float
+     */
+    protected $amount;
+
+    /**
+     * @return float
+     */
+    public function getAmount(): float
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param float $amount
+     */
+    public function setAmount(float $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    /**
      * @return string
      */
     public function getAfterbuyOrderId(): string

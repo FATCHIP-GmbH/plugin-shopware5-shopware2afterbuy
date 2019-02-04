@@ -336,6 +336,15 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     }
 
+    public function isFullfilled(\Shopware\Models\Order\Order $order) {
+        if(($order->getOrderStatus()->getId() == 7 || $order->getOrderStatus()->getId() == 2) && $order->getPaymentStatus()->getId() == 12) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public function getNewFullfilledOrders() {
         $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
 

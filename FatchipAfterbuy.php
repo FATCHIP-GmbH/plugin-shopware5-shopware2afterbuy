@@ -13,6 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 class FatchipAfterbuy extends Plugin
 {
 
+    public function init() {
+
+    }
+
     /**
     * @param ContainerBuilder $container
     */
@@ -20,6 +24,7 @@ class FatchipAfterbuy extends Plugin
     {
         $container->setParameter('fatchip_afterbuy.plugin_dir', $this->getPath());
         $container->setParameter('fatchip_afterbuy.plugin_name', $this->getName());
+
         parent::build($container);
     }
 

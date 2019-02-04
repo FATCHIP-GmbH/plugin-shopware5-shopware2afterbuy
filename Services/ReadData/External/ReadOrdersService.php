@@ -15,6 +15,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     /**
      * @param array $filter
      * @return array|null
+     * @throws \Exception
      */
     public function get(array $filter) {
         $data = $this->read($filter);
@@ -194,7 +195,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                     $value->setShippingAddress($shippingAddress);
                 }
-
             }
 
             array_push($targetData, $value);
@@ -211,9 +211,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @return array
      */
     public function read(array $filter) {
-
-
-
         $resource = new ApiClient($this->apiConfig);
         $data = $resource->getOrdersFromAfterbuy($filter);
 

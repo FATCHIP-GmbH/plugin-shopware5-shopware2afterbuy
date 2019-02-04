@@ -5,6 +5,15 @@
 
     <services>
 
+        <!-- Cronjobs -->
+
+        <service id="fatchip_afterbuy.subscriber.cron" class="FatchipAfterbuy\Subscriber\Cron">
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+            <tag name="shopware.event_subscriber" />
+        </service>
+
+
         <!-- Commands -->
 
         <service id="fatchip_afterbuy.commands.export_status" class="FatchipAfterbuy\Commands\ExportStatus">
@@ -49,6 +58,18 @@
             <tag name="console.command" />
             <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_products_service" />
             <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_products_service" />
+        </service>
+
+        <service id="fatchip_afterbuy.commands.update_products" class="FatchipAfterbuy\Commands\UpdateProducts">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="fatchip_afterbuy.commands.update_orders" class="FatchipAfterbuy\Commands\UpdateOrders">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
         </service>
 
         <!-- Products -->

@@ -66,8 +66,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         $catalogIds = $this->helper->getCatalogIdsFromResponse($response);
         $this->helper->updateExternalIds($catalogIds);
 
-        //TODO: set external identifier if available
-        //TODO: test nur auf unterster ebene
+        return $catalogIds;
     }
 
 

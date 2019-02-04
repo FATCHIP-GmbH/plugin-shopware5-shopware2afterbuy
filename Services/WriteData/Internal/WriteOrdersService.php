@@ -40,7 +40,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * could may be moved into separate helper
      *
      * @param array $data
-     * @return mixed|void
+     * @return mixed
      */
     public function transform(array $data) {
         $this->targetShop = $this->helper->getShop($this->config['targetShop']);
@@ -66,6 +66,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
              * @var \Shopware\Models\Order\Order $order
              */
             $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
+
+            //fullfilled orders should not get updated
+            if($this->helper->isFullfilled($order)) {
+                continue;
+            }
 
             $this->helper->setOrderMainValues($value, $order, $this->targetShop);
             $this->helper->setOrderTaxValues($value, $order);
@@ -107,18 +112,28 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             $this->entityManager->persist($order);
         }
+
+        return $data;
     }
 
 
     /**
      * @param $targetData
-     * @return mixed|void
+     * @return mixed
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-        $this->entityManager->flush();
 
-        $this->storeSubmissionDate('lastOrderImport');
+        try {
+            $this->entityManager->flush();
+
+            $this->storeSubmissionDate('lastOrderImport');
+        }
+        catch(\Exception $e) {
+            $this->logger->error($e->getMessage(), $targetData);
+        }
+
+        return array();
     }
 
     public function getOrderImportDateFilter(bool $force) {

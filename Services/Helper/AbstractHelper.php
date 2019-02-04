@@ -201,7 +201,8 @@ class AbstractHelper {
     public function createMediaImage($url, $albumName): Media
     {
         $path_info = pathinfo($url);
-        $path = 'media/image/' . $path_info['filename'] . '.' . $path_info['extension'];
+        $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
+        $path = 'media/image/' . $filename . '.' . $path_info['extension'];
         $contents = file_get_contents($url);
 
         /** @var MediaService $mediaService */
@@ -232,7 +233,7 @@ class AbstractHelper {
         }
         $media->setAlbum($album);
         $media->setUserId(0);
-        $media->setName($path_info['filename']);
+        $media->setName($filename);
         $media->setPath($path);
         $media->setFileSize($mediaService->getSize($path));
         $media->setExtension($path_info['extension']);
@@ -251,5 +252,25 @@ class AbstractHelper {
         }
 
         return $media;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
+    public function filterNotAllowedCharactersFromURL(string $url): string
+    {
+        $badCharacters = '()+.';
+
+        $urlArray = str_split($url);
+
+        foreach ($urlArray as $index => $character) {
+            if (strpos($badCharacters, $character) !== false) {
+                $url[$index] = '_';
+            }
+        }
+
+        return $url;
     }
 }

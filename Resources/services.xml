@@ -82,14 +82,15 @@
                 <argument type="string">number</argument>
                 <argument type="string">false</argument>
             </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\WriteData\External\WriteProductsService" id="fatchip_afterbuy.services.write_data.external.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
-                <argument type="string">number</argument>
-                <argument type="string">false</argument>
+                <argument type="service" id="fatchip_afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
@@ -226,11 +227,21 @@
             </call>
         </service>
 
+        <service class="FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper" id="fatchip_afterbuy.services.helper.afterbuy_products_helper">
+            <argument id="models" type="service"/>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
+        </service>
+
         <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
             <argument type="string">getCategory</argument>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\Helper\ShopwareArticleHelper" id="fatchip_afterbuy.services.helper.shopware_article_helper">
@@ -240,6 +251,9 @@
             <argument type="string">getArticle</argument>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
+            </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
             </call>
         </service>
 

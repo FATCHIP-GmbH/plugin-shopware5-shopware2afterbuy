@@ -75,6 +75,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
                 'ShowCatalog' => $valueCategory->getActive(),
                 'Picture' => $valueCategory->getImage(),
                 'InternalIdentifier' => $valueCategory->getInternalIdentifier(),
+                'CatalogID' => ($valueCategory->getExternalIdentifier()) ? $valueCategory->getExternalIdentifier() : $valueCategory->getInternalIdentifier(),
             ];
 
             $parentPath = array_reverse(explode('|', trim($valueCategory->getPath(), '|')));
@@ -131,5 +132,70 @@ class ShopwareCategoryHelper extends AbstractHelper {
     private function compare($cat1, $cat2): int
     {
         return ($cat1->getParentIdentifier() > $cat2->getParentIdentifier()) ? 1 : -1;
+    }
+
+    /**
+     * @param array $ids
+     * @throws \Zend_Db_Adapter_Exception
+     */
+    public function updateExternalIds(array $ids) {
+        $sql = "";
+
+        foreach ($ids as $internalId=>$externalId) {
+            $sql .= "INSERT INTO shopware.s_categories_attributes (categoryID, afterbuy_catalog_id)
+VALUES ($internalId, $externalId)
+ON duplicate key update afterbuy_catalog_id = $externalId;";
+
+        }
+
+        if(!empty($sql)) {
+            $this->db->query($sql);
+        }
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     */
+    public function getCatalogIdsFromResponse(array $response) {
+        $catalogIds = [];
+
+        if(!is_array($response)) {
+            return $catalogIds;
+        }
+
+        if(!array_key_exists('Result', $response) || !array_key_exists('NewCatalogs', $response["Result"])) {
+            return $catalogIds;
+        }
+
+        foreach($response["Result"]["NewCatalogs"] as $newCatalog) {
+            $catalogIds[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+
+            $catalogIds = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $catalogIds);
+        }
+
+        return $catalogIds;
+    }
+
+    /**
+     * @param $array
+     * @param array $ids
+     * @return array
+     */
+    public function getCatalogIdsRecursiveFromResponse($array, &$ids = []) {
+
+        if(is_array($array) && array_key_exists('NewCatalog', $array)) {
+
+            foreach ($array['NewCatalog'] as $newCatalog) {
+
+                if(is_array($newCatalog) && array_key_exists('CatalogID', $newCatalog)) {
+                    $ids[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+                }
+
+                $ids = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $ids);
+            }
+        }
+
+        return $ids;
     }
 }

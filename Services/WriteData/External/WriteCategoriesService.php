@@ -26,7 +26,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @return string
      */
-    public function put(array $valueCategories): string
+    public function put(array $valueCategories)
     {
         $catalogs = $this->transform($valueCategories);
 
@@ -56,11 +56,19 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @return string
      */
-    public function send($catalogs): string
+    public function send($catalogs)
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
 
-        return $api->updateCatalogs($catalogs);
+        $response = $api->updateCatalogs($catalogs);
+
+        $catalogIds = $this->helper->getCatalogIdsFromResponse($response);
+        $this->helper->updateExternalIds($catalogIds);
+
+        //TODO: set external identifier if available
+        //TODO: test nur auf unterster ebene
     }
+
+
 }

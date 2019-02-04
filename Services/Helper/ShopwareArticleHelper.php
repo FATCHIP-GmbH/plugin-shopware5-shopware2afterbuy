@@ -2,6 +2,8 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
+use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Configurator\Set;
@@ -39,10 +41,6 @@ class ShopwareArticleHelper extends AbstractHelper {
      */
     protected $configuratorOptions;
 
-    /**
-     * @var \Enlight_Components_Db_Adapter_Pdo_Mysql
-     */
-    protected $db;
 
     /**
      * @param array $ids
@@ -59,6 +57,178 @@ class ShopwareArticleHelper extends AbstractHelper {
         if(!empty($sql)) {
             $this->db->query($sql);
         }
+    }
+
+    public function getDefaultCustomerGroup($id) {
+        $this->customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
+            array('id' => $id)
+        );
+
+        return $this->customerGroup;
+    }
+
+    public function setSimpleArticleValues(Article $entity, \FatchipAfterbuy\ValueObjects\Article &$article, bool $netInput) {
+        $detail = $entity->getMainDetail();
+
+        if($detail->getEan()) {
+            $article->setEan($detail->getEan());
+        }
+        $article->setInternalIdentifier($detail->getNumber());
+        $article->setStockMin($detail->getStockMin());
+        $article->setStock($detail->getInStock());
+
+        $price = $detail->getPrices()->filter(function(Price $price) {
+            return $price->getCustomerGroup() === $this->customerGroup;
+        })->first();
+
+        $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+
+        $article->setPrice($price);
+
+        $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+        $article->setSupplierNumber($detail->getSupplierNumber());
+
+        $article->setVariantId($detail->getId());
+        $article->setVariantArticles(null);
+    }
+
+    public function setVariantValues(Article $entity, Detail $detail, $targetEntity, $netInput) {
+        $variant = new $targetEntity();
+
+        if($detail->getEan()) {
+            $variant->setEan($detail->getEan());
+        }
+
+        $variant->setInternalIdentifier($detail->getNumber());
+        $variant->setStockMin($detail->getStockMin());
+        $variant->setStock($detail->getInStock());
+        $variant->setSupplierNumber($detail->getSupplierNumber());
+        $variant->setVariantId($detail->getId());
+        $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+        $price = $detail->getPrices()->filter(function(Price $price) {
+            return $price->getCustomerGroup() === $this->customerGroup;
+        })->first();
+
+        $options = [];
+
+        foreach($detail->getConfiguratorOptions() as $option) {
+            /**
+             * @var Option $option
+             */
+
+            $options[$option->getGroup()->getName()] = $option->getName();
+        }
+        // we have to take care that the order of variant options stays the same
+        ksort($options);
+
+        $variant->setVariants($options);
+
+        $variant->setName($entity->getName() . ' ' . implode(" ", array_values($options)));
+
+        $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput, false);
+
+        $variant->setPrice($price);
+
+        $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+
+        return $variant;
+    }
+
+    public function assignCategories(\FatchipAfterbuy\ValueObjects\Article &$article, Article $entity) {
+        $categories = [];
+
+        foreach($entity->getCategories() as $category) {
+            /** @var Category $category */
+            if(!$category->getAttribute() || !$category->getAttribute()->getAfterbuyCatalogId()) {
+                continue;
+            }
+
+            $categories[] = $category->getAttribute()->getAfterbuyCatalogId();
+        }
+
+        $article->setExternalCategoryIds($categories);
+    }
+
+    public function assignArticleImages(Article $entity, \FatchipAfterbuy\ValueObjects\Article &$article, Detail $detail = null) {
+        if(is_null($detail)) {
+            $images = $entity->getImages();
+        } else {
+            $images = $detail->getImages();
+        }
+
+        if($images->count()) {
+            foreach($images as $index=>$image) {
+
+                if(is_null($detail)) {
+                    $path = $image->getMedia()->getPath();
+                } else {
+                    $path = $image->getParent()->getMedia()->getPath();
+                }
+
+                $url = $this->mediaService->getUrl($path);
+
+                if($image->getMain() == 1 && is_null($detail)) {
+                    $article->setMainImageUrl($url);
+
+                    $thumbnails = $image->getMedia()->getThumbnails();
+
+                    if(is_array($thumbnails)) {
+                        $thumbnail = reset($thumbnails);
+                        $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
+                    }
+
+                    $article->setMainImageThumbnailUrl($thumbnailUrl);
+                    continue;
+                }
+
+                if($index === 0 && !is_null($detail)) {
+                    $thumbnails = $image->getParent()->getMedia()->getThumbnails();
+
+                    if(is_array($thumbnails)) {
+                        $thumbnail = reset($thumbnails);
+                        $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
+                    }
+
+                    $article->setMainImageUrl($url);
+                    $article->setMainImageThumbnailUrl($thumbnailUrl);
+                    continue;
+                }
+
+
+                if((is_null($image->getChildren()) || $image->getChildren()->count() === 0) || !is_null($detail)) {
+
+                    $productPicture = new ProductPicture();
+                    $productPicture->setAltText($entity->getName() . '_' . ((int)$image->getPosition()));
+                    $productPicture->setNr($image->getPosition());
+                    $productPicture->setUrl($url);
+
+                    $article->addProductPicture($productPicture);
+                }
+            }
+        }
+    }
+
+    public function setArticleMainValues(Article $entity, $targetEntity) {
+        /**
+         * article main values
+         * @var Article $article
+         */
+        $article = new $targetEntity();
+
+        $article->setActive($entity->getActive());
+        $article->setName($entity->getName());
+        $article->setMainArticleId($entity->getId());
+
+
+        $article->setDescription($entity->getDescriptionLong());
+        $article->setShortDescription($entity->getDescription());
+
+        $article->setTax($entity->getTax()->getTax());
+
+        $article->setManufacturer($entity->getSupplier()->getName());
+
+        return $article;
     }
 
     /**
@@ -121,7 +291,6 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $options;
     }
 
-    // TODO: use identifier
     public function getDetailIDsByExternalIdentifier(): array
     {
         return $this->entityManager->createQueryBuilder()

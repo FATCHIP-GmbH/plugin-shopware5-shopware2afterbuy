@@ -49,13 +49,15 @@ class AbstractHelper {
 
     protected $db;
 
+    protected $mediaService;
+
     /**
      * @param ModelManager $entityManager
      * @param string $entity
      * @param string $entityAttributes
      * @param string $attributeGetter
      */
-    public function __construct(ModelManager $entityManager, string $entity, string $entityAttributes, string $attributeGetter) {
+    public function __construct(ModelManager $entityManager, $entity = '', $entityAttributes = '', $attributeGetter = '') {
         $this->entityManager = $entityManager;
         $this->entity = $entity;
         $this->entityAttributes = $entityAttributes;
@@ -190,6 +192,10 @@ class AbstractHelper {
         } else {
             $entity->$setter($identifier);
         }
+    }
+
+    public function initMediaService(MediaService $mediaService) {
+        $this->mediaService = $mediaService;
     }
 
     /**

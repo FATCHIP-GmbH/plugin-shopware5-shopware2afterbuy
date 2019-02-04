@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -39,184 +40,14 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $api = new ApiClient($this->apiConfig);
 
-        $products = array(
-            'Products' => array(
+        /**
+         * @var AfterbuyProductsHelper $helper
+         */
+        $helper = $this->helper;
 
-            )
-        );
+        $afterbuyProductIds = $helper->submitAfterbuySimpleProducts($data, $api);
 
-        $afterbuyProductIds = [];
-
-        //1. add simple articles
-        foreach($data as $value) {
-            /**
-             * @var \FatchipAfterbuy\ValueObjects\Article $value
-             */
-            if($value->getVariantArticles()) {
-                continue;
-            }
-
-            //TODO: into component
-            $product = array(
-              'Product' => array(
-                  'ProductIdent' => array(
-                      'ProductInsert' => 1,
-                      'Anr' => $value->getVariantId()
-                  ),
-                  'EAN' => $value->getInternalIdentifier(),
-                  'Anr' => (string) $value->getVariantId(),
-                  'Name' => $value->getName(),
-                  'ManufacturerPartNumber' => $value->getSupplierNumber(),
-                  'Description' => $value->getDescription(),
-                  'ShortDescription' => $value->getShortDescription(),
-                  'Quantity' => $value->getStock(),
-                  'UnitOfQuantity' => 'Stk',
-                  'MinimumStock' => $value->getStockMin(),
-                  'SellingPrice' => Helper::convertNumberToABString($value->getPrice()),
-                  'TaxRate' => Helper::convertNumberToABString($value->getTax()),
-                  'ProductBrand' => $value->getManufacturer(),
-               )
-            );
-
-            $products['Products'][] = $product;
-
-
-        }
-        $response = $api->updateShopProducts($products);
-
-        //TODO: handle no result or log on error
-
-        if(array_key_exists('Result', $response)) {
-
-            if (array_key_exists('ProductID', $response["Result"]["NewProducts"]["NewProduct"])) {
-                $internalArticleNumber = $response["Result"]["NewProducts"]["NewProduct"]["Anr"];
-                $afterbuyProductIds[$internalArticleNumber] = $response["Result"]["NewProducts"]["NewProduct"]["ProductID"];
-            } elseif (is_array($response["Result"]["NewProducts"]["NewProduct"][0])) {
-
-                foreach ($response["Result"]["NewProducts"]["NewProduct"] as $newProduct) {
-                    $internalArticleNumber = $newProduct["Anr"];
-                    $afterbuyProductIds[$internalArticleNumber] = $newProduct["ProductID"];
-                }
-            }
-        }
-
-        foreach ($data as $value) {
-            if(!$value->getVariantArticles()) {
-                continue;
-            }
-
-            $products = array(
-                'Products' => array(
-                )
-            );
-
-            foreach($value->getVariantArticles() as $variant) {
-
-                $variants = [];
-
-                /**
-                 * @var Article $variant
-                 */
-
-                foreach ($variant->getVariants() as $group => $option) {
-                    $variants[] = array(
-                        'AddAttribute' => array(
-                            'AttributName' => $group,
-                            'AttibutValue' => $option,
-                            'AttributTyp' => 1,
-                            'AttributRequired' => 1
-                        )
-                    );
-                }
-
-                $product = array(
-                    'Product' => array(
-                        'ProductIdent' => array(
-                            'ProductInsert' => 1,
-                            'Anr' => $variant->getVariantId()
-                        ),
-                        'Anr' => $variant->getVariantId(),
-                        'EAN' => $variant->getInternalIdentifier(),
-                        'Name' => $variant->getName(),
-                        'ManufacturerPartNumber' => $variant->getSupplierNumber(),
-                        'Description' => $variant->getDescription(),
-                        'ShortDescription' => $variant->getShortDescription(),
-                        'Quantity' => $variant->getStock(),
-                        'UnitOfQuantity' => 'Stk',
-                        'MinimumStock' => $variant->getStockMin(),
-                        'SellingPrice' => Helper::convertNumberToABString($variant->getPrice()),
-                        'TaxRate' => Helper::convertNumberToABString($variant->getTax()),
-                        'ProductBrand' => $value->getManufacturer(),
-                        'AddAttributes' => $variants
-                    )
-                );
-
-                $products['Products'][] = $product;
-            }
-
-            $variantIds = [];
-
-            $response = $api->updateShopProducts($products);
-
-            if(array_key_exists('Result', $response)) {
-
-                if (array_key_exists('ProductID', $response["Result"]["NewProducts"]["NewProduct"])) {
-                    $internalArticleNumber = $response["Result"]["NewProducts"]["NewProduct"]["Anr"];
-                    $variantIds[$internalArticleNumber] = $response["Result"]["NewProducts"]["NewProduct"]["ProductID"];
-                } elseif (is_array($response["Result"]["NewProducts"]["NewProduct"][0])) {
-
-                    foreach ($response["Result"]["NewProducts"]["NewProduct"] as $newProduct) {
-                        $internalArticleNumber = $newProduct["Anr"];
-                        $variantIds[$internalArticleNumber] = $newProduct["ProductID"];
-                    }
-                }
-            }
-
-            $afterbuyProductIds = $afterbuyProductIds + $variantIds;
-
-            //TODO: update functionality
-
-            $variantArticles = [];
-
-            foreach($value->getVariantArticles() as $variant) {
-                if(!$variant->getExternalIdentifier()) {
-                    $variant->setExternalIdentifier($afterbuyProductIds[$variant->getVariantId()]);
-                }
-
-                $variantArticles[] = array(
-                    'AddBaseProduct' => array(
-                        'ProductID' => $variant->getExternalIdentifier(),
-                        'ProductLabel' => $variant->getName(),
-                        'ProductQuantity' => $variant->getStock()
-                    )
-                );
-            }
-
-            // we have no unique base product identifier
-            // Anr 1,{$articleId}
-            // neccessary cuz articleIds and detailIds may collidate
-
-            $products['Products'] = array(
-                'Product' => array(
-                    'ProductIdent' => array(
-                        'ProductInsert' => 1,
-                        'Anr' => '1,' . $value->getMainArticleId(),
-                        'BaseProductType' => 1
-                    ),
-                    'Anr' => '1,' . $value->getMainArticleId(),
-                    'EAN' => $value->getInternalIdentifier(),
-                    'Name' => $value->getName(),
-                    'Description' => $value->getDescription(),
-                    'ShortDescription' => $value->getShortDescription(),
-                    'UnitOfQuantity' => 'Stk',
-                    'TaxRate' => Helper::convertNumberToABString($value->getTax()),
-                    'ProductBrand' => $value->getManufacturer(),
-                    'AddBaseProducts' => $variantArticles
-                )
-            );
-
-            $response = $api->updateShopProducts($products);
-        }
+        $afterbuyProductIds = $helper->submitAfterbuyVariantProducts($data, $api, $afterbuyProductIds);
 
         return $afterbuyProductIds;
     }
@@ -228,13 +59,11 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
-        //TODO: into method
 
         $this->helper->updateExternalIds($targetData);
 
-        $this->storeSubmissionDate('lastProductExport');
+        //$this->storeSubmissionDate('lastProductExport');
 
 
-       //TODO: update modDate
     }
 }

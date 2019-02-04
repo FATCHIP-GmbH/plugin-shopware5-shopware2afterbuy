@@ -82,7 +82,7 @@ class Cron implements SubscriberInterface
     {
         return array(
             'Shopware_CronJob_AfterbuyUpdateProducts' => 'updateProducts',
-            'Shopware_CronJob_AfterbuyUpdateOrders' => 'updateOrders',
+            'Shopware_CronJob_AfterbuyUpdateOrders' => 'updateOrders'
         );
     }
 
@@ -94,25 +94,37 @@ class Cron implements SubscriberInterface
                 'submitAll' => false
             )
         );
+        $output = "";
 
         $categories = $this->readCategoriesService->get($filter['categories']);
+        $output .= 'Got Categories: ' . count($categories). "\n";
         $result = $this->writeCategoriesService->put($categories);
+        $output .= 'New Categories submitted: ' . count($result). "\n";
 
         $products = $this->readProductsService->get($filter['products']);
+        $output .= 'Got Products: ' . count($products). "\n";
         $result = $this->writeProductsService->put($products);
+        $output .= 'New Products submitted: ' . count($result). "\n";
+
+        return $output;
     }
 
     public function updateOrders(\Shopware_Components_Cron_CronJob $job)
     {
         $filter = array();
+        $output = "";
 
         $orders = $this->readOrderStatusService->get($filter);
+        $output .= 'Update order status: ' . count($orders). "\n";
         $result = $this->writeOrderStatusService->put($orders);
 
         $filter = $this->writeOrderService->getOrderImportDateFilter(false);
 
         $orders = $this->readOrderService->get($filter);
+        $output .= 'Got orders: ' . count($orders). "\n";
         $result = $this->writeOrderService->put($orders);
+
+        return $output;
     }
 
 

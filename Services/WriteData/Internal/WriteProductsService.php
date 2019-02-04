@@ -11,8 +11,12 @@ use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
 use FatchipAfterbuy\ValueObjects\ProductPicture;
 use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
+use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
+use Shopware\Models\Article\Configurator\Option as ConfiguratorOption;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Article\Image as ArticleImage;
+use Shopware\Models\Article\Image\Mapping as ImageMapping;
+use Shopware\Models\Article\Image\Rule as ImageRule;
 use Shopware\Models\Attribute\Article as ArticlesAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
 use Shopware\Models\Media\Media;
@@ -157,6 +161,34 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     $image = $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
                 } else {
                     $image = $images[0];
+                }
+
+                $mapping = new ImageMapping();
+                $mapping->setImage($image);
+
+                if (is_array($valueArticle->variants) && count($valueArticle->variants) > 0) {
+                    foreach ($valueArticle->variants as $variantOption) {
+                        $optionName = $variantOption['value'];
+                        $optionGroup = $variantOption['option'];
+
+                        $group = $this->entityManager->getRepository(ConfiguratorGroup::class)->findOneBy([
+                            'name'  => $optionGroup,
+                        ]);
+
+                        /** @var ConfiguratorOption $option */
+                        $option = $this->entityManager->getRepository(ConfiguratorOption::class)->findOneBy([
+                            'name'  => $optionName,
+                            'group' => $group,
+                        ]);
+
+                        $rule = new ImageRule();
+                        $rule->setMapping($mapping);
+                        $rule->setOption($option);
+
+                        $mapping->getRules()->add($rule);
+                    }
+
+                    $image->getMappings()->add($mapping);
                 }
 
                 if ( ! $valueArticle->isMainProduct()) {

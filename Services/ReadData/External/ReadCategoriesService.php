@@ -54,6 +54,10 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             ['Picture1', 'Image'],
         ];
 
+        if ($data && ! is_array($data[0])) {
+            $data = array($data);
+        }
+
         foreach ($data as $entity) {
             /**
              * @var Category $value
@@ -94,7 +98,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         $api = new ApiClient($this->apiConfig);
 
         // do {
-        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
+        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0, $filter);
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
         // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 

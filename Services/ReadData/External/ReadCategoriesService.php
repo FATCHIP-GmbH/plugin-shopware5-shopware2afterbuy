@@ -54,6 +54,10 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             ['Picture1', 'Image'],
         ];
 
+        if ($data && ! is_array($data[0])) {
+            $data = array($data);
+        }
+
         foreach ($data as $entity) {
             /**
              * @var Category $value

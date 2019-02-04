@@ -60,20 +60,23 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param [] $catalogs
      *
-     * @return string
+     * @return array
      */
-    public function send($orders): ?string
+    public function send($orders)
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
-        $response = $api->updateOrderStatus($orders);
 
-        if ($response['CallStatus'] === 'Error') {
-            $this->logger->error('Error submitting data', $response);
+        if(is_array($orders) && count($orders)) {
+            $response = $api->updateOrderStatus($orders);
+
+            if ($response['CallStatus'] === 'Error') {
+                $this->logger->error('Error submitting data', $response);
+            }
         }
 
         $this->storeSubmissionDate('lastStatusExport');
 
-        return null;
+        return array();
     }
 }

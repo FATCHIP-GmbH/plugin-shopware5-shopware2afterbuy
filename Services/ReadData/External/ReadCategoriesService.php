@@ -94,7 +94,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         $api = new ApiClient($this->apiConfig);
 
         // do {
-        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0);
+        $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0, $filter);
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
         // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 

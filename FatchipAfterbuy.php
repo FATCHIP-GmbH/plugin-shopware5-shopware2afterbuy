@@ -12,11 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class FatchipAfterbuy extends Plugin
 {
-
-    public function init() {
-
-    }
-
     /**
     * @param ContainerBuilder $container
     */
@@ -28,6 +23,11 @@ class FatchipAfterbuy extends Plugin
         parent::build($container);
     }
 
+    /**
+     * @param InstallContext $context
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\Tools\ToolsException
+     */
     public function install(InstallContext $context)
     {
         parent::install($context);
@@ -60,14 +60,5 @@ class FatchipAfterbuy extends Plugin
             $em->persist($status);
             $em->flush();
         }
-
     }
-
-    public function afterInit()
-    {
-
-
-
-    }
-
 }

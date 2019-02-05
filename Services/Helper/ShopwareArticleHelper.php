@@ -721,6 +721,18 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $articles;
     }
 
+    public function setArticlesWithoutAnyActiveVariantToInactive()
+    {
+        $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
+                SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(active) = 0 
+                );";
 
+        Shopware()->Db()->exec($sql);
 
+        $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
+                SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(instock) = 0 
+                );";
+
+        Shopware()->Db()->exec($sql);
+    }
 }

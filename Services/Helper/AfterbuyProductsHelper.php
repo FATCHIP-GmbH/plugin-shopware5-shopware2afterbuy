@@ -6,6 +6,7 @@ use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\ValueObjects\Article;
 use FatchipAfterbuy\ValueObjects\ProductPicture;
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
 
 /**
  * Class ShopwareArticleHelper
@@ -265,4 +266,40 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $product;
     }
 
+    /**
+     * @param array        $product
+     * @param ValueArticle $valueArticle
+     */
+    public function addProductPictures(array $product, ValueArticle $valueArticle): void
+    {
+        $mainPicture = new ProductPicture();
+        $mainPicture->setNr(0);
+        $mainPicture->setUrl($product['ImageLargeURL']);
+
+        $valueArticle->addProductPicture($mainPicture);
+
+        $hasPictures =
+            array_key_exists('ProductPictures', $product)
+            && array_key_exists('ProductPicture', $product['ProductPictures']);
+        if ( ! $hasPictures) {
+            return;
+        }
+
+        $productPictures = $product['ProductPictures']['ProductPicture'];
+
+        if ( ! array_key_exists(0, $productPictures)) {
+            $productPictures = [$productPictures];
+        }
+
+        foreach ($productPictures as $productPicture) {
+
+            $valuePicture = new ProductPicture();
+            $valuePicture->setNr($productPicture['Nr']);
+            $valuePicture->setUrl($productPicture['Url']);
+            $valuePicture->setAltText($productPicture['AltText']);
+
+            $valueArticle->addProductPicture($valuePicture);
+
+        }
+    }
 }

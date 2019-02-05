@@ -79,6 +79,9 @@
             <call method="setTarget">
                 <argument type="string">FatchipAfterbuy\ValueObjects\Article</argument>
             </call>
+            <call method="initHelper">
+                <argument type="service" id="fatchip_afterbuy.services.helper.afterbuy_products_helper"/>
+            </call>
         </service>
 
         <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteProductsService" id="fatchip_afterbuy.services.write_data.internal.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">

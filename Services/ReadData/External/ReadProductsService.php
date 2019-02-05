@@ -4,10 +4,10 @@ namespace FatchipAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -60,28 +60,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
             $valueArticle->setDescription($product['Description']);
 
-            $productPictures = $product['ProductPictures']['ProductPicture'];
-
-            $mainPicture = new ProductPicture();
-            $mainPicture->setNr(0);
-            $mainPicture->setUrl($product['ImageLargeURL']);
-
-            $valueArticle->addProductPicture($mainPicture);
-
-            if ($productPictures && ! is_array($productPictures[0])) {
-                $productPictures = array($productPictures);
-            }
-
-            foreach ($productPictures as $productPicture) {
-
-                $valuePicture = new ProductPicture();
-                $valuePicture->setNr($productPicture['Nr']);
-                $valuePicture->setUrl($productPicture['Url']);
-                $valuePicture->setAltText($productPicture['AltText']);
-
-                $valueArticle->addProductPicture($valuePicture);
-
-            }
+            /** @var AfterbuyProductsHelper $helper */
+            $helper = $this->helper;
+            $helper->addProductPictures($product, $valueArticle);
 
             if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {
                 $valueArticle->setActive(true);

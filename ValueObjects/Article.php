@@ -96,7 +96,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getMainImageThumbnailUrl(): string
+    public function getMainImageThumbnailUrl(): ?string
     {
         return $this->mainImageThumbnailUrl;
     }
@@ -120,7 +120,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getMainImageUrl(): string
+    public function getMainImageUrl(): ?string
     {
         return $this->mainImageUrl;
     }

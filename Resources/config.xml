@@ -54,6 +54,7 @@
             <name>ExportAllArticles</name>
             <label lang="de">Alle Artikel exportieren</label>
             <label lang="en">exportAllArticles</label>
+            <value>true</value>
         </element>
 
         <element type="combo" >

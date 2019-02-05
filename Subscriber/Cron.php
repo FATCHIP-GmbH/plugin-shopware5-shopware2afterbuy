@@ -59,6 +59,12 @@ class Cron implements SubscriberInterface
         if($config['mainSystem'] == 2) {
             $this->readOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.external.write_orders_service');
+
+            $this->readCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_categories_service');
+            $this->writeCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_categories_service');
+
+            $this->readProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_products_service');
+            $this->writeProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_products_service');
         }
         //shopware is data carrying system otherwise
         else {

@@ -45,7 +45,11 @@ class UpdateProducts extends ShopwareCommand
 
         //if afterbuy data carrying system
         if($config['mainSystem'] == 2) {
+            $this->readCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_categories_service');
+            $this->writeCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_categories_service');
 
+            $this->readProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_products_service');
+            $this->writeProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_products_service');
         }
         //shopware is data carrying system otherwise
         else {

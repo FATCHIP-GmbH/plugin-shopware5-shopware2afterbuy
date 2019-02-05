@@ -406,6 +406,7 @@ class ShopwareOrderHelper extends AbstractHelper {
              */
 
             $detail = new Detail();
+
             $detail->setNumber($value->getExternalIdentifier());
             $detail->setTax($position->getTax());
             $detail->setQuantity($position->getQuantity());
@@ -420,7 +421,14 @@ class ShopwareOrderHelper extends AbstractHelper {
                 $detail->setStatus($this->detailStates["1"]);
             }
 
-            $detail->setArticleNumber($position->getExternalIdentifier());
+            if(!empty($position->getInternalIdentifier())) {
+                $detail->setArticleNumber($position->getInternalIdentifier());
+            }
+            else {
+                $detail->setArticleNumber($position->getExternalIdentifier());
+            }
+
+
             $detail->setArticleName($position->getName());
 
             $tax = $this->getTax($position->getTax());

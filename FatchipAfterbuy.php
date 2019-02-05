@@ -38,6 +38,12 @@ class FatchipAfterbuy extends Plugin
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
         $service->update('s_articles_attributes', 'afterbuy_id', 'string');
 
+        $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
+            'label' => 'Artikel exportieren',
+            'supportText' => 'Wenn "Alle Artikel exportieren" in den Plugineinstellungen deaktiviert ist, werden nur Artikel exportiert, für die diese Funktionalität explizit gesetzt wurde',
+            'displayInBackend' => true,
+        ]);
+
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
 
         $em = $this->container->get('models');

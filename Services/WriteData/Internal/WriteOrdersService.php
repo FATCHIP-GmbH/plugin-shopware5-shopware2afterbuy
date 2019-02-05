@@ -68,7 +68,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
 
             //fullfilled orders should not get updated
-            if($this->helper->isFullfilled($order)) {
+            if($order->getId() && $this->helper->isFullfilled($order)) {
                 continue;
             }
 

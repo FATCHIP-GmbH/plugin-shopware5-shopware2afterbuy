@@ -114,6 +114,7 @@ class ShopwareArticleHelper extends AbstractHelper {
             $variant->setEan($detail->getEan());
         }
 
+        $variant->setTax($entity->getTax()->getTax());
         $variant->setInternalIdentifier($detail->getNumber());
         $variant->setStockMin($detail->getStockMin());
         $variant->setStock($detail->getInStock());
@@ -740,7 +741,7 @@ class ShopwareArticleHelper extends AbstractHelper {
         ;
 
         if(!$exportAll) {
-            //$articles->where();
+            $articles->where('attributes.afterbuyExportEnabled = 1');
         }
 
         if(!$force) {

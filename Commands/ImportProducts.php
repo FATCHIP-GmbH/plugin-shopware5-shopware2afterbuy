@@ -75,7 +75,7 @@ EOF
             $filter = array();
         }
         else {
-            $filter = array(
+/*            $filter = array(
                 'Filter' => array(
                     'FilterName' => 'DateFilter',
                     'FilterValues' => array(
@@ -83,10 +83,27 @@ EOF
                         'FilterValue' => 'ModDate'
                     )
                 )
+            );*/
+
+            $filter = array(
+                'Filter' => array(
+                    'FilterName'   => 'ProductID',
+                    'FilterValues' => array(
+                        'FilterValue' => array(
+                            '155313626',
+                            '155313627',
+                            '155313628',
+                            '155313629',
+                            '155313630',
+                            '155313631',
+                            '155313632'
+                        ),
+                    ),
+                ),
             );
         }
 
-        $data = $this->readDataService->get([]);
+        $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);
     }
 }

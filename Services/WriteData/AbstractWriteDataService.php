@@ -6,6 +6,11 @@ use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\AbstractDataService;
 
+use Psr\Log\LoggerInterface;
+use Shopware\Components\DependencyInjection\Bridge\ModelAnnotation;
+use Shopware\Components\Model\ModelManager;
+use FatchipAfterbuy\Models\Status;
+
 class AbstractWriteDataService extends AbstractDataService {
 
     /**
@@ -27,7 +32,7 @@ class AbstractWriteDataService extends AbstractDataService {
      * @throws OptimisticLockException
      */
     public function storeSubmissionDate(string $field) {
-        $status = $this->entityManager->getRepository('\FatchipAfterbuy\Models\Status')->find(1);
+        $status = $this->entityManager->getRepository(Status::class)->find(1);
 
         $setter = Helper::getSetterByField($field);
 

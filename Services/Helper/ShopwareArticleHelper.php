@@ -265,7 +265,6 @@ class ShopwareArticleHelper extends AbstractHelper {
      * @param Article $article
      * @param Detail $detail
      * @param array $variants
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function assignVariants(Article &$article, Detail $detail, array $variants) {
         if(!empty($variants)) {
@@ -467,7 +466,6 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * @param string $supplier
      * @return Supplier|string
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getSupplier(string $supplier) {
         if(!$this->suppliers) {

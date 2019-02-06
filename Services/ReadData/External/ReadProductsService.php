@@ -4,10 +4,10 @@ namespace FatchipAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -60,40 +60,18 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
             $valueArticle->setDescription($product['Description']);
 
-            if($product['ImageLargeURL']) {
-                $mainPicture = new ProductPicture();
-                $mainPicture->setNr(0);
-                $mainPicture->setUrl($product['ImageLargeURL']);
+            /** @var AfterbuyProductsHelper $helper */
+            $helper = $this->helper;
+            $helper->addProductPictures($product, $valueArticle);
 
-                $valueArticle->addProductPicture($mainPicture);
-            }
-
-            $productPictures = [];
-
-            if(array_key_exists('ProductPictures', $product) && array_key_exists('ProductPicture', $product['ProductPictures'])) {
-                $productPictures = $product['ProductPictures']['ProductPicture'];
-            }
-
-            if ($productPictures && array_key_exists('Url', $productPictures)) {
-                if($productPictures['Url']) {
-                    $productPictures = array($productPictures);
+            // catalogs - categories
+            if (array_key_exists('Catalogs', $product) && array_key_exists('CatalogID', $product['Catalogs'])) {
+                $catalogIDs = $product['Catalogs']['CatalogID'];
+                if ( ! is_array($catalogIDs)) {
+                    $catalogIDs = [$catalogIDs];
                 }
-            }
 
-            if(is_array($productPictures) && count($productPictures)) {
-                foreach ($productPictures as $productPicture) {
-
-                    if(!$productPicture['Url']) {
-                        continue;
-                    }
-
-                    $valuePicture = new ProductPicture();
-                    $valuePicture->setNr($productPicture['Nr']);
-                    $valuePicture->setUrl($productPicture['Url']);
-                    $valuePicture->setAltText($productPicture['AltText']);
-
-                    $valueArticle->addProductPicture($valuePicture);
-                }
+                $valueArticle->setExternalCategoryIds($catalogIDs);
             }
 
             if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {

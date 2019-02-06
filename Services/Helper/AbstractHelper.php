@@ -220,11 +220,9 @@ class AbstractHelper {
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];
 
-        if(!file_exists($url)) {
+        if ( ! $contents = file_get_contents($url)) {
             return null;
         }
-
-        $contents = file_get_contents($url);
 
         /** @var MediaService $mediaService */
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');

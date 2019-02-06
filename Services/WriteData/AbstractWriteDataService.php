@@ -5,10 +5,6 @@ namespace FatchipAfterbuy\Services\WriteData;
 use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\AbstractDataService;
-
-use Psr\Log\LoggerInterface;
-use Shopware\Components\DependencyInjection\Bridge\ModelAnnotation;
-use Shopware\Components\Model\ModelManager;
 use FatchipAfterbuy\Models\Status;
 
 class AbstractWriteDataService extends AbstractDataService {
@@ -18,14 +14,12 @@ class AbstractWriteDataService extends AbstractDataService {
      */
     protected $targetRepository;
 
-
     /**
      * @param string $repo
      */
     public function setRepo(string $repo) {
         $this->targetRepository = $repo;
     }
-
 
     /**
      * @param string $field

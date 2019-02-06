@@ -4,27 +4,28 @@ namespace FatchipAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
 use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
     protected $ABCountries;
+
+    /** @var ShopwareOrderHelper $helper */
+    public $helper;
+
     /**
      * @param array $data
      * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function put(array $data) {
         $data = $this->transform($data);
         return $this->send($data);
     }
+
 
     /**
      * transforms valueObject into final structure for storage
@@ -82,10 +83,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
                 'Versandkosten' => Helper::convertNumberToABString($value->getShipping()),
 
-                //TODO: parse, may use ZFunktionsID
                 'Zahlart' => $value->getPaymentType(),
 
-                //TODO: config
                 'NoFeedback' => 0,
 
                 'NoVersandCalc' => 1,
@@ -122,8 +121,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
                 $orders[$value->getInternalIdentifier()]['ArtikelMenge_' . $i] = $position->getQuantity();
 
-
-
                 $i++;
             }
         }
@@ -134,11 +131,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
     /**
      * @param $targetData
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return array
      */
     public function send($targetData) {
-        //TODO: update attribute for submission
         $api = new ApiClient($this->apiConfig);
 
         $submitted = [];
@@ -151,7 +146,12 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             }
         }
 
-        $this->helper->setAfterBuyIds($submitted);
+        try {
+            $this->helper->setAfterBuyIds($submitted);
+        }
+        catch(\Exception $e) {
+            $this->logger->error('Error storing external order ids', $e->getMessage());
+        }
 
         return $submitted;
 

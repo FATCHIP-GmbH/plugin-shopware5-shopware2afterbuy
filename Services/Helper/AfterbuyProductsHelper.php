@@ -229,7 +229,6 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param ApiClient $api
      * @param array $afterbuyProductIds
      * @return array
-     * @throws \Exception
      */
     public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
         $products = array(
@@ -260,12 +259,17 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $products
      * @param ApiClient $api
      * @param array $afterbuyProductIds
-     * @throws \Exception
      */
     public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = []) {
 
         if(count($products['Products'])) {
-            $response = $api->updateShopProducts($products);
+
+            try {
+                $response = $api->updateShopProducts($products);
+            }
+            catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), array($e->getFile(), $products));
+            }
 
             if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response["Result"])) {
 

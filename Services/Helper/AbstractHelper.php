@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
+use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
 use FatchipAfterbuy\Components\Helper;
@@ -50,6 +51,15 @@ class AbstractHelper {
     protected $db;
 
     protected $mediaService;
+
+    protected $logger;
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
+    }
 
     /**
      * @param ModelManager $entityManager

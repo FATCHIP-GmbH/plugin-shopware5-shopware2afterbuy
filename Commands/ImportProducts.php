@@ -5,7 +5,6 @@ namespace FatchipAfterbuy\Commands;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -70,38 +69,7 @@ EOF
          * filter array is unused yet but can be implemented
          */
 
-        //TODO: set filter based on stored import date in service
-        if($input->getOption('force')) {
-            $filter = array();
-        }
-        else {
-/*            $filter = array(
-                'Filter' => array(
-                    'FilterName' => 'DateFilter',
-                    'FilterValues' => array(
-                        'DateFrom' => '10.01.2019',
-                        'FilterValue' => 'ModDate'
-                    )
-                )
-            );*/
-
-            $filter = array(
-                'Filter' => array(
-                    'FilterName'   => 'ProductID',
-                    'FilterValues' => array(
-                        'FilterValue' => array(
-                            '155313626',
-                            '155313627',
-                            '155313628',
-                            '155313629',
-                            '155313630',
-                            '155313631',
-                            '155313632'
-                        ),
-                    ),
-                ),
-            );
-        }
+        $filter = $this->writeDataService->getArticleImportDateFilter($input->getOption('force'));
 
         $data = $this->readDataService->get($filter);
         $this->writeDataService->put($data);

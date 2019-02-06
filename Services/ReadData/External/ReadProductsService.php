@@ -102,7 +102,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             $variants = [];
 
-            //TODO: assign base product id if not set
             if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product["BaseProductFlag"] != "1") {
                 $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 

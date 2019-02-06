@@ -21,10 +21,13 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     protected $isAttribute;
 
+    /** @var ShopwareCategoryHelper $helper */
+    public $helper;
+
     /**
      * @param ValueCategory[] $valueCategories
      *
-     * @return string
+     * @return array
      */
     public function put(array $valueCategories)
     {
@@ -44,17 +47,13 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     public function transform(array $valueCategories): array
     {
         $this->logger->info('Got ' . count($valueCategories) . ' items', ['Categories', 'Write', 'External']);
-
-        /** @var ShopwareCategoryHelper $helper */
-        $helper = $this->helper;
-
-        return $helper->buildAfterbuyCatalogStructure($valueCategories);
+        return $this->helper->buildAfterbuyCatalogStructure($valueCategories);
     }
 
     /**
      * @param [] $catalogs
      *
-     * @return string
+     * @return array
      */
     public function send($catalogs)
     {
@@ -64,10 +63,14 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         $response = $api->updateCatalogs($catalogs);
 
         $catalogIds = $this->helper->getCatalogIdsFromResponse($response);
-        $this->helper->updateExternalIds($catalogIds);
+
+        try {
+            $this->helper->updateExternalIds($catalogIds);
+        }
+        catch(\Exception $e) {
+            $this->logger->error('Could not store external category ids');
+        }
 
         return $catalogIds;
     }
-
-
 }

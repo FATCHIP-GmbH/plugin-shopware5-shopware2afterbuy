@@ -6,7 +6,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
 use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
 use FatchipAfterbuy\ValueObjects\Address;
-use FatchipAfterbuy\ValueObjects\Category;
 use FatchipAfterbuy\ValueObjects\Order;
 use FatchipAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Order\Detail;
@@ -104,9 +103,15 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $order->setShippingAddress($shippingAddress);
 
             $order->setCreateDate($entity->getOrderTime());
-
             $order->setShipping($entity->getInvoiceShipping());
-            $order->setShippingType($entity->getDispatch()->getName());
+
+            try {
+                $shippingType = $entity->getDispatch();
+                $order->setShippingType($shippingType->getName());
+            }
+            catch(\Exception $e) {
+                $order->setShippingType('Standard');
+            }
 
             $order->setPaymentType($entity->getPayment()->getName());
             $order->setPaymentTypeId($entity->getPayment()->getId());

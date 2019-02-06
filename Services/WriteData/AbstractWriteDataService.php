@@ -2,11 +2,9 @@
 
 namespace FatchipAfterbuy\Services\WriteData;
 
+use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\AbstractDataService;
-use Psr\Log\LoggerInterface;
-use Shopware\Components\DependencyInjection\Bridge\ModelAnnotation;
-use Shopware\Components\Model\ModelManager;
 
 class AbstractWriteDataService extends AbstractDataService {
 
@@ -23,6 +21,11 @@ class AbstractWriteDataService extends AbstractDataService {
         $this->targetRepository = $repo;
     }
 
+
+    /**
+     * @param string $field
+     * @throws OptimisticLockException
+     */
     public function storeSubmissionDate(string $field) {
         $status = $this->entityManager->getRepository('\FatchipAfterbuy\Models\Status')->find(1);
 

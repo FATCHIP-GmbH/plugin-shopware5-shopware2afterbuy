@@ -31,7 +31,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @param array $data
      * @return array
-     * @throws \Exception
      */
     public function transform(array $data) {
         /**
@@ -55,14 +54,19 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
     /**
      * @param $targetData
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return mixed     *
      */
     public function send($targetData) {
 
         $this->helper->updateExternalIds($targetData);
 
-        $this->storeSubmissionDate('lastProductExport');
+        try {
+            $this->storeSubmissionDate('lastProductExport');
+        }
+        catch (\Exception $e)
+        {
+            $this->logger->error('Error submitting update date for product import');
+        }
 
         return $targetData;
     }

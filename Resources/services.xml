@@ -236,6 +236,8 @@
             </call>
         </service>
 
+
+
         <!-- Helper -->
 
         <service class="FatchipAfterbuy\Services\Helper\ShopwareOrderHelper" id="fatchip_afterbuy.services.helper.shopware_order_helper">
@@ -250,6 +252,9 @@
 
         <service class="FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper" id="fatchip_afterbuy.services.helper.afterbuy_products_helper">
             <argument id="models" type="service"/>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
             </call>

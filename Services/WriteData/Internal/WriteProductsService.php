@@ -22,10 +22,14 @@ use Shopware\Models\Attribute\Article as ArticlesAttribute;
 use Shopware\Models\Attribute\Category as CategoryAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
 use Shopware\Models\Media\Media;
+use Zend_Db_Adapter_Exception;
 
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
 {
+
+    /** @var ShopwareArticleHelper $helper */
+    public $helper;
 
     /**
      * @param array $data
@@ -41,7 +45,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * could may be moved into separate helper
      *
      * @param ValueArticle[] $valueArticles
-     * @throws OptimisticLockException
      */
     public function transform(array $valueArticles)
     {
@@ -59,18 +62,13 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             return;
         }
 
-        /**
-         * @var ShopwareArticleHelper $helper
-         */
-        $helper = $this->helper;
-
         foreach ($valueArticles as $valueArticle) {
 
             /**
              * @var ShopwareArticle $shopwareArticle
              */
             try {
-                $shopwareArticle = $helper->getMainArticle(
+                $shopwareArticle = $this->helper->getMainArticle(
                     $valueArticle->getExternalIdentifier(),
                     $valueArticle->getName(),
                     $valueArticle->getMainArticleId()
@@ -86,7 +84,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             /**
              * @var ArticleDetail $articleDetail
              */
-            $articleDetail = $helper->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
+            $articleDetail = $this->helper->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
 
             //set main values
             $articleDetail->setLastStock($valueArticle->getStockMin());
@@ -103,15 +101,15 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
 
 
-            $helper->storePrices($articleDetail, $customerGroup, $price);
+            $this->helper->storePrices($articleDetail, $customerGroup, $price);
 
-            $shopwareArticle->setSupplier($helper->getSupplier($valueArticle->getManufacturer()));
+            $shopwareArticle->setSupplier($this->helper->getSupplier($valueArticle->getManufacturer()));
 
-            $helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
+            $this->helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
 
-            $shopwareArticle->setTax($helper->getTax($valueArticle->getTax()));
+            $shopwareArticle->setTax($this->helper->getTax($valueArticle->getTax()));
 
-            $helper->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
+            $this->helper->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
 
             $this->entityManager->persist($shopwareArticle);
 
@@ -164,12 +162,12 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
             foreach ($valueArticle->getProductPictures() as $productPicture) {
 
-                $media = $helper->createMediaImage(
+                $media = $this->helper->createMediaImage(
                     $productPicture->getUrl(),
                     'Artikel'
                 );
 
-                if(is_null($media)) {
+                if ($media === null) {
                     continue;
                 }
 
@@ -203,7 +201,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                         $optionGroup = $variantOption['option'];
 
                         $group = $this->entityManager->getRepository(ConfiguratorGroup::class)->findOneBy([
-                            'name'  => $optionGroup,
+                            'name' => $optionGroup,
                         ]);
 
                         /** @var ConfiguratorOption $option */
@@ -251,7 +249,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         }
 
         $this->storeSubmissionDate('lastProductImport');
-        $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        try {
+            $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        } catch (Zend_Db_Adapter_Exception $e) {
+        }
     }
 
     /**
@@ -310,21 +311,22 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         return $image;
     }
 
-    public function getArticleImportDateFilter($force = false) {
-        if($force) {
+    public function getArticleImportDateFilter($force = false)
+    {
+        if ($force) {
             return array();
         }
 
         /**
          * @var $lastDate Status
          */
-        $lastDate = $this->entityManager->getRepository("FatchipAfterbuy\Models\Status")->find(1);
+        $lastDate = $this->entityManager->getRepository(Status::class)->find(1);
 
-        if(!$lastDate) {
+        if ( ! $lastDate) {
             return array();
         }
 
-        if(!$lastDate->getLastProductImport()) {
+        if ( ! $lastDate->getLastProductImport()) {
             return array();
         }
 
@@ -332,12 +334,12 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $filter = array(
             'Filter' => array(
-                'FilterName' => 'DateFilter',
+                'FilterName'   => 'DateFilter',
                 'FilterValues' => array(
-                    'DateFrom' => $filterDate,
-                    'FilterValue' => 'ModDate'
-                )
-            )
+                    'DateFrom'    => $filterDate,
+                    'FilterValue' => 'ModDate',
+                ),
+            ),
         );
 
         return $filter;

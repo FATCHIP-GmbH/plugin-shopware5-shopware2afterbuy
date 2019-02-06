@@ -18,6 +18,7 @@ use Shopware\Models\Article\Image as ArticleImage;
 use Shopware\Models\Article\Image\Mapping as ImageMapping;
 use Shopware\Models\Article\Image\Rule as ImageRule;
 use Shopware\Models\Attribute\Article as ArticlesAttribute;
+use Shopware\Models\Attribute\Category as CategoryAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
 use Shopware\Models\Media\Media;
 
@@ -116,6 +117,30 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             try {
                 $this->entityManager->flush();
             } catch (OptimisticLockException $e) {
+            }
+        }
+
+        foreach ($valueArticles as $valueArticle) {
+            if ( ! $valueArticle->isMainProduct()) {
+                continue;
+            }
+
+            foreach ($valueArticle->getExternalCategoryIds() as $categoryId) {
+                /** @var CategoryAttribute $categoryAttribute */
+                $categoryAttribute = $this->entityManager->getRepository(CategoryAttribute::class)->findOneBy(
+                    ['afterbuyCatalogId' => $categoryId]
+                );
+
+                $category = $categoryAttribute->getCategory();
+
+                $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+
+                /** @var ArticlesAttribute $articleAttribute */
+                $articleAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
+                    ['afterbuyParentId' => $mainArticleId]
+                );
+
+                $articleAttribute->getArticle()->addCategory($category);
             }
         }
 

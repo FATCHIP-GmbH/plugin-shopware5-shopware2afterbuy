@@ -64,6 +64,16 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $helper = $this->helper;
             $helper->addProductPictures($product, $valueArticle);
 
+            // catalogs - categories
+            if (array_key_exists('Catalogs', $product) && array_key_exists('CatalogID', $product['Catalogs'])) {
+                $catalogIDs = $product['Catalogs']['CatalogID'];
+                if ( ! is_array($catalogIDs)) {
+                    $catalogIDs = [$catalogIDs];
+                }
+
+                $valueArticle->setExternalCategoryIds($catalogIDs);
+            }
+
             if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {
                 $valueArticle->setActive(true);
             }

@@ -31,7 +31,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @param array $data
      * @return array
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
      */
     public function transform(array $data) {
         /**

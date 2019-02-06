@@ -45,28 +45,6 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
     }
 
     /**
-     * @param Article $variant
-     * @return array
-     */
-    public function buildAfterbuyVariantOptions(Article $variant)
-    {
-        $variants = [];
-
-        foreach ($variant->getVariants() as $group => $option) {
-            $variants[] = array(
-                'AddAttribute' => array(
-                    'AttributName' => $group,
-                    'AttibutValue' => $option,
-                    'AttributTyp' => 1,
-                    'AttributRequired' => 1
-                )
-            );
-        }
-
-        return $variants;
-    }
-
-    /**
      * @param array $data
      * @param ApiClient $api
      * @param array $afterbuyProductIds
@@ -124,7 +102,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'SellingPrice' => Helper::convertNumberToABString($variant->getPrice()),
                 'TaxRate' => Helper::convertNumberToABString($variant->getTax()),
                 'ProductBrand' => $value->getManufacturer(),
-                'AddAttributes' => $variants,
+                'AddAttributes' => array(
+                    'UpdateAction' => 3,
+                    'AddAttribut' => $variants
+                ),
                 'ImageLargeURL' => $variant->getMainImageUrl(),
                 'ImageSmallURL' => $variant->getMainImageThumbnailUrl(),
                 'ProductPictures' => $variantImages
@@ -132,6 +113,26 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         );
 
         return $product;
+    }
+
+    /**
+     * @param Article $variant
+     * @return array
+     */
+    public function buildAfterbuyVariantOptions(Article $variant)
+    {
+        $variants = [];
+
+        foreach ($variant->getVariants() as $group => $option) {
+            $variants[] = array(
+                'AttributName' => $group,
+                'AttributValue' => $option,
+                'AttributTyp' => 1,
+                'AttributRequired' => 1
+            );
+        }
+
+        return $variants;
     }
 
     /**

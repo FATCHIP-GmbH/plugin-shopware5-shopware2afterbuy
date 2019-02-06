@@ -85,6 +85,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                     if(array_key_exists('ShopProductDetails', $position)) {
                         $orderPosition->setExternalIdentifier($position["ShopProductDetails"]["ProductID"]);
+                        $orderPosition->setInternalIdentifier($position['ShopProductDetails']['EAN']);
                     } else {
                         $orderPosition->setExternalIdentifier($position["ItemID"]);
                     }

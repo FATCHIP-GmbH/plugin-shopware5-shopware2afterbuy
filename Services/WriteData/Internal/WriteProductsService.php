@@ -219,7 +219,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             // TODO: handle error
         }
 
-        //TODO: update modDate
+        $this->storeSubmissionDate('lastProductImport');
+        $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
     }
 
     /**

@@ -68,13 +68,24 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $valueArticle->setActive(true);
             }
 
+            $variants = [];
 
-            if (array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product)) {
+            //TODO: assign base product id if not set
+            if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product["BaseProductFlag"] != "1") {
+                $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
+
+                $variants[] = array(
+                    'option' => 'Variation',
+                    'value'  => $product['Name'],
+                );
+            }
+
+            if (array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product["BaseProductFlag"] != "1") {
                 $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 
 
                 if (array_key_exists('AttributName', $product['Attributes']['Attribut'])) {
-                    $variants = array(
+                    $variants[] = array(
                         'option' => $product['Attributes']['Attribut']['AttributName'],
                         'value'  => $product['Attributes']['Attribut']['AttributValue'],
                     );
@@ -90,10 +101,10 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                         $variants[] = $variant;
                     }
                 }
+            }
 
-                if ( ! empty($variants)) {
-                    $valueArticle->setVariants($variants);
-                }
+            if ( ! empty($variants) && $product["BaseProductFlag"] != "1") {
+                $valueArticle->setVariants($variants);
             }
 
             $valueArticles[] = $valueArticle;

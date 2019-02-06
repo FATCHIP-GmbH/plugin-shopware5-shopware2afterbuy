@@ -44,7 +44,6 @@ class ShopwareArticleHelper extends AbstractHelper {
 
     /**
      * @param array $ids
-     * @throws \Zend_Db_Adapter_Exception
      */
     public function updateExternalIds(array $ids) {
         $sql = "";
@@ -59,6 +58,10 @@ class ShopwareArticleHelper extends AbstractHelper {
         }
     }
 
+    /**
+     * @param $id
+     * @return object|null
+     */
     public function getDefaultCustomerGroup($id) {
         $this->customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
             array('id' => $id)
@@ -67,6 +70,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $this->customerGroup;
     }
 
+    /**
+     * @param Article $entity
+     * @param \FatchipAfterbuy\ValueObjects\Article $article
+     * @param bool $netInput
+     */
     public function setSimpleArticleValues(Article $entity, \FatchipAfterbuy\ValueObjects\Article &$article, bool $netInput) {
         $detail = $entity->getMainDetail();
 
@@ -92,6 +100,13 @@ class ShopwareArticleHelper extends AbstractHelper {
         $article->setVariantArticles(null);
     }
 
+    /**
+     * @param Article $entity
+     * @param Detail $detail
+     * @param $targetEntity
+     * @param $netInput
+     * @return mixed
+     */
     public function setVariantValues(Article $entity, Detail $detail, $targetEntity, $netInput) {
         $variant = new $targetEntity();
 
@@ -99,6 +114,7 @@ class ShopwareArticleHelper extends AbstractHelper {
             $variant->setEan($detail->getEan());
         }
 
+        $variant->setTax($entity->getTax()->getTax());
         $variant->setInternalIdentifier($detail->getNumber());
         $variant->setStockMin($detail->getStockMin());
         $variant->setStock($detail->getInStock());
@@ -135,6 +151,10 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $variant;
     }
 
+    /**
+     * @param \FatchipAfterbuy\ValueObjects\Article $article
+     * @param Article $entity
+     */
     public function assignCategories(\FatchipAfterbuy\ValueObjects\Article &$article, Article $entity) {
         $categories = [];
 
@@ -150,6 +170,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         $article->setExternalCategoryIds($categories);
     }
 
+    /**
+     * @param Article $entity
+     * @param \FatchipAfterbuy\ValueObjects\Article $article
+     * @param Detail|null $detail
+     */
     public function assignArticleImages(Article $entity, \FatchipAfterbuy\ValueObjects\Article &$article, Detail $detail = null) {
         if(is_null($detail)) {
             $images = $entity->getImages();
@@ -209,6 +234,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         }
     }
 
+    /**
+     * @param Article $entity
+     * @param $targetEntity
+     * @return Article
+     */
     public function setArticleMainValues(Article $entity, $targetEntity) {
         /**
          * article main values
@@ -291,6 +321,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $options;
     }
 
+    /**
+     * @return array
+     */
     public function getDetailIDsByExternalIdentifier(): array
     {
         return $this->entityManager->createQueryBuilder()
@@ -299,7 +332,6 @@ class ShopwareArticleHelper extends AbstractHelper {
             ->getQuery()
             ->getResult();
     }
-
 
     /**
      *
@@ -435,6 +467,7 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * @param string $supplier
      * @return Supplier|string
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getSupplier(string $supplier) {
         if(!$this->suppliers) {
@@ -594,6 +627,7 @@ class ShopwareArticleHelper extends AbstractHelper {
     /**
      * @param array $variants
      * @return array
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getAssignableConfiguratorGroups(array $variants) {
         if(!$this->configuratorGroups) {
@@ -692,7 +726,7 @@ class ShopwareArticleHelper extends AbstractHelper {
      * @param bool $force
      * @return array|\Doctrine\ORM\QueryBuilder
      */
-    public function getUnexportedArticles($force = false) {
+    public function getUnexportedArticles($force = false, $exportAll = true) {
         $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
 
         if($lastExport) {
@@ -704,12 +738,14 @@ class ShopwareArticleHelper extends AbstractHelper {
             ->from('\Shopware\Models\Article\Article', 'articles', 'articles.id')
             ->leftJoin('articles.details', 'details')
             ->leftJoin('details.attribute', 'attributes')
-
         ;
 
+        if(!$exportAll) {
+            $articles->where('attributes.afterbuyExportEnabled = 1');
+        }
+
         if(!$force) {
-            $articles = $articles->where("attributes.afterbuyId IS NULL OR attributes.afterbuyId = ''")
-            ->orWhere("articles.changed >= :lastExport")
+            $articles = $articles->andWhere("(attributes.afterbuyId IS NULL OR attributes.afterbuyId = '') OR articles.changed >= :lastExport")
             ->setParameters(array('lastExport' => $lastExport))
             ;
         }
@@ -721,6 +757,21 @@ class ShopwareArticleHelper extends AbstractHelper {
         return $articles;
     }
 
+    /**
+     * @throws \Zend_Db_Adapter_Exception
+     */
+    public function setArticlesWithoutAnyActiveVariantToInactive()
+    {
+        $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
+                SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(active) = 0 
+                );";
 
+        Shopware()->Db()->exec($sql);
 
+        $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
+                SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(instock) = 0 
+                );";
+
+        Shopware()->Db()->exec($sql);
+    }
 }

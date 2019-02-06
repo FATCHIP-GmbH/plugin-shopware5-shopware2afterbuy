@@ -12,11 +12,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 class FatchipAfterbuy extends Plugin
 {
-
-    public function init() {
-
-    }
-
     /**
     * @param ContainerBuilder $container
     */
@@ -28,6 +23,11 @@ class FatchipAfterbuy extends Plugin
         parent::build($container);
     }
 
+    /**
+     * @param InstallContext $context
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\Tools\ToolsException
+     */
     public function install(InstallContext $context)
     {
         parent::install($context);
@@ -37,6 +37,12 @@ class FatchipAfterbuy extends Plugin
         $service->update('s_order_attributes', 'afterbuy_order_id', 'string');
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
         $service->update('s_articles_attributes', 'afterbuy_id', 'string');
+
+        $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
+            'label' => 'Artikel exportieren',
+            'supportText' => 'Wenn "Alle Artikel exportieren" in den Plugineinstellungen deaktiviert ist, werden nur Artikel exportiert, für die diese Funktionalität explizit gesetzt wurde',
+            'displayInBackend' => true,
+        ]);
 
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
 
@@ -60,14 +66,5 @@ class FatchipAfterbuy extends Plugin
             $em->persist($status);
             $em->flush();
         }
-
     }
-
-    public function afterInit()
-    {
-
-
-
-    }
-
 }

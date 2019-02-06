@@ -14,6 +14,10 @@ use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
  */
 class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
+    /**
+     * @param array $images
+     * @return array
+     */
     public function buildAfterbuyImages(array $images) {
         $productPictures = [];
 
@@ -41,24 +45,13 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $productPictures;
     }
 
-    public function buildAfterbuyVariantOptions(Article $variant)
-    {
-        $variants = [];
-
-        foreach ($variant->getVariants() as $group => $option) {
-            $variants[] = array(
-                'AddAttribute' => array(
-                    'AttributName' => $group,
-                    'AttibutValue' => $option,
-                    'AttributTyp' => 1,
-                    'AttributRequired' => 1
-                )
-            );
-        }
-
-        return $variants;
-    }
-
+    /**
+     * @param array $data
+     * @param ApiClient $api
+     * @param array $afterbuyProductIds
+     * @return array
+     * @throws \Exception
+     */
     public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
         foreach ($data as $value) {
 
@@ -83,6 +76,11 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $afterbuyProductIds;
     }
 
+    /**
+     * @param Article $variant
+     * @param Article $value
+     * @return array
+     */
     public function buildAfterbuyVariant(Article $variant, Article $value) {
         $variants = $this->buildAfterbuyVariantOptions($variant);
         $variantImages = $this->buildAfterbuyImages($variant->getProductPictures());
@@ -105,7 +103,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'SellingPrice' => Helper::convertNumberToABString($variant->getPrice()),
                 'TaxRate' => Helper::convertNumberToABString($variant->getTax()),
                 'ProductBrand' => $value->getManufacturer(),
-                'AddAttributes' => $variants,
+                'AddAttributes' => array(
+                    'UpdateAction' => 3,
+                    'AddAttribut' => $variants
+                ),
                 'ImageLargeURL' => $variant->getMainImageUrl(),
                 'ImageSmallURL' => $variant->getMainImageThumbnailUrl(),
                 'ProductPictures' => $variantImages
@@ -115,6 +116,31 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $product;
     }
 
+    /**
+     * @param Article $variant
+     * @return array
+     */
+    public function buildAfterbuyVariantOptions(Article $variant)
+    {
+        $variants = [];
+
+        foreach ($variant->getVariants() as $group => $option) {
+            $variants[] = array(
+                'AttributName' => $group,
+                'AttributValue' => $option,
+                'AttributTyp' => 1,
+                'AttributRequired' => 1
+            );
+        }
+
+        return $variants;
+    }
+
+    /**
+     * @param Article $value
+     * @param array $afterbuyProductIds
+     * @return mixed
+     */
     public function buildAfterbuyVariantBaseProduct(Article $value, array $afterbuyProductIds) {
         $variantArticles = $this->buildAfterbuyVariantAssignment($value, $afterbuyProductIds);
         $productImages = $this->buildAfterbuyImages($value->getProductPictures());
@@ -148,6 +174,11 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $products;
     }
 
+    /**
+     * @param Article $value
+     * @param array $afterbuyProductIds
+     * @return array
+     */
     public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds) {
 
         $variantArticles = [];
@@ -173,6 +204,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $variantArticles;
     }
 
+    /**
+     * @param $ids
+     * @return array
+     */
     public function buildAfterbuyCatalogAssignment($ids) {
         $catalogs = [];
 
@@ -190,6 +225,13 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $assignment;
     }
 
+    /**
+     * @param array $data
+     * @param ApiClient $api
+     * @param array $afterbuyProductIds
+     * @return array
+     * @throws \Exception
+     */
     public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
         $products = array(
             'Products' => array(
@@ -215,6 +257,12 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         return $afterbuyProductIds;
     }
 
+    /**
+     * @param array $products
+     * @param ApiClient $api
+     * @param array $afterbuyProductIds
+     * @throws \Exception
+     */
     public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = []) {
 
         if(count($products['Products'])) {
@@ -236,6 +284,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         }
     }
 
+    /**
+     * @param Article $value
+     * @return array
+     */
     public function buildAfterbuySimpleProduct(Article $value) {
         $product = array(
             'Product' => array(

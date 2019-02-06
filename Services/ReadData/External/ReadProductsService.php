@@ -60,27 +60,40 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
             $valueArticle->setDescription($product['Description']);
 
-            $productPictures = $product['ProductPictures']['ProductPicture'];
+            if($product['ImageLargeURL']) {
+                $mainPicture = new ProductPicture();
+                $mainPicture->setNr(0);
+                $mainPicture->setUrl($product['ImageLargeURL']);
 
-            $mainPicture = new ProductPicture();
-            $mainPicture->setNr(0);
-            $mainPicture->setUrl($product['ImageLargeURL']);
-
-            $valueArticle->addProductPicture($mainPicture);
-
-            if ($productPictures && ! is_array($productPictures[0])) {
-                $productPictures = array($productPictures);
+                $valueArticle->addProductPicture($mainPicture);
             }
 
-            foreach ($productPictures as $productPicture) {
+            $productPictures = [];
 
-                $valuePicture = new ProductPicture();
-                $valuePicture->setNr($productPicture['Nr']);
-                $valuePicture->setUrl($productPicture['Url']);
-                $valuePicture->setAltText($productPicture['AltText']);
+            if(array_key_exists('ProductPictures', $product) && array_key_exists('ProductPicture', $product['ProductPictures'])) {
+                $productPictures = $product['ProductPictures']['ProductPicture'];
+            }
 
-                $valueArticle->addProductPicture($valuePicture);
+            if ($productPictures && array_key_exists('Url', $productPictures)) {
+                if($productPictures['Url']) {
+                    $productPictures = array($productPictures);
+                }
+            }
 
+            if(is_array($productPictures) && count($productPictures)) {
+                foreach ($productPictures as $productPicture) {
+
+                    if(!$productPicture['Url']) {
+                        continue;
+                    }
+
+                    $valuePicture = new ProductPicture();
+                    $valuePicture->setNr($productPicture['Nr']);
+                    $valuePicture->setUrl($productPicture['Url']);
+                    $valuePicture->setAltText($productPicture['AltText']);
+
+                    $valueArticle->addProductPicture($valuePicture);
+                }
             }
 
             if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {

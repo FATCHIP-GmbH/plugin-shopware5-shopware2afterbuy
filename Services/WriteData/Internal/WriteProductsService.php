@@ -142,6 +142,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     'Artikel'
                 );
 
+                if(is_null($media)) {
+                    continue;
+                }
+
                 /** @var ArticleDetail $articleDetail */
                 $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
                     ['number' => $valueArticle->getExternalIdentifier()]

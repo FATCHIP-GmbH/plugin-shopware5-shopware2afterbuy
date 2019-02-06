@@ -10,7 +10,7 @@ use FatchipAfterbuy\Models\Status;
 class AbstractWriteDataService extends AbstractDataService {
 
     /**
-     * @var ModelEntity
+     * @var string
      */
     protected $targetRepository;
 

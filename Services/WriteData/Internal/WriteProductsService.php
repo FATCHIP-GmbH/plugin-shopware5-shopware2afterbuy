@@ -4,6 +4,7 @@ namespace FatchipAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
+use FatchipAfterbuy\Models\Status;
 use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
 use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
 use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
@@ -40,6 +41,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * could may be moved into separate helper
      *
      * @param ValueArticle[] $valueArticles
+     * @throws OptimisticLockException
      */
     public function transform(array $valueArticles)
     {
@@ -166,6 +168,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     $productPicture->getUrl(),
                     'Artikel'
                 );
+
+                if(is_null($media)) {
+                    continue;
+                }
 
                 /** @var ArticleDetail $articleDetail */
                 $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
@@ -302,5 +308,38 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         }
 
         return $image;
+    }
+
+    public function getArticleImportDateFilter($force = false) {
+        if($force) {
+            return array();
+        }
+
+        /**
+         * @var $lastDate Status
+         */
+        $lastDate = $this->entityManager->getRepository("FatchipAfterbuy\Models\Status")->find(1);
+
+        if(!$lastDate) {
+            return array();
+        }
+
+        if(!$lastDate->getLastProductImport()) {
+            return array();
+        }
+
+        $filterDate = date_format($lastDate->getLastProductImport(), 'd.m.Y H:i:s');
+
+        $filter = array(
+            'Filter' => array(
+                'FilterName' => 'DateFilter',
+                'FilterValues' => array(
+                    'DateFrom' => $filterDate,
+                    'FilterValue' => 'ModDate'
+                )
+            )
+        );
+
+        return $filter;
     }
 }

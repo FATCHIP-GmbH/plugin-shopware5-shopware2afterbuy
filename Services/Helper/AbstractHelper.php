@@ -204,11 +204,16 @@ class AbstractHelper {
      *
      * @return Media
      */
-    public function createMediaImage($url, $albumName): Media
+    public function createMediaImage($url, $albumName): ?Media
     {
         $path_info = pathinfo($url);
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];
+
+        if(!file_exists($url)) {
+            return null;
+        }
+
         $contents = file_get_contents($url);
 
         /** @var MediaService $mediaService */

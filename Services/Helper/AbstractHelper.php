@@ -54,6 +54,8 @@ class AbstractHelper {
 
     protected $logger;
 
+    public $mediaStreamContext;
+
     /**
      * @param LoggerInterface $logger
      */
@@ -206,6 +208,9 @@ class AbstractHelper {
 
     public function initMediaService(MediaService $mediaService) {
         $this->mediaService = $mediaService;
+
+        //added to allow download with self signed certificates
+        $this->mediaStreamContext = stream_context_create([ 'http' => [ 'method' => 'GET' ], 'ssl' => [ 'verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed'=> true ]]);
     }
 
     /**
@@ -220,7 +225,7 @@ class AbstractHelper {
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];
 
-        if ( ! $contents = file_get_contents($url)) {
+        if ( ! $contents = file_get_contents($url, false, $this->mediaStreamContext)) {
             return null;
         }
 

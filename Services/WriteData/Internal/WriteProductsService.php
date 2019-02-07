@@ -131,6 +131,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     ['afterbuyCatalogId' => $categoryId]
                 );
 
+                if($categoryAttribute === null) {
+                    continue;
+                }
+
                 $category = $categoryAttribute->getCategory();
 
                 $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
@@ -192,8 +196,22 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     $image = $images[0];
                 }
 
-                $mapping = new ImageMapping();
-                $mapping->setImage($image);
+                $mapping = null;
+
+                if($image->getId()) {
+                    $mapping = $this->entityManager->createQueryBuilder()
+                        ->select(['mapping'])
+                        ->from(ArticleImage\Mapping::class, 'mapping')
+                        ->where('mapping.imageId = :image')
+                        ->setParameters(array('image' => $image->getId()))
+                        ->setMaxResults(1)
+                        ->getQuery()->getOneOrNullResult();
+                }
+
+                if(!$mapping) {
+                    $mapping = new ImageMapping();
+                    $mapping->setImage($image);
+                }
 
                 if (is_array($valueArticle->variants) && count($valueArticle->variants) > 0) {
                     foreach ($valueArticle->variants as $variantOption) {
@@ -210,14 +228,35 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                             'group' => $group,
                         ]);
 
-                        $rule = new ImageRule();
-                        $rule->setMapping($mapping);
-                        $rule->setOption($option);
+                        $rule = null;
 
-                        $mapping->getRules()->add($rule);
+                        if($mapping->getId()) {
+                            $rule = $this->entityManager->createQueryBuilder()
+                                ->select(['rule'])
+                                ->from(ArticleImage\Rule::class, 'rule')
+                                ->where('rule.mappingId = :mapping')
+                                ->andWhere('rule.optionId = :option')
+                                ->setParameters(array('mapping' => $mapping->getId(), 'option' => $option->getId()))
+                                ->setMaxResults(1)
+                                ->getQuery()->getOneOrNullResult();
+                        }
+
+                        if(!$rule) {
+                            $rule = new ImageRule();
+                            $rule->setMapping($mapping);
+                            $rule->setOption($option);
+                            $mapping->getRules()->add($rule);
+                        }
                     }
 
-                    $image->getMappings()->add($mapping);
+                    //TODO: check if we have to persist mapping if updated
+                    //TODO: only add mapping if missing
+                    if(!$mapping->getId()) {
+                        $image->getMappings()->add($mapping);
+                    }
+                    else {
+                        $this->entityManager->persist($mapping);
+                    }
                 }
 
                 if ( ! $valueArticle->isMainProduct()) {

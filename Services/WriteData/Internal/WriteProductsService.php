@@ -148,6 +148,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             }
         }
 
+        $mappings = [];
+
         foreach ($valueArticles as $valueArticle) {
 
             $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
@@ -185,10 +187,22 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
                 // all images, assigned to current article with current media
                 /** @var ArticleImage[] $images */
-                $images = $imageRepo->findBy([
-                    'mediaId'   => $media->getId(),
-                    'articleId' => $mainDetail->getArticleId(),
-                ]);
+
+                if($articleDetail && $articleDetail->getArticle()) {
+                    $images = $imageRepo->findBy([
+                        'mediaId' => $media->getId(),
+                        'articleId' => $articleDetail->getArticle()->getId(),
+                    ]);
+                }
+                elseif($mainDetail && $mainDetail->getArticleId()) {
+                    $images = $imageRepo->findBy([
+                        'mediaId' => $media->getId(),
+                        'articleId' => $mainDetail->getArticleId(),
+                    ]);
+                }
+                else {
+                    $images = array();
+                }
 
                 if (count($images) === 0) {
                     $image = $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
@@ -198,19 +212,32 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
                 $mapping = null;
 
+                //TODO: we need to find unpersisted mappings!
                 if($image->getId()) {
-                    $mapping = $this->entityManager->createQueryBuilder()
-                        ->select(['mapping'])
-                        ->from(ArticleImage\Mapping::class, 'mapping')
-                        ->where('mapping.imageId = :image')
-                        ->setParameters(array('image' => $image->getId()))
-                        ->setMaxResults(1)
-                        ->getQuery()->getOneOrNullResult();
+                    //get mapping from cache
+                    if(array_key_exists($image->getId(), $mappings)) {
+                        $mapping = $mappings[$image->getId()];
+                    }
+
+                    if(!$mapping) {
+                        $mapping = $this->entityManager->createQueryBuilder()
+                            ->select(['mapping'])
+                            ->from(ArticleImage\Mapping::class, 'mapping')
+                            ->where('mapping.imageId = :image')
+                            ->setParameters(array('image' => $image->getId()))
+                            ->setMaxResults(1)
+                            ->getQuery()->getOneOrNullResult();
+                    }
                 }
 
                 if(!$mapping) {
                     $mapping = new ImageMapping();
                     $mapping->setImage($image);
+                }
+
+                //we have to cache the mappings, otherwise we will not be able to find them if unflushed
+                if($image->getId()) {
+                    $mappings[$image->getId()] = $mapping;
                 }
 
                 if (is_array($valueArticle->variants) && count($valueArticle->variants) > 0) {
@@ -249,9 +276,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                         }
                     }
 
-                    //TODO: check if we have to persist mapping if updated
-                    //TODO: only add mapping if missing
-                    if(!$mapping->getId()) {
+                    if(!$image->getMappings()->count()) {
                         $image->getMappings()->add($mapping);
                     }
                     else {

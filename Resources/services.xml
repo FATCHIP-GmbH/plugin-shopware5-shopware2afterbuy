@@ -284,6 +284,9 @@
             <call method="initMediaService">
                 <argument type="service" id="shopware_media.media_service"/>
             </call>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
         </service>
 
         <!-- Logger -->
@@ -295,11 +298,6 @@
             <call method="pushProcessor">
                 <argument type="service" id="monolog.processor.uid" />
             </call>
-            <!--
-            <call method="setFormatter">
-                <argument type="service" id="myproject_mycommand.logger.formatter"/>
-            </call>
-            -->
         </service>
 
         <service id="afterbuy.logger" class="Shopware\Components\Logger">

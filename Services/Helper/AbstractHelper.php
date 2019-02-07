@@ -11,6 +11,7 @@ use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelRepository;
+use Shopware\Models\Article\Image;
 use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
 use Shopware\Models\Media\Repository as MediaRepository;
@@ -206,11 +207,33 @@ class AbstractHelper {
         }
     }
 
+    /**
+     * @param $url
+     * @return bool|string
+     */
+    function grab_image($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $raw = curl_exec($ch);
+
+        if($error = curl_error($ch)) {
+            $this->logger->warning($error, array($url));
+            return false;
+        }
+
+        curl_close($ch);
+
+        return $raw;
+    }
+
     public function initMediaService(MediaService $mediaService) {
         $this->mediaService = $mediaService;
-
-        //added to allow download with self signed certificates
-        $this->mediaStreamContext = stream_context_create([ 'http' => [ 'method' => 'GET' ], 'ssl' => [ 'verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed'=> true ]]);
     }
 
     /**
@@ -225,7 +248,7 @@ class AbstractHelper {
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];
 
-        if ( ! $contents = file_get_contents($url, false, $this->mediaStreamContext)) {
+        if ( ! $contents = $this->grab_image($url)) {
             return null;
         }
 
@@ -247,6 +270,8 @@ class AbstractHelper {
         $album = $albumRepo->findOneBy(['name' => $albumName]);
         // TODO: handle missing album
 
+        $filesize = $mediaService->getSize($path);
+
         $media = new Media();
         $media->setAlbumId($album->getId());
         $media->setDescription('');
@@ -259,7 +284,7 @@ class AbstractHelper {
         $media->setUserId(0);
         $media->setName($filename);
         $media->setPath($path);
-        $media->setFileSize($mediaService->getSize($path));
+        $media->setFileSize($filesize);
         $media->setExtension($path_info['extension']);
         $media->setType(Media::TYPE_IMAGE);
 

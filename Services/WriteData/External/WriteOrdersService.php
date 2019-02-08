@@ -36,7 +36,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
     public function transform(array $data) {
 
-        $this->logger->info("Storing " . count($data) . " items.", array("Categories", "Write", "Internal"));
+        $this->logger->debug("Storing " . count($data) . " items.", array($data));
 
         $orders = [];
 

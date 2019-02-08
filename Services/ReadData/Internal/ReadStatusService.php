@@ -25,6 +25,8 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
 
     public function transform(array $orders): array
     {
+        $this->logger->debug('Receiving updated orders from shop', $orders);
+
         if(empty($orders)) {
             return array();
         }
@@ -35,6 +37,10 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
             /**
              * @var Order $order
              */
+
+            if(!$order->getAttribute()->getAfterbuyOrderId()) {
+                continue;
+            }
 
             $status = new OrderStatus();
             $status->setAfterbuyOrderId($order->getAttribute()->getAfterbuyOrderId());

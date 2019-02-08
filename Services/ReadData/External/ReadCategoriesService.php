@@ -31,6 +31,8 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function transform(array $data)
     {
+        $this->logger->debug('Receiving categories from afterbuy', $data);
+
         if ($this->targetEntity === null) {
 
             $this->logger->error('No target entity defined!', array('Categories', 'Read', 'External'));
@@ -74,8 +76,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             if ($value->isValid()) {
                 $targetData[] = $value;
             } else {
-                // TODO: log error message
-                // throw new RuntimeException('value is not valid');
+                $this->logger->error('Error submitting category', array($entity));
             }
         }
 
@@ -92,18 +93,19 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function read(array $filter): array
     {
-        // $pageNumber = 0;
-
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
 
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0, $filter);
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
-        // } while ($catalogsResult['Result']['HasMoreCatalogs']);
 
         if ( ! $catalogs) {
             $this->logger->error('No data received', array('Categories', 'Read', 'External'));
+        }
+
+        if($catalogs === null) {
+            $catalogs = [];
         }
 
         return $catalogs;

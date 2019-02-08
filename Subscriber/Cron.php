@@ -106,12 +106,14 @@ class Cron implements SubscriberInterface
         $categories = $this->readCategoriesService->get($filter['categories']);
         $output .= 'Got Categories: ' . count($categories). "\n";
         $result = $this->writeCategoriesService->put($categories);
-        $output .= 'New Categories submitted: ' . count($result). "\n";
+
+        if(method_exists($this->writeProductsService, "getArticleImportDateFilter")) {
+            $filter['products'] = $this->writeProductsService->getArticleImportDateFilter();
+        }
 
         $products = $this->readProductsService->get($filter['products']);
         $output .= 'Got Products: ' . count($products). "\n";
         $result = $this->writeProductsService->put($products);
-        $output .= 'New Products submitted: ' . count($result). "\n";
 
         return $output;
     }
@@ -127,7 +129,9 @@ class Cron implements SubscriberInterface
             $result = $this->writeOrderStatusService->put($orders);
         }
 
-        $filter = $this->writeOrderService->getOrderImportDateFilter(false);
+        if(method_exists($this->writeOrderService, "getOrderImportDateFilter")) {
+            $filter = $this->writeOrderService->getOrderImportDateFilter(false);
+        }
 
         $orders = $this->readOrderService->get($filter);
         $output .= 'Got orders: ' . count($orders). "\n";

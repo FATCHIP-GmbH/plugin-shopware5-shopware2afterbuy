@@ -7,6 +7,7 @@
             <name>mainSystem</name>
             <label lang="de">datenführendes System</label>
             <label lang="en">data-carrying system</label>
+            <description>Als Identifyer der jeweiligen Inhalte werden die IDs des jeweils führenden Systems genutzt. Von einer nachträglichen Änderung dieser Option ist abzusehen, da Inhalte möglicherweise dupliziert werden.</description>
             <store>
                 <option>
                     <value>1</value>

@@ -77,6 +77,8 @@ EOF
         $filter = [];
 
         $data = $this->readDataService->get($filter);
-        $this->writeDataService->put($data);
+        $output->writeln('Got ' . count($data) . ' Categgories');
+        $result = $this->writeDataService->put($data);
+        $output->writeln('New Categories created: ' . count($result));
     }
 }

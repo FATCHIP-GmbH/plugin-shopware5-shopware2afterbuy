@@ -26,7 +26,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     public function put(array $data)
     {
-        $this->transform($data);
+        return $this->transform($data);
     }
 
     /**
@@ -65,12 +65,12 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());
 
-            if ($valueCategory->getImage()) {
+/*            if ($valueCategory->getImage()) {
                 // TODO: create config for album name
                 $media = $this->helper->createMediaImage($valueCategory->getImage(), 'Kategorien');
 
                 $shopwareCategory->setMedia($media);
-            }
+            }*/
 
             $this->entityManager->persist($shopwareCategory);
 
@@ -80,6 +80,8 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
                 // TODO: log error
             }
         }
+
+        return $valueCategories;
     }
 
     /**
@@ -89,5 +91,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     public function send($targetData)
     {
+        return $targetData;
     }
 }

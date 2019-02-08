@@ -33,6 +33,8 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      */
     public function transform(array $products): array
     {
+        $this->logger->debug('Receiving products from afterbuy', $products);
+
         if ($this->targetEntity === null) {
             return array();
         }

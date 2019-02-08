@@ -41,6 +41,13 @@ class ShopwareArticleHelper extends AbstractHelper {
      */
     protected $configuratorOptions;
 
+    public function fixMissingAttribute(Detail $detail) {
+        $attr = new \Shopware\Models\Attribute\Article();
+        $detail->setAttribute($attr);
+        $this->entityManager->persist($detail);
+        $this->entityManager->flush();
+    }
+
 
     /**
      * @param array $ids
@@ -49,7 +56,9 @@ class ShopwareArticleHelper extends AbstractHelper {
         $sql = "";
 
         foreach ($ids as $internalId=>$externalId) {
-            $sql .= "UPDATE s_articles_attributes SET afterbuy_id = $externalId WHERE articledetailsID = $internalId;";
+            $sql .= "INSERT INTO s_articles_attributes (articledetailsID, afterbuy_id, articleID)
+VALUES ($internalId, $externalId,NULL)
+ON duplicate key update afterbuy_id = $externalId;";
 
         }
 
@@ -185,10 +194,15 @@ class ShopwareArticleHelper extends AbstractHelper {
         if($images->count()) {
             foreach($images as $index=>$image) {
 
-                if(is_null($detail)) {
-                    $path = $image->getMedia()->getPath();
-                } else {
-                    $path = $image->getParent()->getMedia()->getPath();
+                try{
+                    if (is_null($detail)) {
+                        $path = $image->getMedia()->getPath();
+                    } else {
+                        $path = $image->getParent()->getMedia()->getPath();
+                    }
+                }
+                catch(\Exception $e) {
+                    continue;
                 }
 
                 $url = $this->mediaService->getUrl($path);
@@ -756,20 +770,18 @@ class ShopwareArticleHelper extends AbstractHelper {
     }
 
     /**
-     * @throws \Zend_Db_Adapter_Exception
      */
     public function setArticlesWithoutAnyActiveVariantToInactive()
     {
         $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
-                SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(active) = 0 
-                );";
-
-        Shopware()->Db()->exec($sql);
-
-        $sql = "UPDATE s_articles SET active = 0 WHERE id IN (
                 SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(instock) = 0 
                 );";
 
-        Shopware()->Db()->exec($sql);
+        try {
+            Shopware()->Db()->exec($sql);
+        }
+        catch(\Exception $e) {
+            $this->logger->error('Error setting articles without any active variant to inactive');
+        }
     }
 }

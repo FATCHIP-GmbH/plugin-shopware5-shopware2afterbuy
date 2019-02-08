@@ -72,6 +72,7 @@ EOF
         $filter = $this->writeDataService->getArticleImportDateFilter($input->getOption('force'));
 
         $data = $this->readDataService->get($filter);
+        $output->writeln('Got ' . count($data) . ' Products');
         $this->writeDataService->put($data);
     }
 }

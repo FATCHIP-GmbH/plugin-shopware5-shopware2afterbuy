@@ -33,6 +33,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @return array
      */
     public function transform(array $data) {
+        $this->logger->debug("Storing " . count($data) . " items.", array($data));
         /**
          * @var Group $customerGroup
          */
@@ -60,12 +61,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $this->helper->updateExternalIds($targetData);
 
-        try {
-            $this->storeSubmissionDate('lastProductExport');
-        }
-        catch (\Exception $e)
-        {
-            $this->logger->error('Error submitting update date for product import');
+        $this->storeSubmissionDate('lastProductExport');
+
+        if(!is_array($targetData)) {
+            $targetData = array();
         }
 
         return $targetData;

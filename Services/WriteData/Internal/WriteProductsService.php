@@ -15,6 +15,7 @@ use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
 use Shopware\Models\Article\Configurator\Option as ConfiguratorOption;
 use Shopware\Models\Article\Detail as ArticleDetail;
+use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Image as ArticleImage;
 use Shopware\Models\Article\Image\Mapping as ImageMapping;
 use Shopware\Models\Article\Image\Rule as ImageRule;
@@ -37,7 +38,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
     public function put(array $data)
     {
         $this->transform($data);
-        $this->send($data);
+        return $this->send($data);
     }
 
     /**
@@ -48,6 +49,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      */
     public function transform(array $valueArticles)
     {
+        $this->logger->debug('Importing articles', $valueArticles);
+
         /**
          * @var CustomerGroup $customerGroup
          */
@@ -74,7 +77,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     $valueArticle->getMainArticleId()
                 );
             } catch (OptimisticLockException $e) {
-                // TODO: correct error handling. This is NOT the correct place to handle such kind of errors. This should be done directly where the flush takes place
+                $this->logger->error('Error creating article', array($valueArticle));
+                continue;
             }
 
             if ( ! $shopwareArticle) {
@@ -120,6 +124,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             }
         }
 
+        //Category Association
+        //TODO: refactor
         foreach ($valueArticles as $valueArticle) {
             if ( ! $valueArticle->isMainProduct()) {
                 continue;
@@ -140,14 +146,18 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
 
                 /** @var ArticlesAttribute $articleAttribute */
-                $articleAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
-                    ['afterbuyParentId' => $mainArticleId]
+                $articleDetail = $this->entityManager->getRepository(Detail::class)->findOneBy(
+                    ['number' => $mainArticleId]
                 );
 
-                $articleAttribute->getArticle()->addCategory($category);
+                if($article = $articleDetail->getArticle()) {
+                    $article->addCategory($category);
+                }
             }
         }
 
+        //Image Association
+        //TODO: refactor
         $mappings = [];
 
         foreach ($valueArticles as $valueArticle) {
@@ -212,7 +222,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
                 $mapping = null;
 
-                //TODO: we need to find unpersisted mappings!
                 if($image->getId()) {
                     //get mapping from cache
                     if(array_key_exists($image->getId(), $mappings)) {
@@ -305,18 +314,16 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      */
     public function send($targetData)
     {
-        // TODO: necessary? We flush already earlier
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle error
+            $this->logger->error('Error storing products', $targetData);
         }
 
         $this->storeSubmissionDate('lastProductImport');
-        try {
-            $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
-        } catch (Zend_Db_Adapter_Exception $e) {
-        }
+        $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+
+        return $targetData;
     }
 
     /**

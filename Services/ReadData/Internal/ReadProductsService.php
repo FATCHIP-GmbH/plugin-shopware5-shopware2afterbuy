@@ -38,6 +38,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @throws \Exception
      */
     public function transform(array $data) {
+        $this->logger->debug('Receiving products from shop', $data);
 
         /**
          * @var ShopwareArticleHelper $helper
@@ -72,6 +73,10 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $article->setInternalIdentifier('AB' . $entity->getMainDetail()->getNumber());
 
                 foreach ($entity->getDetails() as $detail) {
+
+                    if($detail->getAttribute() === null) {
+                        $this->helper->fixMissingAttribute($detail);
+                    }
 
                     $variant = $helper->setVariantValues($entity, $detail, $this->targetEntity, $netInput);
 

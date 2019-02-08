@@ -96,7 +96,9 @@ EOF
             $result = $this->writeOrderStatusService->put($orders);
         }
 
-        $filter = $this->writeOrderService->getOrderImportDateFilter(false);
+        if(method_exists($this->writeOrderService, "getOrderImportDateFilter")) {
+            $filter = $this->writeOrderService->getOrderImportDateFilter(false);
+        }
 
         $orders = $this->readOrderService->get($filter);
         $output->writeln('Got Orders: ' . count($orders));

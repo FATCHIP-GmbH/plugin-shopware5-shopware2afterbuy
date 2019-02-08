@@ -29,6 +29,8 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @return array|null
      */
     public function transform(array $data) {
+        $this->logger->debug('Receiving orders from shop', $data);
+
         if($this->targetEntity === null) {
 
             return null;

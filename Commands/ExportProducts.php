@@ -76,6 +76,7 @@ EOF
         }
 
         $data = $this->readDataService->get($filter);
+        $output->writeln('Got Products: ' . count($data));
         $this->writeDataService->put($data);
     }
 }

@@ -46,7 +46,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     public function transform(array $valueCategories): array
     {
-        $this->logger->info('Got ' . count($valueCategories) . ' items', ['Categories', 'Write', 'External']);
+        $this->logger->debug('Got ' . count($valueCategories) . ' items', [$valueCategories]);
         return $this->helper->buildAfterbuyCatalogStructure($valueCategories);
     }
 
@@ -70,6 +70,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         catch(\Exception $e) {
             $this->logger->error('Could not store external category ids');
         }
+
 
         return $catalogIds;
     }

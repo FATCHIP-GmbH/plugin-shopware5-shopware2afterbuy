@@ -99,11 +99,13 @@ EOF
         $categories = $this->readCategoriesService->get($filter);
         $output->writeln('Got Categories: ' . count($categories));
         $result = $this->writeCategoriesService->put($categories);
-        $output->writeln('New Categories submitted: ' . count($result));
+
+        if(method_exists($this->writeProductsService, "getArticleImportDateFilter")) {
+            $filter['products'] = $this->writeProductsService->getArticleImportDateFilter();
+        }
 
         $products = $this->readProductsService->get($filter['products']);
         $output->writeln('Got Products: ' . count($products));
         $result = $this->writeProductsService->put($products);
-        $output->writeln('New Products submitted: ' . count($result));
     }
 }

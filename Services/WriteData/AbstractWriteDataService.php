@@ -2,7 +2,6 @@
 
 namespace FatchipAfterbuy\Services\WriteData;
 
-use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Services\AbstractDataService;
 use FatchipAfterbuy\Models\Status;
@@ -23,16 +22,19 @@ class AbstractWriteDataService extends AbstractDataService {
 
     /**
      * @param string $field
-     * @throws OptimisticLockException
      */
     public function storeSubmissionDate(string $field) {
         $status = $this->entityManager->getRepository(Status::class)->find(1);
 
         $setter = Helper::getSetterByField($field);
 
-        $status->$setter(new \DateTime());
-
-        $this->entityManager->persist($status);
-        $this->entityManager->flush();
+        try {
+            $status->$setter(new \DateTime());
+            $this->entityManager->persist($status);
+            $this->entityManager->flush();
+        }
+        catch(\Exception $e) {
+            $this->logger->error('Error updating submission date', array($field));
+        }
     }
 }

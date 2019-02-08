@@ -77,6 +77,8 @@ EOF
         $filter = array();
 
         $data = $this->readDataService->get($filter);
-        $this->writeDataService->put($data);
+        $output->writeln('Got Orders: ' . count($data));
+        $result = $this->writeDataService->put($data);
+        $output->writeln('New orders submitted: ' . count($result));
     }
 }

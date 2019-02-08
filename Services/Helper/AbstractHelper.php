@@ -278,7 +278,7 @@ class AbstractHelper {
         try {
             $media->setCreated(new DateTime());
         } catch (Exception $e) {
-            // TODO: handle exception
+            $this->logger->error('Error while creating media', array($url));
         }
         $media->setAlbum($album);
         $media->setUserId(0);

@@ -43,6 +43,8 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      */
     public function transform(array $shopwareCategories): array
     {
+        $this->logger->debug('Receiving categories from shop', $shopwareCategories);
+
         if ($this->targetEntity === null) {
 
             $this->logger->error('No target entity defined!', ['Categories', 'Read', 'Internal']);
@@ -83,7 +85,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             if ($valueCategory->isValid()) {
                 $valueCategories[] = $valueCategory;
             } else {
-                // TODO: log error message
+                $this->logger->error('Error storing category', array($valueCategory));
             }
         }
 

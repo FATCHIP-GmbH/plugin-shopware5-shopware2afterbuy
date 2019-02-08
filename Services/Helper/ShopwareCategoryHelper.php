@@ -141,11 +141,15 @@ class ShopwareCategoryHelper extends AbstractHelper {
     public function updateExternalIds(array $ids) {
         $sql = "";
 
+        //hotfix to avoid category duplicates
         foreach ($ids as $internalId=>$externalId) {
-            $sql .= "INSERT INTO shopware.s_categories_attributes (categoryID, afterbuy_catalog_id)
+            $sql .= "UPDATE s_categories_attributes SET afterbuy_catalog_id = $externalId WHERE afterbuy_catalog_id = $internalId;";
+        }
+
+        foreach ($ids as $internalId=>$externalId) {
+            $sql .= "INSERT INTO s_categories_attributes (categoryID, afterbuy_catalog_id)
 VALUES ($internalId, $externalId)
 ON duplicate key update afterbuy_catalog_id = $externalId;";
-
         }
 
         if(!empty($sql)) {
@@ -169,9 +173,21 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
         }
 
         foreach($response["Result"]["NewCatalogs"] as $newCatalog) {
-            $catalogIds[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+            if(array_key_exists(1, $newCatalog)) {
+                foreach ($newCatalog as $sub) {
 
-            $catalogIds = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $catalogIds);
+                    if(array_key_exists('CatalogID', $sub) && array_key_exists('CatalogIDRequested', $sub)) {
+                        $catalogIds[$sub["CatalogIDRequested"]] = $sub["CatalogID"];
+                    }
+
+                    $catalogIds = $this->getCatalogIdsRecursiveFromResponse($sub, $catalogIds);
+                }
+            }
+            else {
+                $catalogIds[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+
+                $catalogIds = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $catalogIds);
+            }
         }
 
         return $catalogIds;

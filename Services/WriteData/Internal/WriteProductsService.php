@@ -20,6 +20,7 @@ use Shopware\Models\Article\Image as ArticleImage;
 use Shopware\Models\Article\Image\Mapping as ImageMapping;
 use Shopware\Models\Article\Image\Rule as ImageRule;
 use Shopware\Models\Attribute\Article as ArticlesAttribute;
+use Shopware\Models\Attribute\Article;
 use Shopware\Models\Attribute\Category as CategoryAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
 use Shopware\Models\Media\Media;
@@ -150,7 +151,13 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     ['number' => $mainArticleId]
                 );
 
-                if($article = $articleDetail->getArticle()) {
+                if($articleDetail === null) {
+                    $articleDetail = $this->entityManager->getRepository(Article::class)->findOneBy(
+                        ['afterbuyParentId' => $mainArticleId]
+                    );
+                }
+
+                if($articleDetail && $article = $articleDetail->getArticle()) {
                     $article->addCategory($category);
                 }
             }

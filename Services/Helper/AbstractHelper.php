@@ -244,6 +244,10 @@ class AbstractHelper {
      */
     public function createMediaImage($url, $albumName): ?Media
     {
+        if(!$url) {
+            return null;
+        }
+
         $path_info = pathinfo($url);
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];

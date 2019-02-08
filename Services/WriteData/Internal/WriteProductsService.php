@@ -177,11 +177,14 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             );
 
             if ( ! $attribute) {
-                // no attribute with given mainArticleId
-                continue;
+                $mainDetail = $this->entityManager->getRepository(Detail::class)->findOneBy(
+                    ['number' => $mainArticleId]
+                );
+            }
+            else {
+                $mainDetail = $attribute->getArticle()->getMainDetail();
             }
 
-            $mainDetail = $attribute->getArticle()->getMainDetail();
 
             foreach ($valueArticle->getProductPictures() as $productPicture) {
 

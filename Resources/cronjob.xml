@@ -6,7 +6,7 @@
         <name>Sync Afterbuy Orders</name>
         <action>Shopware_CronJob_AfterbuyUpdateOrders</action>
         <active>false</active>
-        <interval>600</interval>
+        <interval>300</interval>
         <disableOnError>false</disableOnError>
     </cronjob>
     <cronjob>

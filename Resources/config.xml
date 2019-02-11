@@ -3,7 +3,13 @@
         xsi:noNamespaceSchemaLocation="../../../../engine/Shopware/Components/Plugin/schema/config.xsd">
 
     <elements>
-        <element type="select" >
+        <element type="button">
+            <name>Spacer1</name>
+            <label>Allgemeine Einstellungen</label>
+            <value>1</value>
+        </element>
+
+        <element type="select" required="true">
             <name>mainSystem</name>
             <label lang="de">datenführendes System</label>
             <label lang="en">data-carrying system</label>
@@ -21,34 +27,35 @@
                 </option>
             </store>
         </element>
-        <element type="text" >
+        <element type="text" required="true">
             <name>partnerId</name>
             <label lang="de">Afterbuy Partner-ID</label>
             <label lang="en">Afterbuy Partner-ID</label>
             <value>110931</value>
         </element>
-        <element type="text" >
+        <element type="text" required="true">
             <name>partnerPassword</name>
             <label lang="de">Afterbuy Partner-Passwort</label>
             <label lang="en">Afterbuy Partner-Password</label>
             <value>h=wRLW)WGW(z7o=XcytHe9ZUZ</value>
         </element>
-        <element type="text" >
+        <element type="text" required="true">
             <name>userName</name>
             <label lang="de">Afterbuy User</label>
             <label lang="en">Afterbuy User</label>
             <value>fatchip</value>
         </element>
-        <element type="text" >
+        <element type="text" required="true">
             <name>userPassword</name>
             <label lang="de">Afterbuy User-Passwort</label>
             <label lang="en">Afterbuy User-Password</label>
             <value>fc2afterbuy</value>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>targetShop</name>
             <label lang="de">Zielshop für Bestellungen</label>
             <label lang="en">target shop for orders</label>
+            <description>Ist Shopware das führende System, werden zu importierende Bestellungen diesem Shop zugeordnet.</description>
             <store>Shopware.apps.Base.store.Shop</store>
         </element>
         <element type="boolean">
@@ -56,118 +63,124 @@
             <label lang="de">Alle Artikel exportieren</label>
             <label lang="en">exportAllArticles</label>
             <value>true</value>
+            <description>Ist Shopware das führende System, werden entweder alle or nur ausgewählte Artikel an Afterbuy übertragen.</description>
         </element>
 
-        <element type="combo" >
+        <element type="button">
+            <name>Spacer2</name>
+            <label>Bestellimporteinstellungen</label>
+            <value>1</value>
+        </element>
+        <element type="combo" required="true">
             <name>paymentINVOICE</name>
             <label lang="de">Zahlungsart INVOICE</label>
             <label lang="en">Payment INVOICE</label>
+
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCREDIT_CARD</name>
             <label lang="de">Zahlungsart CREDIT_CARD</label>
             <label lang="en">Payment CREDIT_CARD</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentDIRECT_DEBIT</name>
             <label lang="de">Zahlungsart DIRECT_DEBIT</label>
             <label lang="en">Payment DIRECT_DEBIT</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentTRANSFER</name>
             <label lang="de">Zahlungsart TRANSFER</label>
             <label lang="en">Payment TRANSFER</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCASH_PAID</name>
             <label lang="de">Zahlungsart CASH_PAID</label>
             <label lang="en">Payment CASH_PAID</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCASH_ON_DELIVERY</name>
             <label lang="de">Zahlungsart CASH_ON_DELIVERY</label>
             <label lang="en">Payment CASH_ON_DELIVERY</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentPAYPAL</name>
             <label lang="de">Zahlungsart PAYPAL</label>
             <label lang="en">Payment PAYPAL</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentINVOICE_TRANSFER</name>
             <label lang="de">Zahlungsart INVOICE_TRANSFER</label>
             <label lang="en">Payment INVOICE_TRANSFER</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCLICKANDBUY</name>
             <label lang="de">Zahlungsart CLICKANDBUY</label>
             <label lang="en">Payment CLICKANDBUY</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentEXPRESS_CREDITWORTHINESS</name>
             <label lang="de">Zahlungsart EXPRESS_CREDITWORTHINESS</label>
             <label lang="en">Payment EXPRESS_CREDITWORTHINESS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentPAYNET</name>
             <label lang="de">Zahlungsart PAYNET</label>
             <label lang="en">Payment PAYNET</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCOD_CREDITWORTHINESS</name>
             <label lang="de">Zahlungsart COD_CREDITWORTHINESS</label>
             <label lang="en">Payment COD_CREDITWORTHINESS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentEBAY_EXPRESS</name>
             <label lang="de">Zahlungsart EBAY_EXPRESS</label>
             <label lang="en">Payment EBAY_EXPRESS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentMONEYBOOKERS</name>
             <label lang="de">Zahlungsart MONEYBOOKERS</label>
             <label lang="en">Payment MONEYBOOKERS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentCREDIT_CARD_MB</name>
             <label lang="de">Zahlungsart CREDIT_CARD_MB</label>
             <label lang="en">Payment CREDIT_CARD_MB</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentDIRECT_DEBIT_MB</name>
             <label lang="de">Zahlungsart DIRECT_DEBIT_MB</label>
             <label lang="en">Payment DIRECT_DEBIT_MB</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>paymentOTHERS</name>
             <label lang="de">Zahlungsart OTHERS</label>
             <label lang="en">Payment OTHERS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>shipping</name>
             <label lang="de">Versandart</label>
             <label lang="en">Shipping type</label>
             <store>Shopware.apps.Base.store.Dispatch</store>
         </element>
-        <element type="combo" >
+        <element type="combo" required="true">
             <name>customerGroup</name>
             <label lang="de">Kundengruppe</label>
             <label lang="en">Customer group</label>

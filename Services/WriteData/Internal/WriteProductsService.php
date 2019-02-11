@@ -327,7 +327,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @return array
      */
-    public function send(array $targetData): array
+    public function send($targetData): array
     {
         try {
             $this->entityManager->flush();

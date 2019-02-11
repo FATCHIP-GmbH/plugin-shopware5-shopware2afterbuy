@@ -20,5 +20,5 @@ interface WriteDataInterface {
      * @param $targetData
      * @return mixed
      */
-    public function send(array $targetData);
+    public function send($targetData);
 }

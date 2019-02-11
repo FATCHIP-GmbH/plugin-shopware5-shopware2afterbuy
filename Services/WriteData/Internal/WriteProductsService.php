@@ -2,6 +2,7 @@
 
 namespace FatchipAfterbuy\Services\WriteData\Internal;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\Models\Status;
@@ -15,16 +16,13 @@ use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
 use Shopware\Models\Article\Configurator\Option as ConfiguratorOption;
 use Shopware\Models\Article\Detail as ArticleDetail;
-use Shopware\Models\Article\Detail;
 use Shopware\Models\Article\Image as ArticleImage;
 use Shopware\Models\Article\Image\Mapping as ImageMapping;
 use Shopware\Models\Article\Image\Rule as ImageRule;
 use Shopware\Models\Attribute\Article as ArticlesAttribute;
-use Shopware\Models\Attribute\Article;
 use Shopware\Models\Attribute\Category as CategoryAttribute;
 use Shopware\Models\Customer\Group as CustomerGroup;
 use Shopware\Models\Media\Media;
-use Zend_Db_Adapter_Exception;
 
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
@@ -35,10 +33,13 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
     /**
      * @param array $data
+     *
+     * @return array
      */
-    public function put(array $data)
+    public function put(array $data): array
     {
         $this->transform($data);
+
         return $this->send($data);
     }
 
@@ -52,9 +53,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
     {
         $this->logger->debug('Importing articles', $valueArticles);
 
-        /**
-         * @var CustomerGroup $customerGroup
-         */
+        /** @var CustomerGroup $customerGroup */
         $customerGroup = $this->entityManager->getRepository(CustomerGroup::class)->findOneBy(
             array('id' => $this->config['customerGroup'])
         );
@@ -68,9 +67,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         foreach ($valueArticles as $valueArticle) {
 
-            /**
-             * @var ShopwareArticle $shopwareArticle
-             */
+            /** @var ShopwareArticle $shopwareArticle */
             try {
                 $shopwareArticle = $this->helper->getMainArticle(
                     $valueArticle->getExternalIdentifier(),
@@ -86,9 +83,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 continue;
             }
 
-            /**
-             * @var ArticleDetail $articleDetail
-             */
+            /** @var ArticleDetail $articleDetail */
             $articleDetail = $this->helper->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
 
             //set main values
@@ -138,7 +133,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                     ['afterbuyCatalogId' => $categoryId]
                 );
 
-                if($categoryAttribute === null) {
+                if ($categoryAttribute === null) {
                     continue;
                 }
 
@@ -147,17 +142,17 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
 
                 /** @var ArticlesAttribute $articleAttribute */
-                $articleDetail = $this->entityManager->getRepository(Detail::class)->findOneBy(
+                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
                     ['number' => $mainArticleId]
                 );
 
-                if($articleDetail === null) {
-                    $articleDetail = $this->entityManager->getRepository(Article::class)->findOneBy(
+                if ($articleDetail === null) {
+                    $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
                 }
 
-                if($articleDetail && $article = $articleDetail->getArticle()) {
+                if ($articleDetail && $article = $articleDetail->getArticle()) {
                     $article->addCategory($category);
                 }
             }
@@ -177,11 +172,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             );
 
             if ( ! $attribute) {
-                $mainDetail = $this->entityManager->getRepository(Detail::class)->findOneBy(
+                $mainDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
                     ['number' => $mainArticleId]
                 );
-            }
-            else {
+            } else {
                 $mainDetail = $attribute->getArticle()->getMainDetail();
             }
 
@@ -208,19 +202,17 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                 // all images, assigned to current article with current media
                 /** @var ArticleImage[] $images */
 
-                if($articleDetail && $articleDetail->getArticle()) {
+                if ($articleDetail && $articleDetail->getArticle()) {
                     $images = $imageRepo->findBy([
-                        'mediaId' => $media->getId(),
+                        'mediaId'   => $media->getId(),
                         'articleId' => $articleDetail->getArticle()->getId(),
                     ]);
-                }
-                elseif($mainDetail && $mainDetail->getArticleId()) {
+                } elseif ($mainDetail && $mainDetail->getArticleId()) {
                     $images = $imageRepo->findBy([
-                        'mediaId' => $media->getId(),
+                        'mediaId'   => $media->getId(),
                         'articleId' => $mainDetail->getArticleId(),
                     ]);
-                }
-                else {
+                } else {
                     $images = array();
                 }
 
@@ -232,30 +224,36 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
                 $mapping = null;
 
-                if($image->getId()) {
+                if ($image->getId()) {
                     //get mapping from cache
-                    if(array_key_exists($image->getId(), $mappings)) {
+                    if (array_key_exists($image->getId(), $mappings)) {
                         $mapping = $mappings[$image->getId()];
                     }
 
-                    if(!$mapping) {
-                        $mapping = $this->entityManager->createQueryBuilder()
+                    if ( ! $mapping) {
+                        $query = $this->entityManager->createQueryBuilder()
                             ->select(['mapping'])
-                            ->from(ArticleImage\Mapping::class, 'mapping')
+                            ->from(ImageMapping::class, 'mapping')
                             ->where('mapping.imageId = :image')
                             ->setParameters(array('image' => $image->getId()))
                             ->setMaxResults(1)
-                            ->getQuery()->getOneOrNullResult();
+                            ->getQuery();
+
+                        try {
+                            $mapping = $query->getOneOrNullResult();
+                        } catch (NonUniqueResultException $e) {
+                            // TODO: handle exception
+                        }
                     }
                 }
 
-                if(!$mapping) {
+                if ( ! $mapping) {
                     $mapping = new ImageMapping();
                     $mapping->setImage($image);
                 }
 
-                //we have to cache the mappings, otherwise we will not be able to find them if unflushed
-                if($image->getId()) {
+                //we have to cache the mappings, otherwise we will not be able to find them if not flushed
+                if ($image->getId()) {
                     $mappings[$image->getId()] = $mapping;
                 }
 
@@ -276,18 +274,24 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
                         $rule = null;
 
-                        if($mapping->getId()) {
-                            $rule = $this->entityManager->createQueryBuilder()
+                        if ($mapping->getId()) {
+                            $query = $this->entityManager->createQueryBuilder()
                                 ->select(['rule'])
-                                ->from(ArticleImage\Rule::class, 'rule')
+                                ->from(ImageRule::class, 'rule')
                                 ->where('rule.mappingId = :mapping')
                                 ->andWhere('rule.optionId = :option')
                                 ->setParameters(array('mapping' => $mapping->getId(), 'option' => $option->getId()))
                                 ->setMaxResults(1)
-                                ->getQuery()->getOneOrNullResult();
+                                ->getQuery();
+
+                            try {
+                                $rule = $query->getOneOrNullResult();
+                            } catch (NonUniqueResultException $e) {
+                                // TODO: handle exception
+                            }
                         }
 
-                        if(!$rule) {
+                        if ( ! $rule) {
                             $rule = new ImageRule();
                             $rule->setMapping($mapping);
                             $rule->setOption($option);
@@ -295,10 +299,9 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
                         }
                     }
 
-                    if(!$image->getMappings()->count()) {
+                    if ( ! $image->getMappings()->count()) {
                         $image->getMappings()->add($mapping);
-                    }
-                    else {
+                    } else {
                         $this->entityManager->persist($mapping);
                     }
                 }
@@ -320,9 +323,11 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
 
     /**
-     * @param $targetData
+     * @param array $targetData
+     *
+     * @return array
      */
-    public function send($targetData)
+    public function send(array $targetData): array
     {
         try {
             $this->entityManager->flush();
@@ -398,9 +403,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             return array();
         }
 
-        /**
-         * @var $lastDate Status
-         */
+        /** @var $lastDate Status */
         $lastDate = $this->entityManager->getRepository(Status::class)->find(1);
 
         if ( ! $lastDate) {

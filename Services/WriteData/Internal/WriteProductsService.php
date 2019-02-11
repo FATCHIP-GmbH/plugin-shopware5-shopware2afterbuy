@@ -67,43 +67,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
         $this->helper->importArticle($valueArticles, $netInput, $customerGroup);
 
-        //Category Association
-        //TODO: refactor
-        foreach ($valueArticles as $valueArticle) {
-            if ( ! $valueArticle->isMainProduct()) {
-                continue;
-            }
-
-            foreach ($valueArticle->getExternalCategoryIds() as $categoryId) {
-                /** @var CategoryAttribute $categoryAttribute */
-                $categoryAttribute = $this->entityManager->getRepository(CategoryAttribute::class)->findOneBy(
-                    ['afterbuyCatalogId' => $categoryId]
-                );
-
-                if ($categoryAttribute === null) {
-                    continue;
-                }
-
-                $category = $categoryAttribute->getCategory();
-
-                $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
-
-                /** @var ArticlesAttribute $articleAttribute */
-                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
-                    ['number' => $mainArticleId]
-                );
-
-                if ($articleDetail === null) {
-                    $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
-                        ['afterbuyParentId' => $mainArticleId]
-                    );
-                }
-
-                if ($articleDetail && $article = $articleDetail->getArticle()) {
-                    $article->addCategory($category);
-                }
-            }
-        }
+        // Category Association
+        $this->helper->associateCategories($valueArticles);
 
         //Image Association
         //TODO: refactor

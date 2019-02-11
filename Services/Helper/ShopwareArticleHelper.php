@@ -852,4 +852,47 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
         }
     }
+
+    /**
+     * @param array $valueArticles
+     */
+    public function associateCategories(array $valueArticles): void
+    {
+        foreach ($valueArticles as $valueArticle) {
+            if ( ! $valueArticle->isMainProduct()) {
+                continue;
+            }
+
+            foreach ($valueArticle->getExternalCategoryIds() as $categoryId) {
+                /** @var CategoryAttribute $categoryAttribute */
+                $categoryAttribute =
+                    $this->entityManager->getRepository(CategoryAttribute::class)->findOneBy(
+                        ['afterbuyCatalogId' => $categoryId]
+                    );
+
+                if ($categoryAttribute === null) {
+                    continue;
+                }
+
+                $category = $categoryAttribute->getCategory();
+
+                $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+
+                /** @var ArticleDetail $articleDetail */
+                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+                    ['number' => $mainArticleId]
+                );
+
+                if ($articleDetail === null) {
+                    $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+                        ['afterbuyParentId' => $mainArticleId]
+                    );
+                }
+
+                if ($articleDetail && $article = $articleDetail->getArticle()) {
+                    $article->addCategory($category);
+                }
+            }
+        }
+    }
 }

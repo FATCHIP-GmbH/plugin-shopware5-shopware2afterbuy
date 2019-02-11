@@ -784,4 +784,72 @@ ON duplicate key update afterbuy_id = $externalId;";
             $this->logger->error('Error setting articles without any active variant to inactive');
         }
     }
+
+    /**
+     * @param array $valueArticles
+     * @param bool $netInput
+     * @param Group $customerGroup
+     */
+    public function importArticle(
+        array $valueArticles,
+        bool $netInput,
+        Group $customerGroup
+    ): void {
+        foreach ($valueArticles as $valueArticle) {
+
+            /** @var Article $shopwareArticle */
+            try {
+                $shopwareArticle = $this->getMainArticle(
+                    $valueArticle->getExternalIdentifier(),
+                    $valueArticle->getName(),
+                    $valueArticle->getMainArticleId()
+                );
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error creating article', array($valueArticle));
+                continue;
+            }
+
+            if ( ! $shopwareArticle) {
+                continue;
+            }
+
+            /** @var Detail $articleDetail */
+            $articleDetail =
+                $this->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
+
+            //set main values
+            $articleDetail->setLastStock($valueArticle->getStockMin());
+            $shopwareArticle->setName($valueArticle->getName());
+            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+            $articleDetail->setInStock($valueArticle->getStock());
+            $articleDetail->setEan($valueArticle->getEan());
+
+            if ($valueArticle->isActive()) {
+                $articleDetail->setActive(1);
+                $shopwareArticle->setActive(true);
+            }
+
+            $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
+
+
+            $this->storePrices($articleDetail, $customerGroup, $price);
+
+            $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
+
+            $this->getArticleAttributes($shopwareArticle, $articleDetail,
+                $valueArticle->getMainArticleId());
+
+            $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
+
+            $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
+
+            $this->entityManager->persist($shopwareArticle);
+
+            //have to flush cuz parent is not getting found otherwise
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+            }
+        }
+    }
 }

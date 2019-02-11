@@ -65,60 +65,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             return;
         }
 
-        foreach ($valueArticles as $valueArticle) {
-
-            /** @var ShopwareArticle $shopwareArticle */
-            try {
-                $shopwareArticle = $this->helper->getMainArticle(
-                    $valueArticle->getExternalIdentifier(),
-                    $valueArticle->getName(),
-                    $valueArticle->getMainArticleId()
-                );
-            } catch (OptimisticLockException $e) {
-                $this->logger->error('Error creating article', array($valueArticle));
-                continue;
-            }
-
-            if ( ! $shopwareArticle) {
-                continue;
-            }
-
-            /** @var ArticleDetail $articleDetail */
-            $articleDetail = $this->helper->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
-
-            //set main values
-            $articleDetail->setLastStock($valueArticle->getStockMin());
-            $shopwareArticle->setName($valueArticle->getName());
-            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
-            $articleDetail->setInStock($valueArticle->getStock());
-            $articleDetail->setEan($valueArticle->getEan());
-
-            if ($valueArticle->isActive()) {
-                $articleDetail->setActive(1);
-                $shopwareArticle->setActive(true);
-            }
-
-            $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
-
-
-            $this->helper->storePrices($articleDetail, $customerGroup, $price);
-
-            $shopwareArticle->setSupplier($this->helper->getSupplier($valueArticle->getManufacturer()));
-
-            $this->helper->getArticleAttributes($shopwareArticle, $articleDetail, $valueArticle->getMainArticleId());
-
-            $shopwareArticle->setTax($this->helper->getTax($valueArticle->getTax()));
-
-            $this->helper->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
-
-            $this->entityManager->persist($shopwareArticle);
-
-            //have to flush cuz parent is not getting found otherwise
-            try {
-                $this->entityManager->flush();
-            } catch (OptimisticLockException $e) {
-            }
-        }
+        $this->helper->importArticle($valueArticles, $netInput, $customerGroup);
 
         //Category Association
         //TODO: refactor

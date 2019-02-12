@@ -526,12 +526,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         if(array_key_exists($supplier, $this->suppliers)) {
             return $this->suppliers[$supplier];
         }
-        else {
-            $supplier = $this->createSupplier($supplier);
-            $this->suppliers = $this->getSuppliers();
 
-            return $supplier;
-        }
+        $supplier = $this->createSupplier($supplier);
+        $this->suppliers = $this->getSuppliers();
+
+        return $supplier;
     }
 
     /**
@@ -612,9 +611,8 @@ ON duplicate key update afterbuy_id = $externalId;";
         if($article !== null) {
             return $article->getArticle();
         }
-        else {
-            return $this->createMainArticle();
-        }
+
+        return $this->createMainArticle();
     }
 
     /**

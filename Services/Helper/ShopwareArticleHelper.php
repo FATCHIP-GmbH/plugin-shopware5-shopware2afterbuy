@@ -254,6 +254,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     }
 
                     // TODO: $thumbnailUrl might not have been defined
+                    /** @noinspection PhpUndefinedVariableInspection */
                     $article->setMainImageThumbnailUrl($thumbnailUrl);
                     continue;
                 }
@@ -268,6 +269,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
                     $article->setMainImageUrl($url);
                     // TODO: $thumbnailUrl might not have been defined
+                    /** @noinspection PhpUndefinedVariableInspection */
                     $article->setMainImageThumbnailUrl($thumbnailUrl);
                     continue;
                 }

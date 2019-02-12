@@ -322,6 +322,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
 
     /**
      * @param $targetData
+     * @return
      */
     public function send($targetData)
     {
@@ -331,8 +332,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $this->logger->error('Error storing products', $targetData);
         }
 
-        $this->storeSubmissionDate('lastProductImport');
-        $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        if(!empty($targetData)) {
+            $this->storeSubmissionDate('lastProductImport');
+            $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        }
 
         return $targetData;
     }

@@ -2,19 +2,27 @@
 
 namespace FatchipAfterbuy\Services\Helper;
 
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\Order;
-use Shopware\Components\Model\ModelEntity;
-use Shopware\Components\Model\ModelManager;
-use Shopware\Models\Category\Category;
-use Shopware\Models\Country\Country;
+use Doctrine\ORM\OptimisticLockException;
+use FatchipAfterbuy\ValueObjects\Address as ValueAddress;
+use FatchipAfterbuy\ValueObjects\Order as ValueOrder;
+use FatchipAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
-use Shopware\Models\Customer\Group;
+use Shopware\Models\Order\Billing;
 use Shopware\Models\Order\Detail;
+use Shopware\Models\Order\Order as ShopwareOrder;
+use Shopware\Models\Order\Status as OrderStatus;
 use Shopware\Models\Shop\Shop;
+use Shopware\Models\Customer\Group;
+use FatchipAfterbuy\Models\Status;
+use Shopware\Models\Dispatch\Dispatch;
+use Shopware\Models\Order\Shipping;
+use Shopware\Models\Country\Country;
+use Shopware\Models\Order\DetailStatus;
+use Shopware\Models\Payment\Payment;
 
-class ShopwareOrderHelper extends AbstractHelper {
+class ShopwareOrderHelper extends AbstractHelper
+{
 
     protected $paymentStates;
 
@@ -30,7 +38,8 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     protected $shippingType;
 
-    public function preFetch() {
+    public function preFetch(): void
+    {
         $this->paymentStates = $this->getPaymentStates();
         $this->shippingStates = $this->getShippingStates();
         $this->paymentTypes = $this->getPaymentTypes();
@@ -39,292 +48,298 @@ class ShopwareOrderHelper extends AbstractHelper {
         $this->targetGroup = $this->getDefaultGroup();
     }
 
-    public function getABCountryCodes() {
-        return array (
-            "AF" => "AFG",
-            "EG" => "ET",
-            "AX" => "AX",
-            "AL" => "AL",
-            "DZ" => "DZ",
-            "AS" => "USA",
-            "AD" => "AND",
-            "AO" => "ANG",
-            "AI" => "AXA",
-            "AQ" => "AY",
-            "AG" => "AG",
-            "GQ" => "GQ",
-            "AR" => "RA",
-            "AM" => "AM",
-            "AW" => "ARU",
-            "AZ" => "AZ",
-            "ET" => "ETH",
-            "AU" => "AUS",
-            "BS" => "BS",
-            "BH" => "BRN",
-            "BD" => "BD",
-            "BB" => "BDS",
-            "BY" => "BY",
-            "BE" => "B",
-            "BZ" => "BZ",
-            "BJ" => "BJ",
-            "BM" => "BD",
-            "BT" => "BHT",
-            "BO" => "BOL",
-            "BQ" => "NL",
-            "BA" => "BIH",
-            "BW" => "RB",
-            "BV" => "BV",
-            "BR" => "BR",
-            "IO" => "IO",
-            "BN" => "BRU",
-            "BG" => "BG",
-            "BF" => "BF",
-            "BI" => "RU",
-            "CL" => "RCH",
-            "CN" => "CHN",
-            "CK" => "CW",
-            "CR" => "CR",
-            "CW" => "UC",
-            "DK" => "DK",
-            "CD" => "CGO",
-            "DE" => "D",
-            "DM" => "WD",
-            "DO" => "DOM",
-            "DJ" => "DJI",
-            "EC" => "EC",
-            "SV" => "ES",
-            "CI" => "CI",
-            "ER" => "ER",
-            "EE" => "EST",
-            "FK" => "FK",
-            "FO" => "FO",
-            "FJ" => "FJI",
-            "FI" => "FIN",
-            "FR" => "F",
-            "GF" => "FG",
-            "PF" => "FP",
-            "TF" => "FS",
-            "GA" => "G",
-            "GM" => "WAG",
-            "GE" => "GE",
-            "GH" => "GH",
-            "GI" => "GBZ",
-            "GD" => "WG",
-            "GR" => "GR",
-            "GL" => "KN",
-            "GP" => "GP",
-            "GU" => "GQ",
-            "GT" => "GCA",
-            "GG" => "GBG",
-            "GN" => "RG",
-            "GW" => "GUB",
-            "GY" => "GUY",
-            "HT" => "RH",
-            "HM" => "HM",
-            "HN" => "HN",
-            "HK" => "HK",
-            "IN" => "IND",
-            "ID" => "RI",
-            "IQ" => "IRQ",
-            "IR" => "IR",
-            "IE" => "IRL",
-            "IS" => "IS",
-            "IL" => "IL",
-            "IT" => "I",
-            "JM" => "JA",
-            "JP" => "J",
-            "YE" => "YEM",
-            "JE" => "GBJ",
-            "JO" => "JOR",
-            "VG" => "VG",
-            "VI" => "VQ",
-            "KY" => "CJ",
-            "KH" => "K",
-            "CM" => "CAM",
-            "CA" => "CDN",
-            "CV" => "CV",
-            "KZ" => "KZ",
-            "QA" => "Q",
-            "KE" => "EAK",
-            "KG" => "KS",
-            "KI" => "KIR",
-            "CC" => "CK",
-            "CO" => "CO",
-            "KM" => "COM",
-            "CG" => "RCB",
-            "XK" => "RKS",
-            "HR" => "HR",
-            "CU" => "C",
-            "KW" => "KWT",
-            "LA" => "LAO",
-            "LS" => "LS",
-            "LV" => "LV",
-            "LB" => "RL",
-            "LR" => "LB",
-            "LY" => "LAR",
-            "LI" => "FL",
-            "LT" => "LT",
-            "LU" => "L",
-            "MO" => "MC",
-            "MG" => "RM",
-            "MW" => "MW",
-            "MY" => "MAL",
-            "MV" => "MV",
-            "ML" => "RMM",
-            "MT" => "M",
-            "MA" => "MA",
-            "MH" => "MH",
-            "MQ" => "MB",
-            "MR" => "RIM",
-            "MU" => "MS",
-            "YT" => "MF",
-            "MK" => "MK",
-            "MX" => "MEX",
-            "FM" => "FSM",
-            "MD" => "MD",
-            "MC" => "MC",
-            "MN" => "MGL",
-            "ME" => "MNE",
-            "MS" => "MH",
-            "MZ" => "MOC",
-            "MM" => "MYA",
-            "NA" => "NAM",
-            "NR" => "NAU",
-            "NP" => "NEP",
-            "NC" => "NCL",
-            "NZ" => "NZ",
-            "NI" => "NIC",
-            "NL" => "NL",
-            "NE" => "RN",
-            "NG" => "NGR",
-            "NU" => "NE",
-            "KP" => "KP",
-            "MP" => "CQ",
-            "NF" => "NF",
-            "NO" => "N",
-            "OM" => "OM",
-            "AT" => "A",
-            "TL" => "TL",
-            "PK" => "PK",
-            "PS" => "WB",
-            "PW" => "PAL",
-            "PA" => "PA",
-            "PG" => "PNG",
-            "PY" => "PY",
-            "PE" => "PE",
-            "PH" => "RP",
-            "PN" => "PC",
-            "PL" => "PL",
-            "PT" => "P",
-            "PR" => "PRI",
-            "RE" => "RE",
-            "RW" => "RWA",
-            "RO" => "RUM",
-            "RU" => "RUS",
-            "MF" => "F",
-            "SB" => "SOL",
-            "ZM" => "Z",
-            "WS" => "WS",
-            "SM" => "RSM",
-            "BL" => "TB",
-            "ST" => "STP",
-            "SA" => "KSA",
-            "SE" => "S",
-            "CH" => "CH",
-            "SN" => "SN",
-            "RS" => "SRB",
-            "SC" => "SY",
-            "SL" => "WAL",
-            "ZW" => "ZW",
-            "SG" => "SGP",
-            "SX" => "NN",
-            "SK" => "SK",
-            "SI" => "SLO",
-            "SO" => "SO",
-            "ES" => "E",
-            "LK" => "CL",
-            "SH" => "SH",
-            "KN" => "KAN",
-            "LC" => "WL",
-            "PM" => "SB",
-            "VC" => "WV",
-            "ZA" => "ZA",
-            "SD" => "SUD",
-            "GS" => "SX",
-            "KR" => "ROK",
-            "SS" => "SSD",
-            "SR" => "SME",
-            "SJ" => "SV",
-            "SZ" => "SD",
-            "SY" => "SYR",
-            "TJ" => "TJ",
-            "TW" => "RC",
-            "TZ" => "EAT",
-            "TH" => "T",
-            "TG" => "TG",
-            "TK" => "TL",
-            "TO" => "TON",
-            "TT" => "TT",
-            "TD" => "TD",
-            "CZ" => "CZ",
-            "TN" => "TN",
-            "TR" => "TR",
-            "TM" => "TM",
-            "TC" => "TK",
-            "TV" => "TUV",
-            "UG" => "EAU",
-            "UA" => "UA",
-            "HU" => "H",
-            "UY" => "ROU",
-            "UZ" => "UZ",
-            "VU" => "VAN",
-            "VA" => "V",
-            "VE" => "YV",
-            "AE" => "UAE",
-            "US" => "USA",
-            "GB" => "GBM",
-            "VN" => "VN",
-            "WF" => "WF",
-            "CX" => "KT",
-            "EH" => "WSA",
-            "CF" => "RCA",
-            "CY" => "CY",
+    public function getABCountryCodes(): array
+    {
+        return array(
+            'AF' => 'AFG',
+            'EG' => 'ET',
+            'AX' => 'AX',
+            'AL' => 'AL',
+            'DZ' => 'DZ',
+            'AS' => 'USA',
+            'AD' => 'AND',
+            'AO' => 'ANG',
+            'AI' => 'AXA',
+            'AQ' => 'AY',
+            'AG' => 'AG',
+            'GQ' => 'GQ',
+            'AR' => 'RA',
+            'AM' => 'AM',
+            'AW' => 'ARU',
+            'AZ' => 'AZ',
+            'ET' => 'ETH',
+            'AU' => 'AUS',
+            'BS' => 'BS',
+            'BH' => 'BRN',
+            'BD' => 'BD',
+            'BB' => 'BDS',
+            'BY' => 'BY',
+            'BE' => 'B',
+            'BZ' => 'BZ',
+            'BJ' => 'BJ',
+            'BM' => 'BD',
+            'BT' => 'BHT',
+            'BO' => 'BOL',
+            'BQ' => 'NL',
+            'BA' => 'BIH',
+            'BW' => 'RB',
+            'BV' => 'BV',
+            'BR' => 'BR',
+            'IO' => 'IO',
+            'BN' => 'BRU',
+            'BG' => 'BG',
+            'BF' => 'BF',
+            'BI' => 'RU',
+            'CL' => 'RCH',
+            'CN' => 'CHN',
+            'CK' => 'CW',
+            'CR' => 'CR',
+            'CW' => 'UC',
+            'DK' => 'DK',
+            'CD' => 'CGO',
+            'DE' => 'D',
+            'DM' => 'WD',
+            'DO' => 'DOM',
+            'DJ' => 'DJI',
+            'EC' => 'EC',
+            'SV' => 'ES',
+            'CI' => 'CI',
+            'ER' => 'ER',
+            'EE' => 'EST',
+            'FK' => 'FK',
+            'FO' => 'FO',
+            'FJ' => 'FJI',
+            'FI' => 'FIN',
+            'FR' => 'F',
+            'GF' => 'FG',
+            'PF' => 'FP',
+            'TF' => 'FS',
+            'GA' => 'G',
+            'GM' => 'WAG',
+            'GE' => 'GE',
+            'GH' => 'GH',
+            'GI' => 'GBZ',
+            'GD' => 'WG',
+            'GR' => 'GR',
+            'GL' => 'KN',
+            'GP' => 'GP',
+            'GU' => 'GQ',
+            'GT' => 'GCA',
+            'GG' => 'GBG',
+            'GN' => 'RG',
+            'GW' => 'GUB',
+            'GY' => 'GUY',
+            'HT' => 'RH',
+            'HM' => 'HM',
+            'HN' => 'HN',
+            'HK' => 'HK',
+            'IN' => 'IND',
+            'ID' => 'RI',
+            'IQ' => 'IRQ',
+            'IR' => 'IR',
+            'IE' => 'IRL',
+            'IS' => 'IS',
+            'IL' => 'IL',
+            'IT' => 'I',
+            'JM' => 'JA',
+            'JP' => 'J',
+            'YE' => 'YEM',
+            'JE' => 'GBJ',
+            'JO' => 'JOR',
+            'VG' => 'VG',
+            'VI' => 'VQ',
+            'KY' => 'CJ',
+            'KH' => 'K',
+            'CM' => 'CAM',
+            'CA' => 'CDN',
+            'CV' => 'CV',
+            'KZ' => 'KZ',
+            'QA' => 'Q',
+            'KE' => 'EAK',
+            'KG' => 'KS',
+            'KI' => 'KIR',
+            'CC' => 'CK',
+            'CO' => 'CO',
+            'KM' => 'COM',
+            'CG' => 'RCB',
+            'XK' => 'RKS',
+            'HR' => 'HR',
+            'CU' => 'C',
+            'KW' => 'KWT',
+            'LA' => 'LAO',
+            'LS' => 'LS',
+            'LV' => 'LV',
+            'LB' => 'RL',
+            'LR' => 'LB',
+            'LY' => 'LAR',
+            'LI' => 'FL',
+            'LT' => 'LT',
+            'LU' => 'L',
+            'MO' => 'MC',
+            'MG' => 'RM',
+            'MW' => 'MW',
+            'MY' => 'MAL',
+            'MV' => 'MV',
+            'ML' => 'RMM',
+            'MT' => 'M',
+            'MA' => 'MA',
+            'MH' => 'MH',
+            'MQ' => 'MB',
+            'MR' => 'RIM',
+            'MU' => 'MS',
+            'YT' => 'MF',
+            'MK' => 'MK',
+            'MX' => 'MEX',
+            'FM' => 'FSM',
+            'MD' => 'MD',
+            'MC' => 'MC',
+            'MN' => 'MGL',
+            'ME' => 'MNE',
+            'MS' => 'MH',
+            'MZ' => 'MOC',
+            'MM' => 'MYA',
+            'NA' => 'NAM',
+            'NR' => 'NAU',
+            'NP' => 'NEP',
+            'NC' => 'NCL',
+            'NZ' => 'NZ',
+            'NI' => 'NIC',
+            'NL' => 'NL',
+            'NE' => 'RN',
+            'NG' => 'NGR',
+            'NU' => 'NE',
+            'KP' => 'KP',
+            'MP' => 'CQ',
+            'NF' => 'NF',
+            'NO' => 'N',
+            'OM' => 'OM',
+            'AT' => 'A',
+            'TL' => 'TL',
+            'PK' => 'PK',
+            'PS' => 'WB',
+            'PW' => 'PAL',
+            'PA' => 'PA',
+            'PG' => 'PNG',
+            'PY' => 'PY',
+            'PE' => 'PE',
+            'PH' => 'RP',
+            'PN' => 'PC',
+            'PL' => 'PL',
+            'PT' => 'P',
+            'PR' => 'PRI',
+            'RE' => 'RE',
+            'RW' => 'RWA',
+            'RO' => 'RUM',
+            'RU' => 'RUS',
+            'MF' => 'F',
+            'SB' => 'SOL',
+            'ZM' => 'Z',
+            'WS' => 'WS',
+            'SM' => 'RSM',
+            'BL' => 'TB',
+            'ST' => 'STP',
+            'SA' => 'KSA',
+            'SE' => 'S',
+            'CH' => 'CH',
+            'SN' => 'SN',
+            'RS' => 'SRB',
+            'SC' => 'SY',
+            'SL' => 'WAL',
+            'ZW' => 'ZW',
+            'SG' => 'SGP',
+            'SX' => 'NN',
+            'SK' => 'SK',
+            'SI' => 'SLO',
+            'SO' => 'SO',
+            'ES' => 'E',
+            'LK' => 'CL',
+            'SH' => 'SH',
+            'KN' => 'KAN',
+            'LC' => 'WL',
+            'PM' => 'SB',
+            'VC' => 'WV',
+            'ZA' => 'ZA',
+            'SD' => 'SUD',
+            'GS' => 'SX',
+            'KR' => 'ROK',
+            'SS' => 'SSD',
+            'SR' => 'SME',
+            'SJ' => 'SV',
+            'SZ' => 'SD',
+            'SY' => 'SYR',
+            'TJ' => 'TJ',
+            'TW' => 'RC',
+            'TZ' => 'EAT',
+            'TH' => 'T',
+            'TG' => 'TG',
+            'TK' => 'TL',
+            'TO' => 'TON',
+            'TT' => 'TT',
+            'TD' => 'TD',
+            'CZ' => 'CZ',
+            'TN' => 'TN',
+            'TR' => 'TR',
+            'TM' => 'TM',
+            'TC' => 'TK',
+            'TV' => 'TUV',
+            'UG' => 'EAU',
+            'UA' => 'UA',
+            'HU' => 'H',
+            'UY' => 'ROU',
+            'UZ' => 'UZ',
+            'VU' => 'VAN',
+            'VA' => 'V',
+            'VE' => 'YV',
+            'AE' => 'UAE',
+            'US' => 'USA',
+            'GB' => 'GBM',
+            'VN' => 'VN',
+            'WF' => 'WF',
+            'CX' => 'KT',
+            'EH' => 'WSA',
+            'CF' => 'RCA',
+            'CY' => 'CY',
         );
     }
 
 
     /**
      * @param array $values
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function setAfterBuyIds(array $values) {
+    public function setAfterBuyIds(array $values): void
+    {
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders'])
-            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->from(ShopwareOrder::class, 'orders', 'orders.id')
             ->where('orders.number IN(:numbers)')
             ->setParameter('numbers', array_keys($values))
             ->getQuery()
             ->getResult();
 
-        foreach($orders as $order) {
+        foreach ($orders as $order) {
             /**
-             * @var \Shopware\Models\Order\Order $order
+             * @var ShopwareOrder $order
              */
             $order->getAttribute()->setAfterbuyOrderId($values[$order->getNumber()]);
 
             $this->entityManager->persist($order);
         }
 
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
     }
 
     /**
      * @return array
      */
-    public function getUnexportedOrders() {
+    public function getUnexportedOrders(): array
+    {
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders'])
-            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->from(ShopwareOrder::class, 'orders', 'orders.id')
             ->leftJoin('orders.attribute', 'attributes')
             ->where('attributes.afterbuyOrderId IS NULL')
             ->orWhere("attributes.afterbuyOrderId = ''")
@@ -336,25 +351,26 @@ class ShopwareOrderHelper extends AbstractHelper {
 
     }
 
-    public function isFullfilled(\Shopware\Models\Order\Order $order) {
-        if(($order->getOrderStatus()->getId() == 7 || $order->getOrderStatus()->getId() == 2) && $order->getPaymentStatus()->getId() == 12) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    public function isFullfilled(ShopwareOrder $order): bool
+    {
+        $completelyPaid = $order->getPaymentStatus()->getId() === 12;
+        $completelyDelivered = $order->getOrderStatus()->getId() === 7;
+        $completed = $order->getOrderStatus()->getId() === 2;
+
+        return $completelyPaid && ($completelyDelivered || $completed);
     }
 
-    public function getNewFullfilledOrders() {
-        $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
+    public function getNewFullfilledOrders(): array
+    {
+        $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
 
-        if($lastExport) {
+        if ($lastExport) {
             $lastExport = $lastExport->getLastStatusExport();
         }
 
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders', 'history'])
-            ->from('\Shopware\Models\Order\Order', 'orders', 'orders.id')
+            ->from(ValueOrder::class, 'orders', 'orders.id')
             ->leftJoin('orders.attribute', 'attributes')
             ->leftJoin('orders.history', 'history')
             ->where('attributes.afterbuyOrderId IS NOT NULL')
@@ -374,33 +390,37 @@ class ShopwareOrderHelper extends AbstractHelper {
     }
 
     /**
-     * @param \Shopware\Models\Order\Order $order
-     * @param int $id
+     * @param ShopwareOrder $order
+     * @param int           $id
      */
-    public function setShippingType(\Shopware\Models\Order\Order &$order, int $id) {
-       $order->setDispatch($this->getShippingType($id));
+    public function setShippingType(ShopwareOrder &$order, int $id): void
+    {
+        $order->setDispatch($this->getShippingType($id));
     }
 
     /**
      * @param int $id
+     *
      * @return object|\Shopware\Models\Dispatch\Dispatch|null
      */
-    public function getShippingType(int $id) {
-        if($this->shippingType) {
+    public function getShippingType(int $id)
+    {
+        if ($this->shippingType) {
             return $this->shippingType;
         }
 
-        $this->shippingType = $this->entityManager->getRepository('\Shopware\Models\Dispatch\Dispatch')
+        $this->shippingType = $this->entityManager->getRepository(Dispatch::class)
             ->find($id);
 
         return $this->shippingType;
     }
 
-    public function setPositions(Order $value, \Shopware\Models\Order\Order &$order) {
+    public function setPositions(ValueOrder $value, ShopwareOrder &$order): void
+    {
         $details = $order->getDetails();
         $details->clear();
 
-        foreach($value->getPositions() as $position) {
+        foreach ($value->getPositions() as $position) {
             /**
              * @var OrderPosition $position
              */
@@ -415,16 +435,15 @@ class ShopwareOrderHelper extends AbstractHelper {
             $tax = number_format($position->getTax(), 2);
             $detail->setTaxRate($tax);
 
-            if($value->isShipped()) {
-                $detail->setStatus($this->detailStates["3"]);
+            if ($value->isShipped()) {
+                $detail->setStatus($this->detailStates['3']);
             } else {
-                $detail->setStatus($this->detailStates["1"]);
+                $detail->setStatus($this->detailStates['1']);
             }
 
-            if(!empty($position->getInternalIdentifier())) {
+            if ($position->getInternalIdentifier() !== null) {
                 $detail->setArticleNumber($position->getInternalIdentifier());
-            }
-            else {
+            } else {
                 $detail->setArticleNumber($position->getExternalIdentifier());
             }
 
@@ -443,33 +462,33 @@ class ShopwareOrderHelper extends AbstractHelper {
         }
     }
 
-    public function setAddress(Order $value, \Shopware\Models\Order\Order &$order, Customer $customer, $type = "billing") {
-        if($type === "billing") {
-            $entityClass = '\Shopware\Models\Order\Billing';
-            $targetGetter = "getBilling";
-            $sourceGetter = "getBillingAddress";
-            $targetSetter = "setBilling";
-        }
-        else {
-            $entityClass = '\Shopware\Models\Order\Shipping';
-            $targetGetter = "getShipping";
-            $targetSetter = "setShipping";
+    public function setAddress(ValueOrder $value, ValueOrder &$order, Customer $customer, $type = 'billing'): void
+    {
+        if ($type === 'billing') {
+            $entityClass = Billing::class;
+            $targetGetter = 'getBilling';
+            $sourceGetter = 'getBillingAddress';
+            $targetSetter = 'setBilling';
+        } else {
+            $entityClass = Shipping::class;
+            $targetGetter = 'getShipping';
+            $targetSetter = 'setShipping';
 
-            if($value->getShippingAddress()) {
-                $sourceGetter = "getShippingAddress";
-            }
-            else {
-                $sourceGetter = "getBillingAddress";
+            if ($value->getShippingAddress()) {
+                $sourceGetter = 'getShippingAddress';
+            } else {
+                $sourceGetter = 'getBillingAddress';
             }
         }
 
+        /** @var Billing $address */
         $address = $order->$targetGetter();
 
-        if($address === null) {
+        if ($address === null) {
             $address = new $entityClass();
         }
 
-        if($type === "billing") {
+        if ($type === 'billing') {
             $address->setVatId($value->$sourceGetter()->getVatId());
         }
 
@@ -480,7 +499,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         $address->setStreet($value->$sourceGetter()->getStreet());
         $address->setAdditionalAddressLine1($value->$sourceGetter()->getAdditionalAddressLine1());
         $address->setAdditionalAddressLine2($value->$sourceGetter()->getAdditionalAddressLine2());
-        $address->setZipcode($value->$sourceGetter()->getZipcode());
+        $address->setZipCode($value->$sourceGetter()->getZipcode());
         $address->setCity($value->$sourceGetter()->getCity());
         $address->setCompany($value->$sourceGetter()->getCompany());
         $address->setDepartment($value->$sourceGetter()->getDepartment());
@@ -490,30 +509,33 @@ class ShopwareOrderHelper extends AbstractHelper {
         $order->$targetSetter($address);
     }
 
-    public function setPaymentType(Order $value, \Shopware\Models\Order\Order &$order, array $config) {
-        if($config["payment" . $value->getPaymentType()]) {
-            $order->setPayment($this->paymentTypes[$config["payment" . $value->getPaymentType()]]);
-        }
-        else {
+    public function setPaymentType(ValueOrder $value, ShopwareOrder &$order, array $config): void
+    {
+        if ($config['payment' . $value->getPaymentType()]) {
+            $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
+        } else {
             //fallback: set first available payment type
+            // TODO: dont know what to do here, to
+            /** @noinspection PhpParamsInspection */
             $order->setPayment(array_values($this->paymentTypes)[0]);
         }
     }
 
-    public function setOrderTaxValues(Order $value, \Shopware\Models\Order\Order &$order) {
-        if(!$value->getAmountNet()) {
+    public function setOrderTaxValues(ValueOrder $value, ShopwareOrder &$order): void
+    {
+        if ( ! $value->getAmountNet()) {
             $order->setTaxFree(1);
             $order->setInvoiceAmountNet($value->getAmount());
             $order->setInvoiceShippingNet($value->getShipping());
-        }
-        else {
+        } else {
             $order->setTaxFree(0);
             $order->setInvoiceAmountNet($value->getAmountNet());
             $order->setInvoiceShippingNet($value->getShippingNet());
         }
     }
 
-    public function setOrderMainValues(Order $value, \Shopware\Models\Order\Order &$order, Shop $shop) {
+    public function setOrderMainValues(ValueOrder $value, ShopwareOrder &$order, Shop $shop): void
+    {
         /**
          * set main order values
          */
@@ -523,7 +545,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         $order->setOrderTime($value->getCreateDate());
         $order->setTransactionId($value->getTransactionId());
 
-        $order->setReferer("Afterbuy");
+        $order->setReferer('Afterbuy');
         $order->setTemporaryId($value->getExternalIdentifier());
 
         $order->setTransactionId($value->getTransactionId());
@@ -537,55 +559,60 @@ class ShopwareOrderHelper extends AbstractHelper {
         $order->getAttribute()->setAfterbuyOrderId($value->getExternalIdentifier());
 
         //TODO: set correct values
-        $order->setComment("");
-        $order->setCustomerComment("");
-        $order->setInternalComment("");
-        $order->setTrackingCode("");
+        $order->setComment('');
+        $order->setCustomerComment('');
+        $order->setInternalComment('');
+        $order->setTrackingCode('');
         $order->setCurrencyFactor(1);
     }
 
     /**
-     * @param Order $value
-     * @param \Shopware\Models\Order\Order $order
+     * @param ValueOrder    $value
+     * @param ShopwareOrder $order
      */
-    public function setShippingStatus(Order $value, \Shopware\Models\Order\Order &$order) {
-        if($value->isShipped()) {
-            $order->setOrderStatus($this->shippingStates["completed"]);
+    public function setShippingStatus(ValueOrder $value, ShopwareOrder &$order): void
+    {
+        if ($value->isShipped()) {
+            $order->setOrderStatus($this->shippingStates['completed']);
         } else {
-            $order->setOrderStatus($this->shippingStates["open"]);
+            $order->setOrderStatus($this->shippingStates['open']);
         }
     }
 
-    public function setPaymentStatus(Order $value, \Shopware\Models\Order\Order &$order) {
-        if($value->getPaid() > 0) {
+    public function setPaymentStatus(ValueOrder $value, ShopwareOrder &$order): void
+    {
+        if ($value->getPaid() > 0) {
             $order->setPaymentStatus($this->paymentStates['partially_paid']);
         }
-        if($value->getPaid() >= $value->getAmount()) {
-            $order->setPaymentStatus($this->paymentStates["completely_paid"]);
+        if ($value->getPaid() >= $value->getAmount()) {
+            $order->setPaymentStatus($this->paymentStates['completely_paid']);
         }
-        if($value->getPaid() <= 0) {
-            $order->setPaymentStatus($this->paymentStates["open"]);
+        if ($value->getPaid() <= 0) {
+            $order->setPaymentStatus($this->paymentStates['open']);
         }
     }
 
-    public function getShop(int $id) {
-        return $this->entityManager->getRepository('\Shopware\Models\Shop\Shop')->find($id);
+    public function getShop(int $id)
+    {
+        return $this->entityManager->getRepository(Shop::class)->find($id);
     }
 
-    public function getCountries() {
+    public function getCountries(): array
+    {
         $countries = $this->entityManager->createQueryBuilder()
             ->select('countries')
-            ->from('\Shopware\Models\Country\Country', 'countries', 'countries.iso')
+            ->from(Country::class, 'countries', 'countries.iso')
             ->getQuery()
             ->getResult();
 
         return $countries;
     }
 
-    public function getPaymentStates() {
+    public function getPaymentStates(): array
+    {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
-            ->from('\Shopware\Models\Order\Status', 'states', 'states.name')
+            ->from(OrderStatus::class, 'states', 'states.name')
             ->where('states.group = :group')
             ->setParameters(array('group' => 'payment'))
             ->getQuery()
@@ -597,10 +624,11 @@ class ShopwareOrderHelper extends AbstractHelper {
     /**
      * @return array
      */
-    public function getShippingStates() {
+    public function getShippingStates(): array
+    {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
-            ->from('\Shopware\Models\Order\Status', 'states', 'states.name')
+            ->from(OrderStatus::class, 'states', 'states.name')
             ->where('states.group = :group')
             ->setParameters(array('group' => 'state'))
             ->getQuery()
@@ -609,10 +637,11 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $states;
     }
 
-    public function getDetailStates() {
+    public function getDetailStates(): array
+    {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
-            ->from('\Shopware\Models\Order\DetailStatus', 'states', 'states.id')
+            ->from(DetailStatus::class, 'states', 'states.id')
             ->getQuery()
             ->getResult();
 
@@ -622,30 +651,31 @@ class ShopwareOrderHelper extends AbstractHelper {
     /**
      * @return array
      */
-    public function getPaymentTypes() {
+    public function getPaymentTypes(): array
+    {
         $types = $this->entityManager->createQueryBuilder()
             ->select('types')
-            ->from('\Shopware\Models\Payment\Payment', 'types', 'types.id')
+            ->from(Payment::class, 'types', 'types.id')
             ->getQuery()
             ->getResult();
 
         return $types;
     }
 
-    public function getCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
-                                Shop $shop) {
-        $customer = $this->entityManager->getRepository('\Shopware\Models\Customer\Customer')
+    public function getCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop)
+    {
+        $customer = $this->entityManager->getRepository(Customer::class)
             ->findOneBy(array('email' => $billingAddress->getEmail(), 'accountMode' => 1));
 
-        if($customer) {
+        if ($customer) {
             return $customer;
         }
 
         return $this->createCustomer($order, $billingAddress, $shop);
     }
 
-    public function createCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
-                                   Shop $shop) {
+    public function createCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop): Customer
+    {
         $customer = new Customer();
 
         $customer->setSalutation($billingAddress->getSalutation());
@@ -678,17 +708,18 @@ class ShopwareOrderHelper extends AbstractHelper {
         $customer->setDefaultShippingAddress($address);
         $this->entityManager->persist($customer);
 
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+        }
 
         return $customer;
     }
 
-    public function getDefaultGroup() {
-        $group = $this->entityManager->getRepository('\Shopware\Models\Customer\Group')->findOneBy(array());
-
-        return $group;
+    public function getDefaultGroup()
+    {
+        return $this->entityManager->getRepository(Group::class)->findOneBy(array());
     }
-
 
 
 }

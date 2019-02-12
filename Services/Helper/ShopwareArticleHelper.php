@@ -5,6 +5,8 @@ namespace FatchipAfterbuy\Services\Helper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\QueryBuilder;
+use Exception;
 use FatchipAfterbuy\Components\Helper;
 use FatchipAfterbuy\ValueObjects\ProductPicture;
 use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
@@ -234,7 +236,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     } else {
                         $path = $image->getParent()->getMedia()->getPath();
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     continue;
                 }
 
@@ -436,7 +438,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ArticleDetail   $detail
      * @param string          $parent
      *
-     * @return \Shopware\Models\Attribute\Article
+     * @return ArticlesAttribute
      */
     public function getArticleAttributes(
         ShopwareArticle $article,
@@ -597,7 +599,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $number
      *
-     * @return object|\Shopware\Models\Attribute\Article|null
+     * @return object|ArticlesAttribute|null
      */
     public function getArticleFromAttribute(string $number)
     {
@@ -614,7 +616,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $name
      * @param string $parent
      *
-     * @return \Shopware\Models\Article\Article
+     * @return ShopwareArticle
      */
     public function getMainArticle(string $number, string $name, $parent = ''): ShopwareArticle
     {
@@ -654,7 +656,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string          $number
      * @param ShopwareArticle $article
      *
-     * @return \Shopware\Models\Article\Detail
+     * @return ArticleDetail
      */
     public function getDetail(string $number, ShopwareArticle &$article): ArticleDetail
     {
@@ -825,7 +827,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param bool $force
      * @param bool $exportAll
      *
-     * @return array|\Doctrine\ORM\QueryBuilder
+     * @return array|QueryBuilder
      */
     public function getUnexportedArticles($force = false, $exportAll = true)
     {
@@ -868,7 +870,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         try {
             Shopware()->Db()->exec($sql);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Error setting articles without any active variant to inactive');
         }
     }
@@ -912,7 +914,6 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
 
             $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
-
 
             $this->storePrices($articleDetail, $customerGroup, $price);
 
@@ -979,6 +980,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     }
 
     // TODO: refactor
+
     /**
      * @param ValueArticle[] $valueArticles
      */

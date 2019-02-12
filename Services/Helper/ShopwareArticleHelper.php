@@ -134,13 +134,17 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param ShopwareArticle $entity
      * @param ArticleDetail   $detail
-     * @param                 $targetEntity
-     * @param                 $netInput
+     * @param ValueArticle    $targetEntity
+     * @param bool            $netInput
      *
      * @return mixed
      */
-    public function setVariantValues(ShopwareArticle $entity, ArticleDetail $detail, $targetEntity, $netInput)
-    {
+    public function setVariantValues(
+        ShopwareArticle $entity,
+        ArticleDetail $detail,
+        ValueArticle $targetEntity,
+        bool $netInput
+    ) {
         /** @var ValueArticle $variant */
         $variant = new $targetEntity();
 
@@ -283,11 +287,11 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ShopwareArticle $entity
-     * @param                 $targetEntity
+     * @param ValueArticle    $targetEntity
      *
      * @return ValueArticle
      */
-    public function setArticleMainValues(ShopwareArticle $entity, $targetEntity): ValueArticle
+    public function setArticleMainValues(ShopwareArticle $entity, ValueArticle $targetEntity): ValueArticle
     {
         /**
          * article main values
@@ -974,6 +978,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
+    // TODO: refactor
     /**
      * @param ValueArticle[] $valueArticles
      */

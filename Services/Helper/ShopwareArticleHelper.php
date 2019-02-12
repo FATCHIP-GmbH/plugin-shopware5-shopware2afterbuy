@@ -515,19 +515,20 @@ ON duplicate key update afterbuy_id = $externalId;";
 
 
     /**
-     * @param string $supplier
+     * @param string $supplierName
+     *
      * @return Supplier|string
      */
-    public function getSupplier(string $supplier) {
+    public function getSupplier(string $supplierName) {
         if(!$this->suppliers) {
             $this->suppliers = $this->getSuppliers();
         }
 
-        if(array_key_exists($supplier, $this->suppliers)) {
-            return $this->suppliers[$supplier];
+        if(array_key_exists($supplierName, $this->suppliers)) {
+            return $this->suppliers[$supplierName];
         }
 
-        $supplier = $this->createSupplier($supplier);
+        $supplier = $this->createSupplier($supplierName);
         $this->suppliers = $this->getSuppliers();
 
         return $supplier;

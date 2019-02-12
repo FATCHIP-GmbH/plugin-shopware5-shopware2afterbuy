@@ -537,7 +537,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $name
      * @return Supplier
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createSupplier(string $name) {
         $supplier = new Supplier();
@@ -547,7 +546,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $supplier->setAttribute($attribute);
 
         $this->entityManager->persist($supplier);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
 
         return $supplier;
     }
@@ -582,7 +585,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $name
      * @param string $parent
      * @return \Shopware\Models\Article\Article
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getMainArticle(string $number, string $name, $parent = '')
     {
@@ -842,16 +844,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         foreach ($valueArticles as $valueArticle) {
 
             /** @var ShopwareArticle $shopwareArticle */
-            try {
-                $shopwareArticle = $this->getMainArticle(
-                    $valueArticle->getExternalIdentifier(),
-                    $valueArticle->getName(),
-                    $valueArticle->getMainArticleId()
-                );
-            } catch (OptimisticLockException $e) {
-                $this->logger->error('Error creating article', array($valueArticle));
-                continue;
-            }
+            $shopwareArticle = $this->getMainArticle(
+                $valueArticle->getExternalIdentifier(),
+                $valueArticle->getName(),
+                $valueArticle->getMainArticleId()
+            );
 
             if ( ! $shopwareArticle) {
                 continue;

@@ -33,28 +33,21 @@ use FatchipAfterbuy\Models\Status;
 
 /**
  * Class ShopwareArticleHelper
+ *
  * @package FatchipAfterbuy\Services\Helper
  */
-class ShopwareArticleHelper extends AbstractHelper {
-
-    /**
-     * @var
-     */
+class ShopwareArticleHelper extends AbstractHelper
+{
+    /** @var */
     protected $suppliers;
 
-    /**
-     * @var
-     */
+    /** @var */
     protected $customerGroup;
 
-    /**
-     * @var
-     */
+    /** @var */
     protected $configuratorGroups;
 
-    /**
-     * @var
-     */
+    /** @var */
     protected $configuratorOptions;
 
     public function fixMissingAttribute(ArticleDetail $detail): void
@@ -77,14 +70,14 @@ class ShopwareArticleHelper extends AbstractHelper {
     {
         $sql = '';
 
-        foreach ($ids as $internalId=>$externalId) {
+        foreach ($ids as $internalId => $externalId) {
             $sql .= "INSERT INTO s_articles_attributes (articledetailsID, afterbuy_id, articleID)
 VALUES ($internalId, $externalId,NULL)
 ON duplicate key update afterbuy_id = $externalId;";
 
         }
 
-        if(!empty($sql)) {
+        if ( ! empty($sql)) {
             try {
                 $this->db->query($sql);
             } catch (Zend_Db_Adapter_Exception $e) {
@@ -95,9 +88,11 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param $id
+     *
      * @return object|null
      */
-    public function getDefaultCustomerGroup($id) {
+    public function getDefaultCustomerGroup($id)
+    {
         $this->customerGroup = $this->entityManager->getRepository(Group::class)->findOneBy(
             array('id' => $id)
         );
@@ -107,21 +102,21 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ShopwareArticle $entity
-     * @param ValueArticle $article
-     * @param bool $netInput
+     * @param ValueArticle    $article
+     * @param bool            $netInput
      */
     public function setSimpleArticleValues(ShopwareArticle $entity, ValueArticle &$article, bool $netInput): void
     {
         $detail = $entity->getMainDetail();
 
-        if($detail->getEan()) {
+        if ($detail->getEan()) {
             $article->setEan($detail->getEan());
         }
         $article->setInternalIdentifier($detail->getNumber());
         $article->setStockMin($detail->getStockMin());
         $article->setStock($detail->getInStock());
 
-        $price = $detail->getPrices()->filter(function(Price $price) {
+        $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
 
@@ -144,11 +139,12 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return mixed
      */
-    public function setVariantValues(ShopwareArticle $entity, ArticleDetail $detail, $targetEntity, $netInput) {
+    public function setVariantValues(ShopwareArticle $entity, ArticleDetail $detail, $targetEntity, $netInput)
+    {
         /** @var ValueArticle $variant */
         $variant = new $targetEntity();
 
-        if($detail->getEan()) {
+        if ($detail->getEan()) {
             $variant->setEan($detail->getEan());
         }
 
@@ -160,13 +156,13 @@ ON duplicate key update afterbuy_id = $externalId;";
         $variant->setVariantId($detail->getId());
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
 
-        $price = $detail->getPrices()->filter(function(Price $price) {
+        $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
 
         $options = [];
 
-        foreach($detail->getConfiguratorOptions() as $option) {
+        foreach ($detail->getConfiguratorOptions() as $option) {
             /**
              * @var Option $option
              */
@@ -197,9 +193,9 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $categories = [];
 
-        foreach($entity->getCategories() as $category) {
+        foreach ($entity->getCategories() as $category) {
             /** @var Category $category */
-            if(!$category->getAttribute() || !$category->getAttribute()->getAfterbuyCatalogId()) {
+            if ( ! $category->getAttribute() || ! $category->getAttribute()->getAfterbuyCatalogId()) {
                 continue;
             }
 
@@ -214,37 +210,39 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ValueArticle       $article
      * @param ArticleDetail|null $detail
      */
-    public function assignArticleImages(ShopwareArticle $entity, ValueArticle &$article, ArticleDetail $detail = null): void
-    {
+    public function assignArticleImages(
+        ShopwareArticle $entity,
+        ValueArticle &$article,
+        ArticleDetail $detail = null
+    ): void {
         if ($detail === null) {
             $images = $entity->getImages();
         } else {
             $images = $detail->getImages();
         }
 
-        if($images->count()) {
-            foreach($images as $index=>$image) {
+        if ($images->count()) {
+            foreach ($images as $index => $image) {
 
-                try{
+                try {
                     if ($detail === null) {
                         $path = $image->getMedia()->getPath();
                     } else {
                         $path = $image->getParent()->getMedia()->getPath();
                     }
-                }
-                catch(\Exception $e) {
+                } catch (\Exception $e) {
                     continue;
                 }
 
                 $url = $this->mediaService->getUrl($path);
 
                 // TODO: check flipping conditions => faster
-                if($detail === null && $image->getMain() === 1) {
+                if ($detail === null && $image->getMain() === 1) {
                     $article->setMainImageUrl($url);
 
                     $thumbnails = $image->getMedia()->getThumbnails();
 
-                    if(is_array($thumbnails)) {
+                    if (is_array($thumbnails)) {
                         $thumbnail = reset($thumbnails);
                         $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
                     }
@@ -254,10 +252,10 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
-                if($index === 0 && $detail !== null) {
+                if ($index === 0 && $detail !== null) {
                     $thumbnails = $image->getParent()->getMedia()->getThumbnails();
 
-                    if(is_array($thumbnails)) {
+                    if (is_array($thumbnails)) {
                         $thumbnail = reset($thumbnails);
                         $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
                     }
@@ -270,7 +268,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
 
                 // TODO: check flipping conditions => faster
-                if($detail !== null || ($image->getChildren() === null || $image->getChildren()->count() === 0)) {
+                if ($detail !== null || ($image->getChildren() === null || $image->getChildren()->count() === 0)) {
 
                     $productPicture = new ProductPicture();
                     $productPicture->setAltText($entity->getName() . '_' . ((int)$image->getPosition()));
@@ -293,6 +291,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         /**
          * article main values
+         *
          * @var ValueArticle $article
          */
         $article = new $targetEntity();
@@ -325,7 +324,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
             $set = $this->getAssignableConfiguratorSet($article, $variants);
 
-            if($set) {
+            if ($set) {
                 $this->addSetGroups($set, $groups);
                 $this->addSetOptions($set, $options);
             }
@@ -336,21 +335,21 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param array $variants
+     *
      * @return array
      */
     public function getAssignableConfiguratorOptions(array $variants): array
     {
-        if(!$this->configuratorOptions) {
+        if ( ! $this->configuratorOptions) {
             $this->getConfiguratorOptions();
         }
 
         $options = [];
 
-        foreach($variants as $variant) {
-            if(array_key_exists($variant['value'], $this->configuratorOptions)) {
+        foreach ($variants as $variant) {
+            if (array_key_exists($variant['value'], $this->configuratorOptions)) {
                 $option = $this->configuratorOptions[$variant['value']];
-            }
-            else {
+            } else {
                 $option = new Option();
                 $option->setName($variant['value']);
                 $option->setGroup($this->configuratorGroups[$variant['option']]);
@@ -403,20 +402,21 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ShopwareArticle $article
-     * @param array $variants
+     * @param array           $variants
+     *
      * @return Set|null
      */
     public function getAssignableConfiguratorSet(ShopwareArticle &$article, array $variants): ?Set
     {
         $configuratorSet = null;
 
-        if(empty($variants)) {
-           return null;
+        if (empty($variants)) {
+            return null;
         }
 
         $configuratorSet = $article->getConfiguratorSet();
 
-        if(!$configuratorSet) {
+        if ( ! $configuratorSet) {
             $configuratorSet = new Set();
 
             $article->setConfiguratorSet($configuratorSet);
@@ -453,12 +453,12 @@ ON duplicate key update afterbuy_id = $externalId;";
      * create attributes for price if not existing
      *
      * @param Price $price
+     *
      * @return ArticlePrice
      */
     public function createPriceAttributes(Price &$price): ArticlePrice
     {
-        if($price->getAttribute() === null)
-        {
+        if ($price->getAttribute() === null) {
             $priceAttr = new ArticlePrice();
             $price->setAttribute($priceAttr);
         } else {
@@ -484,7 +484,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $attr->setArticle($article);
         $attr->setArticleDetail($detail);
 
-        if($parent) {
+        if ($parent) {
             $attr->setAfterbuyParentId($parent);
         }
 
@@ -504,12 +504,11 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $this->customerGroup = $group;
 
-        $price = $detail->getPrices()->filter(function(Price $price) {
+        $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
 
-        if(!$price)
-        {
+        if ( ! $price) {
             $price = new Price();
             $price->setArticle($detail->getArticle());
             $price->setDetail($detail);
@@ -522,9 +521,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         $price->setPseudoPrice($pseudoPrice);
 
 
-
         //assign price to variant
-        if(!$detail->getPrices()->contains($price)) $detail->getPrices()->add($price);
+        if ( ! $detail->getPrices()->contains($price)) {
+            $detail->getPrices()->add($price);
+        }
 
         return $price;
     }
@@ -535,12 +535,13 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return Supplier|string
      */
-    public function getSupplier(string $supplierName) {
-        if(!$this->suppliers) {
+    public function getSupplier(string $supplierName)
+    {
+        if ( ! $this->suppliers) {
             $this->suppliers = $this->getSuppliers();
         }
 
-        if(array_key_exists($supplierName, $this->suppliers)) {
+        if (array_key_exists($supplierName, $this->suppliers)) {
             return $this->suppliers[$supplierName];
         }
 
@@ -552,6 +553,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param string $name
+     *
      * @return Supplier
      */
     public function createSupplier(string $name): Supplier
@@ -584,15 +586,20 @@ ON duplicate key update afterbuy_id = $externalId;";
             ->getResult();
 
         $this->suppliers = $supplier;
+
         return $supplier;
     }
 
     /**
      * @param string $number
+     *
      * @return object|\Shopware\Models\Attribute\Article|null
      */
-    public function getArticleFromAttribute(string $number) {
-        $article = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(array('afterbuyParentId' => $number));
+    public function getArticleFromAttribute(string $number)
+    {
+        $article = $this->entityManager->getRepository(ArticlesAttribute::class)
+            ->findOneBy(array('afterbuyParentId' => $number));
+
         return $article;
     }
 
@@ -602,13 +609,14 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $number
      * @param string $name
      * @param string $parent
+     *
      * @return \Shopware\Models\Article\Article
      */
     public function getMainArticle(string $number, string $name, $parent = ''): ShopwareArticle
     {
         $article = null;
 
-        if($parent) {
+        if ($parent) {
             $article = $this->getArticleFromAttribute($parent);
         } else {
             /**
@@ -616,20 +624,20 @@ ON duplicate key update afterbuy_id = $externalId;";
              */
             $article = $this->getArticleFromAttribute($number);
 
-            if(!$article) {
+            if ( ! $article) {
                 $article = $this->entityManager
                     ->getRepository(ArticleDetail::class)
                     ->findOneBy(array('number' => $number));
-            }
-            else {
+            } else {
                 //If Baseproduct we just will set the name
                 $article->getArticle()->setName($name);
                 $this->entityManager->persist($article);
+
                 return null;
             }
         }
 
-        if($article !== null) {
+        if ($article !== null) {
             return $article->getArticle();
         }
 
@@ -648,17 +656,19 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $detail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(array('number' => $number));
 
-        if($detail === null) $detail = $this->createDetail($number);
+        if ($detail === null) {
+            $detail = $this->createDetail($number);
+        }
 
-        if(!$article->getDetails()->contains($detail)) {
+        if ( ! $article->getDetails()->contains($detail)) {
             $article->getDetails()->add($detail);
         }
 
-        if($detail->getArticle() !== $article) {
+        if ($detail->getArticle() !== $article) {
             $detail->setArticle($article);
         }
 
-        if(!$article->getMainDetail()) {
+        if ( ! $article->getMainDetail()) {
             $article->setMainDetail($detail);
         }
 
@@ -703,21 +713,21 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param array $variants
+     *
      * @return array
      */
     public function getAssignableConfiguratorGroups(array $variants): array
     {
-        if(!$this->configuratorGroups) {
+        if ( ! $this->configuratorGroups) {
             $this->getConfiguratorGroups();
         }
 
         $groups = [];
 
-        foreach($variants as $variant) {
-            if(array_key_exists($variant['option'] , $this->configuratorGroups)) {
+        foreach ($variants as $variant) {
+            if (array_key_exists($variant['option'], $this->configuratorGroups)) {
                 array_push($groups, $this->configuratorGroups[$variant['option']]);
-            }
-            else {
+            } else {
                 array_push($groups, $this->createConfiguratorGroup($variant['option']));
                 $this->getConfiguratorGroups();
             }
@@ -729,6 +739,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param string $name
+     *
      * @return ConfiguratorGroup
      */
     public function createConfiguratorGroup(string $name): ConfiguratorGroup
@@ -766,17 +777,17 @@ ON duplicate key update afterbuy_id = $externalId;";
      * add an option to a given set
      *
      * @param Set $set
-     * @param $options
+     * @param     $options
+     *
      * @return Set
      */
     public function addSetOptions(Set &$set, $options): Set
     {
         $setOptions = $set->getOptions();
 
-        foreach($options as $option)
-        {
+        foreach ($options as $option) {
             // add missing options
-            if(!$setOptions->contains($option)) {
+            if ( ! $setOptions->contains($option)) {
                 $setOptions->add($option);
             }
         }
@@ -788,17 +799,19 @@ ON duplicate key update afterbuy_id = $externalId;";
      * add group to a given set
      *
      * @param Set $set
-     * @param $groups
+     * @param     $groups
+     *
      * @return Set
      */
     public function addSetGroups(Set &$set, $groups): Set
     {
         $setGroups = $set->getGroups();
 
-        foreach($groups as $group)
-        {
+        foreach ($groups as $group) {
             // add missing groups
-            if(!$setGroups->contains($group)) $setGroups->add($group);
+            if ( ! $setGroups->contains($group)) {
+                $setGroups->add($group);
+            }
         }
 
         return $set;
@@ -810,10 +823,11 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return array|\Doctrine\ORM\QueryBuilder
      */
-    public function getUnexportedArticles($force = false, $exportAll = true) {
+    public function getUnexportedArticles($force = false, $exportAll = true)
+    {
         $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
 
-        if($lastExport) {
+        if ($lastExport) {
             $lastExport = $lastExport->getLastProductExport();
         }
 
@@ -821,17 +835,16 @@ ON duplicate key update afterbuy_id = $externalId;";
             ->select(['articles'])
             ->from(ShopwareArticle::class, 'articles', 'articles.id')
             ->leftJoin('articles.details', 'details')
-            ->leftJoin('details.attribute', 'attributes')
-        ;
+            ->leftJoin('details.attribute', 'attributes');
 
-        if(!$exportAll) {
+        if ( ! $exportAll) {
             $articles->where('attributes.afterbuyExportEnabled = 1');
         }
 
-        if(!$force) {
-            $articles = $articles->andWhere("(attributes.afterbuyId IS NULL OR attributes.afterbuyId = '') OR articles.changed >= :lastExport")
-            ->setParameters(array('lastExport' => $lastExport))
-            ;
+        if ( ! $force) {
+            $articles =
+                $articles->andWhere("(attributes.afterbuyId IS NULL OR attributes.afterbuyId = '') OR articles.changed >= :lastExport")
+                    ->setParameters(array('lastExport' => $lastExport));
         }
 
         $articles = $articles->getQuery()
@@ -851,15 +864,14 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         try {
             Shopware()->Db()->exec($sql);
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('Error setting articles without any active variant to inactive');
         }
     }
 
     /**
      * @param array $valueArticles
-     * @param bool $netInput
+     * @param bool  $netInput
      * @param Group $customerGroup
      */
     public function importArticle(

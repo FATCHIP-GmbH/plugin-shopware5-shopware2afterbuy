@@ -211,7 +211,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      */
     public function assignArticleImages(ShopwareArticle $entity, ValueArticle &$article, ArticleDetail $detail = null)
     {
-        if (is_null($detail)) {
+        if ($detail === null) {
             $images = $entity->getImages();
         } else {
             $images = $detail->getImages();
@@ -221,7 +221,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             foreach($images as $index=>$image) {
 
                 try{
-                    if (is_null($detail)) {
+                    if ($detail === null) {
                         $path = $image->getMedia()->getPath();
                     } else {
                         $path = $image->getParent()->getMedia()->getPath();
@@ -233,7 +233,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
                 $url = $this->mediaService->getUrl($path);
 
-                if($image->getMain() == 1 && is_null($detail)) {
+                if($image->getMain() == 1 && $detail === null) {
                     $article->setMainImageUrl($url);
 
                     $thumbnails = $image->getMedia()->getThumbnails();
@@ -247,7 +247,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
-                if($index === 0 && !is_null($detail)) {
+                if($index === 0 && $detail !== null) {
                     $thumbnails = $image->getParent()->getMedia()->getThumbnails();
 
                     if(is_array($thumbnails)) {
@@ -261,7 +261,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 }
 
 
-                if((is_null($image->getChildren()) || $image->getChildren()->count() === 0) || !is_null($detail)) {
+                if(($image->getChildren() === null || $image->getChildren()->count() === 0) || $detail !== null) {
 
                     $productPicture = new ProductPicture();
                     $productPicture->setAltText($entity->getName() . '_' . ((int)$image->getPosition()));
@@ -427,7 +427,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         ArticleDetail &$detail,
         $parent = ''
     ): ArticlesAttribute {
-        if (is_null($detail->getAttribute())) {
+        if ($detail->getAttribute() === null) {
             $attr = $this->createAttributes($article, $detail, $parent);
             $detail->setAttribute($attr);
         } else return $detail->getAttribute();
@@ -443,7 +443,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      */
     public function createPriceAttributes(Price &$price)
     {
-        if(is_null($price->getAttribute()))
+        if($price->getAttribute() === null)
         {
             $priceAttr = new \Shopware\Models\Attribute\ArticlePrice();
             $price->setAttribute($priceAttr);
@@ -607,7 +607,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
         }
 
-        if(!is_null($article)) {
+        if($article !== null) {
             return $article->getArticle();
         }
         else {
@@ -627,7 +627,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $detail = $this->entityManager->getRepository('Shopware\Models\Article\Detail')->findOneBy(array('number' => $number));
 
-        if(is_null($detail)) $detail = $this->createDetail($number);
+        if($detail === null) $detail = $this->createDetail($number);
 
         if(!$article->getDetails()->contains($detail)) {
             $article->getDetails()->add($detail);

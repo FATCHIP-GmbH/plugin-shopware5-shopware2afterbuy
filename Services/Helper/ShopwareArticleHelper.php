@@ -47,10 +47,13 @@ class ShopwareArticleHelper extends AbstractHelper
     protected $customerGroup;
 
     /** @var */
-    protected $configuratorGroups;
-
-    /** @var */
     protected $configuratorOptions;
+
+    /** @var ImageMapping[] */
+    private $imageMappings;
+
+    /** @var ConfiguratorGroup[] */
+    private $configuratorGroups;
 
     public function fixMissingAttribute(ArticleDetail $detail): void
     {
@@ -727,7 +730,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     public function getAssignableConfiguratorGroups(array $variants): array
     {
         if ( ! $this->configuratorGroups) {
-            $this->getConfiguratorGroups();
+            $this->initializeConfiguratorGroupCache();
         }
 
         $groups = [];
@@ -737,7 +740,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 array_push($groups, $this->configuratorGroups[$variant['option']]);
             } else {
                 array_push($groups, $this->createConfiguratorGroup($variant['option']));
-                $this->getConfiguratorGroups();
+                $this->initializeConfiguratorGroupCache();
             }
 
         }
@@ -770,7 +773,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      *
      */
-    public function getConfiguratorGroups(): void
+    public function initializeConfiguratorGroupCache(): void
     {
         $groups = $this->entityManager->createQueryBuilder()
             ->select('groups')
@@ -981,14 +984,14 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
-    // TODO: refactor
-
     /**
      * @param ValueArticle[] $valueArticles
      */
     public function associateImages(array $valueArticles): void
     {
-        $mappings = [];
+        if ( ! $this->configuratorGroups) {
+            $this->initializeConfiguratorGroupCache();
+        }
 
         foreach ($valueArticles as $valueArticle) {
 
@@ -1009,145 +1012,139 @@ ON duplicate key update afterbuy_id = $externalId;";
 
 
             foreach ($valueArticle->getProductPictures() as $productPicture) {
+                $this->associateImage($valueArticle, $productPicture, $mainDetail);
+            }
+        }
+    }
 
-                $media = $this->createMediaImage(
-                    $productPicture->getUrl(),
-                    'Artikel'
-                );
+    private function associateImage(
+        ValueArticle $valueArticle,
+        ProductPicture $productPicture,
+        ArticleDetail $mainDetail
+    ): void {
+        $media = $this->createMediaImage(
+            $productPicture->getUrl(),
+            'Artikel'
+        );
 
-                if ($media === null) {
-                    continue;
-                }
+        if ($media === null) {
+            return;
+        }
 
-                /** @var ArticleDetail $articleDetail */
-                $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
-                    ['number' => $valueArticle->getExternalIdentifier()]
-                );
+        /** @var ArticleDetail $articleDetail */
+        $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+            ['number' => $valueArticle->getExternalIdentifier()]
+        );
 
-                /** @var ModelRepository $imageRepo */
-                $imageRepo = $this->entityManager->getRepository(ArticleImage::class);
+        /** @var ModelRepository $imageRepo */
+        $imageRepo = $this->entityManager->getRepository(ArticleImage::class);
 
-                // all images, assigned to current article with current media
-                /** @var ArticleImage[] $images */
+        // all images, assigned to current article with current media
+        /** @var ArticleImage[] $images */
 
-                if ($articleDetail && $articleDetail->getArticle()) {
-                    $images = $imageRepo->findBy([
-                        'mediaId'   => $media->getId(),
-                        'articleId' => $articleDetail->getArticle()->getId(),
-                    ]);
-                } elseif ($mainDetail && $mainDetail->getArticleId()) {
-                    $images = $imageRepo->findBy([
-                        'mediaId'   => $media->getId(),
-                        'articleId' => $mainDetail->getArticleId(),
-                    ]);
-                } else {
-                    $images = array();
-                }
+        if ($articleDetail && $articleDetail->getArticle()) {
+            $images = $imageRepo->findBy([
+                'mediaId'   => $media->getId(),
+                'articleId' => $articleDetail->getArticle()->getId(),
+            ]);
+        } elseif ($mainDetail && $mainDetail->getArticleId()) {
+            $images = $imageRepo->findBy([
+                'mediaId'   => $media->getId(),
+                'articleId' => $mainDetail->getArticleId(),
+            ]);
+        } else {
+            $images = array();
+        }
 
-                if (count($images) === 0) {
-                    $image =
-                        $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
-                } else {
-                    $image = $images[0];
-                }
+        if (count($images) === 0) {
+            $image = $this->createParentImage($media, $productPicture, $mainDetail->getArticle());
+        } else {
+            $image = $images[0];
+        }
 
-                $mapping = null;
+        $imageMapping = $this->getImageMapping($image);
 
-                if ($image->getId()) {
-                    //get mapping from cache
-                    if (array_key_exists($image->getId(), $mappings)) {
-                        $mapping = $mappings[$image->getId()];
-                    }
+        //we have to cache the mappings, otherwise we will not be able to find them if not flushed
+        if ($image->getId()) {
+            $mappings[$image->getId()] = $imageMapping;
+        }
 
-                    if ( ! $mapping) {
-                        $query = $this->entityManager->createQueryBuilder()
-                            ->select(['mapping'])
-                            ->from(ImageMapping::class, 'mapping')
-                            ->where('mapping.imageId = :image')
-                            ->setParameters(array('image' => $image->getId()))
-                            ->setMaxResults(1)
-                            ->getQuery();
+        if (is_array($valueArticle->variants) && count($valueArticle->variants) > 0) {
+            $this->associateVariantImage($valueArticle, $imageMapping, $image);
+        }
 
-                        try {
-                            $mapping = $query->getOneOrNullResult();
-                        } catch (NonUniqueResultException $e) {
-                            // TODO: handle exception
-                        }
-                    }
-                }
+        if ( ! $valueArticle->isMainProduct()) {
+            $this->createChildImage($image, $articleDetail);
+        }
 
-                if ( ! $mapping) {
-                    $mapping = new ImageMapping();
-                    $mapping->setImage($image);
-                }
+        // reset preview image status
+        if ($valueArticle->isMainProduct() && $productPicture->getNr() === '0' && $image->getMain() !== 1) {
+            foreach ($mainDetail->getArticle()->getImages() as $_image) {
+                $_image->setMain(2);
+            }
+            $image->setMain(1);
+        }
+    }
 
-                //we have to cache the mappings, otherwise we will not be able to find them if not flushed
-                if ($image->getId()) {
-                    $mappings[$image->getId()] = $mapping;
-                }
+    /**
+     * @param ValueArticle $valueArticle
+     * @param ImageMapping $imageMapping
+     * @param ArticleImage $image
+     */
+    private function associateVariantImage(
+        ValueArticle $valueArticle,
+        ImageMapping $imageMapping,
+        ArticleImage $image
+    ): void {
+        foreach ($valueArticle->variants as $variantOption) {
+            $optionName = $variantOption['value'];
+            $optionGroup = $variantOption['option'];
 
-                if (is_array($valueArticle->variants) && count($valueArticle->variants) > 0) {
-                    foreach ($valueArticle->variants as $variantOption) {
-                        $optionName = $variantOption['value'];
-                        $optionGroup = $variantOption['option'];
+            if (array_key_exists($optionGroup, $this->configuratorGroups)) {
+                $group = $this->configuratorGroups[$optionGroup];
+            } else {
+                $group = $this->entityManager->getRepository(ConfiguratorGroup::class)->findOneBy([
+                    'name' => $optionGroup,
+                ]);
+            }
 
-                        $group =
-                            $this->entityManager->getRepository(ConfiguratorGroup::class)->findOneBy([
-                                'name' => $optionGroup,
-                            ]);
+            /** @var Option $option */
+            $option = $this->entityManager->getRepository(Option::class)->findOneBy([
+                'name'  => $optionName,
+                'group' => $group,
+            ]);
 
-                        /** @var Option $option */
-                        $option = $this->entityManager->getRepository(Option::class)->findOneBy([
-                            'name'  => $optionName,
-                            'group' => $group,
-                        ]);
+            $rule = null;
 
-                        $rule = null;
+            if ($imageMapping->getId()) {
+                $query = $this->entityManager->createQueryBuilder()
+                    ->select(['rule'])
+                    ->from(ImageRule::class, 'rule')
+                    ->where('rule.mappingId = :mapping')
+                    ->andWhere('rule.optionId = :option')
+                    ->setParameters(array('mapping' => $imageMapping->getId(), 'option' => $option->getId()))
+                    ->setMaxResults(1)
+                    ->getQuery();
 
-                        if ($mapping->getId()) {
-                            $query = $this->entityManager->createQueryBuilder()
-                                ->select(['rule'])
-                                ->from(ImageRule::class, 'rule')
-                                ->where('rule.mappingId = :mapping')
-                                ->andWhere('rule.optionId = :option')
-                                ->setParameters(array('mapping' => $mapping->getId(), 'option' => $option->getId()))
-                                ->setMaxResults(1)
-                                ->getQuery();
-
-                            try {
-                                $rule = $query->getOneOrNullResult();
-                            } catch (NonUniqueResultException $e) {
-                                // TODO: handle exception
-                            }
-                        }
-
-                        if ( ! $rule) {
-                            $rule = new ImageRule();
-                            $rule->setMapping($mapping);
-                            $rule->setOption($option);
-                            $mapping->getRules()->add($rule);
-                        }
-                    }
-
-                    if ( ! $image->getMappings()->count()) {
-                        $image->getMappings()->add($mapping);
-                    } else {
-                        $this->entityManager->persist($mapping);
-                    }
-                }
-
-                if ( ! $valueArticle->isMainProduct()) {
-                    $this->createChildImage($image, $articleDetail);
-                }
-
-                // reset preview image status
-                if ($valueArticle->isMainProduct() && $productPicture->getNr() === '0' && $image->getMain() !== 1) {
-                    foreach ($mainDetail->getArticle()->getImages() as $_image) {
-                        $_image->setMain(2);
-                    }
-                    $image->setMain(1);
+                try {
+                    $rule = $query->getOneOrNullResult();
+                } catch (NonUniqueResultException $e) {
+                    // TODO: handle exception
                 }
             }
+
+            if ( ! $rule) {
+                $rule = new ImageRule();
+                $rule->setMapping($imageMapping);
+                $rule->setOption($option);
+                $imageMapping->getRules()->add($rule);
+            }
+        }
+
+        if ( ! $image->getMappings()->count()) {
+            $image->getMappings()->add($imageMapping);
+        } else {
+            $this->entityManager->persist($imageMapping);
         }
     }
 
@@ -1205,5 +1202,45 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         return $image;
+    }
+
+    /**
+     * @param ArticleImage $image
+     *
+     * @return ImageMapping
+     */
+    private function getImageMapping(ArticleImage $image): ImageMapping
+    {
+        $imageMapping = null;
+
+        if ($image->getId()) {
+            // get mapping from cache
+            if (array_key_exists($image->getId(), $this->imageMappings)) {
+                $imageMapping = $this->imageMappings[$image->getId()];
+            }
+
+            if ( ! $imageMapping) {
+                $query = $this->entityManager->createQueryBuilder()
+                    ->select(['mapping'])
+                    ->from(ImageMapping::class, 'mapping')
+                    ->where('mapping.imageId = :image')
+                    ->setParameters(array('image' => $image->getId()))
+                    ->setMaxResults(1)
+                    ->getQuery();
+
+                try {
+                    $imageMapping = $query->getOneOrNullResult();
+                } catch (NonUniqueResultException $e) {
+                    // TODO: handle exception
+                }
+            }
+        }
+
+        if ( ! $imageMapping) {
+            $imageMapping = new ImageMapping();
+            $imageMapping->setImage($image);
+        }
+
+        return $imageMapping;
     }
 }

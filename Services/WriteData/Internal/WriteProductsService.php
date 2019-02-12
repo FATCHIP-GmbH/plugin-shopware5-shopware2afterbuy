@@ -58,13 +58,14 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         $customerGroup = $this->entityManager->getRepository(CustomerGroup::class)->findOneBy(
             array('id' => $this->config['customerGroup'])
         );
-        $netInput = $customerGroup->getTaxInput();
 
         if ( ! $customerGroup) {
             $this->logger->error('Target customer group not set', array('Import', 'Articles'));
 
             return;
         }
+
+        $netInput = $customerGroup->getTaxInput();
 
         foreach ($valueArticles as $valueArticle) {
 

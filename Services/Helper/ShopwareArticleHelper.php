@@ -26,6 +26,7 @@ use Shopware\Models\Category\Category;
 use Shopware\Models\Customer\Group;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Media\Media;
+use Zend_Db_Adapter_Exception;
 
 
 /**
@@ -58,7 +59,11 @@ class ShopwareArticleHelper extends AbstractHelper {
         $attr = new \Shopware\Models\Attribute\Article();
         $detail->setAttribute($attr);
         $this->entityManager->persist($detail);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
     }
 
 
@@ -76,7 +81,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         if(!empty($sql)) {
-            $this->db->query($sql);
+            try {
+                $this->db->query($sql);
+            } catch (Zend_Db_Adapter_Exception $e) {
+                // TODO: handle exception
+            }
         }
     }
 
@@ -319,7 +328,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param array $variants
      * @return array
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getAssignableConfiguratorOptions(array $variants) {
         if(!$this->configuratorOptions) {
@@ -342,7 +350,11 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $option->setAttribute($attr);
 
                 $this->entityManager->persist($option);
-                $this->entityManager->flush($option);
+                try {
+                    $this->entityManager->flush($option);
+                } catch (OptimisticLockException $e) {
+                    // TODO: handle exception
+                }
 
                 $this->getConfiguratorOptions();
             }
@@ -644,7 +656,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article->setName(uniqid('', true));
 
         $this->entityManager->persist($article);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
 
         return $article;
     }
@@ -665,7 +681,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param array $variants
      * @return array
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function getAssignableConfiguratorGroups(array $variants) {
         if(!$this->configuratorGroups) {
@@ -691,7 +706,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $name
      * @return \Shopware\Models\Article\Configurator\Group
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createConfiguratorGroup(string $name) {
         $group = new \Shopware\Models\Article\Configurator\Group();
@@ -700,7 +714,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $group->setPosition(1337);
 
         $this->entityManager->persist($group);
-        $this->entityManager->flush($group);
+        try {
+            $this->entityManager->flush($group);
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
 
         return $group;
     }

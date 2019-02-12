@@ -3,6 +3,7 @@
 namespace FatchipAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
+use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
@@ -49,10 +50,13 @@ class AbstractHelper {
      */
     protected $taxes;
 
+    /** @var Enlight_Components_Db_Adapter_Pdo_Mysql */
     protected $db;
 
+    /** @var MediaService */
     protected $mediaService;
 
+    /** @var LoggerInterface */
     protected $logger;
 
     public $mediaStreamContext;
@@ -77,7 +81,7 @@ class AbstractHelper {
         $this->attributeGetter = $attributeGetter;
     }
 
-    public function initDb(\Enlight_Components_Db_Adapter_Pdo_Mysql $db) {
+    public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db) {
         $this->db = $db;
     }
 

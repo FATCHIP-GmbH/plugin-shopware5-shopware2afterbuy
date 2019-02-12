@@ -12,7 +12,6 @@ use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelRepository;
-use Shopware\Models\Article\Image;
 use Shopware\Models\Media\Album;
 use Shopware\Models\Media\Media;
 use Shopware\Models\Media\Repository as MediaRepository;
@@ -22,9 +21,11 @@ use Shopware\Models\Tax\Tax;
  * Helper will extend this abstract helper. This class is defining the given type.
  *
  * Class AbstractHelper
+ *
  * @package FatchipAfterbuy\Services\Helper
  */
-class AbstractHelper {
+class AbstractHelper
+{
     /**
      * @var ModelManager
      */
@@ -64,24 +65,31 @@ class AbstractHelper {
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger): void
+    {
         $this->logger = $logger;
     }
 
     /**
      * @param ModelManager $entityManager
-     * @param string $entity
-     * @param string $entityAttributes
-     * @param string $attributeGetter
+     * @param string       $entity
+     * @param string       $entityAttributes
+     * @param string       $attributeGetter
      */
-    public function __construct(ModelManager $entityManager, $entity = '', $entityAttributes = '', $attributeGetter = '') {
+    public function __construct(
+        ModelManager $entityManager,
+        $entity = '',
+        $entityAttributes = '',
+        $attributeGetter = ''
+    ) {
         $this->entityManager = $entityManager;
         $this->entity = $entity;
         $this->entityAttributes = $entityAttributes;
         $this->attributeGetter = $attributeGetter;
     }
 
-    public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db) {
+    public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db): void
+    {
         $this->db = $db;
     }
 
@@ -89,18 +97,20 @@ class AbstractHelper {
      *
      * @param string $identifier
      * @param string $field
-     * @param bool $isAttribute
+     * @param bool   $isAttribute
+     * @param bool   $create
+     *
      * @return ModelEntity|null
      */
-    public function getEntity(string $identifier, string $field, $isAttribute = false, $create = true) {
-        if($isAttribute === true) {
+    public function getEntity(string $identifier, string $field, $isAttribute = false, $create = true): ?ModelEntity
+    {
+        if ($isAttribute === true) {
             $entity = $this->getEntityByAttribute($identifier, $field);
-        }
-        else {
+        } else {
             $entity = $this->getEntityByField($identifier, $field);
         }
 
-        if(!$entity && $create === true) {
+        if ( ! $entity && $create === true) {
             $entity = $this->createEntity($identifier, $field, $isAttribute);
         }
 
@@ -109,40 +119,51 @@ class AbstractHelper {
 
     /**
      * @param float $rate
-     * @return mixed
+     *
+     * @return Tax
      */
-    public function getTax(float $rate) {
+    public function getTax(float $rate): ?Tax
+    {
 
-        $rate = number_format($rate, 2);
+        $rate_s = number_format($rate, 2);
 
-        if(!$this->taxes) {
+        if ( ! $this->taxes) {
             $this->getTaxes();
         }
 
-        if(array_key_exists((string) $rate, $this->taxes)) {
-            return $this->taxes[$rate];
+        if (array_key_exists($rate_s, $this->taxes)) {
+            return $this->taxes[$rate_s];
         }
 
-        $this->createTax($rate);
+        $this->createTax($rate_s);
         $this->getTaxes();
+
+        // TODO: what to return here?
+        return null;
     }
 
     /**
-     *
+     * @param float $rate
      */
-    public function createTax(float $rate) {
+    public function createTax(float $rate): void
+    {
         $tax = new Tax();
         $tax->setTax($rate);
         $tax->setName($rate);
 
         $this->entityManager->persist($tax);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            // TODO: handle exception
+        }
     }
 
-    public function getTaxes() {
+    public function getTaxes(): void
+    {
         $taxes = $this->entityManager->createQueryBuilder()
             ->select('taxes')
-            ->from('\Shopware\Models\Tax\Tax', 'taxes', 'taxes.tax')
+            ->from(Tax::class, 'taxes', 'taxes.tax')
             ->getQuery()
             ->getResult();
 
@@ -152,9 +173,11 @@ class AbstractHelper {
     /**
      * @param string $identifier
      * @param string $field
+     *
      * @return ModelEntity|null
      */
-    public function getEntityByField(string $identifier, string $field) {
+    public function getEntityByField(string $identifier, string $field): ?ModelEntity
+    {
         return $this->entityManager->getRepository($this->entity)->findOneBy(array($field => $identifier));
     }
 
@@ -162,12 +185,15 @@ class AbstractHelper {
      *
      * @param string $identifier
      * @param string $field
-     * @return |null
+     *
+     * @return object|null
      */
-    public function getEntityByAttribute(string $identifier, string $field) {
-        $attribute = $this->entityManager->getRepository($this->entityAttributes)->findOneBy(array($field => $identifier));
+    public function getEntityByAttribute(string $identifier, string $field)
+    {
+        $attribute =
+            $this->entityManager->getRepository($this->entityAttributes)->findOneBy(array($field => $identifier));
 
-        if($attribute === null) {
+        if ($attribute === null) {
             return null;
         }
 
@@ -179,14 +205,18 @@ class AbstractHelper {
     /**
      * @param string $identifier
      * @param string $field
-     * @param bool $isAttribute
+     * @param bool   $isAttribute
+     *
      * @return ModelEntity
      */
-    public function createEntity(string $identifier, string $field, $isAttribute = false) {
+    public function createEntity(string $identifier, string $field, $isAttribute = false): ModelEntity
+    {
         $entity = new $this->entity();
 
         //we have to create attributes manually
         $attribute = new $this->entityAttributes();
+        // TODO: What type is $entity? ModelEntity has no setAttribute.
+        /** @noinspection PhpUndefinedMethodInspection */
         $entity->setAttribute($attribute);
 
         $this->setIdentifier($identifier, $field, $entity, $isAttribute);
@@ -195,16 +225,19 @@ class AbstractHelper {
     }
 
     /**
-     * @param string $identifier
-     * @param string $field
+     * @param string      $identifier
+     * @param string      $field
      * @param ModelEntity $entity
-     * @param $isAttribute
+     * @param             $isAttribute
      */
-    public function setIdentifier(string $identifier, string $field, ModelEntity $entity, $isAttribute) {
+    public function setIdentifier(string $identifier, string $field, ModelEntity $entity, $isAttribute): void
+    {
 
         $setter = Helper::getSetterByField($field);
 
-        if($isAttribute) {
+        if ($isAttribute) {
+            // TODO: What type is $entity? ModelEntity has no setAttribute.
+            /** @noinspection PhpUndefinedMethodInspection */
             $entity->getAttribute()->$setter($identifier);
         } else {
             $entity->$setter($identifier);
@@ -213,21 +246,27 @@ class AbstractHelper {
 
     /**
      * @param $url
+     *
      * @return bool|string
      */
-    function grab_image($url)
+    public function grab_image($url)
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
+        // TODO: check this inspection
+        /** @noinspection CurlSslServerSpoofingInspection */
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        // TODO: check this inspection
+        /** @noinspection CurlSslServerSpoofingInspection */
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $raw = curl_exec($ch);
 
-        if($error = curl_error($ch)) {
+        if ($error = curl_error($ch)) {
             $this->logger->warning($error, array($url));
+
             return false;
         }
 
@@ -236,7 +275,8 @@ class AbstractHelper {
         return $raw;
     }
 
-    public function initMediaService(MediaService $mediaService) {
+    public function initMediaService(MediaService $mediaService): void
+    {
         $this->mediaService = $mediaService;
     }
 
@@ -248,7 +288,7 @@ class AbstractHelper {
      */
     public function createMediaImage($url, $albumName): ?Media
     {
-        if(!$url) {
+        if ( ! $url) {
             return null;
         }
 

@@ -87,6 +87,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
             $currentParents = &$catalogs;
             foreach ($parentPath as $parentID) {
+                if (!is_array($currentParents)) continue;
                 foreach ($currentParents as &$currentParent) {
                     if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
                         $currentParent['Catalog'][] = $catalog;

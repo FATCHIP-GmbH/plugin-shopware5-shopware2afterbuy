@@ -62,7 +62,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             if(!$this->config['shipping']) {
                 $this->logger->error('Default shipping import type not set.');
-                continue;
+                exit('Default shipping import type not set.');
             }
 
             /**

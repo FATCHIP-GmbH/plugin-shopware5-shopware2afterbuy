@@ -62,7 +62,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         if ( ! $customerGroup) {
             $this->logger->error('Target customer group not set', array('Import', 'Articles'));
 
-            return;
+            exit('Target customer group not set');
         }
 
         $netInput = $customerGroup->getTaxInput();
@@ -330,6 +330,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
             $this->logger->error('Error storing products', $targetData);
+            exit('Error storing products');
         }
 
         if(!empty($targetData)) {

@@ -25,7 +25,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
             $index = $i - 1;
 
-            if(!array_key_exists($index, $images) || is_null($images[$index])) {
+            if(!array_key_exists($index, $images) || $images[$index] === null) {
                 $imageUrl = '';
                 $imageAltText = '';
             } else {
@@ -270,6 +270,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
             }
             catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), array($e->getFile(), $products));
+                exit($e->getMessage());
             }
 
             if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response["Result"])) {

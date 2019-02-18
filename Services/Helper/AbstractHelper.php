@@ -222,7 +222,14 @@ class AbstractHelper {
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $raw = curl_exec($ch);
 
-        if($error = curl_error($ch) || $status = curl_getinfo($ch, CURLINFO_HTTP_CODE) == 404) {
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        $errorOccured = (
+            $error = curl_error($ch) ||
+            $status == 404
+        );
+
+        if($errorOccured) {
             $this->logger->warning($error, array($url, $status));
             return false;
         }

@@ -108,7 +108,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $orderPosition->setName($entity["SoldItems"]["SoldItem"]["ItemTitle"]);
                 $orderPosition->setPrice(Helper::convertDeString2Float($entity["SoldItems"]["SoldItem"]["ItemPrice"]));
 
-                if(array_key_exists('ShopProductDetails', $entity["SoldItems"]["SoldItem"])) {
+                if(array_key_exists('ShopProductDetails', $entity["SoldItems"]["SoldItem"]) && array_key_exists('ProductID', $entity["SoldItems"]["SoldItem"]["ShopProductDetails"])) {
                     $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ShopProductDetails"]["ProductID"]);
                 } else {
                     $orderPosition->setExternalIdentifier($entity["SoldItems"]["SoldItem"]["ItemID"]);

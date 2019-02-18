@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Shopware-Plugin FatchipAfterbuy.
  */
-class FatchipAfterbuy extends Plugin
+class abaccAfterbuy extends Plugin
 {
     /**
     * @param ContainerBuilder $container

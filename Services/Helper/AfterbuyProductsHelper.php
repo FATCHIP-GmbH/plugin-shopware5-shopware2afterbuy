@@ -1,16 +1,16 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\ValueObjects\Article;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\ValueObjects\Article;
+use abaccAfterbuy\ValueObjects\ProductPicture;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
 
 /**
  * Class ShopwareArticleHelper
- * @package FatchipAfterbuy\Services\Helper
+ * @package abaccAfterbuy\Services\Helper
  */
 class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
@@ -239,7 +239,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
         foreach($data as $value) {
             /**
-             * @var \FatchipAfterbuy\ValueObjects\Article $value
+             * @var \abaccAfterbuy\ValueObjects\Article $value
              */
 
             if($value->getVariantArticles()) {

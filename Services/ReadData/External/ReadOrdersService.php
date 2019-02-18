@@ -1,14 +1,14 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\External;
+namespace abaccAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Address;
-use FatchipAfterbuy\ValueObjects\Order;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Address;
+use abaccAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\ValueObjects\OrderPosition;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 

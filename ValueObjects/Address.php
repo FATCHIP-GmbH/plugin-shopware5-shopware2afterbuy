@@ -22,7 +22,7 @@
  * our trademarks remain entirely with us.
  */
 
-namespace   FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
 class Address extends AbstractValueObject
 {

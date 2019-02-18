@@ -1,8 +1,8 @@
 <?php
 
-namespace FatchipAfterbuy;
+namespace abaccAfterbuy;
 
-use FatchipAfterbuy\Models\Status;
+use abaccAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -1,12 +1,12 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\Internal;
+namespace abaccAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface

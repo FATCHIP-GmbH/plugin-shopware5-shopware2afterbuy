@@ -1,10 +1,10 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData;
+namespace abaccAfterbuy\Services\WriteData;
 
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\AbstractDataService;
-use FatchipAfterbuy\Models\Status;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\AbstractDataService;
+use abaccAfterbuy\Models\Status;
 
 class AbstractWriteDataService extends AbstractDataService {
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace FatchipAfterbuy\Services;
+namespace abaccAfterbuy\Services;
 
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
+use abaccAfterbuy\Services\Helper\AbstractHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;

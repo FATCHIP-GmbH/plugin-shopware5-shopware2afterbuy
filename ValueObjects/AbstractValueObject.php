@@ -1,12 +1,12 @@
 <?php
 
-namespace FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
 /**
  * valueObject will extend this object
  *
  * Class AbstractValueObject
- * @package FatchipAfterbuy\ValueObjects
+ * @package abaccAfterbuy\ValueObjects
  */
 abstract class AbstractValueObject {
 

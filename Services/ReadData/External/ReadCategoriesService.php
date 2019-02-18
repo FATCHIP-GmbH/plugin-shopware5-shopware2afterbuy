@@ -1,11 +1,11 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\External;
+namespace abaccAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Category;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Category;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface
 {

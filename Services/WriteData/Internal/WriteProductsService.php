@@ -1,15 +1,15 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\Internal;
+namespace abaccAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Models\Status;
-use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Models\Status;
+use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\ValueObjects\ProductPicture;
 use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;

@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\Models;
+namespace abaccAfterbuy\Models;
 
 use Doctrine\ORM\Mapping as ORM;
 use \Shopware\Components\Model\ModelEntity;

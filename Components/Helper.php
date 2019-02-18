@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\Components;
+namespace abaccAfterbuy\Components;
 
 class Helper {
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\External;
+namespace abaccAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
-use FatchipAfterbuy\ValueObjects\OrderStatus;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use abaccAfterbuy\ValueObjects\OrderStatus;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface
 {

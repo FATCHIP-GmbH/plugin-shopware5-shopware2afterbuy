@@ -1,12 +1,12 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\Internal;
+namespace abaccAfterbuy\Services\WriteData\Internal;
 
-use FatchipAfterbuy\Models\Status;
-use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\Models\Status;
+use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Order;
 use Shopware\Models\Shop\Shop;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {

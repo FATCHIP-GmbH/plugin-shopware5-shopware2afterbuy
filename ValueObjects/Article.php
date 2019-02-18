@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData;
+namespace abaccAfterbuy\Services\ReadData;
 
-use FatchipAfterbuy\Services\AbstractDataService;
+use abaccAfterbuy\Services\AbstractDataService;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
@@ -11,7 +11,7 @@ use Shopware\Components\Model\ModelManager;
  * implements methods we should use in every ReadDataService
  *
  * Class AbstractReadDataService
- * @package FatchipAfterbuy\Services\ReadData
+ * @package abaccAfterbuy\Services\ReadData
  */
 class AbstractReadDataService extends AbstractDataService {
 

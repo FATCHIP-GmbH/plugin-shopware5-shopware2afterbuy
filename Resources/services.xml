@@ -7,102 +7,102 @@
 
         <!-- Cronjobs -->
 
-        <service id="fatchip_afterbuy.subscriber.cron" class="FatchipAfterbuy\Subscriber\Cron">
+        <service id="abacc_afterbuy.subscriber.cron" class="abaccAfterbuy\Subscriber\Cron">
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
             <tag name="shopware.event_subscriber" />
         </service>
 
 
         <!-- Commands -->
 
-        <service id="fatchip_afterbuy.commands.export_status" class="FatchipAfterbuy\Commands\ExportStatus">
+        <service id="abacc_afterbuy.commands.export_status" class="abaccAfterbuy\Commands\ExportStatus">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_status_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_status_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_status_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_status_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.import_categories" class="FatchipAfterbuy\Commands\ImportCategories">
+        <service id="abacc_afterbuy.commands.import_categories" class="abaccAfterbuy\Commands\ImportCategories">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_categories_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.export_categories" class="FatchipAfterbuy\Commands\ExportCategories">
+        <service id="abacc_afterbuy.commands.export_categories" class="abaccAfterbuy\Commands\ExportCategories">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_categories_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.export_orders" class="FatchipAfterbuy\Commands\ExportOrders">
+        <service id="abacc_afterbuy.commands.export_orders" class="abaccAfterbuy\Commands\ExportOrders">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_orders_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.import_orders" class="FatchipAfterbuy\Commands\ImportOrders">
+        <service id="abacc_afterbuy.commands.import_orders" class="abaccAfterbuy\Commands\ImportOrders">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_orders_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_orders_service" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="fatchip_afterbuy.commands.import_products" class="FatchipAfterbuy\Commands\ImportProducts">
+        <service id="abacc_afterbuy.commands.import_products" class="abaccAfterbuy\Commands\ImportProducts">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.external.read_products_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.internal.write_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_products_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.export_products" class="FatchipAfterbuy\Commands\ExportProducts">
+        <service id="abacc_afterbuy.commands.export_products" class="abaccAfterbuy\Commands\ExportProducts">
             <tag name="console.command" />
-            <argument type="service" id="fatchip_afterbuy.services.read_data.internal.read_products_service" />
-            <argument type="service" id="fatchip_afterbuy.services.write_data.external.write_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_products_service" />
         </service>
 
-        <service id="fatchip_afterbuy.commands.update_products" class="FatchipAfterbuy\Commands\UpdateProducts">
-            <tag name="console.command" />
-            <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
-        </service>
-
-        <service id="fatchip_afterbuy.commands.update_orders" class="FatchipAfterbuy\Commands\UpdateOrders">
+        <service id="abacc_afterbuy.commands.update_products" class="abaccAfterbuy\Commands\UpdateProducts">
             <tag name="console.command" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="abacc_afterbuy.commands.update_orders" class="abaccAfterbuy\Commands\UpdateOrders">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
         </service>
 
         <!-- Products -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\External\ReadProductsService" id="fatchip_afterbuy.services.read_data.external.read_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadProductsService" id="abacc_afterbuy.services.read_data.external.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Article</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.afterbuy_products_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteProductsService" id="fatchip_afterbuy.services.write_data.internal.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteProductsService" id="abacc_afterbuy.services.write_data.internal.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Article\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadProductsService" id="fatchip_afterbuy.services.read_data.internal.read_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadProductsService" id="abacc_afterbuy.services.read_data.internal.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Article</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -111,27 +111,27 @@
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\External\WriteProductsService" id="fatchip_afterbuy.services.write_data.external.write_products_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteProductsService" id="abacc_afterbuy.services.write_data.external.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.afterbuy_products_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
         <!-- Orderstatus -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadStatusService" id="fatchip_afterbuy.services.read_data.internal.read_status_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadStatusService" id="abacc_afterbuy.services.read_data.internal.read_status_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
-        <service class="FatchipAfterbuy\Services\WriteData\External\WriteStatusService" id="fatchip_afterbuy.services.write_data.external.write_status_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteStatusService" id="abacc_afterbuy.services.write_data.external.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -139,10 +139,10 @@
 
         <!-- Orders -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="fatchip_afterbuy.services.read_data.internal.read_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="abacc_afterbuy.services.read_data.internal.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -150,38 +150,38 @@
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Order</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\ReadData\External\ReadOrdersService" id="fatchip_afterbuy.services.read_data.external.read_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadOrdersService" id="abacc_afterbuy.services.read_data.external.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Order</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\External\WriteOrdersService" id="fatchip_afterbuy.services.write_data.external.write_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteOrdersService" id="abacc_afterbuy.services.write_data.external.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="fatchip_afterbuy.services.write_data.internal.write_orders_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="abacc_afterbuy.services.write_data.internal.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="fatchip_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -189,36 +189,36 @@
 
         <!-- Categories -->
 
-        <service class="FatchipAfterbuy\Services\ReadData\External\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.external.read_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadCategoriesService" id="abacc_afterbuy.services.read_data.external.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.internal.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="abacc_afterbuy.services.write_data.internal.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="fatchip_afterbuy.services.read_data.internal.read_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="abacc_afterbuy.services.read_data.internal.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
             <call method="setTarget">
-                <argument type="string">FatchipAfterbuy\ValueObjects\Category</argument>
+                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
             </call>
             <call method="initHelper">
-                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\WriteData\External\WriteCategoriesService" id="fatchip_afterbuy.services.write_data.external.write_categories_service" parent="fatchip_afterbuy.services.abstract_data_service">
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteCategoriesService" id="abacc_afterbuy.services.write_data.external.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
               <call method="initHelper">
-                <argument id="fatchip_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
@@ -226,16 +226,16 @@
 
         <!-- Abstracts -->
 
-        <service id="fatchip_afterbuy.services.abstract_data_service" class="FatchipAfterbuy\Services\AbstractDataService" abstract="true">
+        <service id="abacc_afterbuy.services.abstract_data_service" class="abaccAfterbuy\Services\AbstractDataService" abstract="true">
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>
             <call method="setConfig">
                 <argument type="service" id="shopware.plugin.cached_config_reader" />
-                <argument type="string">%fatchip_afterbuy.plugin_name%</argument>
+                <argument type="string">%abacc_afterbuy.plugin_name%</argument>
             </call>
             <call method="registerAPINamespaces">
-                <argument type="string">%fatchip_afterbuy.plugin_dir%</argument>
+                <argument type="string">%abacc_afterbuy.plugin_dir%</argument>
             </call>
         </service>
 
@@ -243,7 +243,7 @@
 
         <!-- Helper -->
 
-        <service class="FatchipAfterbuy\Services\Helper\ShopwareOrderHelper" id="fatchip_afterbuy.services.helper.shopware_order_helper">
+        <service class="abaccAfterbuy\Services\Helper\ShopwareOrderHelper" id="abacc_afterbuy.services.helper.shopware_order_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Order\Order</argument>
             <argument type="string">\Shopware\Models\Attribute\Order</argument>
@@ -253,7 +253,7 @@
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper" id="fatchip_afterbuy.services.helper.afterbuy_products_helper">
+        <service class="abaccAfterbuy\Services\Helper\AfterbuyProductsHelper" id="abacc_afterbuy.services.helper.afterbuy_products_helper">
             <argument id="models" type="service"/>
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
@@ -263,7 +263,7 @@
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper" id="fatchip_afterbuy.services.helper.shopware_category_helper">
+        <service class="abaccAfterbuy\Services\Helper\ShopwareCategoryHelper" id="abacc_afterbuy.services.helper.shopware_category_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
@@ -273,7 +273,7 @@
             </call>
         </service>
 
-        <service class="FatchipAfterbuy\Services\Helper\ShopwareArticleHelper" id="fatchip_afterbuy.services.helper.shopware_article_helper">
+        <service class="abaccAfterbuy\Services\Helper\ShopwareArticleHelper" id="abacc_afterbuy.services.helper.shopware_article_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Article\Article</argument>
             <argument type="string">\Shopware\Models\Attribute\Attribute</argument>

@@ -1,9 +1,9 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\ValueObjects\Order;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Category\Category;
@@ -346,7 +346,7 @@ class ShopwareOrderHelper extends AbstractHelper {
     }
 
     public function getNewFullfilledOrders() {
-        $lastExport = $this->entityManager->getRepository("\FatchipAfterbuy\Models\Status")->find(1);
+        $lastExport = $this->entityManager->getRepository("\abaccAfterbuy\Models\Status")->find(1);
 
         if($lastExport) {
             $lastExport = $lastExport->getLastStatusExport();
@@ -632,7 +632,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $types;
     }
 
-    public function getCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
+    public function getCustomer(Order $order, \abaccAfterbuy\ValueObjects\Address $billingAddress,
                                 Shop $shop) {
         $customer = $this->entityManager->getRepository('\Shopware\Models\Customer\Customer')
             ->findOneBy(array('email' => $billingAddress->getEmail(), 'accountMode' => 1));
@@ -644,7 +644,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $this->createCustomer($order, $billingAddress, $shop);
     }
 
-    public function createCustomer(Order $order, \FatchipAfterbuy\ValueObjects\Address $billingAddress,
+    public function createCustomer(Order $order, \abaccAfterbuy\ValueObjects\Address $billingAddress,
                                    Shop $shop) {
         $customer = new Customer();
 

@@ -27,8 +27,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
     /**
      * @param array $data
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return mixed
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -43,8 +42,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @return mixed
      */
     public function transform(array $data) {
-        $this->targetShop = $this->helper->getShop($this->config['targetShop']);
-        $this->countries = $this->helper->getCountries();
+        /** @var ShopwareOrderHelper $helper */
+        $helper = $this->helper;
+
+        $this->targetShop = $helper->getShop($this->config['targetShop']);
+        $this->countries = $helper->getCountries();
 
         foreach($data as $value) {
             //log and ignore order if country is not setup in shop
@@ -58,6 +60,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 continue;
             }
 
+            if(!$this->config['shipping']) {
+                $this->logger->error('Default shipping import type not set.');
+                continue;
+            }
+
             /**
              * @var Order $value
              */
@@ -65,50 +72,54 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             /**
              * @var \Shopware\Models\Order\Order $order
              */
-            $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number', false);
+            $order = $helper->getEntity($value->getExternalIdentifier(), 'number');
 
             //fullfilled orders should not get updated
-            if($order->getId() && $this->helper->isFullfilled($order)) {
+            if($order->getId() && $helper->isFullfilled($order)) {
                 continue;
             }
 
-            $this->helper->setOrderMainValues($value, $order, $this->targetShop);
-            $this->helper->setOrderTaxValues($value, $order);
+            $helper->setOrderMainValues($value, $order, $this->targetShop);
+            $helper->setOrderTaxValues($value, $order);
 
             /**
              * set payment status
              */
-            $this->helper->setPaymentStatus($value, $order);
+            $helper->setPaymentStatus($value, $order);
 
             /**
              * set shipping status
              */
-            $this->helper->setShippingStatus($value, $order);
+            $helper->setShippingStatus($value, $order);
 
             /**
              * set payment type
              */
-            $this->helper->setPaymentType($value, $order, $this->config);
+            $helper->setPaymentType($value, $order, $this->config);
 
-            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop);
+            $customer = $helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop);
             $order->setCustomer($customer);
 
             /**
              * set billing address
              */
-            $this->helper->setAddress($value, $order, $customer);
+            if($customer === null) {
+                continue;
+            }
+
+            $helper->setAddress($value, $order, $customer);
 
             /**
              * set shipping address
              */
-            $this->helper->setAddress($value, $order, $customer, "shipping");
+            $helper->setAddress($value, $order, $customer, 'shipping');
 
             /**
              * set and update positions
              */
-            $this->helper->setPositions($value, $order);
+            $helper->setPositions($value, $order);
 
-            $this->helper->setShippingType($order, $this->config["shipping"]);
+            $helper->setShippingType($order, $this->config['shipping']);
 
             $this->entityManager->persist($order);
         }
@@ -120,7 +131,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param $targetData
      * @return mixed
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function send($targetData) {
 
@@ -145,7 +155,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         /**
          * @var $lastDate Status
          */
-        $lastDate = $this->entityManager->getRepository("FatchipAfterbuy\Models\Status")->find(1);
+        $lastDate = $this->entityManager->getRepository(Status::class)->find(1);
 
         if(!$lastDate) {
             return array();
@@ -157,7 +167,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         //if the shop is the data carrying system, we do only import new orders,
         //otherwise we will receive states from afterbuy for update
-        if($this->config["mainSystem"] != 1) {
+        if($this->config['mainSystem'] != 1) {
             $filterField = 'ModDate';
         } else {
             $filterField = 'AuctionEndDate';

@@ -141,8 +141,16 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         foreach ($targetData as $order) {
             $response = $api->sendOrdersToAfterbuy($order);
 
-            if(!empty($response)) {
-                $submitted[$response["ordernumber"]] = $response["afterbuyId"];
+            if(empty($response)) {
+                continue;
+            }
+
+            if(array_key_exists('ordernumber', $response)) {
+                $submitted[$response['ordernumber']] = $response['afterbuyId'];
+            }
+
+            if(array_key_exists('error', $response)) {
+                $this->logger->error('Error submitting order', array($response));
             }
         }
 

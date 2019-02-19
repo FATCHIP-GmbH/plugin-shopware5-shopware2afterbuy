@@ -7,7 +7,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
-use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 class AbstractDataService {
 
@@ -47,7 +46,6 @@ class AbstractDataService {
      * !!! if different services etc are needed, we will make use of factories (symfony) !!!
      *
      * AbstractReadDataService constructor.
-     * @param string $targetEntity
      * @param ModelManager $entityManager
      */
     public function __construct(ModelManager $entityManager = null) {
@@ -57,25 +55,28 @@ class AbstractDataService {
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger): void
+    {
         $this->logger = $logger;
     }
 
-    public function setConfig(CachedConfigReader $configReader, string $pluginName) {
+    public function setConfig(CachedConfigReader $configReader, string $pluginName): void
+    {
         $this->config = $configReader->getByPluginName($pluginName);
 
         $this->apiConfig = [
             'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
             'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
-            'afterbuyPartnerId'            => $this->config["partnerId"],
-            'afterbuyPartnerPassword'      => $this->config["partnerPassword"],
-            'afterbuyUsername'             => $this->config["userName"],
-            'afterbuyUserPassword'         => $this->config["userPassword"],
+            'afterbuyPartnerId'            => $this->config['partnerId'],
+            'afterbuyPartnerPassword'      => $this->config['partnerPassword'],
+            'afterbuyUsername'             => $this->config['userName'],
+            'afterbuyUserPassword'         => $this->config['userPassword'],
             'logLevel'                     => '1',
         ];
     }
 
-    public function registerAPINamespaces(string $path) {
+    public function registerAPINamespaces(string $path): void
+    {
         Shopware()->Container()->get('loader')->registerNamespace(
             'Fatchip\Afterbuy',
             $path . '/Library/API/'
@@ -87,13 +88,15 @@ class AbstractDataService {
      * @param string $identifier
      * @param bool $isAttribute
      */
-    public function initHelper(AbstractHelper $helper, $identifier = '', $isAttribute = false) {
+    public function initHelper(AbstractHelper $helper, $identifier = '', $isAttribute = false): void
+    {
         $this->helper = $helper;
         $this->identifier = $identifier;
         $this->isAttribute = $isAttribute;
     }
 
-    public function initMediaService(MediaService $mediaService) {
+    public function initMediaService(MediaService $mediaService): void
+    {
         $this->mediaService = $mediaService;
     }
 }

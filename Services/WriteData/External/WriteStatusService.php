@@ -4,7 +4,6 @@ namespace abaccAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
 use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
 use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 use abaccAfterbuy\ValueObjects\Category as ValueCategory;
@@ -16,9 +15,9 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param ValueCategory[] $valueCategories
      *
-     * @return string
+     * @return array|null
      */
-    public function put(array $valueCategories)
+    public function put(array $valueCategories) :?array
     {
         $catalogs = $this->transform($valueCategories);
 
@@ -27,7 +26,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
 
     public function transform(array $orders): array
     {
-        $this->logger->debug("Storing " . count($orders) . " items.", array($orders));
+        $this->logger->debug('Storing ' . count($orders) . ' items.', array($orders));
 
         if(empty($orders)) {
             return array();
@@ -64,7 +63,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      *
      * @return array
      */
-    public function send($orders)
+    public function send($orders) :?array
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);

@@ -2,30 +2,22 @@
 
 namespace abaccAfterbuy\Services\ReadData\Internal;
 
-use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
 use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
 use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Address;
-use abaccAfterbuy\ValueObjects\Article;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
-use abaccAfterbuy\ValueObjects\ProductPicture;
-use Shopware\Models\Article\Configurator\Option;
-use Shopware\Models\Article\Price;
-use Shopware\Models\Category\Category;
-use Shopware\Models\Customer\Group;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
 
     protected $customerGroup;
 
+    /** @var ShopwareArticleHelper */
+    public $helper;
+
     /**
      * @param array $filter
      * @return array|null
      */
-    public function get(array $filter) {
+    public function get(array $filter) :?array {
         $data = $this->read($filter);
         return $this->transform($data);
     }
@@ -35,9 +27,8 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      *
      * @param array $data
      * @return array
-     * @throws \Exception
      */
-    public function transform(array $data) {
+    public function transform(array $data) :?array {
         $this->logger->debug('Receiving products from shop', $data);
 
         /**
@@ -56,7 +47,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
         foreach($data as $entity) {
 
-            if(empty($entity) || is_null($entity->getTax())) {
+            if(empty($entity) || $entity->getTax() === null) {
                 continue;
             }
 
@@ -81,7 +72,10 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     $variant = $helper->setVariantValues($entity, $detail, $this->targetEntity, $netInput);
 
                     $helper->assignArticleImages($entity, $variant, $detail);
-                    $article->getVariantArticles()->add($variant);
+
+                    if($article->getVariantArticles() !== null) {
+                        $article->getVariantArticles()->add($variant);
+                    }
                 }
             }
 
@@ -91,14 +85,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
         return $targetData;
     }
 
-
     /**
      * provides api data. dummy data as used here can be used in tests
      *
      * @param array $filter
      * @return array
      */
-    public function read(array $filter) {
+    public function read(array $filter) :?array {
 
         $data = $this->helper->getUnexportedArticles($filter['submitAll'], $this->config['ExportAllArticles']);
 

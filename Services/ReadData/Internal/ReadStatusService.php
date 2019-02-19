@@ -2,15 +2,10 @@
 
 namespace abaccAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\AbstractHelper;
-use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
 use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
 use abaccAfterbuy\ValueObjects\OrderStatus;
-use Shopware\Bundle\MediaBundle\MediaService;
-use Shopware\Models\Category\Category as ShopwareCategory;
 use Shopware\Models\Order\Order;
 
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface
@@ -46,8 +41,13 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
             $status->setAfterbuyOrderId($order->getAttribute()->getAfterbuyOrderId());
 
             //should be replaced by values from status history
-            $status->setPaymentDate(new \DateTime());
-            $status->setShippingDate(new \DateTime());
+            try {
+                $status->setPaymentDate(new \DateTime());
+                $status->setShippingDate(new \DateTime());
+            }
+            catch(\Exception $e) {
+                //ugly datetime exception handling
+            }
             $status->setAmount($order->getInvoiceAmount());
 
             $values[] = $status;

@@ -3,9 +3,7 @@
 namespace abaccAfterbuy\Services\ReadData;
 
 use abaccAfterbuy\Services\AbstractDataService;
-use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelEntity;
-use Shopware\Components\Model\ModelManager;
 
 /**
  * implements methods we should use in every ReadDataService
@@ -29,11 +27,13 @@ class AbstractReadDataService extends AbstractDataService {
     /**
      * @param string $repo
      */
-    public function setRepo(string $repo) {
+    public function setRepo(string $repo): void
+    {
         $this->sourceRepository = $repo;
     }
 
-    public function setTarget(string $target) {
+    public function setTarget(string $target): void
+    {
         $this->targetEntity = $target;
     }
 }

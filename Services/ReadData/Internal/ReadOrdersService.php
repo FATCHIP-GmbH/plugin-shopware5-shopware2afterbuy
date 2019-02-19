@@ -2,6 +2,7 @@
 
 namespace abaccAfterbuy\Services\ReadData\Internal;
 
+use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
@@ -12,12 +13,14 @@ use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
+    /** @var ShopwareOrderHelper */
+    public $helper;
 
     /**
      * @param array $filter
      * @return array|null
      */
-    public function get(array $filter) {
+    public function get(array $filter) :?array {
         $data = $this->read($filter);
         return $this->transform($data);
     }
@@ -28,7 +31,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $data
      * @return array|null
      */
-    public function transform(array $data) {
+    public function transform(array $data) :?array {
         $this->logger->debug('Receiving orders from shop', $data);
 
         if($this->targetEntity === null) {
@@ -127,13 +130,13 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $order->setCurrency($entity->getCurrency());
 
-            if($entity->getPaymentStatus()->getId() == 12) {
+            if($entity->getPaymentStatus()->getId() === 12) {
                 $order->setPaid(true);
             }
 
             $order->setTransactionId($entity->getTransactionId());
 
-            array_push($targetData, $order);
+            $targetData[] = $order;
         }
 
         return $targetData;
@@ -146,7 +149,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $filter
      * @return array
      */
-    public function read(array $filter) {
+    public function read(array $filter) :?array {
 
         /**
          * @var Repository $repo
@@ -154,7 +157,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         $data = $this->helper->getUnexportedOrders();
 
         if(!$data) {
-            $this->logger->error("No data received", array("Orders", "Read", "Internal"));
+            $this->logger->error('No data received', array('Orders', 'Read', 'Internal'));
         }
 
         return $data;

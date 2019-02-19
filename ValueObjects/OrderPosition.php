@@ -2,8 +2,6 @@
 
 namespace abaccAfterbuy\ValueObjects;
 
-use abaccAfterbuy\ValueObjects\Address as AddressAlias;
-
 class OrderPosition extends AbstractValueObject {
 
     /**

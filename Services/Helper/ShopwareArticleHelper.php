@@ -146,7 +146,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     public function setVariantValues(
         ShopwareArticle $entity,
         ArticleDetail $detail,
-        ValueArticle $targetEntity,
+        string $targetEntity,
         bool $netInput
     ) {
         /** @var ValueArticle $variant */
@@ -297,7 +297,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return ValueArticle
      */
-    public function setArticleMainValues(ShopwareArticle $entity, ValueArticle $targetEntity): ValueArticle
+    public function setArticleMainValues(ShopwareArticle $entity, string $targetEntity): ValueArticle
     {
         /**
          * article main values

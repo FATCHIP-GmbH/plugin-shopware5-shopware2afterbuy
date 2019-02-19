@@ -19,9 +19,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
     /**
      * @param array $data
-     * @return mixed|void
+     * @return array|null
      */
-    public function put(array $data) {
+    public function put(array $data) :?array {
         $data = $this->transform($data);
         return $this->send($data);
     }
@@ -32,11 +32,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * could may be moved into separate helper
      *
      * @param array $data
-     * @return mixed|void
+     * @return array
      */
-    public function transform(array $data) {
+    public function transform(array $data) :array {
 
-        $this->logger->debug("Storing " . count($data) . " items.", array($data));
+        $this->logger->debug('Storing ' . count($data) . ' items.', array($data));
 
         $orders = [];
 
@@ -51,6 +51,12 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             /**
              * @var Order $value
              */
+
+            if($value->getShippingAddress() === null) {
+                continue;
+            }
+
+            $internalIdentifyer = $value->getInternalIdentifier();
 
             $orders[$value->getInternalIdentifier()] = array(
                 'PosAnz' => $value->getPositions()->count(),
@@ -76,7 +82,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'Ktelefon' => $value->getBillingAddress()->getPhone(),
                 'Kemail' => $value->getBillingAddress()->getEmail(),
 
-                'KBirthday' => ($value->getBillingAddress()->getBirthday()) ? date_format($value->getBillingAddress()->getBirthday(), 'd.m.Y H:i:s') : '',
+                'KBirthday' => $value->getBillingAddress()->getBirthday() ? date_format($value->getBillingAddress()->getBirthday(), 'd.m.Y H:i:s') : '',
                 'BuyDate' => date_format($value->getCreateDate(), 'd.m.Y H:i:s'),
 
                 'Versandart' => $value->getShippingType(),
@@ -90,14 +96,14 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'NoVersandCalc' => 1,
                 'Versandgruppe' => 'shop',
 
-                'MwStNichtAusweisen' => ($value->isTaxFree()) ? 1 : 0,
+                'MwStNichtAusweisen' => $value->isTaxFree() ? 1 : 0,
                 'EkundenNr' => $value->getCustomerNumber(),
                 'Kundenerkennung' => 1,
                 'NoeBayNameAktu' => 1,
                 'Artikelerkennung' => 13,
-                'VID' => $value->getInternalIdentifier(),
+                'VID' => $internalIdentifyer,
                 'SoldCurrency' => $value->getCurrency(),
-                'SetPay' => ($value->isCleared()) ? 1 : 0,
+                'SetPay' => $value->isCleared() ? 1 : 0,
                 'CheckVID' => 1,
                 'CheckPackstation' => 1,
                 'PaymentTransactionId' => $value->getTransactionId()
@@ -110,16 +116,16 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                  * @var OrderPosition $position
                  */
 
-                $orders[$value->getInternalIdentifier()]['Artikelnr_' . $i] = $position->getInternalIdentifier();
-                $orders[$value->getInternalIdentifier()]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
-                $orders[$value->getInternalIdentifier()]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
+                $orders[$internalIdentifyer]['Artikelnr_' . $i] = $position->getInternalIdentifier();
+                $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
+                $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
 
-                $orders[$value->getInternalIdentifier()]['Artikelname_' . $i] = $position->getName();
+                $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();
 
-                $orders[$value->getInternalIdentifier()]['ArtikelEpreis_' . $i] = Helper::convertNumberToABString($position->getPrice());
-                $orders[$value->getInternalIdentifier()]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString($position->getTax());
+                $orders[$internalIdentifyer]['ArtikelEpreis_' . $i] = Helper::convertNumberToABString($position->getPrice());
+                $orders[$internalIdentifyer]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString($position->getTax());
 
-                $orders[$value->getInternalIdentifier()]['ArtikelMenge_' . $i] = $position->getQuantity();
+                $orders[$internalIdentifyer]['ArtikelMenge_' . $i] = $position->getQuantity();
 
                 $i++;
             }
@@ -133,7 +139,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param $targetData
      * @return array
      */
-    public function send($targetData) {
+    public function send($targetData) :?array {
         $api = new ApiClient($this->apiConfig);
 
         $submitted = [];
@@ -158,7 +164,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $this->helper->setAfterBuyIds($submitted);
         }
         catch(\Exception $e) {
-            $this->logger->error('Error storing external order ids', $e->getMessage());
+            $this->logger->error('Error storing external order ids', array($e->getMessage()));
         }
 
         return $submitted;

@@ -16,17 +16,23 @@ class AbstractWriteDataService extends AbstractDataService {
     /**
      * @param string $repo
      */
-    public function setRepo(string $repo) {
+    public function setRepo(string $repo): void
+    {
         $this->targetRepository = $repo;
     }
 
     /**
      * @param string $field
      */
-    public function storeSubmissionDate(string $field) {
+    public function storeSubmissionDate(string $field): void
+    {
         $status = $this->entityManager->getRepository(Status::class)->find(1);
 
         $setter = Helper::getSetterByField($field);
+
+        if(empty($status)) {
+            return;
+        }
 
         try {
             $status->$setter(new \DateTime());

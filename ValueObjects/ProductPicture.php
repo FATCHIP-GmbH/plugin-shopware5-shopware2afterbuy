@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
 class ProductPicture
 {

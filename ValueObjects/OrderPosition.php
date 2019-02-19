@@ -1,8 +1,8 @@
 <?php
 
-namespace FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
-use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
+use abaccAfterbuy\ValueObjects\Address as AddressAlias;
 
 class OrderPosition extends AbstractValueObject {
 

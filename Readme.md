@@ -1,9 +1,11 @@
-# führendes System Shopware
+#Funktionsbeschreibung
+
+## führendes System Shopware
 Artikel und Kategorien (noch nicht übermittelt oder geändert seit letztem Export) werden von Shopware an Afterbuy übertragen.
 Bestellungen (seit letztem Import) werden aus Afterbuy importiert.
 Der Status von abgeschlossenen Bestellungen wird vor jedem Bestellimport an Afterbuy übermittelt.
 
-#führendes System Afterbuy
+## führendes System Afterbuy
 Artikel und Kategorien werden von Afterbuy importiert.
 Im Shop getätigte Bestellungen werden an Afterbuy übermittelt.
 
@@ -11,6 +13,9 @@ Im Shop getätigte Bestellungen werden an Afterbuy übermittelt.
 - php-curl
 - PHP 7.1
 - Shopware 5.3
+
+#Beschränkungen
+- max. 250 Varianten je Artikel
 
 # Anmerkungen
 ## führendes System
@@ -29,3 +34,17 @@ Anstelle der Cronjobs können die Commands verwendet werden.
 
     php bin/console Afterbuy:Update:Products
     php bin/console Afterbuy:Update:Orders
+    
+# Installation
+
+## Konfiguration
+
+Die Konfiguration erfolgt über den Plugin-Manager nach Installation des Plugins.
+    
+## Cronjobs aktivieren
+
+Die bereitgestellten Cronjobs müssen nach vorgenommener Konfiguration aktiviert und ggf. konfiguriert werden. (Einstellungen -> Grundeinstellungen -> Cronjobs)
+
+    Sync Afterbuy Orders
+    Sync Afterbuy Products
+       

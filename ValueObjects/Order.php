@@ -1,9 +1,9 @@
 <?php
 
-namespace FatchipAfterbuy\ValueObjects;
+namespace abaccAfterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FatchipAfterbuy\ValueObjects\Address as AddressAlias;
+use abaccAfterbuy\ValueObjects\Address as AddressAlias;
 
 class Order extends AbstractValueObject {
 

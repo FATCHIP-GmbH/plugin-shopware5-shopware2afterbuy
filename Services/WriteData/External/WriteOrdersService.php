@@ -1,14 +1,14 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\External;
+namespace abaccAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Order;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\ValueObjects\OrderPosition;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
@@ -141,8 +141,16 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         foreach ($targetData as $order) {
             $response = $api->sendOrdersToAfterbuy($order);
 
-            if(!empty($response)) {
-                $submitted[$response["ordernumber"]] = $response["afterbuyId"];
+            if(empty($response)) {
+                continue;
+            }
+
+            if(array_key_exists('ordernumber', $response)) {
+                $submitted[$response['ordernumber']] = $response['afterbuyId'];
+            }
+
+            if(array_key_exists('error', $response)) {
+                $this->logger->error('Error submitting order', array($response));
             }
         }
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace FatchipAfterbuy\Commands;
+namespace abaccAfterbuy\Commands;
 
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputArgument;

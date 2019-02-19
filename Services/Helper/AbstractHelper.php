@@ -1,13 +1,13 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
 use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
-use FatchipAfterbuy\Components\Helper;
+use abaccAfterbuy\Components\Helper;
 use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
@@ -21,8 +21,7 @@ use Shopware\Models\Tax\Tax;
  * Helper will extend this abstract helper. This class is defining the given type.
  *
  * Class AbstractHelper
- *
- * @package FatchipAfterbuy\Services\Helper
+ * @package abaccAfterbuy\Services\Helper
  */
 class AbstractHelper
 {
@@ -174,9 +173,9 @@ class AbstractHelper
      * @param string $identifier
      * @param string $field
      *
-     * @return ModelEntity|null
+     * @return object|ModelEntity|null
      */
-    public function getEntityByField(string $identifier, string $field): ?ModelEntity
+    public function getEntityByField(string $identifier, string $field)
     {
         return $this->entityManager->getRepository($this->entity)->findOneBy(array($field => $identifier));
     }
@@ -244,7 +243,7 @@ class AbstractHelper
         }
     }
 
-    /**
+    /**curl_close($ch)
      * @param $url
      *
      * @return bool|string
@@ -264,9 +263,15 @@ class AbstractHelper
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         $raw = curl_exec($ch);
 
-        if ($error = curl_error($ch)) {
-            $this->logger->warning($error, array($url));
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+        $errorOccured = (
+            $error = curl_error($ch) ||
+            $status == 404
+        );
+
+        if ($errorOccured) {
+            $this->logger->warning($error, array($url, $status));
             return false;
         }
 

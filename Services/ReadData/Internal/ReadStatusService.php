@@ -1,14 +1,14 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\Internal;
+namespace abaccAfterbuy\Services\ReadData\Internal;
 
-use FatchipAfterbuy\Services\Helper\AbstractHelper;
-use FatchipAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use FatchipAfterbuy\Services\Helper\ShopwareOrderHelper;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
-use FatchipAfterbuy\ValueObjects\OrderStatus;
+use abaccAfterbuy\Services\Helper\AbstractHelper;
+use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use abaccAfterbuy\ValueObjects\OrderStatus;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 use Shopware\Models\Order\Order;

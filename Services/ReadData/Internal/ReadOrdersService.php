@@ -1,13 +1,13 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\Internal;
+namespace abaccAfterbuy\Services\ReadData\Internal;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Address;
-use FatchipAfterbuy\ValueObjects\Order;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Address;
+use abaccAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 

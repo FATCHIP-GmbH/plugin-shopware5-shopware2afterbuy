@@ -1,8 +1,8 @@
 <?php
 
-namespace FatchipAfterbuy;
+namespace abaccAfterbuy;
 
-use FatchipAfterbuy\Models\Status;
+use abaccAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -10,15 +10,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Shopware-Plugin FatchipAfterbuy.
  */
-class FatchipAfterbuy extends Plugin
+class abaccAfterbuy extends Plugin
 {
     /**
     * @param ContainerBuilder $container
     */
     public function build(ContainerBuilder $container)
     {
-        $container->setParameter('fatchip_afterbuy.plugin_dir', $this->getPath());
-        $container->setParameter('fatchip_afterbuy.plugin_name', $this->getName());
+        $container->setParameter('abacc_afterbuy.plugin_dir', $this->getPath());
+        $container->setParameter('abacc_afterbuy.plugin_name', $this->getName());
 
         parent::build($container);
     }
@@ -34,12 +34,16 @@ class FatchipAfterbuy extends Plugin
 
         $service = $this->container->get('shopware_attribute.crud_service');
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
-        $service->update('s_order_attributes', 'afterbuy_order_id', 'string');
+
+        $service->update('s_order_attributes', 'afterbuy_order_id', 'string', [
+            'displayInBackend' => true
+        ]);
+
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
         $service->update('s_articles_attributes', 'afterbuy_id', 'string');
 
         $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
-            'label' => 'Artikel exportieren',
+            'label' => 'Artikel zu Afterbuy exportieren',
             'supportText' => 'Wenn "Alle Artikel exportieren" in den Plugineinstellungen deaktiviert ist, werden nur Artikel exportiert, für die diese Funktionalität explizit gesetzt wurde',
             'displayInBackend' => true,
         ]);

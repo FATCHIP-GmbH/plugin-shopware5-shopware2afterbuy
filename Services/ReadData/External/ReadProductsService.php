@@ -1,13 +1,13 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\External;
+namespace abaccAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\Helper\AfterbuyProductsHelper;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\Helper\AfterbuyProductsHelper;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface
 {

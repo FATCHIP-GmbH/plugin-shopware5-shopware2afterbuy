@@ -1,16 +1,16 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\ValueObjects\Article;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\ValueObjects\Article;
+use abaccAfterbuy\ValueObjects\ProductPicture;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
 
 /**
  * Class ShopwareArticleHelper
- * @package FatchipAfterbuy\Services\Helper
+ * @package abaccAfterbuy\Services\Helper
  */
 class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
@@ -25,7 +25,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
             $index = $i - 1;
 
-            if(!array_key_exists($index, $images) || is_null($images[$index])) {
+            if(!array_key_exists($index, $images) || $images[$index] === null) {
                 $imageUrl = '';
                 $imageAltText = '';
             } else {
@@ -239,7 +239,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
         foreach($data as $value) {
             /**
-             * @var \FatchipAfterbuy\ValueObjects\Article $value
+             * @var \abaccAfterbuy\ValueObjects\Article $value
              */
 
             if($value->getVariantArticles()) {
@@ -270,6 +270,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
             }
             catch (\Exception $e) {
                 $this->logger->error($e->getMessage(), array($e->getFile(), $products));
+                exit($e->getMessage());
             }
 
             if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response["Result"])) {

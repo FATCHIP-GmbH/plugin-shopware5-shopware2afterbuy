@@ -1,11 +1,11 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
-use FatchipAfterbuy\ValueObjects\Address as ValueAddress;
-use FatchipAfterbuy\ValueObjects\Order as ValueOrder;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
+use abaccAfterbuy\ValueObjects\Address as ValueAddress;
+use abaccAfterbuy\ValueObjects\Order as ValueOrder;
+use abaccAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
 use Shopware\Models\Order\Billing;
@@ -14,7 +14,7 @@ use Shopware\Models\Order\Order as ShopwareOrder;
 use Shopware\Models\Order\Status as OrderStatus;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Customer\Group;
-use FatchipAfterbuy\Models\Status;
+use abaccAfterbuy\Models\Status;
 use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Shipping;
 use Shopware\Models\Country\Country;

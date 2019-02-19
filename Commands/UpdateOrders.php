@@ -1,11 +1,11 @@
 <?php
 
-namespace FatchipAfterbuy\Commands;
+namespace abaccAfterbuy\Commands;
 
-use FatchipAfterbuy\Services\ReadData\External\ReadOrdersService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\Services\WriteData\External\WriteOrdersService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\Services\ReadData\External\ReadOrdersService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\Services\WriteData\External\WriteOrdersService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 use Shopware\Commands\ShopwareCommand;
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,16 +47,16 @@ class UpdateOrders extends ShopwareCommand
 
         //if afterbuy data carrying system
         if($config['mainSystem'] == 2) {
-            $this->readOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.internal.read_orders_service');
-            $this->writeOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.external.write_orders_service');
+            $this->readOrderService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_orders_service');
+            $this->writeOrderService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_orders_service');
         }
         //shopware is data carrying system otherwise
         else {
-            $this->readOrderStatusService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.internal.read_status_service');
-            $this->writeOrderStatusService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.external.write_status_service');
+            $this->readOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_status_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_status_service');
 
-            $this->readOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_orders_service');
-            $this->writeOrderService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_orders_service');
+            $this->readOrderService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_orders_service');
         }
     }
 

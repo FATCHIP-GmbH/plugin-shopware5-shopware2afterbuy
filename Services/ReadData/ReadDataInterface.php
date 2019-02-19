@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData;
+namespace abaccAfterbuy\Services\ReadData;
 
 interface ReadDataInterface {
     /**

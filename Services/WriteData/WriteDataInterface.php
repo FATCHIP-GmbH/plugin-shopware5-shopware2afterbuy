@@ -1,6 +1,6 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData;
+namespace abaccAfterbuy\Services\WriteData;
 
 interface WriteDataInterface {
 

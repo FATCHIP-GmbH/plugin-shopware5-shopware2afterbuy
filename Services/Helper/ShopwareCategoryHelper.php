@@ -1,14 +1,14 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
-use FatchipAfterbuy\ValueObjects\Category as ValueCategory;
+use abaccAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 /**
  *
  * Class ShopwareCategoryHelper
- * @package FatchipAfterbuy\Services\Helper
+ * @package abaccAfterbuy\Services\Helper
  */
 
 class ShopwareCategoryHelper extends AbstractHelper {
@@ -87,6 +87,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
             $currentParents = &$catalogs;
             foreach ($parentPath as $parentID) {
+                if (!is_array($currentParents)) continue;
                 foreach ($currentParents as &$currentParent) {
                     if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
                         $currentParent['Catalog'][] = $catalog;

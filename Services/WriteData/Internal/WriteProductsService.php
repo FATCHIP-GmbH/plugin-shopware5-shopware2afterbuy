@@ -1,13 +1,13 @@
 <?php
 
-namespace FatchipAfterbuy\Services\WriteData\Internal;
+namespace abaccAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use FatchipAfterbuy\Models\Status;
-use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
-use FatchipAfterbuy\Services\WriteData\AbstractWriteDataService;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\Models\Status;
+use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
+use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
 use Shopware\Models\Customer\Group as CustomerGroup;
 
 
@@ -43,13 +43,14 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         $customerGroup = $this->entityManager->getRepository(CustomerGroup::class)->findOneBy(
             array('id' => $this->config['customerGroup'])
         );
-        $netInput = $customerGroup->getTaxInput();
 
         if ( ! $customerGroup) {
             $this->logger->error('Target customer group not set', array('Import', 'Articles'));
 
-            return;
+            exit('Target customer group not set');
         }
+
+        $netInput = $customerGroup->getTaxInput();
 
         $this->helper->importArticle($valueArticles, $netInput, $customerGroup);
 
@@ -57,7 +58,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         $this->helper->associateCategories($valueArticles);
 
         // Image Association
-        $this->helper->associateImages($valueArticles, $this);
+        $this->helper->associateImages($valueArticles);
     }
 
 
@@ -72,10 +73,13 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
             $this->logger->error('Error storing products', $targetData);
+            exit('Error storing products');
         }
 
-        $this->storeSubmissionDate('lastProductImport');
-        $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        if(!empty($targetData)) {
+            $this->storeSubmissionDate('lastProductImport');
+            $this->helper->setArticlesWithoutAnyActiveVariantToInactive();
+        }
 
         return $targetData;
     }

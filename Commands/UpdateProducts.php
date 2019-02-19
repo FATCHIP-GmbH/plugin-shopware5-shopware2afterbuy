@@ -1,9 +1,9 @@
 <?php
 
-namespace FatchipAfterbuy\Commands;
+namespace abaccAfterbuy\Commands;
 
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\Services\WriteData\WriteDataInterface;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 use Shopware\Commands\ShopwareCommand;
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,19 +45,19 @@ class UpdateProducts extends ShopwareCommand
 
         //if afterbuy data carrying system
         if($config['mainSystem'] == 2) {
-            $this->readCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_categories_service');
-            $this->writeCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_categories_service');
+            $this->readCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_categories_service');
+            $this->writeCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_categories_service');
 
-            $this->readProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.external.read_products_service');
-            $this->writeProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.internal.write_products_service');
+            $this->readProductsService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_products_service');
+            $this->writeProductsService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_products_service');
         }
         //shopware is data carrying system otherwise
         else {
-            $this->readCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.internal.read_categories_service');
-            $this->writeCategoriesService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.external.write_categories_service');
+            $this->readCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_categories_service');
+            $this->writeCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_categories_service');
 
-            $this->readProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.read_data.internal.read_products_service');
-            $this->writeProductsService = Shopware()->Container()->get('fatchip_afterbuy.services.write_data.external.write_products_service');
+            $this->readProductsService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_products_service');
+            $this->writeProductsService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_products_service');
         }
     }
 

@@ -1,15 +1,16 @@
 <?php
 
-namespace FatchipAfterbuy\Services\Helper;
+namespace abaccAfterbuy\Services\Helper;
 
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Models\Status;
+use abaccAfterbuy\ValueObjects\ProductPicture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
-use FatchipAfterbuy\ValueObjects\Article as ValueArticle;
+use abaccAfterbuy\ValueObjects\Article as ValueArticle;
 use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
@@ -30,13 +31,11 @@ use Shopware\Models\Customer\Group;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Media\Media;
 use Zend_Db_Adapter_Exception;
-use FatchipAfterbuy\Models\Status;
 
 
 /**
  * Class ShopwareArticleHelper
- *
- * @package FatchipAfterbuy\Services\Helper
+ * @package abaccAfterbuy\Services\Helper
  */
 class ShopwareArticleHelper extends AbstractHelper
 {

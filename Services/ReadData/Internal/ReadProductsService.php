@@ -1,17 +1,17 @@
 <?php
 
-namespace FatchipAfterbuy\Services\ReadData\Internal;
+namespace abaccAfterbuy\Services\ReadData\Internal;
 
 use Fatchip\Afterbuy\ApiClient;
-use FatchipAfterbuy\Components\Helper;
-use FatchipAfterbuy\Services\Helper\ShopwareArticleHelper;
-use FatchipAfterbuy\Services\ReadData\AbstractReadDataService;
-use FatchipAfterbuy\Services\ReadData\ReadDataInterface;
-use FatchipAfterbuy\ValueObjects\Address;
-use FatchipAfterbuy\ValueObjects\Article;
-use FatchipAfterbuy\ValueObjects\Order;
-use FatchipAfterbuy\ValueObjects\OrderPosition;
-use FatchipAfterbuy\ValueObjects\ProductPicture;
+use abaccAfterbuy\Components\Helper;
+use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
+use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
+use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\ValueObjects\Address;
+use abaccAfterbuy\ValueObjects\Article;
+use abaccAfterbuy\ValueObjects\Order;
+use abaccAfterbuy\ValueObjects\OrderPosition;
+use abaccAfterbuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Category\Category;

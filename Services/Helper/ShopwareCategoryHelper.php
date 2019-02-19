@@ -23,7 +23,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
     /**
      * @return ShopwareCategory|null
      */
-    public function getMainCategory() {
+    public function getMainCategory() :?ShopwareCategory {
         return $this->entityManager->getRepository($this->entity)->findOneBy(array('id' => 1));
     }
 
@@ -75,7 +75,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
                 'ShowCatalog' => $valueCategory->getActive(),
                 'Picture' => $valueCategory->getImage(),
                 'InternalIdentifier' => $valueCategory->getInternalIdentifier(),
-                'CatalogID' => ($valueCategory->getExternalIdentifier()) ? $valueCategory->getExternalIdentifier() : $valueCategory->getInternalIdentifier(),
+                'CatalogID' => $valueCategory->getExternalIdentifier() ?: $valueCategory->getInternalIdentifier(),
             ];
 
             $parentPath = array_reverse(explode('|', trim($valueCategory->getPath(), '|')));
@@ -87,7 +87,10 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
             $currentParents = &$catalogs;
             foreach ($parentPath as $parentID) {
-                if (!is_array($currentParents)) continue;
+                if (!is_array($currentParents)) {
+                    continue;
+                }
+
                 foreach ($currentParents as &$currentParent) {
                     if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
                         $currentParent['Catalog'][] = $catalog;
@@ -139,8 +142,9 @@ class ShopwareCategoryHelper extends AbstractHelper {
      * @param array $ids
      * @throws \Zend_Db_Adapter_Exception
      */
-    public function updateExternalIds(array $ids) {
-        $sql = "";
+    public function updateExternalIds(array $ids): void
+    {
+        $sql = '';
 
         //hotfix to avoid category duplicates
         foreach ($ids as $internalId=>$externalId) {
@@ -162,30 +166,31 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
      * @param array $response
      * @return array
      */
-    public function getCatalogIdsFromResponse(array $response) {
+    public function getCatalogIdsFromResponse(array $response): array
+    {
         $catalogIds = [];
 
         if(!is_array($response)) {
             return $catalogIds;
         }
 
-        if(!array_key_exists('Result', $response) || !array_key_exists('NewCatalogs', $response["Result"])) {
+        if(!array_key_exists('Result', $response) || !array_key_exists('NewCatalogs', $response['Result'])) {
             return $catalogIds;
         }
 
-        foreach($response["Result"]["NewCatalogs"] as $newCatalog) {
+        foreach($response['Result']['NewCatalogs'] as $newCatalog) {
             if(array_key_exists(1, $newCatalog)) {
                 foreach ($newCatalog as $sub) {
 
                     if(array_key_exists('CatalogID', $sub) && array_key_exists('CatalogIDRequested', $sub)) {
-                        $catalogIds[$sub["CatalogIDRequested"]] = $sub["CatalogID"];
+                        $catalogIds[$sub['CatalogIDRequested']] = $sub['CatalogID'];
                     }
 
                     $catalogIds = $this->getCatalogIdsRecursiveFromResponse($sub, $catalogIds);
                 }
             }
             else {
-                $catalogIds[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+                $catalogIds[$newCatalog['CatalogIDRequested']] = $newCatalog['CatalogID'];
 
                 $catalogIds = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $catalogIds);
             }
@@ -199,14 +204,15 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
      * @param array $ids
      * @return array
      */
-    public function getCatalogIdsRecursiveFromResponse($array, &$ids = []) {
+    public function getCatalogIdsRecursiveFromResponse($array, &$ids = []): array
+    {
 
         if(is_array($array) && array_key_exists('NewCatalog', $array)) {
 
             foreach ($array['NewCatalog'] as $newCatalog) {
 
                 if(is_array($newCatalog) && array_key_exists('CatalogID', $newCatalog)) {
-                    $ids[$newCatalog["CatalogIDRequested"]] = $newCatalog["CatalogID"];
+                    $ids[$newCatalog['CatalogIDRequested']] = $newCatalog['CatalogID'];
                 }
 
                 $ids = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $ids);

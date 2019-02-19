@@ -18,7 +18,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $images
      * @return array
      */
-    public function buildAfterbuyImages(array $images) {
+    public function buildAfterbuyImages(array $images): array
+    {
         $productPictures = [];
 
         for($i = 1; $i <= 12; $i++) {
@@ -52,7 +53,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @return array
      * @throws \Exception
      */
-    public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
+    public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = []): array
+    {
         foreach ($data as $value) {
 
             if (!$value->getVariantArticles()) {
@@ -70,7 +72,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
             $this->sendAfterbuyProducts($products, $api, $afterbuyProductIds);
             $baseProduct = $this->buildAfterbuyVariantBaseProduct($value, $afterbuyProductIds);
-            $response = $this->sendAfterbuyProducts($baseProduct, $api);
+            $this->sendAfterbuyProducts($baseProduct, $api);
         }
 
         return $afterbuyProductIds;
@@ -81,7 +83,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $value
      * @return array
      */
-    public function buildAfterbuyVariant(Article $variant, Article $value) {
+    public function buildAfterbuyVariant(Article $variant, Article $value): array
+    {
         $variants = $this->buildAfterbuyVariantOptions($variant);
         $variantImages = $this->buildAfterbuyImages($variant->getProductPictures());
 
@@ -120,7 +123,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $variant
      * @return array
      */
-    public function buildAfterbuyVariantOptions(Article $variant)
+    public function buildAfterbuyVariantOptions(Article $variant): array
     {
         $variants = [];
 
@@ -179,7 +182,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $afterbuyProductIds
      * @return array
      */
-    public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds) {
+    public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds): array
+    {
 
         $variantArticles = [];
 
@@ -208,7 +212,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param $ids
      * @return array
      */
-    public function buildAfterbuyCatalogAssignment($ids) {
+    public function buildAfterbuyCatalogAssignment($ids): array
+    {
         $catalogs = [];
 
         foreach($ids as $value) {
@@ -231,7 +236,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $afterbuyProductIds
      * @return array
      */
-    public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []) {
+    public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []): array
+    {
         $products = array(
             'Products' => array(
             )
@@ -261,7 +267,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param ApiClient $api
      * @param array $afterbuyProductIds
      */
-    public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = []) {
+    public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = []): void
+    {
 
         if(count($products['Products'])) {
 
@@ -273,16 +280,16 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 exit($e->getMessage());
             }
 
-            if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response["Result"])) {
+            if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response['Result'])) {
 
-                if (array_key_exists('ProductID', $response["Result"]["NewProducts"]["NewProduct"])) {
-                    $internalArticleNumber = $response["Result"]["NewProducts"]["NewProduct"]["Anr"];
-                    $afterbuyProductIds[$internalArticleNumber] = $response["Result"]["NewProducts"]["NewProduct"]["ProductID"];
-                } elseif (is_array($response["Result"]["NewProducts"]["NewProduct"][0])) {
+                if (array_key_exists('ProductID', $response['Result']['NewProducts']['NewProduct'])) {
+                    $internalArticleNumber = $response['Result']['NewProducts']['NewProduct']['Anr'];
+                    $afterbuyProductIds[$internalArticleNumber] = $response['Result']['NewProducts']['NewProduct']['ProductID'];
+                } elseif (is_array($response['Result']['NewProducts']['NewProduct'][0])) {
 
-                    foreach ($response["Result"]["NewProducts"]["NewProduct"] as $newProduct) {
-                        $internalArticleNumber = $newProduct["Anr"];
-                        $afterbuyProductIds[$internalArticleNumber] = $newProduct["ProductID"];
+                    foreach ($response['Result']['NewProducts']['NewProduct'] as $newProduct) {
+                        $internalArticleNumber = $newProduct['Anr'];
+                        $afterbuyProductIds[$internalArticleNumber] = $newProduct['ProductID'];
                     }
                 }
             }
@@ -293,7 +300,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $value
      * @return array
      */
-    public function buildAfterbuySimpleProduct(Article $value) {
+    public function buildAfterbuySimpleProduct(Article $value): array
+    {
         $product = array(
             'Product' => array(
                 'ProductIdent' => array(

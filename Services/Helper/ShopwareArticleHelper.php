@@ -378,7 +378,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $this->getConfiguratorOptions();
             }
 
-            array_push($options, $option);
+            $options[] = $option;
         }
 
         return $options;
@@ -736,9 +736,9 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         foreach ($variants as $variant) {
             if (array_key_exists($variant['option'], $this->configuratorGroups)) {
-                array_push($groups, $this->configuratorGroups[$variant['option']]);
+                $groups[] = $this->configuratorGroups[$variant['option']];
             } else {
-                array_push($groups, $this->createConfiguratorGroup($variant['option']));
+                $groups[] = $this->createConfiguratorGroup($variant['option']);
                 $this->initializeConfiguratorGroupCache();
             }
 

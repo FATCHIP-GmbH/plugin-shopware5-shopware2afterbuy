@@ -266,8 +266,8 @@ class AbstractHelper
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         $errorOccured = (
-            $error = curl_error($ch) ||
-            $status == 404
+            $error = (curl_error($ch) ||
+                $status === 404)
         );
 
         if ($errorOccured) {

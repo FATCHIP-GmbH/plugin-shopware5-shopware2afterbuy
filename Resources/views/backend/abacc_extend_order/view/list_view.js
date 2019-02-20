@@ -36,7 +36,6 @@ Ext.define('Shopware.apps.abacc_extend_order.view.list.List', {
                 header: me.mySnippets.columns.afterbuyOrderId,
                 dataIndex: 'afterbuyOrderId',
                 flex:1,
-                // renderer:me.
             }
         );
 

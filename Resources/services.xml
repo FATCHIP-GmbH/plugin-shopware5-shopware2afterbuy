@@ -15,7 +15,7 @@
 
         <!-- DispatchEvents -->
 
-        <service id="abacc_afterbuy.subscriber.post_dispatch_secure_backend_order" class="abaccAfterbuy\Subscriber\PostDispatchSecureBackendOrder">
+        <service id="abacc_afterbuy.subscriber.post_dispatch_secure_backend" class="abaccAfterbuy\Subscriber\PostDispatchSecureBackend">
             <argument id="models" type="service"/>
             <argument>%abacc_afterbuy.plugin_dir%</argument>
             <tag name="shopware.event_subscriber" />

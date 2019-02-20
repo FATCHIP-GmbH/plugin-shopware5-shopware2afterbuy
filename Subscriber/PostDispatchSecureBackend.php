@@ -14,7 +14,7 @@ use Enlight_Event_EventArgs;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Order\Order;
 
-class PostDispatchSecureBackendOrder implements SubscriberInterface
+class PostDispatchSecureBackend implements SubscriberInterface
 {
     /**
      * @var ModelManager
@@ -39,18 +39,23 @@ class PostDispatchSecureBackendOrder implements SubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            'Enlight_Controller_Action_PostDispatchSecure_Backend_Order' =>
-                'onBackendOrderPostDispatch',
+            'Enlight_Controller_Action_PostDispatchSecure_Backend_Index' => 'onPostDispatchSecureBackendIndex',
+            'Enlight_Controller_Action_PostDispatchSecure_Backend_Order' => 'onPostDispatchSecureBackendOrder',
         ];
     }
 
-    public function onBackendOrderPostDispatch(Enlight_Event_EventArgs $args)
+    public function onPostDispatchSecureBackendIndex(Enlight_Event_EventArgs $args)
     {
         /** @var Enlight_Controller_Action $controller */
-        $controller = $args->get('subject');
-        $view = $controller->View();
+        list($controller, $view) = $this->prepareEventHandler($args);
 
-        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
+        $view->extendsTemplate('backend/abacc_extend_order/base/header.tpl');
+    }
+
+    public function onPostDispatchSecureBackendOrder(Enlight_Event_EventArgs $args)
+    {
+        /** @var Enlight_Controller_Action $controller */
+        list($controller, $view) = $this->prepareEventHandler($args);
 
         if ($controller->Request()->getActionName() == 'load') {
             $view->extendsTemplate('backend/abacc_extend_order/view/list_view.js');
@@ -66,5 +71,19 @@ class PostDispatchSecureBackendOrder implements SubscriberInterface
 
             $controller->View()->assign($orders);
         }
+    }
+
+    /**
+     * @param Enlight_Event_EventArgs $args
+     * @return array
+     */
+    public function prepareEventHandler(Enlight_Event_EventArgs $args): array
+    {
+        /** @var Enlight_Controller_Action $controller */
+        $controller = $args->get('subject');
+        $view = $controller->View();
+
+        $view->addTemplateDir($this->pluginDirectory . '/Resources/views');
+        return array($controller, $view);
     }
 }

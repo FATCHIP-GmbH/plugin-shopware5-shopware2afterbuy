@@ -21,8 +21,20 @@ Ext.define('Shopware.apps.abacc_extend_order.view.list.List', {
         }
     },
 
+    myViewConfig: {
+        getRowClass: function (record) {
+            console.log('getRowClass');
+            return (record.data.afterbuyOrderId === '') ? '' : 'afterbuy-grid-row';
+        }
+    },
+
     initComponent: function () {
         const me = this;
+
+        for (let [key, value] of Object.entries(me.myViewConfig)) {
+            me.viewConfig[key] = value;
+        }
+        console.log('init view');
 
         me.callParent(arguments);
     },
@@ -35,7 +47,7 @@ Ext.define('Shopware.apps.abacc_extend_order.view.list.List', {
             {
                 header: me.mySnippets.columns.afterbuyOrderId,
                 dataIndex: 'afterbuyOrderId',
-                flex:1,
+                flex: 1,
             }
         );
 

@@ -47,6 +47,9 @@ class UpdateOrders extends ShopwareCommand
 
         //if afterbuy data carrying system
         if($config['mainSystem'] == 2) {
+            $this->readOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_status_service');
+
             $this->readOrderService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_orders_service');
         }
@@ -90,11 +93,17 @@ EOF
          */
         $filter = array();
 
+        if(method_exists($this->writeOrderStatusService, "getOrdersForRequestingStatusUpdate")) {
+            $filter = $this->writeOrderStatusService->getOrdersForRequestingStatusUpdate();
+        }
+
         if($this->readOrderStatusService && $this->writeOrderStatusService) {
             $orders = $this->readOrderStatusService->get($filter);
             $output->writeln('Update order status: ' . count($orders));
             $result = $this->writeOrderStatusService->put($orders);
         }
+
+        $filter = array();
 
         if(method_exists($this->writeOrderService, "getOrderImportDateFilter")) {
             $filter = $this->writeOrderService->getOrderImportDateFilter(false);

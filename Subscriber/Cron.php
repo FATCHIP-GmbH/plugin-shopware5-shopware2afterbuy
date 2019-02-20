@@ -65,6 +65,9 @@ class Cron implements SubscriberInterface
 
             $this->readProductsService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_products_service');
             $this->writeProductsService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_products_service');
+
+            $this->readOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_status_service');
         }
         //shopware is data carrying system otherwise
         else {
@@ -121,7 +124,11 @@ class Cron implements SubscriberInterface
     public function updateOrders(\Shopware_Components_Cron_CronJob $job)
     {
         $filter = array();
-        $output = "";
+        $output = '';
+
+        if(method_exists($this->writeOrderStatusService, 'getOrdersForRequestingStatusUpdate')) {
+            $filter = $this->writeOrderStatusService->getOrdersForRequestingStatusUpdate();
+        }
 
         if($this->readOrderStatusService && $this->writeOrderStatusService) {
             $orders = $this->readOrderStatusService->get($filter);
@@ -129,7 +136,9 @@ class Cron implements SubscriberInterface
             $result = $this->writeOrderStatusService->put($orders);
         }
 
-        if(method_exists($this->writeOrderService, "getOrderImportDateFilter")) {
+        $filter = array();
+
+        if(method_exists($this->writeOrderService, 'getOrderImportDateFilter')) {
             $filter = $this->writeOrderService->getOrderImportDateFilter(false);
         }
 

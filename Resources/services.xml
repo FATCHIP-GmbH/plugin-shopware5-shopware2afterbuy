@@ -72,6 +72,12 @@
             <argument type="string">%abacc_afterbuy.plugin_name%</argument>
         </service>
 
+        <service id="abacc_afterbuy.commands.import_status" class="abaccAfterbuy\Commands\ImportStatus">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_status_service" />
+        </service>
+
         <!-- Products -->
 
         <service class="abaccAfterbuy\Services\ReadData\External\ReadProductsService" id="abacc_afterbuy.services.read_data.external.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
@@ -176,6 +182,18 @@
         </service>
 
         <service class="abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="abacc_afterbuy.services.write_data.internal.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Order\Order</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteStatusService" id="abacc_afterbuy.services.write_data.internal.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>

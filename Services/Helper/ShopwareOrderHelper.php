@@ -345,6 +345,22 @@ class ShopwareOrderHelper extends AbstractHelper {
         }
     }
 
+    public function getUnfullfilledOrders() {
+
+        $orders = $this->entityManager->createQueryBuilder()
+            ->select(['attributes.afterbuyOrderId'])
+            ->from(\Shopware\Models\Attribute\Order::class, 'attributes')
+            ->leftJoin('attributes.order', 'orders')
+            ->where('attributes.afterbuyOrderId IS NOT NULL')
+            ->andWhere("attributes.afterbuyOrderId != ''")
+            ->andWhere('orders.status = 0')
+            ->getQuery()
+            ->setMaxResults(250)
+            ->getScalarResult();
+
+        return $orders;
+    }
+
     public function getNewFullfilledOrders() {
         $lastExport = $this->entityManager->getRepository("\abaccAfterbuy\Models\Status")->find(1);
 

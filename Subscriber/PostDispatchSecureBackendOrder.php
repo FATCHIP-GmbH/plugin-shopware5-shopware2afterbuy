@@ -11,19 +11,28 @@ namespace abaccAfterbuy\Subscriber;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;
 use Enlight_Event_EventArgs;
+use Shopware\Components\Model\ModelManager;
+use Shopware\Models\Order\Order;
 
 class PostDispatchSecureBackendOrder implements SubscriberInterface
 {
+    /**
+     * @var ModelManager
+     */
+    protected $entityManager;
+
     /**
      * @var string
      */
     private $pluginDirectory;
 
     /**
+     * @param $entityManager
      * @param $pluginDirectory
      */
-    public function __construct($pluginDirectory)
+    public function __construct($entityManager, $pluginDirectory)
     {
+        $this->entityManager = $entityManager;
         $this->pluginDirectory = $pluginDirectory;
     }
 
@@ -50,7 +59,9 @@ class PostDispatchSecureBackendOrder implements SubscriberInterface
             $orders = $controller->View()->getAssign();
 
             foreach ($orders['data'] as $index => $order) {
-                $orders['data'][$index]['afterbuyOrderId'] = '' . $index;
+                /** @var Order $currentOrder */
+                $currentOrder = $this->entityManager->getRepository(Order::class)->find($order['id']);
+                $orders['data'][$index]['afterbuyOrderId'] = $currentOrder->getAttribute()->getAfterbuyOrderId();
             }
 
             $controller->View()->assign($orders);

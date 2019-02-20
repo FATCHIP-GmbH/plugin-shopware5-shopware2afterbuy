@@ -45,14 +45,15 @@ class PostDispatchSecureBackendOrder implements SubscriberInterface
 
         if ($controller->Request()->getActionName() == 'load') {
             $view->extendsTemplate('backend/abacc_extend_order/view/list_view.js');
-//        } elseif ($controller->Request()->getActionName() === 'getList') {
-//            $orders = $controller->View()->getAssign();
-//
-//            foreach ($orders['data'] as $index => $order) {
-//                $orders['data'][$index]['test'] = 'test';
-//            }
-//
-//            $controller->View()->assign($orders);
+            $view->extendsTemplate('backend/abacc_extend_order/model/order_model.tpl');
+        } elseif ($controller->Request()->getActionName() === 'getList') {
+            $orders = $controller->View()->getAssign();
+
+            foreach ($orders['data'] as $index => $order) {
+                $orders['data'][$index]['afterbuyOrderId'] = '' . $index;
+            }
+
+            $controller->View()->assign($orders);
         }
     }
 }

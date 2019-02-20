@@ -56,7 +56,7 @@ class Cron implements SubscriberInterface
         $config = $configReader->getByPluginName($pluginName);
 
         //if afterbuy data carrying system
-        if($config['mainSystem'] == 2) {
+        if($config['mainSystem'] === 2) {
             $this->readOrderService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.external.write_orders_service');
 
@@ -93,7 +93,7 @@ class Cron implements SubscriberInterface
         );
     }
 
-    public function updateProducts(\Shopware_Components_Cron_CronJob $job)
+    public function updateProducts(\Shopware_Components_Cron_CronJob $job): string
     {
         $filter = array(
             'categories' => array(),
@@ -107,7 +107,7 @@ class Cron implements SubscriberInterface
         $output .= 'Got Categories: ' . count($categories). "\n";
         $result = $this->writeCategoriesService->put($categories);
 
-        if(method_exists($this->writeProductsService, "getArticleImportDateFilter")) {
+        if(method_exists($this->writeProductsService, 'getArticleImportDateFilter')) {
             $filter['products'] = $this->writeProductsService->getArticleImportDateFilter();
         }
 
@@ -118,7 +118,7 @@ class Cron implements SubscriberInterface
         return $output;
     }
 
-    public function updateOrders(\Shopware_Components_Cron_CronJob $job)
+    public function updateOrders(\Shopware_Components_Cron_CronJob $job): string
     {
         $filter = array();
         $output = "";
@@ -129,7 +129,7 @@ class Cron implements SubscriberInterface
             $result = $this->writeOrderStatusService->put($orders);
         }
 
-        if(method_exists($this->writeOrderService, "getOrderImportDateFilter")) {
+        if(method_exists($this->writeOrderService, 'getOrderImportDateFilter')) {
             $filter = $this->writeOrderService->getOrderImportDateFilter(false);
         }
 

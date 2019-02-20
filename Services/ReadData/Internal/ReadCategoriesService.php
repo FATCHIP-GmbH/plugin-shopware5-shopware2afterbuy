@@ -2,7 +2,6 @@
 
 namespace abaccAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\AbstractHelper;
 use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;

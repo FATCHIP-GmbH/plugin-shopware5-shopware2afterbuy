@@ -3,22 +3,19 @@
 namespace abaccAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
 use abaccAfterbuy\Services\Helper\AfterbuyProductsHelper;
-use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
 use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
 use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Article;
-use Shopware\Models\Article\Detail;
 use Shopware\Models\Customer\Group;
 
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface {
+    /** @var AfterbuyProductsHelper */
+    public $helper;
 
     /**
-     * @param array $data
-     * @return mixed|void
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @param null|array $data
+     * @return mixed
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -32,8 +29,8 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @param array $data
      * @return array
      */
-    public function transform(array $data) {
-        $this->logger->debug("Storing " . count($data) . " items.", array($data));
+    public function transform(array $data) :?array {
+        $this->logger->debug('Storing ' . count($data) . ' items.', array($data));
         /**
          * @var Group $customerGroup
          */

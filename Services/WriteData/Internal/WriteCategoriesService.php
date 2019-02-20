@@ -23,6 +23,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
     /**
      * @param array $data
+     * @return mixed
      */
     public function put(array $data)
     {
@@ -35,7 +36,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @param ValueCategory[] $valueCategories
      *
-     * @return mixed|void
+     * @return mixed
      */
     public function transform(array $valueCategories)
     {
@@ -87,7 +88,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     /**
      * @param $targetData
      *
-     * @return mixed|void
+     * @return mixed
      */
     public function send($targetData)
     {

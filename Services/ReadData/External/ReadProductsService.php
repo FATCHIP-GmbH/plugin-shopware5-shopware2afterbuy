@@ -82,7 +82,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             $variants = [];
 
-            if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product["BaseProductFlag"] != "1") {
+            if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product['BaseProductFlag'] !== '1') {
                 $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 
                 $variants[] = array(
@@ -91,7 +91,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 );
             }
 
-            if (array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product["BaseProductFlag"] != "1") {
+            if (array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product['BaseProductFlag'] !== '1') {
                 $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 
 
@@ -114,7 +114,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 }
             }
 
-            if ( ! empty($variants) && $product["BaseProductFlag"] != "1") {
+            if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {
                 $valueArticle->setVariants($variants);
             }
 

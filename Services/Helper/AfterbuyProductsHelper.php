@@ -51,7 +51,6 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param ApiClient $api
      * @param array $afterbuyProductIds
      * @return array
-     * @throws \Exception
      */
     public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = []): array
     {

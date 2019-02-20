@@ -40,11 +40,11 @@ class PostDispatchSecureBackendOrder implements SubscriberInterface
     {
         return [
             'Enlight_Controller_Action_PostDispatchSecure_Backend_Order' =>
-                'onCustomerPostDispatch',
+                'onBackendOrderPostDispatch',
         ];
     }
 
-    public function onCustomerPostDispatch(Enlight_Event_EventArgs $args)
+    public function onBackendOrderPostDispatch(Enlight_Event_EventArgs $args)
     {
         /** @var Enlight_Controller_Action $controller */
         $controller = $args->get('subject');

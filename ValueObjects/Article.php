@@ -198,9 +198,9 @@ class Article extends AbstractValueObject
     }
 
     /**
-     * @param ArrayCollection $variantArticles
+     * @param mixed $variantArticles
      */
-    public function setVariantArticles(?ArrayCollection $variantArticles)
+    public function setVariantArticles($variantArticles)
     {
         $this->variantArticles = $variantArticles;
     }

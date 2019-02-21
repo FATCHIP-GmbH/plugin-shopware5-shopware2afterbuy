@@ -60,8 +60,9 @@ class ProductPicture
     /**
      * @param string $altText
      */
-    public function setAltText(?string $altText)
+    public function setAltText($altText)
     {
+        $altText = (string) $altText;
         if ($altText === null) {
             $altText = '';
         }

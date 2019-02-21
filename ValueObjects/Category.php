@@ -85,8 +85,9 @@ class Category extends AbstractValueObject
     /**
      * @param $externalIdentifier
      */
-    public function setExternalIdentifier(?string $externalIdentifier)
+    public function setExternalIdentifier($externalIdentifier)
     {
+        $externalIdentifier = (string) $externalIdentifier;
         $this->externalIdentifier = $externalIdentifier;
     }
 

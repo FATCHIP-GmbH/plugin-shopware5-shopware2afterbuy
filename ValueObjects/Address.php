@@ -321,8 +321,9 @@ class Address extends AbstractValueObject
     /**
      * @param string $vatId
      */
-    public function setVatId(?string $vatId)
+    public function setVatId($vatId)
     {
+        $vatId = (string) $vatId;
         if(!$vatId) {
             $vatId = "";
         }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cronjobs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/5.3/engine/Shopware/Components/Plugin/schema/cronjob.xsd">
+
+    <cronjob>
+        <name>Sync Afterbuy Orders</name>
+        <action>Shopware_CronJob_AfterbuyUpdateOrders</action>
+        <active>false</active>
+        <interval>300</interval>
+        <disableOnError>false</disableOnError>
+    </cronjob>
+    <cronjob>
+        <name>Sync Afterbuy Products</name>
+        <action>Shopware_CronJob_AfterbuyUpdateProducts</action>
+        <active>false</active>
+        <interval>86400</interval>
+        <disableOnError>false</disableOnError>
+    </cronjob>
+
+</cronjobs>

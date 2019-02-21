@@ -1,20 +1,49 @@
 <?php
 
-namespace  Shopware\viaebShopware2Afterbuy\Components;
+namespace abaccAfterbuy\Components;
 
-/**
- * Class Helper
- *
- * @package  Shopware\viaebShopware2Afterbuy\Components
- */
-class Helper
-{
+class Helper {
+
+
     /**
-     * @param string $version
-     * @return bool
+     * returns setter name as string for given property
+     *
+     * @param string $field
+     * @return string
      */
-    public static function checkShopwareVersion($version = '5.3.0')
-    {
-        return (\Shopware::VERSION === '___VERSION___' || version_compare(\Shopware::VERSION, $version, '>='));
+    public static function getSetterByField(string $field) {
+        return 'set' . strtoupper($field[0]) . substr($field, 1);
+    }
+
+    public static function convertDeString2Float(string $value) {
+        $value = str_replace(".", "", $value);
+        $value = str_replace(",", ".", $value);
+
+        return floatval($value);
+    }
+
+    public static function convertNumberToABString($value) {
+        $value = number_format($value, 2);
+        $value = str_replace(",", "", $value);
+        $value = str_replace(".", ",", $value);
+
+        return $value;
+    }
+
+    public static function convertPrice(float $price, float $tax, $isNet = true, $toNet = false) {
+        if($isNet == $toNet) {
+            return $price;
+        }
+
+        if(!$tax) {
+            return $price;
+        }
+
+        if ($isNet) {
+            return $price * (1 + ($tax / 100));
+        }
+        else {
+            return $price / (1 + ($tax / 100));
+        }
     }
 }

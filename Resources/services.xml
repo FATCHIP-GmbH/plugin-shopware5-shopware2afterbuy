@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <!-- Cronjobs -->
+
+        <service id="abacc_afterbuy.subscriber.cron" class="abaccAfterbuy\Subscriber\Cron">
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            <tag name="shopware.event_subscriber" />
+        </service>
+
+
+        <!-- Commands -->
+
+        <service id="abacc_afterbuy.commands.export_status" class="abaccAfterbuy\Commands\ExportStatus">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_status_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_status_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.import_categories" class="abaccAfterbuy\Commands\ImportCategories">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_categories_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.export_categories" class="abaccAfterbuy\Commands\ExportCategories">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_categories_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_categories_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.export_orders" class="abaccAfterbuy\Commands\ExportOrders">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_orders_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.import_orders" class="abaccAfterbuy\Commands\ImportOrders">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_orders_service" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="abacc_afterbuy.commands.import_products" class="abaccAfterbuy\Commands\ImportProducts">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_products_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.export_products" class="abaccAfterbuy\Commands\ExportProducts">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_products_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_products_service" />
+        </service>
+
+        <service id="abacc_afterbuy.commands.update_products" class="abaccAfterbuy\Commands\UpdateProducts">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="abacc_afterbuy.commands.update_orders" class="abaccAfterbuy\Commands\UpdateOrders">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="abacc_afterbuy.commands.import_status" class="abaccAfterbuy\Commands\ImportStatus">
+            <tag name="console.command" />
+            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_status_service" />
+        </service>
+
+        <!-- Products -->
+
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadProductsService" id="abacc_afterbuy.services.read_data.external.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteProductsService" id="abacc_afterbuy.services.write_data.internal.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Article\Article</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadProductsService" id="abacc_afterbuy.services.read_data.internal.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteProductsService" id="abacc_afterbuy.services.write_data.external.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
+            </call>
+        </service>
+
+        <!-- Orderstatus -->
+
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadStatusService" id="abacc_afterbuy.services.read_data.internal.read_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteStatusService" id="abacc_afterbuy.services.write_data.external.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <!-- Orders -->
+
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="abacc_afterbuy.services.read_data.internal.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Order\Order</argument>
+            </call>
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadOrdersService" id="abacc_afterbuy.services.read_data.external.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteOrdersService" id="abacc_afterbuy.services.write_data.external.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="abacc_afterbuy.services.write_data.internal.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Order\Order</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteStatusService" id="abacc_afterbuy.services.write_data.internal.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setRepo">
+                <argument type="string">\Shopware\Models\Order\Order</argument>
+            </call>
+            <call method="initHelper">
+                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
+        </service>
+
+        <!-- Categories -->
+
+        <service class="abaccAfterbuy\Services\ReadData\External\ReadCategoriesService" id="abacc_afterbuy.services.read_data.external.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="abacc_afterbuy.services.write_data.internal.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="abacc_afterbuy.services.read_data.internal.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <call method="setTarget">
+                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
+            </call>
+            <call method="initHelper">
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\WriteData\External\WriteCategoriesService" id="abacc_afterbuy.services.write_data.external.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+              <call method="initHelper">
+                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument type="string">afterbuyCatalogId</argument>
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <!-- Abstracts -->
+
+        <service id="abacc_afterbuy.services.abstract_data_service" class="abaccAfterbuy\Services\AbstractDataService" abstract="true">
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+            <call method="setConfig">
+                <argument type="service" id="shopware.plugin.cached_config_reader" />
+                <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            </call>
+            <call method="registerAPINamespaces">
+                <argument type="string">%abacc_afterbuy.plugin_dir%</argument>
+            </call>
+        </service>
+
+
+
+        <!-- Helper -->
+
+        <service class="abaccAfterbuy\Services\Helper\ShopwareOrderHelper" id="abacc_afterbuy.services.helper.shopware_order_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Order\Order</argument>
+            <argument type="string">\Shopware\Models\Attribute\Order</argument>
+            <argument type="string">getOrder</argument>
+            <call method="preFetch">
+
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\Helper\AfterbuyProductsHelper" id="abacc_afterbuy.services.helper.afterbuy_products_helper">
+            <argument id="models" type="service"/>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\Helper\ShopwareCategoryHelper" id="abacc_afterbuy.services.helper.shopware_category_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Category\Category</argument>
+            <argument type="string">\Shopware\Models\Attribute\Category</argument>
+            <argument type="string">getCategory</argument>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
+        </service>
+
+        <service class="abaccAfterbuy\Services\Helper\ShopwareArticleHelper" id="abacc_afterbuy.services.helper.shopware_article_helper">
+            <argument id="models" type="service"/>
+            <argument type="string">\Shopware\Models\Article\Article</argument>
+            <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
+            <argument type="string">getArticle</argument>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
+            <call method="initMediaService">
+                <argument type="service" id="shopware_media.media_service"/>
+            </call>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
+        <!-- Logger -->
+
+        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="false">
+            <argument>%kernel.logs_dir%/afterbuy_%kernel.environment%.log</argument>
+            <argument>14</argument>
+            <argument>%kernel.default_error_level%</argument>
+            <call method="pushProcessor">
+                <argument type="service" id="monolog.processor.uid" />
+            </call>
+        </service>
+
+        <service id="afterbuy.logger" class="Shopware\Components\Logger">
+            <argument>Afterbuy</argument>
+            <argument type="collection">
+                    <argument type="service" id="monolog.handler.afterbuy_file"/>
+            </argument>
+        </service>
+
+    </services>
+</container>

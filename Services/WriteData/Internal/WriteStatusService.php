@@ -84,10 +84,6 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
 
         $orders = $this->helper->getUnfullfilledOrders();
 
-        if(empty($orders)) {
-            exit();
-        }
-
         $filterValues = [];
 
         foreach ($orders as $order) {

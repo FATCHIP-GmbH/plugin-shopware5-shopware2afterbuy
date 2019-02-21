@@ -66,7 +66,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
              */
             $value = new $this->targetEntity();
 
-            foreach ($fieldMappings as [$afterbuyVar, $valueObjVar]) {
+            foreach ($fieldMappings as list($afterbuyVar, $valueObjVar)) {
                 if (isset($entity[$afterbuyVar])) {
                     $setter = 'set' . $valueObjVar;
                     $value->$setter($entity[$afterbuyVar]);

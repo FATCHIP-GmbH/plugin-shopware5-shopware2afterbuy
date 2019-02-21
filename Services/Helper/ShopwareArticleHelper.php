@@ -17,6 +17,7 @@ use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Configurator\Set;
 use Shopware\Models\Article\Image as ArticleImage;
+use Shopware\Models\Article\Image;
 use Shopware\Models\Article\Image\Mapping as ImageMapping;
 use Shopware\Models\Article\Image\Rule as ImageRule;
 use Shopware\Models\Article\Price;
@@ -137,9 +138,9 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ShopwareArticle $entity
-     * @param ArticleDetail   $detail
-     * @param ValueArticle    $targetEntity
-     * @param bool            $netInput
+     * @param ArticleDetail $detail
+     * @param string $targetEntity
+     * @param bool $netInput
      *
      * @return mixed
      */
@@ -232,6 +233,8 @@ ON duplicate key update afterbuy_id = $externalId;";
         if ($images->count()) {
             foreach ($images as $index => $image) {
 
+                /** @var Image $image */
+
                 try {
                     if ($detail === null) {
                         $path = $image->getMedia()->getPath();
@@ -276,6 +279,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
+                /** @var Image $image */
 
                 // TODO: check flipping conditions => faster
                 if ($detail !== null || ($image->getChildren() === null || $image->getChildren()->count() === 0)) {
@@ -293,7 +297,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ShopwareArticle $entity
-     * @param ValueArticle    $targetEntity
+     * @param string $targetEntity
      *
      * @return ValueArticle
      */
@@ -622,7 +626,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return ShopwareArticle
      */
-    public function getMainArticle(string $number, string $name, $parent = ''): ShopwareArticle
+    public function getMainArticle(string $number, string $name, $parent = ''): ?ShopwareArticle
     {
         $article = null;
 
@@ -971,7 +975,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 );
 
                 if ($articleDetail === null) {
-                    $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
+                    $articleDetail = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
                 }
@@ -1016,6 +1020,12 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param ProductPicture $productPicture
+     * @param ArticleDetail $mainDetail
+     */
     private function associateImage(
         ValueArticle $valueArticle,
         ProductPicture $productPicture,
@@ -1079,6 +1089,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         // reset preview image status
         if ($valueArticle->isMainProduct() && $productPicture->getNr() === '0' && $image->getMain() !== 1) {
             foreach ($mainDetail->getArticle()->getImages() as $_image) {
+                /** @var Image $_image */
                 $_image->setMain(2);
             }
             $image->setMain(1);
@@ -1214,7 +1225,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         if ($image->getId()) {
             // get mapping from cache
-            if (array_key_exists($image->getId(), $this->imageMappings)) {
+            if (is_array($this->imageMappings) && array_key_exists($image->getId(), $this->imageMappings)) {
                 $imageMapping = $this->imageMappings[$image->getId()];
             }
 

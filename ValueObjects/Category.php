@@ -61,7 +61,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -69,7 +69,7 @@ class Category extends AbstractValueObject
     /**
      * @param $name
      */
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -77,7 +77,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getExternalIdentifier(): ?string
+    public function getExternalIdentifier()
     {
         return $this->externalIdentifier;
     }
@@ -85,7 +85,7 @@ class Category extends AbstractValueObject
     /**
      * @param $externalIdentifier
      */
-    public function setExternalIdentifier(?string $externalIdentifier): void
+    public function setExternalIdentifier(?string $externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -93,7 +93,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getInternalIdentifier(): string
+    public function getInternalIdentifier()
     {
         return $this->internalIdentifier;
     }
@@ -101,7 +101,7 @@ class Category extends AbstractValueObject
     /**
      * @param $internalIdentifier
      */
-    public function setInternalIdentifier($internalIdentifier): void
+    public function setInternalIdentifier($internalIdentifier)
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -109,7 +109,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getParentIdentifier(): string
+    public function getParentIdentifier()
     {
         return $this->parentIdentifier;
     }
@@ -117,7 +117,7 @@ class Category extends AbstractValueObject
     /**
      * @param $parentIdentifier
      */
-    public function setParentIdentifier($parentIdentifier): void
+    public function setParentIdentifier($parentIdentifier)
     {
         $this->parentIdentifier = $parentIdentifier;
     }
@@ -125,7 +125,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getDescription()
     {
         return $this->description;
     }
@@ -133,7 +133,7 @@ class Category extends AbstractValueObject
     /**
      * @param $description
      */
-    public function setDescription(?string $description): void
+    public function setDescription(?string $description)
     {
         if ($description !== null) {
             $this->description = $description;
@@ -143,7 +143,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getPosition(): string
+    public function getPosition()
     {
         return $this->position;
     }
@@ -151,7 +151,7 @@ class Category extends AbstractValueObject
     /**
      * @param string $position
      */
-    public function setPosition(?string $position): void
+    public function setPosition(?string $position)
     {
         if ($position !== null) {
             $this->position = $position;
@@ -161,7 +161,7 @@ class Category extends AbstractValueObject
     /**
      * @return bool
      */
-    public function getActive(): bool
+    public function getActive()
     {
         return $this->active;
     }
@@ -169,7 +169,7 @@ class Category extends AbstractValueObject
     /**
      * @param $active
      */
-    public function setActive($active): void
+    public function setActive($active)
     {
         $this->active = $active;
     }
@@ -177,7 +177,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getImage(): string
+    public function getImage()
     {
         return $this->image;
     }
@@ -185,7 +185,7 @@ class Category extends AbstractValueObject
     /**
      * @param $image
      */
-    public function setImage($image): void
+    public function setImage($image)
     {
         $this->image = $image;
     }
@@ -193,7 +193,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCmsText(): string
+    public function getCmsText()
     {
         return $this->cmsText;
     }
@@ -201,7 +201,7 @@ class Category extends AbstractValueObject
     /**
      * @param string $cmsText
      */
-    public function setCmsText(?string $cmsText): void
+    public function setCmsText(?string $cmsText)
     {
         if ($cmsText !== null) {
            $this->cmsText = $cmsText;
@@ -211,7 +211,7 @@ class Category extends AbstractValueObject
     /**
      * @return string
      */
-    public function getPath(): string
+    public function getPath()
     {
         return $this->path;
     }
@@ -219,7 +219,7 @@ class Category extends AbstractValueObject
     /**
      * @param string $path
      */
-    public function setPath(?string $path): void
+    public function setPath(?string $path)
     {
         if ($path !== null) {
             $this->path = $path;
@@ -229,7 +229,7 @@ class Category extends AbstractValueObject
     /**
      * @return bool
      */
-    public function isValid(): bool
+    public function isValid()
     {
         $isValid = true;
 

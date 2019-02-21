@@ -17,7 +17,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      *
      * @return ValueArticle[]
      */
-    public function get(array $filter): array
+    public function get(array $filter)
     {
         $data = $this->read($filter);
 
@@ -31,7 +31,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      *
      * @return ValueArticle[]
      */
-    public function transform(array $products): array
+    public function transform(array $products)
     {
         $this->logger->debug('Receiving products from afterbuy', $products);
 
@@ -132,7 +132,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      *
      * @return array
      */
-    public function read(array $filter): array
+    public function read(array $filter)
     {
 
         $resource = new ApiClient($this->apiConfig);

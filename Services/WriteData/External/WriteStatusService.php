@@ -25,7 +25,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
         return $this->send($catalogs);
     }
 
-    public function transform(array $orders): array
+    public function transform(array $orders)
     {
         $this->logger->debug("Storing " . count($orders) . " items.", array($orders));
 

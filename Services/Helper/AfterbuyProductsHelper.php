@@ -327,7 +327,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array        $product
      * @param ValueArticle $valueArticle
      */
-    public function addProductPictures(array $product, ValueArticle $valueArticle): void
+    public function addProductPictures(array $product, ValueArticle $valueArticle)
     {
         $mainPicture = new ProductPicture();
         $mainPicture->setNr(0);

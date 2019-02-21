@@ -27,7 +27,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getAmount(): float
+    public function getAmount()
     {
         return $this->amount;
     }
@@ -35,7 +35,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @param float $amount
      */
-    public function setAmount(float $amount): void
+    public function setAmount(float $amount)
     {
         $this->amount = $amount;
     }
@@ -43,7 +43,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getAfterbuyOrderId(): string
+    public function getAfterbuyOrderId()
     {
         return $this->afterbuyOrderId;
     }
@@ -51,7 +51,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @param string $afterbuyOrderId
      */
-    public function setAfterbuyOrderId(string $afterbuyOrderId): void
+    public function setAfterbuyOrderId(string $afterbuyOrderId)
     {
         $this->afterbuyOrderId = $afterbuyOrderId;
     }
@@ -59,7 +59,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @return \DateTime
      */
-    public function getPaymentDate(): \DateTime
+    public function getPaymentDate()
     {
         return $this->paymentDate;
     }
@@ -67,7 +67,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @param \DateTime $paymentDate
      */
-    public function setPaymentDate(\DateTime $paymentDate): void
+    public function setPaymentDate(\DateTime $paymentDate)
     {
         $this->paymentDate = $paymentDate;
     }
@@ -75,7 +75,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @return \DateTime
      */
-    public function getShippingDate(): \DateTime
+    public function getShippingDate()
     {
         return $this->shippingDate;
     }
@@ -83,7 +83,7 @@ class OrderStatus extends AbstractValueObject {
     /**
      * @param \DateTime $shippingDate
      */
-    public function setShippingDate(\DateTime $shippingDate): void
+    public function setShippingDate(\DateTime $shippingDate)
     {
         $this->shippingDate = $shippingDate;
     }

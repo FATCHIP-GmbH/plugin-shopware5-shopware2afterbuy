@@ -249,7 +249,7 @@ class AbstractHelper {
      *
      * @return Media
      */
-    public function createMediaImage($url, $albumName): ?Media
+    public function createMediaImage($url, $albumName)
     {
         if(!$url) {
             return null;
@@ -319,7 +319,7 @@ class AbstractHelper {
      *
      * @return string
      */
-    public function filterNotAllowedCharactersFromURL(string $url): string
+    public function filterNotAllowedCharactersFromURL(string $url)
     {
         $badCharacters = '()+.';
 

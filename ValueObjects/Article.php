@@ -79,7 +79,7 @@ class Article extends AbstractValueObject
     /**
      * @return array
      */
-    public function getExternalCategoryIds(): array
+    public function getExternalCategoryIds()
     {
         return $this->externalCategoryIds;
     }
@@ -87,7 +87,7 @@ class Article extends AbstractValueObject
     /**
      * @param array $externalCategoryIds
      */
-    public function setExternalCategoryIds(array $externalCategoryIds): void
+    public function setExternalCategoryIds(array $externalCategoryIds)
     {
         $this->externalCategoryIds = $externalCategoryIds;
     }
@@ -96,7 +96,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getMainImageThumbnailUrl(): ?string
+    public function getMainImageThumbnailUrl()
     {
         return $this->mainImageThumbnailUrl;
     }
@@ -104,7 +104,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $mainImageThumbnailUrl
      */
-    public function setMainImageThumbnailUrl(string $mainImageThumbnailUrl): void
+    public function setMainImageThumbnailUrl(string $mainImageThumbnailUrl)
     {
         $this->mainImageThumbnailUrl = $mainImageThumbnailUrl;
     }
@@ -120,7 +120,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getMainImageUrl(): ?string
+    public function getMainImageUrl()
     {
         return $this->mainImageUrl;
     }
@@ -128,7 +128,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $mainImageUrl
      */
-    public function setMainImageUrl(string $mainImageUrl): void
+    public function setMainImageUrl(string $mainImageUrl)
     {
         $this->mainImageUrl = $mainImageUrl;
     }
@@ -136,7 +136,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $variantId
      */
-    public function setVariantId($variantId): void
+    public function setVariantId($variantId)
     {
         $this->variantId = $variantId;
     }
@@ -162,7 +162,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $shortDescription
      */
-    public function setShortDescription($shortDescription): void
+    public function setShortDescription($shortDescription)
     {
         $this->shortDescription = $shortDescription;
     }
@@ -178,7 +178,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $supplierNumber
      */
-    public function setSupplierNumber($supplierNumber): void
+    public function setSupplierNumber($supplierNumber)
     {
         $this->supplierNumber = $supplierNumber;
     }
@@ -192,7 +192,7 @@ class Article extends AbstractValueObject
     /**
      * @return ArrayCollection
      */
-    public function getVariantArticles(): ?ArrayCollection
+    public function getVariantArticles()
     {
         return $this->variantArticles;
     }
@@ -200,7 +200,7 @@ class Article extends AbstractValueObject
     /**
      * @param ArrayCollection $variantArticles
      */
-    public function setVariantArticles(?ArrayCollection $variantArticles): void
+    public function setVariantArticles(?ArrayCollection $variantArticles)
     {
         $this->variantArticles = $variantArticles;
     }
@@ -216,7 +216,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $description
      */
-    public function setDescription($description): void
+    public function setDescription($description)
     {
         $this->description = $description;
     }
@@ -224,7 +224,7 @@ class Article extends AbstractValueObject
     /**
      * @return bool
      */
-    public function isActive(): bool
+    public function isActive()
     {
         return $this->active;
     }
@@ -232,7 +232,7 @@ class Article extends AbstractValueObject
     /**
      * @param bool $active
      */
-    public function setActive(bool $active): void
+    public function setActive(bool $active)
     {
         $this->active = $active;
     }
@@ -249,7 +249,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $mainArticleId
      */
-    public function setMainArticleId($mainArticleId): void
+    public function setMainArticleId($mainArticleId)
     {
         $this->mainArticleId = $mainArticleId;
     }
@@ -257,7 +257,7 @@ class Article extends AbstractValueObject
     /**
      * @return array
      */
-    public function getVariants(): array
+    public function getVariants()
     {
         return $this->variants;
     }
@@ -265,7 +265,7 @@ class Article extends AbstractValueObject
     /**
      * @param array $variants
      */
-    public function setVariants(array $variants): void
+    public function setVariants(array $variants)
     {
         $this->variants = $variants;
     }
@@ -281,7 +281,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $pseudoPrice
      */
-    public function setPseudoPrice($pseudoPrice): void
+    public function setPseudoPrice($pseudoPrice)
     {
         $this->pseudoPrice = $pseudoPrice;
     }
@@ -297,7 +297,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $tax
      */
-    public function setTax($tax): void
+    public function setTax($tax)
     {
         $this->tax = $tax;
     }
@@ -313,7 +313,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $stockMin
      */
-    public function setStockMin($stockMin): void
+    public function setStockMin($stockMin)
     {
         $this->stockMin = $stockMin;
     }
@@ -322,7 +322,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getExternalIdentifier(): ?string
+    public function getExternalIdentifier()
     {
         return $this->externalIdentifier;
     }
@@ -330,7 +330,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(?string $externalIdentifier): void
+    public function setExternalIdentifier(?string $externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -338,7 +338,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getInternalIdentifier(): string
+    public function getInternalIdentifier()
     {
         return $this->internalIdentifier;
     }
@@ -346,7 +346,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $internalIdentifier
      */
-    public function setInternalIdentifier(string $internalIdentifier): void
+    public function setInternalIdentifier(string $internalIdentifier)
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -354,7 +354,7 @@ class Article extends AbstractValueObject
     /**
      * @return int
      */
-    public function getStock(): ?int
+    public function getStock()
     {
         return $this->stock;
     }
@@ -362,7 +362,7 @@ class Article extends AbstractValueObject
     /**
      * @param int $stock
      */
-    public function setStock(?int $stock): void
+    public function setStock(?int $stock)
     {
         $this->stock = $stock;
     }
@@ -370,7 +370,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -378,7 +378,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $name
      */
-    public function setName(string $name): void
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -386,7 +386,7 @@ class Article extends AbstractValueObject
     /**
      * @return float
      */
-    public function getPrice(): float
+    public function getPrice()
     {
         return $this->price;
     }
@@ -394,7 +394,7 @@ class Article extends AbstractValueObject
     /**
      * @param float $price
      */
-    public function setPrice(float $price): void
+    public function setPrice(float $price)
     {
         $this->price = $price;
     }
@@ -402,7 +402,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getManufacturer(): string
+    public function getManufacturer()
     {
         return $this->manufacturer;
     }
@@ -410,7 +410,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $manufacturer
      */
-    public function setManufacturer(string $manufacturer): void
+    public function setManufacturer(string $manufacturer)
     {
         $this->manufacturer = $manufacturer;
     }
@@ -418,7 +418,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getEan(): ?string
+    public function getEan()
     {
         return $this->ean;
     }
@@ -426,7 +426,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $ean
      */
-    public function setEan(?string $ean): void
+    public function setEan(?string $ean)
     {
         $this->ean = $ean;
     }
@@ -434,7 +434,7 @@ class Article extends AbstractValueObject
     /**
      * @return ProductPicture[]
      */
-    public function getProductPictures(): array
+    public function getProductPictures()
     {
         return $this->productPictures;
     }
@@ -442,12 +442,12 @@ class Article extends AbstractValueObject
     /**
      * @param ProductPicture $productPicture
      */
-    public function addProductPicture(ProductPicture $productPicture): void
+    public function addProductPicture(ProductPicture $productPicture)
     {
         $this->productPictures[] = $productPicture;
     }
 
-    public function isMainProduct(): bool
+    public function isMainProduct()
     {
         return $this->mainArticleId === null;
     }

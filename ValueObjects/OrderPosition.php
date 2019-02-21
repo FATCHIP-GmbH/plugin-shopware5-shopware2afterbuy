@@ -38,7 +38,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getPrice(): float
+    public function getPrice()
     {
         return $this->price;
     }
@@ -46,7 +46,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param float $price
      */
-    public function setPrice(float $price): void
+    public function setPrice(float $price)
     {
         $this->price = $price;
     }
@@ -54,7 +54,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getOrderId(): string
+    public function getOrderId()
     {
         return $this->orderId;
     }
@@ -62,7 +62,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $orderId
      */
-    public function setOrderId(string $orderId): void
+    public function setOrderId(string $orderId)
     {
         $this->orderId = $orderId;
     }
@@ -70,7 +70,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -78,7 +78,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $name
      */
-    public function setName(string $name): void
+    public function setName(string $name)
     {
         $this->name = $name;
     }
@@ -86,7 +86,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getInternalIdentifier(): ?string
+    public function getInternalIdentifier()
     {
         return $this->internalIdentifier;
     }
@@ -94,7 +94,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $internalIdentifier
      */
-    public function setInternalIdentifier(string $internalIdentifier): void
+    public function setInternalIdentifier(string $internalIdentifier)
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -102,7 +102,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getExternalIdentifier(): ?string
+    public function getExternalIdentifier()
     {
         return $this->externalIdentifier;
     }
@@ -110,7 +110,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(string $externalIdentifier): void
+    public function setExternalIdentifier(string $externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -126,7 +126,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param mixed $tax
      */
-    public function setTax($tax): void
+    public function setTax($tax)
     {
         $this->tax = $tax;
     }
@@ -142,7 +142,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param mixed $quantity
      */
-    public function setQuantity($quantity): void
+    public function setQuantity($quantity)
     {
         $this->quantity = $quantity;
     }

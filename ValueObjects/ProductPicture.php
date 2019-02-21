@@ -18,7 +18,7 @@ class ProductPicture
      *
      * @return string
      */
-    public function getNr(): string
+    public function getNr()
     {
         return $this->nr;
     }
@@ -28,7 +28,7 @@ class ProductPicture
      *
      * @param string $nr
      */
-    public function setNr(string $nr): void
+    public function setNr(string $nr)
     {
         $this->nr = $nr;
     }
@@ -36,7 +36,7 @@ class ProductPicture
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getUrl()
     {
         return $this->url;
     }
@@ -44,7 +44,7 @@ class ProductPicture
     /**
      * @param string $url
      */
-    public function setUrl(string $url): void
+    public function setUrl(string $url)
     {
         $this->url = $url;
     }
@@ -52,7 +52,7 @@ class ProductPicture
     /**
      * @return string
      */
-    public function getAltText(): string
+    public function getAltText()
     {
         return $this->altText;
     }
@@ -60,7 +60,7 @@ class ProductPicture
     /**
      * @param string $altText
      */
-    public function setAltText(?string $altText): void
+    public function setAltText(?string $altText)
     {
         if ($altText === null) {
             $altText = '';

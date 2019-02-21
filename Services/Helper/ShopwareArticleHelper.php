@@ -337,7 +337,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @return array
      */
-    public function getDetailIDsByExternalIdentifier(): array
+    public function getDetailIDsByExternalIdentifier()
     {
         return $this->entityManager->createQueryBuilder()
             ->select(['detail.id', 'detail.articleId', 'detail.number'])

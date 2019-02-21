@@ -66,7 +66,7 @@ class UpdateOrders extends ShopwareCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure(): void
+    protected function configure()
     {
         $this
             ->setName('Afterbuy:Update:Orders')

@@ -115,7 +115,7 @@ class Order extends AbstractValueObject {
     /**
      * @return bool
      */
-    public function isCleared(): bool
+    public function isCleared()
     {
         return $this->cleared;
     }
@@ -123,7 +123,7 @@ class Order extends AbstractValueObject {
     /**
      * @param bool $cleared
      */
-    public function setCleared(bool $cleared): void
+    public function setCleared(bool $cleared)
     {
         $this->cleared = $cleared;
     }
@@ -131,7 +131,7 @@ class Order extends AbstractValueObject {
     /**
      * @return int
      */
-    public function getPaymentTypeId(): int
+    public function getPaymentTypeId()
     {
         return $this->paymentTypeId;
     }
@@ -139,7 +139,7 @@ class Order extends AbstractValueObject {
     /**
      * @param int $paymentTypeId
      */
-    public function setPaymentTypeId(int $paymentTypeId): void
+    public function setPaymentTypeId(int $paymentTypeId)
     {
         $this->paymentTypeId = $paymentTypeId;
     }
@@ -149,7 +149,7 @@ class Order extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getShippingType(): string
+    public function getShippingType()
     {
         return $this->shippingType;
     }
@@ -157,7 +157,7 @@ class Order extends AbstractValueObject {
     /**
      * @param string $shippingType
      */
-    public function setShippingType(string $shippingType): void
+    public function setShippingType(string $shippingType)
     {
         $this->shippingType = $shippingType;
     }
@@ -175,7 +175,7 @@ class Order extends AbstractValueObject {
     /**
      * @param mixed $customerNumber
      */
-    public function setCustomerNumber($customerNumber): void
+    public function setCustomerNumber($customerNumber)
     {
         $this->customerNumber = $customerNumber;
     }
@@ -187,7 +187,7 @@ class Order extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getPaymentType(): string
+    public function getPaymentType()
     {
         return $this->paymentType;
     }
@@ -195,7 +195,7 @@ class Order extends AbstractValueObject {
     /**
      * @param string $paymentType
      */
-    public function setPaymentType(string $paymentType): void
+    public function setPaymentType(string $paymentType)
     {
         $this->paymentType = $paymentType;
     }
@@ -208,7 +208,7 @@ class Order extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getExternalIdentifier(): string
+    public function getExternalIdentifier()
     {
         return $this->externalIdentifier;
     }
@@ -216,7 +216,7 @@ class Order extends AbstractValueObject {
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(string $externalIdentifier): void
+    public function setExternalIdentifier(string $externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -224,7 +224,7 @@ class Order extends AbstractValueObject {
     /**
      * @return int
      */
-    public function getInternalIdentifier(): int
+    public function getInternalIdentifier()
     {
         return $this->internalIdentifier;
     }
@@ -232,7 +232,7 @@ class Order extends AbstractValueObject {
     /**
      * @param int $internalIdentifier
      */
-    public function setInternalIdentifier(int $internalIdentifier): void
+    public function setInternalIdentifier(int $internalIdentifier)
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -240,7 +240,7 @@ class Order extends AbstractValueObject {
     /**
      * @return ArrayCollection
      */
-    public function getPositions(): ArrayCollection
+    public function getPositions()
     {
         return $this->positions;
     }
@@ -248,7 +248,7 @@ class Order extends AbstractValueObject {
     /**
      * @param ArrayCollection $positions
      */
-    public function setPositions(ArrayCollection $positions): void
+    public function setPositions(ArrayCollection $positions)
     {
         $this->positions = $positions;
     }
@@ -256,7 +256,7 @@ class Order extends AbstractValueObject {
     /**
      * @return Address
      */
-    public function getShippingAddress(): ?Address
+    public function getShippingAddress()
     {
         return $this->shippingAddress;
     }
@@ -264,7 +264,7 @@ class Order extends AbstractValueObject {
     /**
      * @param Address $shippingAddress
      */
-    public function setShippingAddress(Address $shippingAddress): void
+    public function setShippingAddress(Address $shippingAddress)
     {
         $this->shippingAddress = $shippingAddress;
     }
@@ -272,7 +272,7 @@ class Order extends AbstractValueObject {
     /**
      * @return Address
      */
-    public function getBillingAddress(): Address
+    public function getBillingAddress()
     {
         return $this->billingAddress;
     }
@@ -280,7 +280,7 @@ class Order extends AbstractValueObject {
     /**
      * @param Address $billingAddress
      */
-    public function setBillingAddress(Address $billingAddress): void
+    public function setBillingAddress(Address $billingAddress)
     {
         $this->billingAddress = $billingAddress;
     }
@@ -296,7 +296,7 @@ class Order extends AbstractValueObject {
     /**
      * @param mixed $amount
      */
-    public function setAmount(float $amount): void
+    public function setAmount(float $amount)
     {
         $this->amount = $amount;
     }
@@ -304,7 +304,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getShipping(): float
+    public function getShipping()
     {
         return $this->shipping;
     }
@@ -312,7 +312,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $shipping
      */
-    public function setShipping(float $shipping): void
+    public function setShipping(float $shipping)
     {
         $this->shipping = $shipping;
     }
@@ -320,7 +320,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getAmountNet(): float
+    public function getAmountNet()
     {
         return $this->amountNet;
     }
@@ -328,7 +328,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $amountNet
      */
-    public function setAmountNet(float $amountNet): void
+    public function setAmountNet(float $amountNet)
     {
         $this->amountNet = $amountNet;
     }
@@ -336,7 +336,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getPaid(): float
+    public function getPaid()
     {
         return $this->paid;
     }
@@ -344,7 +344,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $paid
      */
-    public function setPaid(float $paid): void
+    public function setPaid(float $paid)
     {
         $this->paid = $paid;
     }
@@ -352,7 +352,7 @@ class Order extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getCurrency(): string
+    public function getCurrency()
     {
         return $this->currency;
     }
@@ -360,7 +360,7 @@ class Order extends AbstractValueObject {
     /**
      * @param string $currency
      */
-    public function setCurrency(string $currency): void
+    public function setCurrency(string $currency)
     {
         $this->currency = $currency;
     }
@@ -368,7 +368,7 @@ class Order extends AbstractValueObject {
     /**
      * @return string
      */
-    public function getTransactionId(): string
+    public function getTransactionId()
     {
         return $this->transactionId;
     }
@@ -376,7 +376,7 @@ class Order extends AbstractValueObject {
     /**
      * @param string $transactionId
      */
-    public function setTransactionId(string $transactionId): void
+    public function setTransactionId(string $transactionId)
     {
         $this->transactionId = $transactionId;
     }
@@ -384,7 +384,7 @@ class Order extends AbstractValueObject {
     /**
      * @return bool
      */
-    public function isTaxFree(): bool
+    public function isTaxFree()
     {
         return $this->taxFree;
     }
@@ -392,7 +392,7 @@ class Order extends AbstractValueObject {
     /**
      * @param bool $taxFree
      */
-    public function setTaxFree(bool $taxFree): void
+    public function setTaxFree(bool $taxFree)
     {
         $this->taxFree = $taxFree;
     }
@@ -408,7 +408,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $shippingNet
      */
-    public function setShippingNet(float $shippingNet): void
+    public function setShippingNet(float $shippingNet)
     {
         $this->shippingNet = $shippingNet;
     }
@@ -416,7 +416,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getShippingTax(): float
+    public function getShippingTax()
     {
         return $this->shippingTax;
     }
@@ -424,7 +424,7 @@ class Order extends AbstractValueObject {
     /**
      * @param float $shippingTax
      */
-    public function setShippingTax(float $shippingTax): void
+    public function setShippingTax(float $shippingTax)
     {
         $this->shippingTax = $shippingTax;
     }
@@ -432,7 +432,7 @@ class Order extends AbstractValueObject {
     /**
      * @return bool
      */
-    public function isShipped(): bool
+    public function isShipped()
     {
         return $this->shipped;
     }
@@ -440,7 +440,7 @@ class Order extends AbstractValueObject {
     /**
      * @param bool $shipped
      */
-    public function setShipped(bool $shipped): void
+    public function setShipped(bool $shipped)
     {
         $this->shipped = $shipped;
     }
@@ -448,7 +448,7 @@ class Order extends AbstractValueObject {
     /**
      * @return \DateTime
      */
-    public function getCreateDate(): \DateTime
+    public function getCreateDate()
     {
         return $this->createDate;
     }
@@ -456,7 +456,7 @@ class Order extends AbstractValueObject {
     /**
      * @param \DateTime $createDate
      */
-    public function setCreateDate(\DateTime $createDate): void
+    public function setCreateDate(\DateTime $createDate)
     {
         $this->createDate = $createDate;
     }
@@ -464,7 +464,7 @@ class Order extends AbstractValueObject {
     /**
      * @return \DateTime
      */
-    public function getUpdateDate(): \DateTime
+    public function getUpdateDate()
     {
         return $this->updateDate;
     }
@@ -472,7 +472,7 @@ class Order extends AbstractValueObject {
     /**
      * @param \DateTime $updateDate
      */
-    public function setUpdateDate(\DateTime $updateDate): void
+    public function setUpdateDate(\DateTime $updateDate)
     {
         $this->updateDate = $updateDate;
     }

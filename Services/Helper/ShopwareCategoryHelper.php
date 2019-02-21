@@ -16,7 +16,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
     /**
      * @return ShopwareCategory[]
      */
-    public function getAllCategories(): array {
+    public function getAllCategories() {
         return $this->entityManager->getRepository($this->entity)->findAll();
     }
 
@@ -35,7 +35,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      *
      * @return ShopwareCategory
      */
-    public function findParentCategory(ValueCategory $category, string $identifier): ShopwareCategory
+    public function findParentCategory(ValueCategory $category, string $identifier)
     {
         $parent = null;
 
@@ -60,7 +60,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      *
      * @return array
      */
-    public function buildAfterbuyCatalogStructure(array $valueCategories): array
+    public function buildAfterbuyCatalogStructure(array $valueCategories)
     {
         $valueCategories = $this->sortValueCategoriesByParentID($valueCategories);
 
@@ -117,7 +117,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      *
      * @return ValueCategory[]
      */
-    public function sortValueCategoriesByParentID(array $valueCategories): array
+    public function sortValueCategoriesByParentID(array $valueCategories)
     {
         usort($valueCategories, [$this, 'compare']);
 
@@ -130,7 +130,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      *
      * @return int
      */
-    private function compare($cat1, $cat2): int
+    private function compare($cat1, $cat2)
     {
         return ($cat1->getParentIdentifier() > $cat2->getParentIdentifier()) ? 1 : -1;
     }

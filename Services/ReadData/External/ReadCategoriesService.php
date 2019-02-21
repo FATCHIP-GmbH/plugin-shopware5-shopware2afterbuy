@@ -91,7 +91,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return array
      */
-    public function read(array $filter): array
+    public function read(array $filter)
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);

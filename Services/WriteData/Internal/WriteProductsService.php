@@ -352,7 +352,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         Media $media,
         ProductPicture $productPicture,
         ShopwareArticle $article
-    ): ArticleImage {
+    ) {
         $image = new ArticleImage();
 
         $image->setArticle($article);
@@ -378,7 +378,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @return ArticleImage
      */
-    public function createChildImage(ArticleImage $parent, ArticleDetail $detail): ArticleImage
+    public function createChildImage(ArticleImage $parent, ArticleDetail $detail)
     {
         $image = new ArticleImage();
 

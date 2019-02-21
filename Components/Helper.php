@@ -16,22 +16,22 @@ class Helper {
     }
 
     public static function convertDeString2Float(string $value) {
-        $value = str_replace(".", "", $value);
-        $value = str_replace(",", ".", $value);
+        $value = str_replace('.', '', $value);
+        $value = str_replace(',', '.', $value);
 
-        return floatval($value);
+        return (float)$value;
     }
 
     public static function convertNumberToABString($value) {
         $value = number_format($value, 2);
-        $value = str_replace(",", "", $value);
-        $value = str_replace(".", ",", $value);
+        $value = str_replace(',', '', $value);
+        $value = str_replace('.', ',', $value);
 
         return $value;
     }
 
     public static function convertPrice(float $price, float $tax, $isNet = true, $toNet = false) {
-        if($isNet == $toNet) {
+        if($isNet === $toNet) {
             return $price;
         }
 
@@ -42,8 +42,7 @@ class Helper {
         if ($isNet) {
             return $price * (1 + ($tax / 100));
         }
-        else {
-            return $price / (1 + ($tax / 100));
-        }
+
+        return $price / (1 + ($tax / 100));
     }
 }

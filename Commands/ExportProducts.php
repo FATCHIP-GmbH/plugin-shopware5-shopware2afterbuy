@@ -5,7 +5,6 @@ namespace abaccAfterbuy\Commands;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
 use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,7 +27,7 @@ class ExportProducts extends ShopwareCommand
      * @param WriteDataInterface $writeDataService
      */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;

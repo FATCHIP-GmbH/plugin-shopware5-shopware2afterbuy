@@ -15,7 +15,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     /**
      * @param array $filter
      * @return array|null
-     * @throws \Exception
      */
     public function get(array $filter) :?array {
         $data = $this->read($filter);
@@ -27,7 +26,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      *
      * @param array $data
      * @return array
-     * @throws \Exception
      */
     public function transform(array $data) :array {
         $this->logger->debug('Receiving orders from afterbuy', $data);
@@ -59,7 +57,14 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             //mappings for valueObject
             $value->setExternalIdentifier($entity['OrderID']);
             $value->setAmount(Helper::convertDeString2Float($entity['PaymentInfo']['FullAmount']));
-            $value->setCreateDate(new \DateTime($entity['OrderDate']));
+
+            try {
+                $value->setCreateDate(new \DateTime($entity['OrderDate']));
+            }
+            catch(\Exception $e) {
+                //handle annoying datetime exception
+            }
+
             $value->setCustomerNumber('AB' . $entity['BuyerInfo']['BillingAddress']['AfterbuyUserID']);
 
             /**

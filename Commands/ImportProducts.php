@@ -3,6 +3,7 @@
 namespace abaccAfterbuy\Commands;
 
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use abaccAfterbuy\Services\WriteData\Internal\WriteProductsService;
 use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +19,7 @@ class ImportProducts extends ShopwareCommand
     protected $readDataService;
 
     /**
-     * @var WriteDataInterface
+     * @var WriteProductsService
      */
     protected $writeDataService;
 
@@ -28,7 +29,7 @@ class ImportProducts extends ShopwareCommand
      */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService)
     {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;
@@ -59,16 +60,6 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * Structure for receiving and writing data
-         * Should look everywhere the same.
-         * Dependencies are handeled via services.xml
-         */
-
-        /**
-         * filter array is unused yet but can be implemented
-         */
-
         $filter = $this->writeDataService->getArticleImportDateFilter($input->getOption('force'));
 
         $data = $this->readDataService->get($filter);

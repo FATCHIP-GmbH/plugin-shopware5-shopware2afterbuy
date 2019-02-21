@@ -11,6 +11,7 @@ use Shopware\Models\Customer\Customer;
 use Shopware\Models\Order\Billing;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Order as ShopwareOrder;
+use Shopware\Models\Order\Order;
 use Shopware\Models\Order\Status as OrderStatus;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Customer\Group;
@@ -370,7 +371,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders', 'history'])
-            ->from(ValueOrder::class, 'orders', 'orders.id')
+            ->from(ShopwareOrder::class, 'orders', 'orders.id')
             ->leftJoin('orders.attribute', 'attributes')
             ->leftJoin('orders.history', 'history')
             ->where('attributes.afterbuyOrderId IS NOT NULL')
@@ -462,7 +463,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setAddress(ValueOrder $value, ValueOrder &$order, Customer $customer, $type = 'billing'): void
+    public function setAddress(ValueOrder $value, Order &$order, Customer $customer, $type = 'billing'): void
     {
         if ($type === 'billing') {
             $entityClass = Billing::class;

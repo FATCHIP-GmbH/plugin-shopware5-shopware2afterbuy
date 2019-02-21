@@ -394,7 +394,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $email
      */
-    public function setEmail(?string $email)
+    public function setEmail(string $email)
     {
         if(!$email) {
             return;

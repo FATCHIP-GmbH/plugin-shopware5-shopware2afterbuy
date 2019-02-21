@@ -330,7 +330,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(?string $externalIdentifier)
+    public function setExternalIdentifier(string $externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }
@@ -362,7 +362,7 @@ class Article extends AbstractValueObject
     /**
      * @param int $stock
      */
-    public function setStock(?int $stock)
+    public function setStock(int $stock)
     {
         $this->stock = $stock;
     }
@@ -426,7 +426,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $ean
      */
-    public function setEan(?string $ean)
+    public function setEan(string $ean)
     {
         $this->ean = $ean;
     }

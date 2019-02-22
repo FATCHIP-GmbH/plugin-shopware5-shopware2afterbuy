@@ -50,6 +50,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
         }
 
         $this->customerGroup = $helper->getDefaultCustomerGroup($this->config['customerGroup']);
+
+        if($this->customerGroup === null) {
+            $this->logger->error('Default customer group not defined');
+            exit('Default customer group not defined');
+        }
+
         $netInput = $this->customerGroup->getTaxInput();
 
         $targetData = array();

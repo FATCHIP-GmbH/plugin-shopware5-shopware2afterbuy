@@ -67,7 +67,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     public function send($orders)
     {
         /** @var ApiClient $api */
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         if(is_array($orders) && count($orders)) {
             $response = $api->updateOrderStatus($orders);

@@ -135,7 +135,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
     public function read(array $filter)
     {
 
-        $resource = new ApiClient($this->apiConfig);
+        $resource = new ApiClient($this->apiConfig, $this->logger);
         $data = $resource->getAllShopProductsFromAfterbuy($filter);
 
         if ( ! $data || empty($data)) {

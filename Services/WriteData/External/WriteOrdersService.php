@@ -134,7 +134,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @return array
      */
     public function send($targetData) {
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         $submitted = [];
 

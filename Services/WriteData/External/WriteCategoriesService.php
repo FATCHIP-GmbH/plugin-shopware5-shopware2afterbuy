@@ -58,7 +58,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     public function send($catalogs)
     {
         /** @var ApiClient $api */
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         $response = $api->updateCatalogs($catalogs);
 

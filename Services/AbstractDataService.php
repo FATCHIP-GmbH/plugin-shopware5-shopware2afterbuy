@@ -7,7 +7,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
-use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
 
 class AbstractDataService {
 
@@ -42,12 +41,11 @@ class AbstractDataService {
      */
     public $helper;
 
-     /**
+    /**
      * provides the target entity (valueObject) given via services.xml
      * !!! if different services etc are needed, we will make use of factories (symfony) !!!
      *
      * AbstractReadDataService constructor.
-     * @param string $targetEntity
      * @param ModelManager $entityManager
      */
     public function __construct(ModelManager $entityManager = null) {
@@ -64,7 +62,7 @@ class AbstractDataService {
     public function setConfig(CachedConfigReader $configReader, string $pluginName) {
         $this->config = $configReader->getByPluginName($pluginName);
 
-        if($this->config["partnerId"] === null || $this->config["partnerPassword"] === null || $this->config["userName"] === null || $this->config["userPassword"] === null) {
+        if($this->config['partnerId'] === null || $this->config['partnerPassword'] === null || $this->config['userName'] === null || $this->config['userPassword'] === null) {
             $this->logger->error('Afterbuy Connection not configured!');
             exit('Afterbuy Connection not configured!');
         }
@@ -72,10 +70,10 @@ class AbstractDataService {
         $this->apiConfig = [
             'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
             'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
-            'afterbuyPartnerId'            => $this->config["partnerId"],
-            'afterbuyPartnerPassword'      => $this->config["partnerPassword"],
-            'afterbuyUsername'             => $this->config["userName"],
-            'afterbuyUserPassword'         => $this->config["userPassword"],
+            'afterbuyPartnerId'            => $this->config['partnerId'],
+            'afterbuyPartnerPassword'      => $this->config['partnerPassword'],
+            'afterbuyUsername'             => $this->config['userName'],
+            'afterbuyUserPassword'         => $this->config['userPassword'],
             'logLevel'                     => '1',
         ];
     }

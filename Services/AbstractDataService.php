@@ -64,6 +64,11 @@ class AbstractDataService {
     public function setConfig(CachedConfigReader $configReader, string $pluginName) {
         $this->config = $configReader->getByPluginName($pluginName);
 
+        if($this->config["partnerId"] === null || $this->config["partnerPassword"] === null || $this->config["userName"] === null || $this->config["userPassword"] === null) {
+            $this->logger->error('Afterbuy Connection not configured!');
+            exit('Afterbuy Connection not configured!');
+        }
+
         $this->apiConfig = [
             'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
             'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',

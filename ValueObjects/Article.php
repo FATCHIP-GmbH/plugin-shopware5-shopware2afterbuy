@@ -330,7 +330,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(string $externalIdentifier)
+    public function setExternalIdentifier($externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }

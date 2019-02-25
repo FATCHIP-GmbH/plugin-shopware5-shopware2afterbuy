@@ -45,6 +45,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         /** @var ShopwareOrderHelper $helper */
         $helper = $this->helper;
 
+        if($this->config['targetShop'] === null) {
+            $this->logger->error('Target shop not defined');
+            exit('Target shop not defined');
+        }
+
         $this->targetShop = $helper->getShop($this->config['targetShop']);
         $this->countries = $helper->getCountries();
 

@@ -361,7 +361,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $completelyPaid && ($completelyDelivered || $completed);
     }
 
-    public function getNewFullfilledOrders(): array
+    public function getNewFullfilledOrders()
     {
         $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
 
@@ -386,6 +386,22 @@ class ShopwareOrderHelper extends AbstractHelper
             ->getQuery()
             ->setMaxResults(145)
             ->getResult();
+
+        return $orders;
+    }
+
+    public function getUnfullfilledOrders() {
+
+        $orders = $this->entityManager->createQueryBuilder()
+            ->select(['attributes.afterbuyOrderId'])
+            ->from(\Shopware\Models\Attribute\Order::class, 'attributes')
+            ->leftJoin('attributes.order', 'orders')
+            ->where('attributes.afterbuyOrderId IS NOT NULL')
+            ->andWhere("attributes.afterbuyOrderId != ''")
+            ->andWhere('orders.status = 0')
+            ->getQuery()
+            ->setMaxResults(250)
+            ->getScalarResult();
 
         return $orders;
     }

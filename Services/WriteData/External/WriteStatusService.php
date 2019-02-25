@@ -24,7 +24,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
         return $this->send($catalogs);
     }
 
-    public function transform(array $orders): array
+    public function transform(array $orders)
     {
         $this->logger->debug('Storing ' . count($orders) . ' items.', array($orders));
 
@@ -66,7 +66,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     public function send($orders) :?array
     {
         /** @var ApiClient $api */
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         if(is_array($orders) && count($orders)) {
             $response = $api->updateOrderStatus($orders);

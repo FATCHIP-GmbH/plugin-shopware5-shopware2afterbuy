@@ -35,7 +35,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
          * @var Group $customerGroup
          */
 
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         /**
          * @var AfterbuyProductsHelper $helper

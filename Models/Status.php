@@ -53,7 +53,7 @@ class Status extends ModelEntity {
     /**
      * @param mixed $id
      */
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -61,7 +61,7 @@ class Status extends ModelEntity {
     /**
      * @return \DateTime
      */
-    public function getLastOrderImport(): \DateTime
+    public function getLastOrderImport()
     {
         return $this->lastOrderImport;
     }
@@ -69,7 +69,7 @@ class Status extends ModelEntity {
     /**
      * @param \DateTime $lastOrderImport
      */
-    public function setLastOrderImport(\DateTime $lastOrderImport): void
+    public function setLastOrderImport(\DateTime $lastOrderImport)
     {
         $this->lastOrderImport = $lastOrderImport;
     }
@@ -77,7 +77,7 @@ class Status extends ModelEntity {
     /**
      * @return \DateTime
      */
-    public function getLastProductImport(): \DateTime
+    public function getLastProductImport()
     {
         return $this->lastProductImport;
     }
@@ -85,7 +85,7 @@ class Status extends ModelEntity {
     /**
      * @param \DateTime $lastProductImport
      */
-    public function setLastProductImport(\DateTime $lastProductImport): void
+    public function setLastProductImport(\DateTime $lastProductImport)
     {
         $this->lastProductImport = $lastProductImport;
     }
@@ -93,7 +93,7 @@ class Status extends ModelEntity {
     /**
      * @return \DateTime
      */
-    public function getLastStatusExport(): \DateTime
+    public function getLastStatusExport()
     {
         return $this->lastStatusExport;
     }
@@ -101,7 +101,7 @@ class Status extends ModelEntity {
     /**
      * @param \DateTime $lastStatusExport
      */
-    public function setLastStatusExport(\DateTime $lastStatusExport): void
+    public function setLastStatusExport(\DateTime $lastStatusExport)
     {
         $this->lastStatusExport = $lastStatusExport;
     }
@@ -109,7 +109,7 @@ class Status extends ModelEntity {
     /**
      * @return \DateTime
      */
-    public function getLastProductExport(): \DateTime
+    public function getLastProductExport()
     {
         return $this->lastProductExport;
     }
@@ -117,7 +117,7 @@ class Status extends ModelEntity {
     /**
      * @param \DateTime $lastProductExport
      */
-    public function setLastProductExport(\DateTime $lastProductExport): void
+    public function setLastProductExport(\DateTime $lastProductExport)
     {
         $this->lastProductExport = $lastProductExport;
     }

@@ -4,15 +4,25 @@
     <label lang="de">%%NAME%%</label>
     <label lang="en">%%NAME%%</label>
     <version>%%VERSION%%</version>
-    <copyright>(c) by Fatchip GmbH</copyright>
-    <license></license>
-    <link>https://www.fatchip.de/</link>
+    <copyright>(c) by VIA-Connect</copyright>
+    <license>General Public License Version 3</license>
+    <link>https://www.via-connect.de/</link>
     <author>Fatchip GmbH</author>
-
-    <compatibility minVersion="5.2.0" />
-
-    <changelog version="1.0.0">
+    <compatibility minVersion="5.3.0" />
+    <changelog version="1.0.0_beta">
         <changes lang="de">Erste Veröffentlichung</changes>
         <changes lang="en">Initial Release</changes>
     </changelog>
+    <description>
+        <![CDATA[
+            <b>Interface-Plugin for Afterbuy</b>
+            <p>With the Afterbuy Connector you can establish a connection to your Afterbuy-Account</p>
+        ]]>
+    </description>
+    <description lang="de">
+        <![CDATA[
+            <b>Schnittstelle zu Afterbuy</b>
+            <p>Mit dem Afterbuy-Connector können Sie einen Shopware-Shop an Ihr Afterbuy-System anbinden.</p>
+        ]]>
+    </description>
 </plugin>

@@ -41,7 +41,7 @@ class AbstractDataService {
      */
     public $helper;
 
-     /**
+    /**
      * provides the target entity (valueObject) given via services.xml
      * !!! if different services etc are needed, we will make use of factories (symfony) !!!
      *
@@ -63,6 +63,11 @@ class AbstractDataService {
     public function setConfig(CachedConfigReader $configReader, string $pluginName): void
     {
         $this->config = $configReader->getByPluginName($pluginName);
+
+        if($this->config['partnerId'] === null || $this->config['partnerPassword'] === null || $this->config['userName'] === null || $this->config['userPassword'] === null) {
+            $this->logger->error('Afterbuy Connection not configured!');
+            exit('Afterbuy Connection not configured!');
+        }
 
         $this->apiConfig = [
             'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',

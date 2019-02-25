@@ -66,7 +66,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
              */
             $value = new $this->targetEntity();
 
-            foreach ($fieldMappings as [$afterbuyVar, $valueObjVar]) {
+            foreach ($fieldMappings as list($afterbuyVar, $valueObjVar)) {
                 if (isset($entity[$afterbuyVar])) {
                     $setter = 'set' . $valueObjVar;
                     $value->$setter($entity[$afterbuyVar]);
@@ -91,10 +91,10 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return array
      */
-    public function read(array $filter): array
+    public function read(array $filter)
     {
         /** @var ApiClient $api */
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0, $filter);

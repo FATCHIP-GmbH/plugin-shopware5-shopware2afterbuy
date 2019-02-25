@@ -26,7 +26,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return ValueCategory[]
      */
-    public function get(array $filter): array
+    public function get(array $filter)
     {
         $data = $this->read($filter);
 
@@ -40,7 +40,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return ValueCategory[]
      */
-    public function transform(array $shopwareCategories): array
+    public function transform(array $shopwareCategories)
     {
         $this->logger->debug('Receiving categories from shop', $shopwareCategories);
 
@@ -99,7 +99,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return ShopwareCategory[]
      */
-    public function read(array $filter): array
+    public function read(array $filter)
     {
         /**
          * @var ShopwareCategoryHelper $categoryHelper

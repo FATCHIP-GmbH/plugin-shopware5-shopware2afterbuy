@@ -11,14 +11,14 @@ use Shopware\Models\Order\Order;
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface
 {
 
-    public function get(array $filter): array
+    public function get(array $filter)
     {
         $data = $this->read($filter);
 
         return $this->transform($data);
     }
 
-    public function transform(array $orders): array
+    public function transform(array $orders)
     {
         $this->logger->debug('Receiving updated orders from shop', $orders);
 
@@ -57,7 +57,7 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
     }
 
 
-    public function read(array $filter): array
+    public function read(array $filter)
     {
         /**
          * @var ShopwareOrderHelper $orderHelper

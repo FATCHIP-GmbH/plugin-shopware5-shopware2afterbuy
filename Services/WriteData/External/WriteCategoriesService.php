@@ -44,7 +44,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @return array
      */
-    public function transform(array $valueCategories): array
+    public function transform(array $valueCategories)
     {
         $this->logger->debug('Got ' . count($valueCategories) . ' items', [$valueCategories]);
         return $this->helper->buildAfterbuyCatalogStructure($valueCategories);
@@ -58,7 +58,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     public function send($catalogs) :?array
     {
         /** @var ApiClient $api */
-        $api = new ApiClient($this->apiConfig);
+        $api = new ApiClient($this->apiConfig, $this->logger);
 
         $response = $api->updateCatalogs($catalogs);
 

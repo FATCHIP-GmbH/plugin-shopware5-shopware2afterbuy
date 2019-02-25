@@ -215,8 +215,8 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $filter
      * @return array
      */
-    public function read(array $filter) :?array {
-        $resource = new ApiClient($this->apiConfig);
+    public function read(array $filter) {
+        $resource = new ApiClient($this->apiConfig, $this->logger);
         $data = $resource->getOrdersFromAfterbuy($filter);
 
         if(!$data || !$data['Result']) {

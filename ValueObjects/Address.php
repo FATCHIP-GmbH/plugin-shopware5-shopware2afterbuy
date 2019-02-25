@@ -135,7 +135,7 @@ class Address extends AbstractValueObject
     /**
      * @return \DateTime
      */
-    public function getBirthday(): ?\DateTime
+    public function getBirthday()
     {
         return $this->birthday;
     }
@@ -143,7 +143,7 @@ class Address extends AbstractValueObject
     /**
      * @param \DateTime $birthday
      */
-    public function setBirthday(\DateTime $birthday): void
+    public function setBirthday(\DateTime $birthday)
     {
         $this->birthday = $birthday;
     }
@@ -153,7 +153,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCompany(): string
+    public function getCompany()
     {
         return $this->company;
     }
@@ -161,7 +161,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $company
      */
-    public function setCompany(string $company): void
+    public function setCompany(string $company)
     {
         $this->company = $company;
     }
@@ -169,7 +169,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getDepartment(): string
+    public function getDepartment()
     {
         return $this->department;
     }
@@ -177,7 +177,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $department
      */
-    public function setDepartment(string $department): void
+    public function setDepartment(string $department)
     {
         $this->department = $department;
     }
@@ -185,7 +185,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getSalutation(): string
+    public function getSalutation()
     {
         return $this->salutation;
     }
@@ -193,7 +193,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $salutation
      */
-    public function setSalutation(string $salutation): void
+    public function setSalutation(string $salutation)
     {
         $this->salutation = $salutation;
     }
@@ -201,7 +201,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getFirstname(): string
+    public function getFirstname()
     {
         return $this->firstname;
     }
@@ -209,7 +209,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $firstname
      */
-    public function setFirstname(string $firstname): void
+    public function setFirstname(string $firstname)
     {
         $this->firstname = $firstname;
     }
@@ -217,7 +217,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }
@@ -225,7 +225,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $title
      */
-    public function setTitle(string $title): void
+    public function setTitle(string $title)
     {
         $this->title = $title;
     }
@@ -233,7 +233,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getLastname(): string
+    public function getLastname()
     {
         return $this->lastname;
     }
@@ -241,7 +241,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $lastname
      */
-    public function setLastname(string $lastname): void
+    public function setLastname(string $lastname)
     {
         $this->lastname = $lastname;
     }
@@ -249,7 +249,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getStreet(): string
+    public function getStreet()
     {
         return $this->street;
     }
@@ -257,7 +257,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $street
      */
-    public function setStreet(string $street): void
+    public function setStreet(string $street)
     {
         $this->street = $street;
     }
@@ -265,7 +265,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getZipcode(): string
+    public function getZipcode()
     {
         return $this->zipcode;
     }
@@ -273,7 +273,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $zipcode
      */
-    public function setZipcode(string $zipcode): void
+    public function setZipcode(string $zipcode)
     {
         $this->zipcode = $zipcode;
     }
@@ -281,7 +281,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCity(): string
+    public function getCity()
     {
         return $this->city;
     }
@@ -289,7 +289,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $city
      */
-    public function setCity(string $city): void
+    public function setCity(string $city)
     {
         $this->city = $city;
     }
@@ -297,7 +297,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getPhone(): string
+    public function getPhone()
     {
         return $this->phone;
     }
@@ -305,7 +305,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $phone
      */
-    public function setPhone(string $phone): void
+    public function setPhone(string $phone)
     {
         $this->phone = $phone;
     }
@@ -313,7 +313,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getVatId(): string
+    public function getVatId()
     {
         return $this->vatId;
     }
@@ -321,8 +321,9 @@ class Address extends AbstractValueObject
     /**
      * @param string $vatId
      */
-    public function setVatId(?string $vatId): void
+    public function setVatId($vatId)
     {
+        $vatId = (string) $vatId;
         if(!$vatId) {
             $vatId = '';
         }
@@ -333,7 +334,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getAdditionalAddressLine1(): string
+    public function getAdditionalAddressLine1()
     {
         return $this->additionalAddressLine1;
     }
@@ -341,7 +342,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $additionalAddressLine1
      */
-    public function setAdditionalAddressLine1(string $additionalAddressLine1): void
+    public function setAdditionalAddressLine1(string $additionalAddressLine1)
     {
         $this->additionalAddressLine1 = $additionalAddressLine1;
     }
@@ -349,7 +350,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getAdditionalAddressLine2(): string
+    public function getAdditionalAddressLine2()
     {
         return $this->additionalAddressLine2;
     }
@@ -357,7 +358,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $additionalAddressLine2
      */
-    public function setAdditionalAddressLine2(string $additionalAddressLine2): void
+    public function setAdditionalAddressLine2(string $additionalAddressLine2)
     {
         if(!$additionalAddressLine2) {
             $additionalAddressLine2 = '';
@@ -369,7 +370,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getCountry(): string
+    public function getCountry()
     {
         return $this->country;
     }
@@ -377,7 +378,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $country
      */
-    public function setCountry(string $country): void
+    public function setCountry(string $country)
     {
         $this->country = $country;
     }
@@ -385,7 +386,7 @@ class Address extends AbstractValueObject
     /**
      * @return string
      */
-    public function getEmail(): string
+    public function getEmail()
     {
         return $this->email;
     }
@@ -393,7 +394,7 @@ class Address extends AbstractValueObject
     /**
      * @param string $email
      */
-    public function setEmail(?string $email): void
+    public function setEmail(string $email)
     {
         if(!$email) {
             return;

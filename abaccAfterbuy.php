@@ -5,6 +5,7 @@ namespace abaccAfterbuy;
 use abaccAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
+use Shopware\Components\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
@@ -36,6 +37,7 @@ class abaccAfterbuy extends Plugin
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
 
         $service->update('s_order_attributes', 'afterbuy_order_id', 'string', [
+            'label' => 'Afterbuy OrderId',
             'displayInBackend' => true
         ]);
 
@@ -69,6 +71,38 @@ class abaccAfterbuy extends Plugin
 
             $em->persist($status);
             $em->flush();
+        }
+    }
+
+    public function uninstall(UninstallContext $context)
+    {
+        if($context->keepUserData() !== true) {
+            $this->deleteAttributes();
+            $this->deleteSchema();
+        }
+    }
+
+    public function deleteAttributes() {
+        $service = $this->container->get('shopware_attribute.crud_service');
+        $service->delete('s_categories_attributes', 'afterbuy_catalog_id');
+        $service->delete('s_order_attributes', 'afterbuy_order_id');
+        $service->delete('s_articles_attributes', 'afterbuy_parent_id');
+        $service->delete('s_articles_attributes', 'afterbuy_id');
+        $service->delete('s_articles_attributes', 'afterbuy_export_enabled');
+
+        Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
+    }
+
+    public function deleteSchema() {
+        $em = $this->container->get('models');
+        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $classes = [$em->getClassMetadata(Status::class)];
+
+        $tableNames = array('afterbuy_status');
+
+        $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
+        if ($schemaManager->tablesExist($tableNames)) {
+            $tool->dropSchema($classes);
         }
     }
 }

@@ -82,6 +82,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
         } elseif ($controller->Request()->getActionName() === 'getList') {
             $orders = $controller->View()->getAssign();
 
+            //TODO: merge outside subscriber
             foreach ($orders['data'] as $index => $order) {
                 /** @var Order $currentOrder */
                 $currentOrder = $this->entityManager->getRepository(Order::class)->find($order['id']);

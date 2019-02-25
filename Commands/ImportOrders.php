@@ -5,8 +5,6 @@ namespace abaccAfterbuy\Commands;
 use abaccAfterbuy\Services\ReadData\ReadDataInterface;
 use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 
-use Shopware\Components\Plugin\CachedConfigReader;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +18,7 @@ class ImportOrders extends ShopwareCommand
     protected $readDataService;
 
     /**
-     * @var WriteDataInterface
+     * @var \abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService
      */
     protected $writeDataService;
 
@@ -29,7 +27,7 @@ class ImportOrders extends ShopwareCommand
      * @param WriteDataInterface $writeDataService
      */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;
@@ -60,16 +58,6 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * Structure for receiving and writing data
-         * Should look everywhere the same.
-         * Dependenciies are handeld via services.xml
-         */
-
-        /**
-         * filter array is unused yet but can be implemented
-         */
-
         $filter = $this->writeDataService->getOrderImportDateFilter($input->getOption('force'));
 
         $data = $this->readDataService->get($filter);

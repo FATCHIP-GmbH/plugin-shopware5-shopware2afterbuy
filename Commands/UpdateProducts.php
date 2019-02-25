@@ -44,7 +44,7 @@ class UpdateProducts extends ShopwareCommand
         $config = $configReader->getByPluginName($pluginName);
 
         //if afterbuy data carrying system
-        if($config['mainSystem'] == 2) {
+        if($config['mainSystem'] === 2) {
             $this->readCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.read_data.external.read_categories_service');
             $this->writeCategoriesService = Shopware()->Container()->get('abacc_afterbuy.services.write_data.internal.write_categories_service');
 
@@ -98,14 +98,14 @@ EOF
 
         $categories = $this->readCategoriesService->get($filter);
         $output->writeln('Got Categories: ' . count($categories));
-        $result = $this->writeCategoriesService->put($categories);
+        $this->writeCategoriesService->put($categories);
 
-        if(method_exists($this->writeProductsService, "getArticleImportDateFilter")) {
+        if(method_exists($this->writeProductsService, 'getArticleImportDateFilter')) {
             $filter['products'] = $this->writeProductsService->getArticleImportDateFilter();
         }
 
         $products = $this->readProductsService->get($filter['products']);
         $output->writeln('Got Products: ' . count($products));
-        $result = $this->writeProductsService->put($products);
+        $this->writeProductsService->put($products);
     }
 }

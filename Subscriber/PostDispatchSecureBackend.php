@@ -11,7 +11,9 @@ namespace abaccAfterbuy\Subscriber;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;
 use Enlight_Event_EventArgs;
+use Enlight_View_Default;
 use Shopware\Components\Model\ModelManager;
+use Shopware\Components\Plugin\CachedConfigReader;
 use Shopware\Models\Order\Order;
 
 class PostDispatchSecureBackend implements SubscriberInterface
@@ -24,16 +26,27 @@ class PostDispatchSecureBackend implements SubscriberInterface
     /**
      * @var string
      */
-    private $pluginDirectory;
+    protected $pluginDirectory;
+
+    /** @var array */
+    protected $config;
 
     /**
-     * @param $entityManager
-     * @param $pluginDirectory
+     * @param ModelManager $entityManager
+     * @param string $pluginDirectory
+     * @param CachedConfigReader $configReader
+     * @param string $pluginName
      */
-    public function __construct($entityManager, $pluginDirectory)
+    public function __construct(
+        ModelManager $entityManager,
+        string $pluginDirectory,
+        CachedConfigReader $configReader,
+        string $pluginName
+    )
     {
         $this->entityManager = $entityManager;
         $this->pluginDirectory = $pluginDirectory;
+        $this->config = $configReader->getByPluginName($pluginName);
     }
 
     public static function getSubscribedEvents()
@@ -46,10 +59,16 @@ class PostDispatchSecureBackend implements SubscriberInterface
 
     public function onPostDispatchSecureBackendIndex(Enlight_Event_EventArgs $args)
     {
-        /** @var Enlight_Controller_Action $controller */
-        list($controller, $view) = $this->prepareEventHandler($args);
+        // afterbuy is carrying system
+        if ($this->config['mainSystem'] == 2) {
+            return;
+        }
+
+        /** @var Enlight_View_Default $view */
+        $view = $this->prepareEventHandler($args)[1];
 
         $view->extendsTemplate('backend/abacc_extend_order/base/header.tpl');
+
     }
 
     public function onPostDispatchSecureBackendOrder(Enlight_Event_EventArgs $args)
@@ -75,7 +94,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
 
     /**
      * @param Enlight_Event_EventArgs $args
-     * @return array
+     * @return array array with current $controller and $view [$controller, $view]
      */
     public function prepareEventHandler(Enlight_Event_EventArgs $args): array
     {

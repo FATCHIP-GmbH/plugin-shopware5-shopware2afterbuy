@@ -69,7 +69,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $order->setPositions($positions);
 
-
             $billingAddress = new Address();
             $billingAddress->setFirstname($entity->getBilling()->getFirstName());
             $billingAddress->setLastname($entity->getBilling()->getLastName());
@@ -83,9 +82,12 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setCity($entity->getBilling()->getCity());
             $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
             $billingAddress->setPhone($entity->getBilling()->getPhone());
-            $billingAddress->setEmail($entity->getCustomer()->getEmail());
 
-            if($entity->getCustomer()->getBirthday()) {
+            if($entity->getCustomer()) {
+                $billingAddress->setEmail($entity->getCustomer()->getEmail());
+            }
+
+            if($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
                 $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
             }
 

@@ -134,7 +134,7 @@ class Category extends AbstractValueObject
     /**
      * @param $description
      */
-    public function setDescription(string $description)
+    public function setDescription($description)
     {
         if ($description !== null) {
             $this->description = $description;

@@ -7,28 +7,29 @@ Ext.define('Shopware.apps.abaccResetShopConnection', {
      * @string
      */
     name: 'Shopware.apps.abaccResetShopConnection',
+    bulkLoad: true,
+    loadPath: '{url action=load}',
+
+    /**
+     * Requires class for the module (subapplication)
+     */
+    requires: [
+        'Shopware.container.Viewport'
+    ],
+
+    views: [
+        'ResetWindow'
+    ],
+
+    controllers: [
+        'ResetController'
+    ],
 
 
-    launch: function () {
-        var me = this;
+    launch() {
+        const me = this;
+        const controller = me.getController('ResetController');
 
-
-        // Ext.Ajax.request({
-        //     url: '{url controller=saltyUpdateCurrencyRates action=reset}',
-        //     success: function() {
-        //         Shopware.Notification.createGrowlMessage(
-        //             '{s namespace="backend/salty" name="update_title"}{/s}',
-        //             '{s namespace="backend/salty" name="update_success"}{/s}',
-        //             'UpdateCurrencyRates'
-        //         );
-        //
-        //     }
-        // });
-
-        // Shopware.Notification.createGrowlMessage(
-        //     'a','b','c'
-        // );
-
-        console.log('DBG');
+        return controller.resetWindow;
     }
 });

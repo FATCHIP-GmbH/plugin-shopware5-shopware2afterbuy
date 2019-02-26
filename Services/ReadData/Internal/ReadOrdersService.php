@@ -85,6 +85,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             if($entity->getCustomer()) {
                 $billingAddress->setEmail($entity->getCustomer()->getEmail());
+                $order->setCustomerNumber($entity->getCustomer()->getNumber());
             }
 
             if($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
@@ -124,7 +125,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $order->setTaxFree(true);
             }
 
-            $order->setCustomerNumber($entity->getCustomer()->getNumber());
             $order->setInternalIdentifier($entity->getNumber());
 
             $order->setCurrency($entity->getCurrency());

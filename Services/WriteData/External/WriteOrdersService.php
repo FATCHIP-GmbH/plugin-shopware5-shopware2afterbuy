@@ -1,14 +1,14 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\External;
+namespace viaebShopware2Afterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use viaebShopware2Afterbuy\Components\Helper;
+use viaebShopware2Afterbuy\Services\Helper\ShopwareOrderHelper;
+use viaebShopware2Afterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopware2Afterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopware2Afterbuy\ValueObjects\Order;
+use viaebShopware2Afterbuy\ValueObjects\OrderPosition;
 
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 

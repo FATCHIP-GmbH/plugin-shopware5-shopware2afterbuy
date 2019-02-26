@@ -1,12 +1,12 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\External;
+namespace viaebShopware2Afterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopware2Afterbuy\Services\Helper\ShopwareCategoryHelper;
+use viaebShopware2Afterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopware2Afterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopware2Afterbuy\ValueObjects\Category as ValueCategory;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\Internal;
+namespace viaebShopware2Afterbuy\Services\ReadData\Internal;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Address;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopware2Afterbuy\ValueObjects\Address;
+use viaebShopware2Afterbuy\ValueObjects\Order;
+use viaebShopware2Afterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 

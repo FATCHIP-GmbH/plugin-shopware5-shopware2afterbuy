@@ -1,12 +1,12 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\Internal;
+namespace viaebShopware2Afterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\AbstractHelper;
-use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopware2Afterbuy\Services\Helper\AbstractHelper;
+use viaebShopware2Afterbuy\Services\Helper\ShopwareCategoryHelper;
+use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopware2Afterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 

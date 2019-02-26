@@ -1,9 +1,9 @@
 <?php
 
-namespace abaccAfterbuy\Services\Helper;
+namespace viaebShopware2Afterbuy\Services\Helper;
 
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\ValueObjects\ProductPicture;
+use viaebShopware2Afterbuy\Components\Helper;
+use viaebShopware2Afterbuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Configurator\Set;
@@ -17,7 +17,7 @@ use Shopware\Models\Article\Detail;
 
 /**
  * Class ShopwareArticleHelper
- * @package abaccAfterbuy\Services\Helper
+ * @package viaebShopware2Afterbuy\Services\Helper
  */
 class ShopwareArticleHelper extends AbstractHelper {
 
@@ -81,10 +81,10 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param Article $entity
-     * @param \abaccAfterbuy\ValueObjects\Article $article
+     * @param \viaebShopware2Afterbuy\ValueObjects\Article $article
      * @param bool $netInput
      */
-    public function setSimpleArticleValues(Article $entity, \abaccAfterbuy\ValueObjects\Article &$article, bool $netInput) {
+    public function setSimpleArticleValues(Article $entity, \viaebShopware2Afterbuy\ValueObjects\Article &$article, bool $netInput) {
         $detail = $entity->getMainDetail();
 
         if($detail->getEan()) {
@@ -161,10 +161,10 @@ ON duplicate key update afterbuy_id = $externalId;";
     }
 
     /**
-     * @param \abaccAfterbuy\ValueObjects\Article $article
+     * @param \viaebShopware2Afterbuy\ValueObjects\Article $article
      * @param Article $entity
      */
-    public function assignCategories(\abaccAfterbuy\ValueObjects\Article &$article, Article $entity) {
+    public function assignCategories(\viaebShopware2Afterbuy\ValueObjects\Article &$article, Article $entity) {
         $categories = [];
 
         foreach($entity->getCategories() as $category) {
@@ -181,10 +181,10 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param Article $entity
-     * @param \abaccAfterbuy\ValueObjects\Article $article
+     * @param \viaebShopware2Afterbuy\ValueObjects\Article $article
      * @param Detail|null $detail
      */
-    public function assignArticleImages(Article $entity, \abaccAfterbuy\ValueObjects\Article &$article, Detail $detail = null) {
+    public function assignArticleImages(Article $entity, \viaebShopware2Afterbuy\ValueObjects\Article &$article, Detail $detail = null) {
         if(is_null($detail)) {
             $images = $entity->getImages();
         } else {
@@ -739,7 +739,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @return array|\Doctrine\ORM\QueryBuilder
      */
     public function getUnexportedArticles($force = false, $exportAll = true) {
-        $lastExport = $this->entityManager->getRepository("\abaccAfterbuy\Models\Status")->find(1);
+        $lastExport = $this->entityManager->getRepository("\viaebShopware2Afterbuy\Models\Status")->find(1);
 
         if($lastExport) {
             $lastExport = $lastExport->getLastProductExport();

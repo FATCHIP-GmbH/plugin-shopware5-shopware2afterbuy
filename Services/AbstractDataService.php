@@ -1,8 +1,8 @@
 <?php
 
-namespace abaccAfterbuy\Services;
+namespace viaebShopware2Afterbuy\Services;
 
-use abaccAfterbuy\Services\Helper\AbstractHelper;
+use viaebShopware2Afterbuy\Services\Helper\AbstractHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;

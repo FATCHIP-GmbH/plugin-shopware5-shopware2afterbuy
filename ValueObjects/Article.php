@@ -1,6 +1,6 @@
 <?php
 
-namespace abaccAfterbuy\ValueObjects;
+namespace viaebShopware2Afterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
 

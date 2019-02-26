@@ -7,108 +7,108 @@
 
         <!-- Cronjobs -->
 
-        <service id="abacc_afterbuy.subscriber.cron" class="abaccAfterbuy\Subscriber\Cron">
+        <service id="viaeb_shopware2afterbuy.subscriber.cron" class="viaebShopware2Afterbuy\Subscriber\Cron">
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            <argument type="string">%viaeb_shopware2afterbuy.plugin_name%</argument>
             <tag name="shopware.event_subscriber" />
         </service>
 
 
         <!-- Commands -->
 
-        <service id="abacc_afterbuy.commands.export_status" class="abaccAfterbuy\Commands\ExportStatus">
+        <service id="viaeb_shopware2afterbuy.commands.export_status" class="viaebShopware2Afterbuy\Commands\ExportStatus">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_status_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_status_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.internal.read_status_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.external.write_status_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.import_categories" class="abaccAfterbuy\Commands\ImportCategories">
+        <service id="viaeb_shopware2afterbuy.commands.import_categories" class="viaebShopware2Afterbuy\Commands\ImportCategories">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_categories_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_categories_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.external.read_categories_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.export_categories" class="abaccAfterbuy\Commands\ExportCategories">
+        <service id="viaeb_shopware2afterbuy.commands.export_categories" class="viaebShopware2Afterbuy\Commands\ExportCategories">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_categories_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_categories_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.internal.read_categories_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.export_orders" class="abaccAfterbuy\Commands\ExportOrders">
+        <service id="viaeb_shopware2afterbuy.commands.export_orders" class="viaebShopware2Afterbuy\Commands\ExportOrders">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_orders_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_orders_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.internal.read_orders_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.external.write_orders_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.import_orders" class="abaccAfterbuy\Commands\ImportOrders">
+        <service id="viaeb_shopware2afterbuy.commands.import_orders" class="viaebShopware2Afterbuy\Commands\ImportOrders">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_orders_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.internal.write_orders_service" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            <argument type="string">%viaeb_shopware2afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="abacc_afterbuy.commands.import_products" class="abaccAfterbuy\Commands\ImportProducts">
+        <service id="viaeb_shopware2afterbuy.commands.import_products" class="viaebShopware2Afterbuy\Commands\ImportProducts">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_products_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_products_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.external.read_products_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.internal.write_products_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.export_products" class="abaccAfterbuy\Commands\ExportProducts">
+        <service id="viaeb_shopware2afterbuy.commands.export_products" class="viaebShopware2Afterbuy\Commands\ExportProducts">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.internal.read_products_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.external.write_products_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.internal.read_products_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.external.write_products_service" />
         </service>
 
-        <service id="abacc_afterbuy.commands.update_products" class="abaccAfterbuy\Commands\UpdateProducts">
-            <tag name="console.command" />
-            <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
-        </service>
-
-        <service id="abacc_afterbuy.commands.update_orders" class="abaccAfterbuy\Commands\UpdateOrders">
+        <service id="viaeb_shopware2afterbuy.commands.update_products" class="viaebShopware2Afterbuy\Commands\UpdateProducts">
             <tag name="console.command" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            <argument type="string">%viaeb_shopware2afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="abacc_afterbuy.commands.import_status" class="abaccAfterbuy\Commands\ImportStatus">
+        <service id="viaeb_shopware2afterbuy.commands.update_orders" class="viaebShopware2Afterbuy\Commands\UpdateOrders">
             <tag name="console.command" />
-            <argument type="service" id="abacc_afterbuy.services.read_data.external.read_orders_service" />
-            <argument type="service" id="abacc_afterbuy.services.write_data.internal.write_status_service" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%viaeb_shopware2afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="viaeb_shopware2afterbuy.commands.import_status" class="viaebShopware2Afterbuy\Commands\ImportStatus">
+            <tag name="console.command" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.read_data.external.read_orders_service" />
+            <argument type="service" id="viaeb_shopware2afterbuy.services.write_data.internal.write_status_service" />
         </service>
 
         <!-- Products -->
 
-        <service class="abaccAfterbuy\Services\ReadData\External\ReadProductsService" id="abacc_afterbuy.services.read_data.external.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\External\ReadProductsService" id="viaeb_shopware2afterbuy.services.read_data.external.read_products_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteProductsService" id="abacc_afterbuy.services.write_data.internal.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\Internal\WriteProductsService" id="viaeb_shopware2afterbuy.services.write_data.internal.write_products_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Article\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_article_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadProductsService" id="abacc_afterbuy.services.read_data.internal.read_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\Internal\ReadProductsService" id="viaeb_shopware2afterbuy.services.read_data.internal.read_products_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Article</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Article</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_article_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -117,27 +117,27 @@
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\External\WriteProductsService" id="abacc_afterbuy.services.write_data.external.write_products_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\External\WriteProductsService" id="viaeb_shopware2afterbuy.services.write_data.external.write_products_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.afterbuy_products_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.afterbuy_products_helper"/>
             </call>
         </service>
 
         <!-- Orderstatus -->
 
-        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadStatusService" id="abacc_afterbuy.services.read_data.internal.read_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\Internal\ReadStatusService" id="viaeb_shopware2afterbuy.services.read_data.internal.read_status_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
-        <service class="abaccAfterbuy\Services\WriteData\External\WriteStatusService" id="abacc_afterbuy.services.write_data.external.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\External\WriteStatusService" id="viaeb_shopware2afterbuy.services.write_data.external.write_status_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -145,10 +145,10 @@
 
         <!-- Orders -->
 
-        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="abacc_afterbuy.services.read_data.internal.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\Internal\ReadOrdersService" id="viaeb_shopware2afterbuy.services.read_data.internal.read_orders_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -156,50 +156,50 @@
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Order</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\ReadData\External\ReadOrdersService" id="abacc_afterbuy.services.read_data.external.read_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\External\ReadOrdersService" id="viaeb_shopware2afterbuy.services.read_data.external.read_orders_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Order</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Order</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\External\WriteOrdersService" id="abacc_afterbuy.services.write_data.external.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\External\WriteOrdersService" id="viaeb_shopware2afterbuy.services.write_data.external.write_orders_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="abacc_afterbuy.services.write_data.internal.write_orders_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\Internal\WriteOrdersService" id="viaeb_shopware2afterbuy.services.write_data.internal.write_orders_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteStatusService" id="abacc_afterbuy.services.write_data.internal.write_status_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\Internal\WriteStatusService" id="viaeb_shopware2afterbuy.services.write_data.internal.write_status_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
             </call>
             <call method="initHelper">
-                <argument type="service" id="abacc_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -207,36 +207,36 @@
 
         <!-- Categories -->
 
-        <service class="abaccAfterbuy\Services\ReadData\External\ReadCategoriesService" id="abacc_afterbuy.services.read_data.external.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\External\ReadCategoriesService" id="viaeb_shopware2afterbuy.services.read_data.external.read_categories_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Category</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="abacc_afterbuy.services.write_data.internal.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\Internal\WriteCategoriesService" id="viaeb_shopware2afterbuy.services.write_data.internal.write_categories_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="viaeb_shopware2afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="abacc_afterbuy.services.read_data.internal.read_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\ReadData\Internal\ReadCategoriesService" id="viaeb_shopware2afterbuy.services.read_data.internal.read_categories_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <call method="setTarget">
-                <argument type="string">abaccAfterbuy\ValueObjects\Category</argument>
+                <argument type="string">viaebShopware2Afterbuy\ValueObjects\Category</argument>
             </call>
             <call method="initHelper">
-                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="viaeb_shopware2afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\WriteData\External\WriteCategoriesService" id="abacc_afterbuy.services.write_data.external.write_categories_service" parent="abacc_afterbuy.services.abstract_data_service">
+        <service class="viaebShopware2Afterbuy\Services\WriteData\External\WriteCategoriesService" id="viaeb_shopware2afterbuy.services.write_data.external.write_categories_service" parent="viaeb_shopware2afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
               <call method="initHelper">
-                <argument id="abacc_afterbuy.services.helper.shopware_category_helper" type="service"/>
+                <argument id="viaeb_shopware2afterbuy.services.helper.shopware_category_helper" type="service"/>
                 <argument type="string">afterbuyCatalogId</argument>
                 <argument>true</argument>
             </call>
@@ -244,16 +244,16 @@
 
         <!-- Abstracts -->
 
-        <service id="abacc_afterbuy.services.abstract_data_service" class="abaccAfterbuy\Services\AbstractDataService" abstract="true">
+        <service id="viaeb_shopware2afterbuy.services.abstract_data_service" class="viaebShopware2Afterbuy\Services\AbstractDataService" abstract="true">
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>
             <call method="setConfig">
                 <argument type="service" id="shopware.plugin.cached_config_reader" />
-                <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+                <argument type="string">%viaeb_shopware2afterbuy.plugin_name%</argument>
             </call>
             <call method="registerAPINamespaces">
-                <argument type="string">%abacc_afterbuy.plugin_dir%</argument>
+                <argument type="string">%viaeb_shopware2afterbuy.plugin_dir%</argument>
             </call>
         </service>
 
@@ -261,7 +261,7 @@
 
         <!-- Helper -->
 
-        <service class="abaccAfterbuy\Services\Helper\ShopwareOrderHelper" id="abacc_afterbuy.services.helper.shopware_order_helper">
+        <service class="viaebShopware2Afterbuy\Services\Helper\ShopwareOrderHelper" id="viaeb_shopware2afterbuy.services.helper.shopware_order_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Order\Order</argument>
             <argument type="string">\Shopware\Models\Attribute\Order</argument>
@@ -271,7 +271,7 @@
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\Helper\AfterbuyProductsHelper" id="abacc_afterbuy.services.helper.afterbuy_products_helper">
+        <service class="viaebShopware2Afterbuy\Services\Helper\AfterbuyProductsHelper" id="viaeb_shopware2afterbuy.services.helper.afterbuy_products_helper">
             <argument id="models" type="service"/>
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
@@ -281,7 +281,7 @@
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\Helper\ShopwareCategoryHelper" id="abacc_afterbuy.services.helper.shopware_category_helper">
+        <service class="viaebShopware2Afterbuy\Services\Helper\ShopwareCategoryHelper" id="viaeb_shopware2afterbuy.services.helper.shopware_category_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
@@ -291,7 +291,7 @@
             </call>
         </service>
 
-        <service class="abaccAfterbuy\Services\Helper\ShopwareArticleHelper" id="abacc_afterbuy.services.helper.shopware_article_helper">
+        <service class="viaebShopware2Afterbuy\Services\Helper\ShopwareArticleHelper" id="viaeb_shopware2afterbuy.services.helper.shopware_article_helper">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Article\Article</argument>
             <argument type="string">\Shopware\Models\Attribute\Attribute</argument>

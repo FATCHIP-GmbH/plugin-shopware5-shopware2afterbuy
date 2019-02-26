@@ -1,15 +1,15 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\Internal;
+namespace viaebShopware2Afterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Models\Status;
-use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Article as ValueArticle;
-use abaccAfterbuy\ValueObjects\ProductPicture;
+use viaebShopware2Afterbuy\Components\Helper;
+use viaebShopware2Afterbuy\Models\Status;
+use viaebShopware2Afterbuy\Services\Helper\ShopwareArticleHelper;
+use viaebShopware2Afterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopware2Afterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopware2Afterbuy\ValueObjects\Article as ValueArticle;
+use viaebShopware2Afterbuy\ValueObjects\ProductPicture;
 use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;

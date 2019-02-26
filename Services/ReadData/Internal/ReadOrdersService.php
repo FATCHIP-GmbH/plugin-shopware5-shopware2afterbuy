@@ -3,6 +3,7 @@
 namespace viaebShopware2Afterbuy\Services\ReadData\Internal;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityNotFoundException;
 use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopware2Afterbuy\ValueObjects\Address;
@@ -83,13 +84,18 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
             $billingAddress->setPhone($entity->getBilling()->getPhone());
 
-            if($entity->getCustomer()) {
-                $billingAddress->setEmail($entity->getCustomer()->getEmail());
-                $order->setCustomerNumber($entity->getCustomer()->getNumber());
-            }
+            try {
+                if ($entity->getCustomer()) {
+                    $billingAddress->setEmail($entity->getCustomer()->getEmail());
+                    $order->setCustomerNumber($entity->getCustomer()->getNumber());
+                }
 
-            if($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
-                $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+                if ($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
+                    $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+                }
+            }
+            catch(EntityNotFoundException $e) {
+                $this->logger->error($e->getMessage());
             }
 
             $shippingAddress = new Address();

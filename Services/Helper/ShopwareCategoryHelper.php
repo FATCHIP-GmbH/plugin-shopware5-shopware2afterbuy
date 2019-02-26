@@ -89,14 +89,14 @@ class ShopwareCategoryHelper extends AbstractHelper {
             foreach ($parentPath as $parentID) {
                 if (!is_array($currentParents)) continue;
                 foreach ($currentParents as &$currentParent) {
-                    if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
+                    if ($currentParent['InternalIdentifier'] == $valueCategory->getParentIdentifier()) {
                         $currentParent['Catalog'][] = $catalog;
 
                         // next valueCategory
                         continue 3;
                     }
 
-                    if ($currentParent['InternalIdentifier'] === $parentID) {
+                    if ($currentParent['InternalIdentifier'] == $parentID) {
                         // if ( ! isset($currentParent['Catalog'])) {
                         //     $currentParent['Catalog'] = [];
                         // }

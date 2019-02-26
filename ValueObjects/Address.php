@@ -22,7 +22,7 @@
  * our trademarks remain entirely with us.
  */
 
-namespace viaebShopwareAfterBuy\ValueObjects;
+namespace viaebShopwareAfterbuy\ValueObjects;
 
 class Address extends AbstractValueObject
 {

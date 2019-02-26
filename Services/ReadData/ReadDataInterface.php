@@ -1,6 +1,6 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\ReadData;
+namespace viaebShopwareAfterbuy\Services\ReadData;
 
 interface ReadDataInterface {
     /**

@@ -1,14 +1,14 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\WriteData\External;
+namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopwareAfterBuy\Components\Helper;
-use viaebShopwareAfterBuy\Services\Helper\AfterbuyProductsHelper;
-use viaebShopwareAfterBuy\Services\Helper\ShopwareArticleHelper;
-use viaebShopwareAfterBuy\Services\WriteData\AbstractWriteDataService;
-use viaebShopwareAfterBuy\Services\WriteData\WriteDataInterface;
-use viaebShopwareAfterBuy\ValueObjects\Article;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Article;
 use Shopware\Models\Article\Detail;
 use Shopware\Models\Customer\Group;
 

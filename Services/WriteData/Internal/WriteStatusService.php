@@ -1,10 +1,10 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\WriteData\Internal;
+namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
-use viaebShopwareAfterBuy\Services\Helper\ShopwareOrderHelper;
-use viaebShopwareAfterBuy\Services\WriteData\AbstractWriteDataService;
-use viaebShopwareAfterBuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use Shopware\Models\Shop\Shop;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface {

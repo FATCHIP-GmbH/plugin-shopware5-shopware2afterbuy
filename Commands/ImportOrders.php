@@ -1,9 +1,9 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Commands;
+namespace viaebShopwareAfterbuy\Commands;
 
-use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
-use viaebShopwareAfterBuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputArgument;

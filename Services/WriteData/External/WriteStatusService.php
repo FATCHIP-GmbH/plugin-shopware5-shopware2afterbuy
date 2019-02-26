@@ -1,14 +1,14 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\WriteData\External;
+namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopwareAfterBuy\Components\Helper;
-use viaebShopwareAfterBuy\Services\Helper\ShopwareCategoryHelper;
-use viaebShopwareAfterBuy\Services\WriteData\AbstractWriteDataService;
-use viaebShopwareAfterBuy\Services\WriteData\WriteDataInterface;
-use viaebShopwareAfterBuy\ValueObjects\Category as ValueCategory;
-use viaebShopwareAfterBuy\ValueObjects\OrderStatus;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterbuy\ValueObjects\OrderStatus;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface
 {

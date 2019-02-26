@@ -1,12 +1,12 @@
 <?php
 
-namespace viaebShopwareAfterBuy\ValueObjects;
+namespace viaebShopwareAfterbuy\ValueObjects;
 
 /**
  * valueObject will extend this object
  *
  * Class AbstractValueObject
- * @package viaebShopwareAfterBuy\ValueObjects
+ * @package viaebShopwareAfterbuy\ValueObjects
  */
 abstract class AbstractValueObject {
 

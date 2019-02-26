@@ -1,14 +1,14 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
-use viaebShopwareAfterBuy\Services\ReadData\AbstractReadDataService;
-use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
-use viaebShopwareAfterBuy\ValueObjects\Address;
-use viaebShopwareAfterBuy\ValueObjects\Order;
-use viaebShopwareAfterBuy\ValueObjects\OrderPosition;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Address;
+use viaebShopwareAfterbuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 

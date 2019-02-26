@@ -1,10 +1,10 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services\Helper;
+namespace viaebShopwareAfterbuy\Services\Helper;
 
-use viaebShopwareAfterBuy\Components\Helper;
-use viaebShopwareAfterBuy\Models\Status;
-use viaebShopwareAfterBuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\ValueObjects\Order;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Models\Category\Category;
@@ -649,7 +649,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $types;
     }
 
-    public function getCustomer(Order $order, \viaebShopwareAfterBuy\ValueObjects\Address $billingAddress,
+    public function getCustomer(Order $order, \viaebShopwareAfterbuy\ValueObjects\Address $billingAddress,
                                 Shop $shop) {
         $customer = $this->entityManager->getRepository('\Shopware\Models\Customer\Customer')
             ->findOneBy(array('email' => $billingAddress->getEmail(), 'accountMode' => 1));
@@ -661,7 +661,7 @@ class ShopwareOrderHelper extends AbstractHelper {
         return $this->createCustomer($order, $billingAddress, $shop);
     }
 
-    public function createCustomer(Order $order, \viaebShopwareAfterBuy\ValueObjects\Address $billingAddress,
+    public function createCustomer(Order $order, \viaebShopwareAfterbuy\ValueObjects\Address $billingAddress,
                                    Shop $shop) {
         $customer = new Customer();
 

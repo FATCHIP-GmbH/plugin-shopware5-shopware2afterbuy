@@ -1,6 +1,6 @@
 <?php
 
-namespace viaebShopwareAfterBuy\ValueObjects;
+namespace viaebShopwareAfterbuy\ValueObjects;
 
 class Category extends AbstractValueObject
 {

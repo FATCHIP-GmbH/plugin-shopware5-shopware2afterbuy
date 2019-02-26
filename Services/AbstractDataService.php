@@ -1,8 +1,8 @@
 <?php
 
-namespace viaebShopwareAfterBuy\Services;
+namespace viaebShopwareAfterbuy\Services;
 
-use viaebShopwareAfterBuy\Services\Helper\AbstractHelper;
+use viaebShopwareAfterbuy\Services\Helper\AbstractHelper;
 use Psr\Log\LoggerInterface;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Components\Model\ModelManager;

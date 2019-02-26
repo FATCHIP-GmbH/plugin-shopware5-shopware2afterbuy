@@ -1,8 +1,8 @@
 <?php
 
-namespace viaebShopware2Afterbuy\ValueObjects;
+namespace viaebShopwareAfterBuy\ValueObjects;
 
-use viaebShopware2Afterbuy\ValueObjects\Address as AddressAlias;
+use viaebShopwareAfterBuy\ValueObjects\Address as AddressAlias;
 
 class OrderPosition extends AbstractValueObject {
 

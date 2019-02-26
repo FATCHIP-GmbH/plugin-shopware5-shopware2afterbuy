@@ -1,11 +1,11 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Commands;
+namespace viaebShopwareAfterBuy\Commands;
 
-use viaebShopware2Afterbuy\Services\ReadData\External\ReadOrdersService;
-use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopware2Afterbuy\Services\WriteData\External\WriteOrdersService;
-use viaebShopware2Afterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterBuy\Services\ReadData\External\ReadOrdersService;
+use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterBuy\Services\WriteData\External\WriteOrdersService;
+use viaebShopwareAfterBuy\Services\WriteData\WriteDataInterface;
 use Shopware\Commands\ShopwareCommand;
 use Shopware\Components\Plugin\CachedConfigReader;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,19 +47,19 @@ class UpdateOrders extends ShopwareCommand
 
         //if afterbuy data carrying system
         if($config['mainSystem'] == 2) {
-            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.read_data.external.read_orders_service');
-            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.write_data.internal.write_status_service');
+            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.write_data.internal.write_status_service');
 
-            $this->readOrderService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.read_data.internal.read_orders_service');
-            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.write_data.external.write_orders_service');
+            $this->readOrderService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.read_data.internal.read_orders_service');
+            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.write_data.external.write_orders_service');
         }
         //shopware is data carrying system otherwise
         else {
-            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.read_data.internal.read_status_service');
-            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.write_data.external.write_status_service');
+            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.read_data.internal.read_status_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.write_data.external.write_status_service');
 
-            $this->readOrderService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.read_data.external.read_orders_service');
-            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware2afterbuy.services.write_data.internal.write_orders_service');
+            $this->readOrderService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopwareafterbuy.services.write_data.internal.write_orders_service');
         }
     }
 

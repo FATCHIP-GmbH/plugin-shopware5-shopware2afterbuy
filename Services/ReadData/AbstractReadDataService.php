@@ -1,8 +1,8 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\ReadData;
+namespace viaebShopwareAfterBuy\Services\ReadData;
 
-use viaebShopware2Afterbuy\Services\AbstractDataService;
+use viaebShopwareAfterBuy\Services\AbstractDataService;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
@@ -11,7 +11,7 @@ use Shopware\Components\Model\ModelManager;
  * implements methods we should use in every ReadDataService
  *
  * Class AbstractReadDataService
- * @package viaebShopware2Afterbuy\Services\ReadData
+ * @package viaebShopwareAfterBuy\Services\ReadData
  */
 class AbstractReadDataService extends AbstractDataService {
 

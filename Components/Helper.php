@@ -1,6 +1,6 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Components;
+namespace viaebShopwareAfterBuy\Components;
 
 class Helper {
 

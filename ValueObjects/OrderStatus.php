@@ -1,6 +1,6 @@
 <?php
 
-namespace viaebShopware2Afterbuy\ValueObjects;
+namespace viaebShopwareAfterBuy\ValueObjects;
 
 class OrderStatus extends AbstractValueObject {
 

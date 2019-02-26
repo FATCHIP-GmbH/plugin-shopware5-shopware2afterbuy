@@ -1,14 +1,14 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterBuy\Services\ReadData\Internal;
 
-use viaebShopware2Afterbuy\Services\Helper\AbstractHelper;
-use viaebShopware2Afterbuy\Services\Helper\ShopwareCategoryHelper;
-use viaebShopware2Afterbuy\Services\Helper\ShopwareOrderHelper;
-use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
-use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopware2Afterbuy\ValueObjects\Category as ValueCategory;
-use viaebShopware2Afterbuy\ValueObjects\OrderStatus;
+use viaebShopwareAfterBuy\Services\Helper\AbstractHelper;
+use viaebShopwareAfterBuy\Services\Helper\ShopwareCategoryHelper;
+use viaebShopwareAfterBuy\Services\Helper\ShopwareOrderHelper;
+use viaebShopwareAfterBuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterBuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterBuy\ValueObjects\OrderStatus;
 use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 use Shopware\Models\Order\Order;

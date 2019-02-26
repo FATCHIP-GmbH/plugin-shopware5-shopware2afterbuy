@@ -1,16 +1,16 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\Helper;
+namespace viaebShopwareAfterBuy\Services\Helper;
 
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopware2Afterbuy\ValueObjects\Article;
-use viaebShopware2Afterbuy\ValueObjects\ProductPicture;
-use viaebShopware2Afterbuy\Components\Helper;
-use viaebShopware2Afterbuy\ValueObjects\Article as ValueArticle;
+use viaebShopwareAfterBuy\ValueObjects\Article;
+use viaebShopwareAfterBuy\ValueObjects\ProductPicture;
+use viaebShopwareAfterBuy\Components\Helper;
+use viaebShopwareAfterBuy\ValueObjects\Article as ValueArticle;
 
 /**
  * Class ShopwareArticleHelper
- * @package viaebShopware2Afterbuy\Services\Helper
+ * @package viaebShopwareAfterBuy\Services\Helper
  */
 class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
@@ -239,7 +239,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
         foreach($data as $value) {
             /**
-             * @var \viaebShopware2Afterbuy\ValueObjects\Article $value
+             * @var \viaebShopwareAfterBuy\ValueObjects\Article $value
              */
 
             if($value->getVariantArticles()) {

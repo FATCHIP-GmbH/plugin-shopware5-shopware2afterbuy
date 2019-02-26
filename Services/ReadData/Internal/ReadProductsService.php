@@ -1,17 +1,17 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterBuy\Services\ReadData\Internal;
 
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopware2Afterbuy\Components\Helper;
-use viaebShopware2Afterbuy\Services\Helper\ShopwareArticleHelper;
-use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
-use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopware2Afterbuy\ValueObjects\Address;
-use viaebShopware2Afterbuy\ValueObjects\Article;
-use viaebShopware2Afterbuy\ValueObjects\Order;
-use viaebShopware2Afterbuy\ValueObjects\OrderPosition;
-use viaebShopware2Afterbuy\ValueObjects\ProductPicture;
+use viaebShopwareAfterBuy\Components\Helper;
+use viaebShopwareAfterBuy\Services\Helper\ShopwareArticleHelper;
+use viaebShopwareAfterBuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterBuy\ValueObjects\Address;
+use viaebShopwareAfterBuy\ValueObjects\Article;
+use viaebShopwareAfterBuy\ValueObjects\Order;
+use viaebShopwareAfterBuy\ValueObjects\OrderPosition;
+use viaebShopwareAfterBuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Configurator\Option;
 use Shopware\Models\Article\Price;
 use Shopware\Models\Category\Category;

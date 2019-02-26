@@ -1,13 +1,13 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\ReadData\External;
+namespace viaebShopwareAfterBuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopware2Afterbuy\Components\Helper;
-use viaebShopware2Afterbuy\Services\Helper\AfterbuyProductsHelper;
-use viaebShopware2Afterbuy\Services\ReadData\AbstractReadDataService;
-use viaebShopware2Afterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopware2Afterbuy\ValueObjects\Article as ValueArticle;
+use viaebShopwareAfterBuy\Components\Helper;
+use viaebShopwareAfterBuy\Services\Helper\AfterbuyProductsHelper;
+use viaebShopwareAfterBuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterBuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterBuy\ValueObjects\Article as ValueArticle;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Services\Helper;
+namespace viaebShopwareAfterBuy\Services\Helper;
 
-use viaebShopware2Afterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterBuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 /**
  *
  * Class ShopwareCategoryHelper
- * @package viaebShopware2Afterbuy\Services\Helper
+ * @package viaebShopwareAfterBuy\Services\Helper
  */
 
 class ShopwareCategoryHelper extends AbstractHelper {

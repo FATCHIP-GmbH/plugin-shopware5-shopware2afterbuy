@@ -1,6 +1,6 @@
 <?php
 
-namespace viaebShopware2Afterbuy\Models;
+namespace viaebShopwareAfterBuy\Models;
 
 use Doctrine\ORM\Mapping as ORM;
 use \Shopware\Components\Model\ModelEntity;

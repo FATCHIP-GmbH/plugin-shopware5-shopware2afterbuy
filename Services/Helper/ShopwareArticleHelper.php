@@ -3,6 +3,7 @@
 namespace viaebShopware2Afterbuy\Services\Helper;
 
 use viaebShopware2Afterbuy\Components\Helper;
+use viaebShopware2Afterbuy\Models\Status;
 use viaebShopware2Afterbuy\ValueObjects\ProductPicture;
 use Shopware\Models\Article\Article;
 use Shopware\Models\Article\Configurator\Option;
@@ -739,7 +740,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @return array|\Doctrine\ORM\QueryBuilder
      */
     public function getUnexportedArticles($force = false, $exportAll = true) {
-        $lastExport = $this->entityManager->getRepository("\viaebShopware2Afterbuy\Models\Status")->find(1);
+        $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
 
         if($lastExport) {
             $lastExport = $lastExport->getLastProductExport();

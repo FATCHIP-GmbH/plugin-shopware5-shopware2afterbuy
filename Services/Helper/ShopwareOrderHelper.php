@@ -3,6 +3,7 @@
 namespace viaebShopware2Afterbuy\Services\Helper;
 
 use viaebShopware2Afterbuy\Components\Helper;
+use viaebShopware2Afterbuy\Models\Status;
 use viaebShopware2Afterbuy\ValueObjects\Order;
 use Shopware\Components\Model\ModelEntity;
 use Shopware\Components\Model\ModelManager;
@@ -362,7 +363,7 @@ class ShopwareOrderHelper extends AbstractHelper {
     }
 
     public function getNewFullfilledOrders() {
-        $lastExport = $this->entityManager->getRepository("\viaebShopware2Afterbuy\Models\Status")->find(1);
+        $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
 
         if($lastExport) {
             $lastExport = $lastExport->getLastStatusExport();

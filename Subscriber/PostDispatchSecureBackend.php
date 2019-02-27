@@ -6,7 +6,7 @@
  * Time: 14:00
  */
 
-namespace abaccAfterbuy\Subscriber;
+namespace viaebShopwareAfterbuy\Subscriber;
 
 use Enlight\Event\SubscriberInterface;
 use Enlight_Controller_Action;

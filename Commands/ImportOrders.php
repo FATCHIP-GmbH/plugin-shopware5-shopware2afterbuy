@@ -18,7 +18,7 @@ class ImportOrders extends ShopwareCommand
     protected $readDataService;
 
     /**
-     * @var \abaccAfterbuy\Services\WriteData\Internal\WriteOrdersService
+     * @var \viaebShopwareAfterbuy\Services\WriteData\Internal\WriteOrdersService
      */
     protected $writeDataService;
 

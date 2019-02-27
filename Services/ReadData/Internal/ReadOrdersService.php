@@ -2,7 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
+use viaeb_shopware_afterbuy\Services\Helper\ShopwareOrderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityNotFoundException;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;

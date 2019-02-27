@@ -4,7 +4,7 @@ namespace viaebShopwareAfterbuy\Commands;
 
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\Services\WriteData\Internal\WriteProductsService;
+use viaebShopwareAfterbuy\Services\WriteData\Internal\WriteProductsService;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;

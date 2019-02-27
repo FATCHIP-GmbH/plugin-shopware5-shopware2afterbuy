@@ -15,11 +15,11 @@
 
         <!-- DispatchEvents -->
 
-        <service id="abacc_afterbuy.subscriber.post_dispatch_secure_backend" class="abaccAfterbuy\Subscriber\PostDispatchSecureBackend">
+        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackend">
             <argument id="models" type="service"/>
-            <argument>%abacc_afterbuy.plugin_dir%</argument>
+            <argument>%viaeb_shopware_afterbuy.plugin_dir%</argument>
             <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%abacc_afterbuy.plugin_name%</argument>
+            <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
             <tag name="shopware.event_subscriber" />
         </service>
 

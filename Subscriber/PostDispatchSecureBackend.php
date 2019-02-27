@@ -71,15 +71,15 @@ class PostDispatchSecureBackend implements SubscriberInterface
             return;
         }
 
-        $this->view->extendsTemplate('backend/abacc_extend_order/base/header.tpl');
+        $this->view->extendsTemplate('backend/viaeb_extend_order/base/header.tpl');
 
     }
 
     public function onPostDispatchSecureBackendOrder(Enlight_Event_EventArgs $args)
     {
         if ($this->controller->Request()->getActionName() == 'load') {
-            $this->view->extendsTemplate('backend/abacc_extend_order/view/list_view.js');
-            $this->view->extendsTemplate('backend/abacc_extend_order/model/order_model.tpl');
+            $this->view->extendsTemplate('backend/viaeb_extend_order/view/list_view.js');
+            $this->view->extendsTemplate('backend/viaeb_extend_order/model/order_model.tpl');
         } elseif ($this->controller->Request()->getActionName() === 'getList') {
             $orders = $this->controller->View()->getAssign();
 

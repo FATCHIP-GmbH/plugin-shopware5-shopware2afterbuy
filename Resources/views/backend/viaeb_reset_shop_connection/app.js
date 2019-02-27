@@ -1,4 +1,4 @@
-Ext.define('Shopware.apps.abaccResetShopConnection', {
+Ext.define('Shopware.apps.viaebResetShopConnection', {
 
     extend: 'Enlight.app.SubApplication',
 
@@ -6,7 +6,7 @@ Ext.define('Shopware.apps.abaccResetShopConnection', {
      * The name of the module. Used for internal purpose
      * @string
      */
-    name: 'Shopware.apps.abaccResetShopConnection',
+    name: 'Shopware.apps.viaebResetShopConnection',
     bulkLoad: true,
     loadPath: '{url action=load}',
 

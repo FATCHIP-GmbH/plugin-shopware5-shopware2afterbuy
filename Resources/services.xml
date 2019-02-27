@@ -87,6 +87,11 @@
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_status_service" />
         </service>
 
+        <service id="viaeb_shopware_afterbuy.commands.reset_shop_connection" class="viaebShopwareAfterbuy\Commands\ResetShopConnection">
+            <tag name="console.command" />
+            <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper" />
+        </service>
+
         <!-- Products -->
 
         <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadProductsService" id="viaeb_shopware_afterbuy.services.read_data.external.read_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
@@ -313,6 +318,23 @@
             </call>
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareResetHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper">
+            <argument id="models" type="service"/>
+            <call method="initDb">
+                <argument type="service" id="shopware.db"/>
+            </call>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+            <call method="initHelper">
+                <argument type="collection">
+                    <argument type="string">\Shopware\Models\Attribute\Article</argument>
+                    <argument type="string">\Shopware\Models\Attribute\Category</argument>
+                    <argument type="string">\Shopware\Models\Attribute\Order</argument>
+                </argument>
             </call>
         </service>
 

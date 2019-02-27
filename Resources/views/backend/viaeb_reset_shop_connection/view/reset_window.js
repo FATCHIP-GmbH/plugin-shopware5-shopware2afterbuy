@@ -1,12 +1,12 @@
-Ext.define('Shopware.apps.abaccResetShopConnection.view.ResetWindow', {
+Ext.define('Shopware.apps.viaebResetShopConnection.view.ResetWindow', {
     extend: 'Enlight.app.Window',
 
     id: 'reset_window',
 
     snippets: {
-        title: '{s namespace="backend/abaccResetShopConnection" name="reset_window_title"}Reset Connection{/s}',
-        infoText: '{s namespace="backend/abaccResetShopConnection" name="reset_window_info"}Information{/s}',
-        buttonText: '{s namespace="backend/abaccResetShopConnection" name="reset_window_button-text"}Yes{/s}',
+        title: '{s namespace="backend/viaebResetShopConnection" name="reset_window_title"}Reset Connection{/s}',
+        infoText: '{s namespace="backend/viaebResetShopConnection" name="reset_window_info"}Information{/s}',
+        buttonText: '{s namespace="backend/viaebResetShopConnection" name="reset_window_button-text"}Yes{/s}',
     },
 
     height: 420,

@@ -1,7 +1,7 @@
 //{block name="backend/order/view/list/list"}
 //{$smarty.block.parent}
 
-Ext.define('Shopware.apps.abacc_extend_order.view.list.List', {
+Ext.define('Shopware.apps.viaeb_extend_order.view.list.List', {
     override: 'Shopware.apps.Order.view.list.List',
 
     mySnippets: {

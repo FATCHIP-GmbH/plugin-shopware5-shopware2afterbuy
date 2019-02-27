@@ -2,7 +2,7 @@
  * $Id: $
  */
 
-Ext.define('Shopware.apps.abaccResetShopConnection.controller.ResetController', {
+Ext.define('Shopware.apps.viaebResetShopConnection.controller.ResetController', {
 
     /**
      * Extend from the standard ExtJS 4 controller
@@ -10,14 +10,14 @@ Ext.define('Shopware.apps.abaccResetShopConnection.controller.ResetController', 
      */
     extend: 'Ext.app.Controller',
 
-    requestUrl: '{url controller="abaccResetShopConnection" action="reset"}',
+    requestUrl: '{url controller="viaebResetShopConnection" action="reset"}',
     snippets: {
         growlTitle: '{s name=growlMessage/title}Verbindung zurücksetzen{/s}',
         growlMessageStart: '{s name=growlMessage/start}Starte Vorgang{/s}',
         growlMessageSuccess: '{s name=growlMessage/success}Vorgang erfolgreich{/s}',
         growlMessageFailureTimeout: '{s name=growlMessage/timeout}Timeout: Server nicht erreichbar{/s}',
         growlMessageFailureServer: '{s name=growlMessage/serverFailure}Fehler: Bei der Ausführung des Vorgangs ist ein Fehler aufgetreten{/s}',
-        growlModule: '{s name=growlMessage/module}abaccResetShopConnection{/s}',
+        growlModule: '{s name=growlMessage/module}viaebResetShopConnection{/s}',
     },
 
     init: function () {

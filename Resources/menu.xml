@@ -6,7 +6,7 @@
             <name>ResetShopConnection</name>
             <label lang="en">Reset Shop Connection</label>
             <label lang="de">Shop Verknüpfung zurücksetzen</label>
-            <controller>abaccResetShopConnection</controller>
+            <controller>viaebResetShopConnection</controller>
             <action>index</action>
             <class>sprite-money</class>
             <parent identifiedBy="controller">ConfigurationMenu</parent>

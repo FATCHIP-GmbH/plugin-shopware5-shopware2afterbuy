@@ -15,7 +15,7 @@ Ext.define('Shopware.apps.abaccResetShopConnection.controller.ResetController', 
         growlTitle: '{s name=growlMessage/title}Verbindung zurücksetzen{/s}',
         growlMessageStart: '{s name=growlMessage/start}Starte Vorgang{/s}',
         growlMessageSuccess: '{s name=growlMessage/success}Vorgang erfolgreich{/s}',
-        growlMessageFailureTimeout: '{s name=growlMessage/timeout}Fehler: Server nicht erreichbar{/s}',
+        growlMessageFailureTimeout: '{s name=growlMessage/timeout}Timeout: Server nicht erreichbar{/s}',
         growlMessageFailureServer: '{s name=growlMessage/serverFailure}Fehler: Bei der Ausführung des Vorgangs ist ein Fehler aufgetreten{/s}',
         growlModule: '{s name=growlMessage/module}abaccResetShopConnection{/s}',
     },
@@ -39,10 +39,12 @@ Ext.define('Shopware.apps.abaccResetShopConnection.controller.ResetController', 
             me.snippets.growlMessageStart
         );
 
+        me.resetWindow.hide();
+
         Ext.Ajax.request({
             url: me.requestUrl,
             method: 'POST',
-            timeout: 3600000,
+            timeout: 180000,
             success: function (resp) {
                 me.onSuccess(resp, me);
             },

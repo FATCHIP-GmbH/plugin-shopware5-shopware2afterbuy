@@ -1,6 +1,8 @@
 Ext.define('Shopware.apps.abaccResetShopConnection.view.ResetWindow', {
     extend: 'Enlight.app.Window',
 
+    id: 'reset_window',
+
     snippets: {
         title: '{s namespace="backend/abaccResetShopConnection" name="reset_window_title"}Reset Connection{/s}',
         infoText: '{s namespace="backend/abaccResetShopConnection" name="reset_window_info"}Information{/s}',
@@ -77,6 +79,9 @@ Ext.define('Shopware.apps.abaccResetShopConnection.view.ResetWindow', {
         return Ext.create('Ext.button.Button', {
             text: me.snippets.buttonText,
             cls: 'primary',
+            handler: function () {
+                me.fireEvent('resetShopwareAfterbuyConnection');
+            },
         });
     },
 });

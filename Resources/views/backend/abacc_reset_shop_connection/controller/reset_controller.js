@@ -20,5 +20,15 @@ Ext.define('Shopware.apps.abaccResetShopConnection.controller.ResetController', 
     init: function () {
         const me = this;
         me.resetWindow = me.getView('ResetWindow').create();
+
+        me.control({
+            'window[id=reset_window]': {
+                'resetShopwareAfterbuyConnection': me.resetShopwareAfterbuyConnection,
+            }
+        })
     },
+
+    resetShopwareAfterbuyConnection: function () {
+        console.log('dbg2');
+    }
 });

@@ -1,16 +1,16 @@
 <?php
 
-namespace abaccAfterbuy\Services\Helper;
+namespace viaebShopwareAfterbuy\Services\Helper;
 
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Models\Status;
-use abaccAfterbuy\ValueObjects\ProductPicture;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\ValueObjects\ProductPicture;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
-use abaccAfterbuy\ValueObjects\Article as ValueArticle;
+use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
 use Shopware\Components\Model\ModelRepository;
 use Shopware\Models\Article\Article as ShopwareArticle;
 use Shopware\Models\Article\Configurator\Group as ConfiguratorGroup;
@@ -36,7 +36,7 @@ use Zend_Db_Adapter_Exception;
 
 /**
  * Class ShopwareArticleHelper
- * @package abaccAfterbuy\Services\Helper
+ * @package viaebShopwareAfterbuy\Services\Helper
  */
 class ShopwareArticleHelper extends AbstractHelper
 {
@@ -110,7 +110,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ValueArticle    $article
      * @param bool            $netInput
      */
-    public function setSimpleArticleValues(ShopwareArticle $entity, ValueArticle &$article, bool $netInput): void
+    public function setSimpleArticleValues(ShopwareArticle $entity, ValueArticle &$article, bool $netInput)
     {
         $detail = $entity->getMainDetail();
 
@@ -198,7 +198,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ValueArticle    $article
      * @param ShopwareArticle $entity
      */
-    public function assignCategories(ValueArticle &$article, ShopwareArticle $entity): void
+    public function assignCategories(ValueArticle &$article, ShopwareArticle $entity)
     {
         $categories = [];
 
@@ -223,7 +223,8 @@ ON duplicate key update afterbuy_id = $externalId;";
         ShopwareArticle $entity,
         ValueArticle &$article,
         ArticleDetail $detail = null
-    ): void {
+    )
+    {
         if ($detail === null) {
             $images = $entity->getImages();
         } else {

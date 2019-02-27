@@ -1,11 +1,11 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\OrderStatus;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\OrderStatus;
 use Shopware\Models\Order\Order;
 
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface

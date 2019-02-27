@@ -1,6 +1,6 @@
 <?php
 
-namespace abaccAfterbuy\ValueObjects;
+namespace viaebShopwareAfterbuy\ValueObjects;
 
 class OrderPosition extends AbstractValueObject {
 

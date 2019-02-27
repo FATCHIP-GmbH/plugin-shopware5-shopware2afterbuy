@@ -1,6 +1,6 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData;
+namespace viaebShopwareAfterbuy\Services\WriteData;
 
 interface WriteDataInterface {
 

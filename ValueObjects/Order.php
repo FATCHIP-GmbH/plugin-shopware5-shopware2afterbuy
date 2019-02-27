@@ -1,9 +1,9 @@
 <?php
 
-namespace abaccAfterbuy\ValueObjects;
+namespace viaebShopwareAfterbuy\ValueObjects;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use abaccAfterbuy\ValueObjects\Address as AddressAlias;
+use viaebShopwareAfterbuy\ValueObjects\Address as AddressAlias;
 
 class Order extends AbstractValueObject {
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\Internal;
+namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use abaccAfterbuy\Services\Helper\ShopwareCategoryHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface

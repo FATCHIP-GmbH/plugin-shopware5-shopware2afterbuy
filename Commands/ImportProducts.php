@@ -1,10 +1,10 @@
 <?php
 
-namespace abaccAfterbuy\Commands;
+namespace viaebShopwareAfterbuy\Commands;
 
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use abaccAfterbuy\Services\WriteData\Internal\WriteProductsService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;

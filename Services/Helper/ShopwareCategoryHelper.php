@@ -1,14 +1,14 @@
 <?php
 
-namespace abaccAfterbuy\Services\Helper;
+namespace viaebShopwareAfterbuy\Services\Helper;
 
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 /**
  *
  * Class ShopwareCategoryHelper
- * @package abaccAfterbuy\Services\Helper
+ * @package viaebShopwareAfterbuy\Services\Helper
  */
 
 class ShopwareCategoryHelper extends AbstractHelper {
@@ -92,14 +92,14 @@ class ShopwareCategoryHelper extends AbstractHelper {
                 }
 
                 foreach ($currentParents as &$currentParent) {
-                    if ($currentParent['InternalIdentifier'] === $valueCategory->getParentIdentifier()) {
+                    if ($currentParent['InternalIdentifier'] == $valueCategory->getParentIdentifier()) {
                         $currentParent['Catalog'][] = $catalog;
 
                         // next valueCategory
                         continue 3;
                     }
 
-                    if ($currentParent['InternalIdentifier'] === $parentID) {
+                    if ($currentParent['InternalIdentifier'] == $parentID) {
                         // if ( ! isset($currentParent['Catalog'])) {
                         //     $currentParent['Catalog'] = [];
                         // }

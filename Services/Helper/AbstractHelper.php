@@ -1,13 +1,13 @@
 <?php
 
-namespace abaccAfterbuy\Services\Helper;
+namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
 use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
-use abaccAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Components\Helper;
 use DateTime;
 use Exception;
 use Shopware\Bundle\MediaBundle\MediaService;
@@ -21,7 +21,7 @@ use Shopware\Models\Tax\Tax;
  * Helper will extend this abstract helper. This class is defining the given type.
  *
  * Class AbstractHelper
- * @package abaccAfterbuy\Services\Helper
+ * @package viaebShopwareAfterbuy\Services\Helper
  */
 class AbstractHelper
 {

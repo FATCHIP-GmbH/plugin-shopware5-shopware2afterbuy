@@ -1,6 +1,6 @@
 <?php
 
-namespace abaccAfterbuy\Components;
+namespace viaebShopwareAfterbuy\Components;
 
 class Helper {
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\External;
+namespace viaebShopwareAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Address;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Address;
+use viaebShopwareAfterbuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 

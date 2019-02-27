@@ -1,13 +1,14 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\Internal;
+namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
-use abaccAfterbuy\Models\Status;
-use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Article as ValueArticle;
+
+use viaebShopwareAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
 use Shopware\Models\Customer\Group as CustomerGroup;
 
 
@@ -22,7 +23,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @return array
      */
-    public function put(array $data): array
+    public function put(array $data)
     {
         $this->transform($data);
 
@@ -67,7 +68,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      *
      * @return array
      */
-    public function send($targetData): array
+    public function send($targetData)
     {
         try {
             $this->entityManager->flush();

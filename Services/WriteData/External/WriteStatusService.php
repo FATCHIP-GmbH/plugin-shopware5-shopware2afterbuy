@@ -1,13 +1,13 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\External;
+namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
-use abaccAfterbuy\ValueObjects\Category as ValueCategory;
-use abaccAfterbuy\ValueObjects\OrderStatus;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
+use viaebShopwareAfterbuy\ValueObjects\OrderStatus;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface
 {
@@ -17,7 +17,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      *
      * @return array|null
      */
-    public function put(array $valueCategories) :?array
+    public function put(array $valueCategories)
     {
         $catalogs = $this->transform($valueCategories);
 
@@ -63,7 +63,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      *
      * @return array
      */
-    public function send($orders) :?array
+    public function send($orders)
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig, $this->logger);

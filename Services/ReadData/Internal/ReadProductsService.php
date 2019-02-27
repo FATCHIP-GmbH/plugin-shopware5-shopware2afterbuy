@@ -1,10 +1,10 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\ShopwareArticleHelper;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -17,7 +17,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @param array $filter
      * @return array|null
      */
-    public function get(array $filter) :?array {
+    public function get(array $filter) {
         $data = $this->read($filter);
         return $this->transform($data);
     }
@@ -28,7 +28,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @param array $data
      * @return array
      */
-    public function transform(array $data) :?array {
+    public function transform(array $data) {
         $this->logger->debug('Receiving products from shop', $data);
 
         /**
@@ -97,7 +97,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      * @param array $filter
      * @return array
      */
-    public function read(array $filter) :?array {
+    public function read(array $filter) {
 
         $data = $this->helper->getUnexportedArticles($filter['submitAll'], $this->config['ExportAllArticles']);
 

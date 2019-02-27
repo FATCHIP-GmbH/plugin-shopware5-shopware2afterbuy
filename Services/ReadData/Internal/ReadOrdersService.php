@@ -1,14 +1,15 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\Internal;
+namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
-use abaccAfterbuy\Services\Helper\ShopwareOrderHelper;
+use viaeb_shopware_afterbuy\Services\Helper\ShopwareOrderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Address;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use Doctrine\ORM\EntityNotFoundException;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Address;
+use viaebShopwareAfterbuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Repository;
 
@@ -72,7 +73,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $order->setPositions($positions);
 
-
             $billingAddress = new Address();
             $billingAddress->setFirstname($entity->getBilling()->getFirstName());
             $billingAddress->setLastname($entity->getBilling()->getLastName());
@@ -86,10 +86,19 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setCity($entity->getBilling()->getCity());
             $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
             $billingAddress->setPhone($entity->getBilling()->getPhone());
-            $billingAddress->setEmail($entity->getCustomer()->getEmail());
 
-            if($entity->getCustomer()->getBirthday()) {
-                $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+            try {
+                if ($entity->getCustomer()) {
+                    $billingAddress->setEmail($entity->getCustomer()->getEmail());
+                    $order->setCustomerNumber($entity->getCustomer()->getNumber());
+                }
+
+                if ($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
+                    $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
+                }
+            }
+            catch(EntityNotFoundException $e) {
+                $this->logger->error($e->getMessage());
             }
 
             $shippingAddress = new Address();
@@ -125,7 +134,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $order->setTaxFree(true);
             }
 
-            $order->setCustomerNumber($entity->getCustomer()->getNumber());
             $order->setInternalIdentifier($entity->getNumber());
 
             $order->setCurrency($entity->getCurrency());

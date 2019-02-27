@@ -1,14 +1,14 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData\External;
+namespace viaebShopwareAfterbuy\Services\ReadData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\ReadData\AbstractReadDataService;
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\ValueObjects\Address;
-use abaccAfterbuy\ValueObjects\Order;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Address;
+use viaebShopwareAfterbuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 
@@ -16,7 +16,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $filter
      * @return array|null
      */
-    public function get(array $filter) :?array {
+    public function get(array $filter) {
         $data = $this->read($filter);
         return $this->transform($data);
     }
@@ -27,7 +27,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $data
      * @return array
      */
-    public function transform(array $data) :array {
+    public function transform(array $data) {
         $this->logger->debug('Receiving orders from afterbuy', $data);
 
         if($this->targetEntity === null) {
@@ -90,7 +90,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
                     $orderPosition->setName($position['ItemTitle']);
 
-                    if(array_key_exists('ShopProductDetails', $position)) {
+                    if(array_key_exists('ShopProductDetails', $position) && array_key_exists('ProductID', $position['ShopProductDetails'])) {
                         $orderPosition->setExternalIdentifier($position['ShopProductDetails']['ProductID']);
                         $orderPosition->setInternalIdentifier($position['ShopProductDetails']['EAN']);
                     } else {

@@ -1,8 +1,8 @@
 <?php
 
-namespace abaccAfterbuy;
+namespace viaebShopwareAfterbuy;
 
-use abaccAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UninstallContext;
@@ -11,15 +11,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 /**
  * Shopware-Plugin FatchipAfterbuy.
  */
-class abaccAfterbuy extends Plugin
+class viaebShopwareAfterbuy extends Plugin
 {
     /**
     * @param ContainerBuilder $container
     */
     public function build(ContainerBuilder $container)
     {
-        $container->setParameter('abacc_afterbuy.plugin_dir', $this->getPath());
-        $container->setParameter('abacc_afterbuy.plugin_name', $this->getName());
+        $container->setParameter('viaeb_shopware_afterbuy.plugin_dir', $this->getPath());
+        $container->setParameter('viaeb_shopware_afterbuy.plugin_name', $this->getName());
 
         parent::build($container);
     }

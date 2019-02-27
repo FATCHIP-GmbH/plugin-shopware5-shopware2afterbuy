@@ -1,11 +1,11 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData\External;
+namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Fatchip\Afterbuy\ApiClient;
-use abaccAfterbuy\Services\Helper\AfterbuyProductsHelper;
-use abaccAfterbuy\Services\WriteData\AbstractWriteDataService;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper;
+use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use Shopware\Models\Customer\Group;
 
 
@@ -29,7 +29,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @param array $data
      * @return array
      */
-    public function transform(array $data) :?array {
+    public function transform(array $data) {
         $this->logger->debug('Storing ' . count($data) . ' items.', array($data));
         /**
          * @var Group $customerGroup

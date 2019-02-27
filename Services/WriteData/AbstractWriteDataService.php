@@ -1,10 +1,10 @@
 <?php
 
-namespace abaccAfterbuy\Services\WriteData;
+namespace viaebShopwareAfterbuy\Services\WriteData;
 
-use abaccAfterbuy\Components\Helper;
-use abaccAfterbuy\Services\AbstractDataService;
-use abaccAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\Components\Helper;
+use viaebShopwareAfterbuy\Services\AbstractDataService;
+use viaebShopwareAfterbuy\Models\Status;
 
 class AbstractWriteDataService extends AbstractDataService {
 

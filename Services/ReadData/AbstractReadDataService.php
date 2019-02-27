@@ -1,15 +1,15 @@
 <?php
 
-namespace abaccAfterbuy\Services\ReadData;
+namespace viaebShopwareAfterbuy\Services\ReadData;
 
-use abaccAfterbuy\Services\AbstractDataService;
+use viaebShopwareAfterbuy\Services\AbstractDataService;
 use Shopware\Components\Model\ModelEntity;
 
 /**
  * implements methods we should use in every ReadDataService
  *
  * Class AbstractReadDataService
- * @package abaccAfterbuy\Services\ReadData
+ * @package viaebShopwareAfterbuy\Services\ReadData
  */
 class AbstractReadDataService extends AbstractDataService {
 
@@ -27,13 +27,11 @@ class AbstractReadDataService extends AbstractDataService {
     /**
      * @param string $repo
      */
-    public function setRepo(string $repo): void
-    {
+    public function setRepo(string $repo) {
         $this->sourceRepository = $repo;
     }
 
-    public function setTarget(string $target): void
-    {
+    public function setTarget(string $target) {
         $this->targetEntity = $target;
     }
 }

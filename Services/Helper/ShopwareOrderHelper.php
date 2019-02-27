@@ -1,11 +1,11 @@
 <?php
 
-namespace abaccAfterbuy\Services\Helper;
+namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
-use abaccAfterbuy\ValueObjects\Address as ValueAddress;
-use abaccAfterbuy\ValueObjects\Order as ValueOrder;
-use abaccAfterbuy\ValueObjects\OrderPosition;
+use viaebShopwareAfterbuy\ValueObjects\Address as ValueAddress;
+use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
+use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
 use Shopware\Models\Order\Billing;
@@ -15,7 +15,7 @@ use Shopware\Models\Order\Order;
 use Shopware\Models\Order\Status as OrderStatus;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Customer\Group;
-use abaccAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Models\Dispatch\Dispatch;
 use Shopware\Models\Order\Shipping;
 use Shopware\Models\Country\Country;
@@ -39,7 +39,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
     protected $shippingType;
 
-    public function preFetch(): void
+    public function preFetch()
     {
         $this->paymentStates = $this->getPaymentStates();
         $this->shippingStates = $this->getShippingStates();
@@ -307,7 +307,7 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @param array $values
      */
-    public function setAfterBuyIds(array $values): void
+    public function setAfterBuyIds(array $values)
     {
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders'])
@@ -336,7 +336,7 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @return array
      */
-    public function getUnexportedOrders(): array
+    public function getUnexportedOrders()
     {
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['orders'])
@@ -352,7 +352,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
     }
 
-    public function isFullfilled(ShopwareOrder $order): bool
+    public function isFullfilled(ShopwareOrder $order)
     {
         $completelyPaid = $order->getPaymentStatus()->getId() === 12;
         $completelyDelivered = $order->getOrderStatus()->getId() === 7;
@@ -479,7 +479,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setAddress(ValueOrder $value, Order &$order, Customer $customer, $type = 'billing'): void
+    public function setAddress(ValueOrder $value, Order &$order, Customer $customer, $type = 'billing')
     {
         if ($type === 'billing') {
             $entityClass = Billing::class;
@@ -526,7 +526,7 @@ class ShopwareOrderHelper extends AbstractHelper
         $order->$targetSetter($address);
     }
 
-    public function setPaymentType(ValueOrder $value, ShopwareOrder &$order, array $config): void
+    public function setPaymentType(ValueOrder $value, ShopwareOrder &$order, array $config)
     {
         if ($config['payment' . $value->getPaymentType()]) {
             $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
@@ -538,7 +538,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setOrderTaxValues(ValueOrder $value, ShopwareOrder &$order): void
+    public function setOrderTaxValues(ValueOrder $value, ShopwareOrder &$order)
     {
         if ( ! $value->getAmountNet()) {
             $order->setTaxFree(1);
@@ -551,7 +551,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setOrderMainValues(ValueOrder $value, ShopwareOrder &$order, Shop $shop): void
+    public function setOrderMainValues(ValueOrder $value, ShopwareOrder &$order, Shop $shop)
     {
         /**
          * set main order values
@@ -587,7 +587,7 @@ class ShopwareOrderHelper extends AbstractHelper
      * @param ValueOrder    $value
      * @param ShopwareOrder $order
      */
-    public function setShippingStatus(ValueOrder $value, ShopwareOrder &$order): void
+    public function setShippingStatus(ValueOrder $value, ShopwareOrder &$order)
     {
         if ($value->isShipped()) {
             $order->setOrderStatus($this->shippingStates['completed']);
@@ -596,7 +596,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setPaymentStatus(ValueOrder $value, ShopwareOrder &$order): void
+    public function setPaymentStatus(ValueOrder $value, ShopwareOrder &$order)
     {
         if ($value->getPaid() > 0) {
             $order->setPaymentStatus($this->paymentStates['partially_paid']);
@@ -691,7 +691,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->createCustomer($order, $billingAddress, $shop);
     }
 
-    public function createCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop): Customer
+    public function createCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop)
     {
         $customer = new Customer();
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace abaccAfterbuy\Commands;
+namespace viaebShopwareAfterbuy\Commands;
 
-use abaccAfterbuy\Services\ReadData\ReadDataInterface;
-use abaccAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

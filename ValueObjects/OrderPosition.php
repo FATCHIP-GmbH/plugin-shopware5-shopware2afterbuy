@@ -92,7 +92,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $internalIdentifier
      */
-    public function setInternalIdentifier(string $internalIdentifier)
+    public function setInternalIdentifier($internalIdentifier)
     {
         $this->internalIdentifier = $internalIdentifier;
     }
@@ -108,7 +108,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $externalIdentifier
      */
-    public function setExternalIdentifier(string $externalIdentifier)
+    public function setExternalIdentifier($externalIdentifier)
     {
         $this->externalIdentifier = $externalIdentifier;
     }

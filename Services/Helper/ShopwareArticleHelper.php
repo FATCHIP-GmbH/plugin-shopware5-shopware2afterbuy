@@ -344,7 +344,12 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $this->addSetOptions($set, $options);
             }
 
-            $detail->setConfiguratorOptions(new ArrayCollection($options));
+            $definedOptions = $detail->getConfiguratorOptions();
+            foreach ($options as $addOption) {
+                if(!$definedOptions->contains($addOption)) {
+                    $definedOptions->add($addOption);
+                }
+            }
         }
     }
 
@@ -360,10 +365,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         $options = [];
+        $this->configuratorOptions = array_change_key_case($this->configuratorOptions, CASE_LOWER);
 
         foreach ($variants as $variant) {
-            if (array_key_exists($variant['value'], $this->configuratorOptions)) {
-                $option = $this->configuratorOptions[$variant['value']];
+            if(array_key_exists(strtolower($variant['value']), $this->configuratorOptions)) {
+                $option = $this->configuratorOptions[strtolower($variant['value'])];
             } else {
                 $option = new Option();
                 $option->setName($variant['value']);
@@ -381,6 +387,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 }
 
                 $this->getConfiguratorOptions();
+                $this->configuratorOptions = array_change_key_case($this->configuratorOptions, CASE_LOWER);
             }
 
             $options[] = $option;

@@ -257,6 +257,11 @@ class AbstractHelper {
 
         $path_info = pathinfo($url);
         $filename = $this->filterNotAllowedCharactersFromURL($path_info['filename']);
+
+        if(!array_key_exists('extension', $path_info)) {
+            return null;
+        }
+
         $path = 'media/image/' . $filename . '.' . $path_info['extension'];
 
         if ( ! $contents = $this->grab_image($url)) {

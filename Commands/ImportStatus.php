@@ -3,9 +3,9 @@
 namespace viaebShopwareAfterbuy\Commands;
 
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStatusService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +19,7 @@ class ImportStatus extends ShopwareCommand
     protected $readDataService;
 
     /**
-     * @var WriteDataInterface
+     * @var WriteStatusService
      */
     protected $writeDataService;
 
@@ -28,7 +28,7 @@ class ImportStatus extends ShopwareCommand
      * @param WriteDataInterface $writeDataService
      */
     public function __construct(ReadDataInterface $readDataService, WriteDataInterface $writeDataService) {
-        parent::__construct(null);
+        parent::__construct();
 
         $this->readDataService = $readDataService;
         $this->writeDataService = $writeDataService;

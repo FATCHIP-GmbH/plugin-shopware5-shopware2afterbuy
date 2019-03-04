@@ -41,7 +41,7 @@ class ShopwareResetHelper extends AbstractHelper
         $builder->update($entity, 'a');
 
         foreach ($metadata->fieldMappings as $name => $column) {
-            // column does not start with afterbuy?
+            // skip column names not starting with 'afterbuy'
             if (substr($name, 0, strlen($prefix)) !== $prefix) {
                 continue;
             }
@@ -54,6 +54,7 @@ class ShopwareResetHelper extends AbstractHelper
             ->getQuery()
             ->execute();
 
-        die();
+        // TODO: return 'failure' on any failure
+        return 'success';
     }
 }

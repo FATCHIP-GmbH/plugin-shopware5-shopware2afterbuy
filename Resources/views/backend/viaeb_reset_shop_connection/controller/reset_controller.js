@@ -39,7 +39,7 @@ Ext.define('Shopware.apps.viaebResetShopConnection.controller.ResetController', 
             me.snippets.growlMessageStart
         );
 
-        me.resetWindow.hide();
+        me.resetWindow.close();
 
         Ext.Ajax.request({
             url: me.requestUrl,
@@ -48,7 +48,7 @@ Ext.define('Shopware.apps.viaebResetShopConnection.controller.ResetController', 
             success: function (resp) {
                 me.onSuccess(resp, me);
             },
-            failure:  function (resp) {
+            failure: function (resp) {
                 me.onFailure(resp, me)
             },
         });
@@ -57,11 +57,20 @@ Ext.define('Shopware.apps.viaebResetShopConnection.controller.ResetController', 
     onSuccess: function (resp, me) {
         const response = JSON.parse(resp.responseText);
 
+        let message = '';
+
+        if (response.success) {
+            message = me.snippets.growlMessageSuccess;
+        } else {
+            message = me.snippets.growlMessageFailureServer + ':<br>';
+            for (let index = 0; index < response['total']; index++) {
+                message += response['data'][index] + '<br>';
+            }
+        }
+
         Shopware.Notification.createGrowlMessage(
             me.snippets.growlTitle,
-            response.success
-                ? me.snippets.growlMessageSuccess
-                : (me.snippets.growlMessageFailureServer + ': ' + response['errormessage'])
+            message
         );
     },
 

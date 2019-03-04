@@ -36,6 +36,9 @@ class ResetShopConnection extends ShopwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $result = $this->shopwareResetHelper->resetShopConnection();
-        $output->writeln(json_encode($result));
+        $output->writeln($result['msg']);
+        foreach ($result['data'] as $entity) {
+            $output->writeln($entity);
+        }
     }
 }

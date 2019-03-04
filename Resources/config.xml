@@ -47,13 +47,6 @@
             <label lang="de">Afterbuy User-Passwort</label>
             <label lang="en">Afterbuy User-Password</label>
         </element>
-        <element type="combo" required="true">
-            <name>targetShop</name>
-            <label lang="de">Zielshop für Bestellungen</label>
-            <label lang="en">target shop for orders</label>
-            <description>Ist Shopware das führende System, werden zu importierende Bestellungen diesem Shop zugeordnet.</description>
-            <store>Shopware.apps.Base.store.Shop</store>
-        </element>
         <element type="boolean">
             <name>ExportAllArticles</name>
             <label lang="de">Alle Artikel exportieren</label>
@@ -66,6 +59,25 @@
             <name>Spacer2</name>
             <label>Bestellimporteinstellungen</label>
             <value>1</value>
+        </element>
+        <element type="combo" required="true">
+            <name>targetShop</name>
+            <label lang="de">Zielshop für Bestellungen</label>
+            <label lang="en">target shop for orders</label>
+            <description>Ist Shopware das führende System, werden zu importierende Bestellungen diesem Shop zugeordnet.</description>
+            <store>Shopware.apps.Base.store.Shop</store>
+        </element>
+        <element type="combo" required="true">
+            <name>shipping</name>
+            <label lang="de">Versandart</label>
+            <label lang="en">Shipping type</label>
+            <store>Shopware.apps.Base.store.Dispatch</store>
+        </element>
+        <element type="combo" required="true">
+            <name>customerGroup</name>
+            <label lang="de">Kundengruppe</label>
+            <label lang="en">Customer group</label>
+            <store>Shopware.apps.Base.store.CustomerGroup</store>
         </element>
         <element type="combo" required="true">
             <name>paymentINVOICE</name>
@@ -170,18 +182,7 @@
             <label lang="en">Payment OTHERS</label>
             <store>Shopware.apps.Base.store.Payment</store>
         </element>
-        <element type="combo" required="true">
-            <name>shipping</name>
-            <label lang="de">Versandart</label>
-            <label lang="en">Shipping type</label>
-            <store>Shopware.apps.Base.store.Dispatch</store>
-        </element>
-        <element type="combo" required="true">
-            <name>customerGroup</name>
-            <label lang="de">Kundengruppe</label>
-            <label lang="en">Customer group</label>
-            <store>Shopware.apps.Base.store.CustomerGroup</store>
-        </element>
+
     </elements>
 
 </config>

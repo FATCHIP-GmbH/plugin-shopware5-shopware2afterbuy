@@ -7,6 +7,7 @@ use \Shopware\Components\Model\ModelEntity;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Repository")
  * @ORM\Table(name="afterbuy_status")
  */
 class Status extends ModelEntity {

@@ -62,7 +62,7 @@ class ShopwareArticleHelper extends AbstractHelper
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error saving attribute');
         }
     }
 
@@ -85,7 +85,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             try {
                 $this->db->query($sql);
             } catch (Zend_Db_Adapter_Exception $e) {
-                // TODO: handle exception
+                $this->logger->error('Error storing external ids', array($sql));
             }
         }
     }
@@ -271,10 +271,16 @@ ON duplicate key update afterbuy_id = $externalId;";
                         $thumbnail = reset($thumbnails);
                         $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
                     }
+                    else {
+                        continue;
+                    }
 
                     $article->setMainImageUrl($url);
-                    // TODO: $thumbnailUrl might not have been defined
-                    /** @noinspection PhpUndefinedVariableInspection */
+
+                    if(!$thumbnailUrl) {
+                        continue;
+                    }
+
                     $article->setMainImageThumbnailUrl($thumbnailUrl);
                     continue;
                 }
@@ -382,7 +388,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 try {
                     $this->entityManager->flush($option);
                 } catch (OptimisticLockException $e) {
-                    // TODO: handle exception
+                    $this->logger->error('Error assigning configurator options', array(json_encode($option)));
                 }
 
                 $this->getConfiguratorOptions();
@@ -589,7 +595,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error saving supplier', array($name));
         }
 
         return $supplier;
@@ -711,7 +717,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error saving temporary main article');
         }
 
         return $article;
@@ -774,7 +780,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->flush($group);
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error saving configurator group', array($name));
         }
 
         return $group;
@@ -1248,7 +1254,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 try {
                     $imageMapping = $query->getOneOrNullResult();
                 } catch (NonUniqueResultException $e) {
-                    // TODO: handle exception
+                    $this->logger->error('Ambiguous Image mapping', array(json_encode($image)));
                 }
             }
         }

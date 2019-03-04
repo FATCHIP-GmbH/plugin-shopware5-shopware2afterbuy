@@ -29,6 +29,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
     protected $shippingStates;
 
+    /** @var Payment[] */
     protected $paymentTypes;
 
     protected $countries;
@@ -329,7 +330,7 @@ class ShopwareOrderHelper extends AbstractHelper
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error storing afterbuy ids');
         }
     }
 
@@ -526,14 +527,16 @@ class ShopwareOrderHelper extends AbstractHelper
         $order->$targetSetter($address);
     }
 
+    /**
+     * @param ValueOrder $value
+     * @param Order $order
+     * @param array $config
+     */
     public function setPaymentType(ValueOrder $value, ShopwareOrder &$order, array $config)
     {
         if ($config['payment' . $value->getPaymentType()]) {
             $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
         } else {
-            //fallback: set first available payment type
-            // TODO: dont know what to do here, to
-            /** @noinspection PhpParamsInspection */
             $order->setPayment(array_values($this->paymentTypes)[0]);
         }
     }
@@ -575,7 +578,6 @@ class ShopwareOrderHelper extends AbstractHelper
 
         $order->getAttribute()->setAfterbuyOrderId($value->getExternalIdentifier());
 
-        //TODO: set correct values
         $order->setComment('');
         $order->setCustomerComment('');
         $order->setInternalComment('');

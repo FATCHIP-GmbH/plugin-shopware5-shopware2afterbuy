@@ -72,14 +72,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             }
 
             $valueCategory->setPath($shopwareCategory->getPath());
-            if (($media = $shopwareCategory->getMedia()) && $media->getId() > 0) {
-                /** @var MediaService $mediaService */
-                $mediaService = Shopware()->Container()->get('shopware_media.media_service');
-                $image = $mediaService->getUrl($media->getPath());
-
-                $valueCategory->setImage($image);
-            }
-            // TODO: handle media
 
             if ($valueCategory->isValid()) {
                 $valueCategories[] = $valueCategory;

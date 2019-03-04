@@ -137,7 +137,6 @@ class AbstractHelper
         $this->createTax($rate_s);
         $this->getTaxes();
 
-        // TODO: what to return here?
         return null;
     }
 
@@ -154,7 +153,7 @@ class AbstractHelper
         try {
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
-            // TODO: handle exception
+            $this->logger->error('Error saving tax rule', array($rate));
         }
     }
 
@@ -214,8 +213,11 @@ class AbstractHelper
 
         //we have to create attributes manually
         $attribute = new $this->entityAttributes();
-        // TODO: What type is $entity? ModelEntity has no setAttribute.
-        /** @noinspection PhpUndefinedMethodInspection */
+
+        /**
+         * setAttribute is implemented for each entity specifically
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $entity->setAttribute($attribute);
 
         $this->setIdentifier($identifier, $field, $entity, $isAttribute);
@@ -235,8 +237,10 @@ class AbstractHelper
         $setter = Helper::getSetterByField($field);
 
         if ($isAttribute) {
-            // TODO: What type is $entity? ModelEntity has no setAttribute.
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * setAttribute is implemented for each entity specifically
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $entity->getAttribute()->$setter($identifier);
         } else {
             $entity->$setter($identifier);
@@ -255,12 +259,17 @@ class AbstractHelper
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-        // TODO: check this inspection
-        /** @noinspection CurlSslServerSpoofingInspection */
+
+
+        /**
+         * this enables self signed ssl certificates.
+         * as long requests are possible via http, mitm-attacks  will always be a problem
+         * @noinspection CurlSslServerSpoofingInspection
+         */
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        // TODO: check this inspection
         /** @noinspection CurlSslServerSpoofingInspection */
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
         $raw = curl_exec($ch);
 
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -291,7 +300,7 @@ class AbstractHelper
      *
      * @return Media
      */
-    public function createMediaImage($url, $albumName)
+    public function createMediaImage($url, $albumName = 'Artikel')
     {
         if ( ! $url) {
             return null;
@@ -326,7 +335,10 @@ class AbstractHelper
         $albumRepo = $this->entityManager->getRepository(Album::class);
         /** @var Album $album */
         $album = $albumRepo->findOneBy(['name' => $albumName]);
-        // TODO: handle missing album
+
+        if(!$album === null) {
+            return;
+        }
 
         $filesize = $mediaService->getSize($path);
 

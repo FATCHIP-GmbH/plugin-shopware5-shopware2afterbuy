@@ -61,24 +61,20 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
             $shopwareCategory->setName($valueCategory->getName());
             $shopwareCategory->setMetaDescription($valueCategory->getDescription());
-            $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
+
+            if($shopwareCategory->getParent() !== null) {
+                $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
+            }
             $shopwareCategory->setPosition($valueCategory->getPosition());
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());
-
-/*            if ($valueCategory->getImage()) {
-                // TODO: create config for album name
-                $media = $this->helper->createMediaImage($valueCategory->getImage(), 'Kategorien');
-
-                $shopwareCategory->setMedia($media);
-            }*/
 
             $this->entityManager->persist($shopwareCategory);
 
             try {
                 $this->entityManager->flush($shopwareCategory);
             } catch (OptimisticLockException $e) {
-                // TODO: log error
+                $this->logger->error('Error saving category', array(json_encode($valueCategory)));
             }
         }
 

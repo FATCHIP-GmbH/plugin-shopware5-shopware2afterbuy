@@ -9,7 +9,7 @@ class Shopware_Controllers_Backend_viaebResetShopConnection extends Shopware_Con
     public function resetAction()
     {
         $data = [];
-        $errorMessage = 'Everything failed';
+        $errorMessage = '';
         $success = strlen($errorMessage) === 0;
 
         for ($i = 0; $i <= 5000000; $i++) {

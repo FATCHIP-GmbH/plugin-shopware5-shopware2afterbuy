@@ -54,6 +54,7 @@ class ShopwareResetHelper extends AbstractHelper
             ->getQuery()
             ->execute();
 
+        // TODO: return 'failure' on any failure
         return 'success';
     }
 }

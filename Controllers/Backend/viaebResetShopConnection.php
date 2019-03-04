@@ -18,7 +18,7 @@ class Shopware_Controllers_Backend_viaebResetShopConnection extends Shopware_Con
         $result = $shopwareResetHelper->resetShopConnection();
 
         $this->View()->assign([
-            'success' => $result['msg'],
+            'success' => $result['msg'] === 'success',
             'data' => $result['data'],
             'total' => count($result['data']),
         ]);

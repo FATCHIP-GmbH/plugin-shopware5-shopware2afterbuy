@@ -5,7 +5,6 @@ namespace viaebShopwareAfterbuy\Services\Helper;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\ValueObjects\ProductPicture;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\QueryBuilder;

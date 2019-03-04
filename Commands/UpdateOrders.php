@@ -93,7 +93,7 @@ EOF
          */
         $filter = array();
 
-        if(method_exists($this->writeOrderStatusService, "getOrdersForRequestingStatusUpdate")) {
+        if(method_exists($this->writeOrderStatusService, 'getOrdersForRequestingStatusUpdate')) {
             $filter = $this->writeOrderStatusService->getOrdersForRequestingStatusUpdate();
         }
 

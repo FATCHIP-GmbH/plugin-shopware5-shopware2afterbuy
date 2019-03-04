@@ -76,7 +76,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $valueArticle->setExternalCategoryIds($catalogIDs);
             }
 
-            if ((int)$product['Quantity'] > (int)$product['MinimumStock']) {
+            if ((int)$product['Quantity'] > (int)$product['MinimumStock'] && Helper::convertDeString2Float($product['SellingPrice'] > 0)) {
                 $valueArticle->setActive(true);
             }
 

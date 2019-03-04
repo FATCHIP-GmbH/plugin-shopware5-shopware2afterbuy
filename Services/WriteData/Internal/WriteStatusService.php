@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
+use Shopware\Models\Order\Order;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
@@ -46,6 +47,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     public function transform(array $data) {
 
         foreach($data as $value) {
+            /** @var Order $order */
             $order = $this->helper->getEntity($value->getExternalIdentifier(), 'afterbuyOrderId', true);
 
             if($order->getId() === null) {

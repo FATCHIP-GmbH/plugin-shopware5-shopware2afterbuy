@@ -80,10 +80,14 @@ class ShopwareResetHelper extends AbstractHelper
 
         $builder
             ->setParameter('null', null)
-            ->getQuery()
-            ->execute();
+            ->getQuery();
 
-        // TODO: return 'failure' on any failure
+        try {
+                $builder->execute();
+        } catch (Exception $e) {
+            return 'failure';
+        }
+
         return 'success';
     }
 }

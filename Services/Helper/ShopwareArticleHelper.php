@@ -1241,22 +1241,6 @@ ON duplicate key update afterbuy_id = $externalId;";
             if (is_array($this->imageMappings) && array_key_exists($image->getId(), $this->imageMappings)) {
                 $imageMapping = $this->imageMappings[$image->getId()];
             }
-
-            if ( ! $imageMapping) {
-                $query = $this->entityManager->createQueryBuilder()
-                    ->select(['mapping'])
-                    ->from(ImageMapping::class, 'mapping')
-                    ->where('mapping.imageId = :image')
-                    ->setParameters(array('image' => $image->getId()))
-                    ->setMaxResults(1)
-                    ->getQuery();
-
-                try {
-                    $imageMapping = $query->getOneOrNullResult();
-                } catch (NonUniqueResultException $e) {
-                    $this->logger->error('Ambiguous Image mapping', array(json_encode($image)));
-                }
-            }
         }
 
         if ( ! $imageMapping) {

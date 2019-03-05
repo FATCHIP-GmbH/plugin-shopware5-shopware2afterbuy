@@ -257,9 +257,10 @@ ON duplicate key update afterbuy_id = $externalId;";
                         $thumbnailUrl = $this->mediaService->getUrl($thumbnail);
                     }
 
-                    // TODO: $thumbnailUrl might not have been defined
-                    /** @noinspection PhpUndefinedVariableInspection */
-                    $article->setMainImageThumbnailUrl($thumbnailUrl);
+                    if (isset($thumbnailUrl)) {
+                        $article->setMainImageThumbnailUrl($thumbnailUrl);
+                    }
+
                     continue;
                 }
 

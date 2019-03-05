@@ -5,7 +5,14 @@ Ext.define('Shopware.apps.viaebResetShopConnection.view.ResetWindow', {
 
     snippets: {
         title: '{s namespace="backend/viaebResetShopConnection" name="reset_window_title"}Reset Connection{/s}',
-        infoText: '{s namespace="backend/viaebResetShopConnection" name="reset_window_info"}Information{/s}',
+        infoText: '{s namespace="backend/viaebResetShopConnection" name="reset_window_info"}' +
+            'Achtung!<br><br>' +
+            'Mit dieser Aktion werden sämtliche Beziehungen von Artikeln, Bestellungen und Kategorien zu Afterbuy' +
+            ' gelöscht. Dies ist nur dann sinnvoll, wenn sie das führende System auf Shopware wechseln oder einen' +
+            ' kompletten Neuimport durchführen möchten.<br><br>' +
+            'Bitte fertigen Sie vor Durchführung dieser Aktion ein Backup an. Im Anschluss an diese Aktion sollten Sie' +
+            ' das nicht führende System leeren, da andernfalls Duplikate auftreten können.<br><br>' +
+            'Wirklich fortfahren?{/s}',
         buttonText: '{s namespace="backend/viaebResetShopConnection" name="reset_window_button-text"}Yes{/s}',
     },
 
@@ -70,6 +77,7 @@ Ext.define('Shopware.apps.viaebResetShopConnection.view.ResetWindow', {
             flex: 1,
             width: '100%',
             value: me.snippets.infoText,
+            htmlEncode: true,
         });
     },
 

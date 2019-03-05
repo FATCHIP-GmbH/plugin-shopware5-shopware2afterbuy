@@ -1151,7 +1151,10 @@ ON duplicate key update afterbuy_id = $externalId;";
                 try {
                     $rule = $query->getOneOrNullResult();
                 } catch (NonUniqueResultException $e) {
-                    // TODO: handle exception
+                    $this->logger->error(
+                        'More than one rule for given mapping and option found.',
+                        [$imageMapping->getId(), 'option' => $option->getId()]
+                    );
                 }
             }
 

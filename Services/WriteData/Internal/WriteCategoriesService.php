@@ -62,9 +62,10 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $shopwareCategory->setName($valueCategory->getName());
             $shopwareCategory->setMetaDescription($valueCategory->getDescription());
 
-            if($shopwareCategory->getParent() !== null) {
+            if($shopwareCategory->getParent() === null) {
                 $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
             }
+
             $shopwareCategory->setPosition($valueCategory->getPosition());
             $shopwareCategory->setCmsText($valueCategory->getCmsText());
             $shopwareCategory->setActive($valueCategory->getActive());

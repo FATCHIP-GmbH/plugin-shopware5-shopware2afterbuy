@@ -11,7 +11,6 @@ use Shopware\Models\Customer\Customer;
 use Shopware\Models\Order\Billing;
 use Shopware\Models\Order\Detail;
 use Shopware\Models\Order\Order as ShopwareOrder;
-use Shopware\Models\Order\Order;
 use Shopware\Models\Order\Status as OrderStatus;
 use Shopware\Models\Shop\Shop;
 use Shopware\Models\Customer\Group;
@@ -480,7 +479,7 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
-    public function setAddress(ValueOrder $value, Order &$order, Customer $customer, $type = 'billing')
+    public function setAddress(ValueOrder $value, ShopwareOrder &$order, Customer $customer, $type = 'billing')
     {
         if ($type === 'billing') {
             $entityClass = Billing::class;
@@ -529,7 +528,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
     /**
      * @param ValueOrder $value
-     * @param Order $order
+     * @param ShopwareOrder $order
      * @param array $config
      */
     public function setPaymentType(ValueOrder $value, ShopwareOrder &$order, array $config)

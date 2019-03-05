@@ -247,7 +247,6 @@ ON duplicate key update afterbuy_id = $externalId;";
 
                 $url = $this->mediaService->getUrl($path);
 
-                // TODO: check flipping conditions => faster
                 if ($detail === null && $image->getMain() === 1) {
                     $article->setMainImageUrl($url);
 
@@ -287,7 +286,6 @@ ON duplicate key update afterbuy_id = $externalId;";
 
                 /** @var Image $image */
 
-                // TODO: check flipping conditions => faster
                 if ($detail !== null || ($image->getChildren() === null || $image->getChildren()->count() === 0)) {
 
                     $productPicture = new ProductPicture();

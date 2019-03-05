@@ -21,6 +21,9 @@
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
             <tag name="shopware.event_subscriber" />
+            <call method="initHelper">
+                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
+            </call>
         </service>
 
         <!-- Commands -->

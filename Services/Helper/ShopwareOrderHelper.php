@@ -739,5 +739,17 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->entityManager->getRepository(Group::class)->findOneBy(array());
     }
 
+    /**
+     * @param ShopwareOrder[] $orders
+     * @return ShopwareOrder[]
+     */
+    public function addAfterbuyOrderIdToOrders($orders) {
+        foreach ($orders['data'] as $index => $order) {
+            /** @var ShopwareOrder $currentOrder */
+            $currentOrder = $this->entityManager->getRepository(ShopwareOrder::class)->find($order['id']);
+            $orders['data'][$index]['afterbuyOrderId'] = $currentOrder->getAttribute()->getAfterbuyOrderId();
+        }
 
+        return $orders;
+    }
 }

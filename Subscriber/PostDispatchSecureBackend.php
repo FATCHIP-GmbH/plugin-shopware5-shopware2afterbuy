@@ -14,7 +14,7 @@ use Enlight_Event_EventArgs;
 use Enlight_View_Default;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
-use Shopware\Models\Order\Order;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 
 class PostDispatchSecureBackend implements SubscriberInterface
 {
@@ -37,6 +37,9 @@ class PostDispatchSecureBackend implements SubscriberInterface
     /** @var Enlight_Controller_Action $controller */
     protected $controller;
 
+    /** @var ShopwareOrderHelper */
+    protected $helper;
+
     /**
      * @param ModelManager $entityManager
      * @param string $pluginDirectory
@@ -53,6 +56,10 @@ class PostDispatchSecureBackend implements SubscriberInterface
         $this->entityManager = $entityManager;
         $this->pluginDirectory = $pluginDirectory;
         $this->config = $configReader->getByPluginName($pluginName);
+    }
+
+    public function initHelper(ShopwareOrderHelper $helper) {
+        $this->helper = $helper;
     }
 
     public static function getSubscribedEvents()
@@ -83,12 +90,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
         } elseif ($this->controller->Request()->getActionName() === 'getList') {
             $orders = $this->controller->View()->getAssign();
 
-            //TODO: merge outside subscriber
-            foreach ($orders['data'] as $index => $order) {
-                /** @var Order $currentOrder */
-                $currentOrder = $this->entityManager->getRepository(Order::class)->find($order['id']);
-                $orders['data'][$index]['afterbuyOrderId'] = $currentOrder->getAttribute()->getAfterbuyOrderId();
-            }
+            $orders = $this->helper->addAfterbuyOrderIdToOrders($orders);
 
             $this->controller->View()->assign($orders);
         }

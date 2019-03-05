@@ -47,6 +47,18 @@
             <label lang="de">Afterbuy User-Passwort</label>
             <label lang="en">Afterbuy User-Password</label>
         </element>
+        <element type="button">
+            <name>Spacer2</name>
+            <label>Artikeleinstellungen</label>
+            <value>1</value>
+        </element>
+        <element type="combo" required="true">
+            <name>baseCategory</name>
+            <label lang="de">Stammkategorie</label>
+            <label lang="en"></label>
+            <description>Ist Afterbuy das führende System, werden Kategorien innerhalb dieser im Shop eingefügt.</description>
+            <store>Shopware.apps.Base.store.Category</store>
+        </element>
         <element type="boolean">
             <name>ExportAllArticles</name>
             <label lang="de">Alle Artikel exportieren</label>

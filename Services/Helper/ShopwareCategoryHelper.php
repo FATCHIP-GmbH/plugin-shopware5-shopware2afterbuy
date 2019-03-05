@@ -24,7 +24,13 @@ class ShopwareCategoryHelper extends AbstractHelper {
      * @return ShopwareCategory|null
      */
     public function getMainCategory() :?ShopwareCategory {
-        return $this->entityManager->getRepository($this->entity)->findOneBy(array('id' => 1));
+        $baseCategoryId = 1;
+
+        if(array_key_exists('baseCategory', $this->config) && $this->config['baseCategory']) {
+            $baseCategoryId = $this->config['baseCategory'];
+        }
+
+        return $this->entityManager->getRepository($this->entity)->findOneBy(array('id' => $baseCategoryId));
     }
 
     /**

@@ -7,6 +7,7 @@ use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
+use Shopware\Components\Plugin\CachedConfigReader;
 use viaebShopwareAfterbuy\Components\Helper;
 use DateTime;
 use Exception;
@@ -69,6 +70,9 @@ class AbstractHelper
         $this->logger = $logger;
     }
 
+    /** @var array */
+    public $config;
+
     /**
      * @param ModelManager $entityManager
      * @param string       $entity
@@ -90,6 +94,11 @@ class AbstractHelper
     public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db): void
     {
         $this->db = $db;
+    }
+
+    public function setConfig(CachedConfigReader $configReader, string $pluginName): void
+    {
+        $this->config = $configReader->getByPluginName($pluginName);
     }
 
     /**

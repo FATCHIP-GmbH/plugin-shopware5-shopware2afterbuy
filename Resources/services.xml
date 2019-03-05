@@ -273,6 +273,8 @@
 
 
 
+
+
         <!-- Helper -->
 
         <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper">
@@ -302,6 +304,10 @@
             <argument type="string">getCategory</argument>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
+            </call>
+            <call method="setConfig">
+                <argument type="service" id="shopware.plugin.cached_config_reader" />
+                <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
             </call>
         </service>
 

@@ -7,17 +7,7 @@ Ext.define('Shopware.apps.viaeb_extend_order.view.list.List', {
     mySnippets: {
         columns: {
             afterbuyOrderId: '{s name=column/afterbuyOrderId}Afterbuy Order ID{/s}',
-            hermes: '{s name=column/hermes}Hermes{/s}',
-            noHermesDispatch: '{s name=column/noHermesDispatch}Kein Hermes Versand{/s}',
-            createJob: '{s name=column/createJob}Auftrag erstellen{/s}',
-            createLabel: '{s name=column/createLabel}Label erzeugen{/s}',
-            downloadLabel: '{s name=column/downloadLabel}Label herunterladen{/s}',
         },
-        toolbar: {
-            createJobs: '{s name=toolbar/createJobs}Hermes Aufträge erstellen{/s}',
-            createLabels: '{s name=toolbar/createLabels}Hermes Labels erzeugen{/s}',
-            downloadLabels: '{s name=toolbar/downloadLabels}Hermes Labels herunterladen{/s}',
-        }
     },
 
     initComponent: function () {

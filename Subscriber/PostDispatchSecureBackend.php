@@ -68,6 +68,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
             'Enlight_Controller_Action_PreDispatch' => 'addTemplateDir',
             'Enlight_Controller_Action_PostDispatchSecure_Backend_Index' => 'onPostDispatchSecureBackendIndex',
             'Enlight_Controller_Action_PostDispatchSecure_Backend_Order' => 'onPostDispatchSecureBackendOrder',
+            'Enlight_Controller_Action_PostDispatchSecure_Backend_ArticleList' => 'onPostDispatchSecureBackendArticleList',
         ];
     }
 
@@ -93,6 +94,13 @@ class PostDispatchSecureBackend implements SubscriberInterface
             $orders = $this->helper->addAfterbuyOrderIdToOrders($orders);
 
             $this->controller->View()->assign($orders);
+        }
+    }
+
+    public function onPostDispatchSecureBackendArticleList(Enlight_Event_EventArgs $args)
+    {
+        if ($this->controller->Request()->getActionName() == 'load') {
+            $this->view->extendsTemplate('backend/viaeb_extend_article_list/view/list_view.js');
         }
     }
 

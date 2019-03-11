@@ -9,6 +9,26 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
+    <changelog version="0.9.3">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Did remaining TODO's - minor changes</li>
+                    <li>Added Backend feature to show Afterbuy Order ID in Article List</li>
+                    <li>Added Backend feature to show Export Flag in Article List</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Did remaining TODO's - minor changes</li>
+                    <li>Added Backend feature to show Afterbuy Order ID in Article List</li>
+                    <li>Added Backend feature to show Export Flag in Article List</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="0.9.2">
         <changes lang="de">Fixed Error with category import</changes>
         <changes lang="en">Fixed Error with category import</changes>

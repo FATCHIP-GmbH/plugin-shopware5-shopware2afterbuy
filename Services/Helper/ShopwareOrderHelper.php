@@ -760,20 +760,12 @@ class ShopwareOrderHelper extends AbstractHelper
      */
     public function manipulateArticleList(array $columnConfig)
     {
-        $columnConfig['data'] = $this->addAfterbuyOrderIdToArticleList($columnConfig['data']);
-
-        return $columnConfig;
-    }
-
-    /**
-     * @param array $columnConfig
-     * @return array
-     */
-    public function addAfterbuyOrderIdToArticleList(array $columnConfig)
-    {
-        foreach ($columnConfig as $index => $entity) {
+        foreach ($columnConfig['data'] as $index => $entity) {
             if ($entity['field'] === 'afterbuyId') {
-                $columnConfig[$index]['show'] = true;
+                $columnConfig['data'][$index]['show'] = true;
+            } elseif ($entity['field'] === 'afterbuyExportEnabled') {
+                $columnConfig['data'][$index]['show'] = true;
+                $columnConfig['data'][$index]['type'] = 'boolean';
             }
         }
 

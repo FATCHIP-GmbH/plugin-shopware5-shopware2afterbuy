@@ -19,6 +19,16 @@ Ext.define('Shopware.apps.viaeb_extend_article_list.view.main.Grid', {
             if (column['dataIndex'] === 'Attribute_afterbuyId') {
                 column['header'] = me.getTranslationForColumnHead('Afterbuy OrderID');
                 afterbuyIdIndex = index;
+                column['width'] = me.getWidthForColumn({
+                    'alias': 'Detail_number',
+                });
+            }
+
+            if (column['dataIndex'] === 'Attribute_afterbuyExportEnabled') {
+                column['header'] = me.getTranslationForColumnHead('Exportieren Nach Afterbuy');
+                column['width'] = me.getWidthForColumn({
+                    'alias': 'Article_active',
+                });
             }
 
             if (column['dataIndex'] === 'Detail_number') {

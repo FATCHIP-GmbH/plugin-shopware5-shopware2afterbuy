@@ -101,6 +101,12 @@ class PostDispatchSecureBackend implements SubscriberInterface
     {
         if ($this->controller->Request()->getActionName() == 'load') {
             $this->view->extendsTemplate('backend/viaeb_extend_article_list/view/list_view.js');
+        } elseif ($this->controller->Request()->getActionName() == 'columnConfig') {
+            $columnConfig = $this->controller->View()->getAssign();
+
+            $columnConfig = $this->helper->addAfterbuyOrderIdToArticleList($columnConfig);
+
+            $this->controller->View()->assign($columnConfig);
         }
     }
 

@@ -743,7 +743,8 @@ class ShopwareOrderHelper extends AbstractHelper
      * @param ShopwareOrder[] $orders
      * @return ShopwareOrder[]
      */
-    public function addAfterbuyOrderIdToOrders($orders) {
+    public function addAfterbuyOrderIdToOrders($orders)
+    {
         foreach ($orders['data'] as $index => $order) {
             /** @var ShopwareOrder $currentOrder */
             $currentOrder = $this->entityManager->getRepository(ShopwareOrder::class)->find($order['id']);
@@ -751,5 +752,21 @@ class ShopwareOrderHelper extends AbstractHelper
         }
 
         return $orders;
+    }
+
+    /**
+     * @param array $columnConfig
+     * @return array
+     */
+    public function addAfterbuyOrderIdToArticleList(array $columnConfig)
+    {
+        foreach ($columnConfig['data'] as $index => $entity) {
+            if ($entity['field'] === 'afterbuyId') {
+                $columnConfig['data'][$index]['show'] = true;
+//                $columnConfig['data'][$index]['alias'] = 'afterbuyId';
+            }
+        }
+
+        return $columnConfig;
     }
 }

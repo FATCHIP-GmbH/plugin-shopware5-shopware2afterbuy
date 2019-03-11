@@ -104,7 +104,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
         } elseif ($this->controller->Request()->getActionName() == 'columnConfig') {
             $columnConfig = $this->controller->View()->getAssign();
 
-            $columnConfig = $this->helper->addAfterbuyOrderIdToArticleList($columnConfig);
+            $columnConfig = $this->helper->manipulateArticleList($columnConfig);
 
             $this->controller->View()->assign($columnConfig);
         }

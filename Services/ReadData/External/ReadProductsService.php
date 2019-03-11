@@ -48,6 +48,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
+            //TODO: if hauptartikel mit mehreren varianten -> an das ende des arrays
+            //nur abarbeiten wenn index größer ursprüngl. max index
+
             /**
              * @var ValueArticle $valueArticle
              */
@@ -120,7 +123,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $valueArticle->setVariants($variants);
             }
 
-            $valueArticles[] = $valueArticle;
+            if(!$valueArticle->getMainArticleId()) {
+                $valueArticles[] = $valueArticle;
+            }
+            else {
+                array_unshift($valueArticles, $valueArticle);
+            }
         }
 
         return $valueArticles;

@@ -4,6 +4,7 @@ namespace viaebShopwareAfterbuy\Services\Helper;
 
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
+use viaebShopwareAfterbuy\ValueObjects\Article;
 use viaebShopwareAfterbuy\ValueObjects\ProductPicture;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
@@ -616,6 +617,14 @@ ON duplicate key update afterbuy_id = $externalId;";
         return $supplier;
     }
 
+    public function getArticleByNumber(string $number)
+    {
+        $article = $this->entityManager->getRepository(ArticleDetail::class)
+            ->findOneBy(array('number' => $number));
+
+        return $article;
+    }
+
     /**
      * @param string $number
      *
@@ -644,6 +653,11 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         if ($parent) {
             $article = $this->getArticleFromAttribute($parent);
+
+            if(!$article) {
+                $article = $this->getArticleByNumber($parent);
+            }
+
         } else {
             /**
              * @var ArticlesAttribute $article
@@ -906,6 +920,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         Group $customerGroup
     ): void {
         foreach ($valueArticles as $valueArticle) {
+            /** @var Article $valueArticle */
 
             /** @var ShopwareArticle $shopwareArticle */
             $shopwareArticle = $this->getMainArticle(
@@ -918,13 +933,21 @@ ON duplicate key update afterbuy_id = $externalId;";
                 continue;
             }
 
+            if(!$valueArticle->getMainArticleId()) {
+                $shopwareArticle->setName($valueArticle->getName());
+            }
+            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+            $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
+
+            $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
+
+
             /** @var ArticleDetail $articleDetail */
             $articleDetail = $this->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
 
             //set main values
             $articleDetail->setLastStock($valueArticle->getStockMin());
-            $shopwareArticle->setName($valueArticle->getName());
-            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
 
@@ -937,12 +960,8 @@ ON duplicate key update afterbuy_id = $externalId;";
 
             $this->storePrices($articleDetail, $customerGroup, $price);
 
-            $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
-
             $this->getArticleAttributes($shopwareArticle, $articleDetail,
                 $valueArticle->getMainArticleId());
-
-            $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
 
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
 

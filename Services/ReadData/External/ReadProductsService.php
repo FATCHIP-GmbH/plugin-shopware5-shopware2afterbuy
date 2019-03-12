@@ -119,7 +119,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $valueArticle->setVariants($variants);
             }
 
-            $valueArticles[] = $valueArticle;
+            if(!$valueArticle->getMainArticleId()) {
+                $valueArticles[] = $valueArticle;
+            }
+            else {
+                array_unshift($valueArticles, $valueArticle);
+            }
         }
 
         return $valueArticles;

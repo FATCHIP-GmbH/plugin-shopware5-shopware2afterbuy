@@ -11,5 +11,22 @@
             <class>sprite-money</class>
             <parent identifiedBy="controller">ConfigurationMenu</parent>
         </entry>
+        <entry>
+            <name>AfterbuyConnector</name>
+            <label lang="en">Afterbuy Connector</label>
+            <label lang="de">Afterbuy Connector</label>
+            <parent identifiedBy="controller">ConfigurationMenu</parent>
+            <children>
+                <entry>
+                    <name>TestConnection</name>
+                    <label lang="en">Test Connection</label>
+                    <label lang="de">Verbindungstest</label>
+                    <controller>AfterbuyConnector</controller>
+                    <action>testConnection</action>
+                    <class>sprite-box</class>
+                </entry>
+            </children>
+        </entry>
     </entries>
 </menu>
+

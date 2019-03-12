@@ -26,6 +26,14 @@
             </call>
         </service>
 
+        <!-- Subscriber -->
+        <service id="viaeb_shopware_afterbuy.subscriber.template_registration" class="viaebShopwareAfterbuy\Subscriber\TemplateRegistration">
+            <argument type="string">%viaeb_shopware_afterbuy.plugin_dir%</argument>
+            <argument type="service" id="template"/>
+            <tag name="shopware.event_subscriber"/>
+        </service>
+
+
         <!-- Commands -->
 
         <service id="viaeb_shopware_afterbuy.commands.export_status" class="viaebShopwareAfterbuy\Commands\ExportStatus">
@@ -93,6 +101,11 @@
         <service id="viaeb_shopware_afterbuy.commands.reset_shop_connection" class="viaebShopwareAfterbuy\Commands\ResetShopConnection">
             <tag name="console.command" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper" />
+        </service>
+
+        <!-- Connection test -->
+
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ConnectionTestService" id="viaeb_shopware_afterbuy.services.read_data.external.connection_test_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
         </service>
 
         <!-- Products -->
@@ -273,10 +286,6 @@
                 <argument type="string">%viaeb_shopware_afterbuy.plugin_dir%</argument>
             </call>
         </service>
-
-
-
-
 
         <!-- Helper -->
 

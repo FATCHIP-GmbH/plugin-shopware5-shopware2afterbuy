@@ -71,7 +71,7 @@ class ShopwareArticleHelper extends AbstractHelper
     /**
      * @param array $ids
      */
-    public function updateExternalIds(array $ids): void
+    public function updateExternalIds(array $ids)
     {
         $sql = '';
 

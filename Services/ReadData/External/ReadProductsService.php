@@ -48,9 +48,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
-            //TODO: if hauptartikel mit mehreren varianten -> an das ende des arrays
-            //nur abarbeiten wenn index größer ursprüngl. max index
-
             /**
              * @var ValueArticle $valueArticle
              */

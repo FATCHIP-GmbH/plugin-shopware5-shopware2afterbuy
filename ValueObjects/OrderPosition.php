@@ -60,7 +60,7 @@ class OrderPosition extends AbstractValueObject {
     /**
      * @param string $orderId
      */
-    public function setOrderId(string $orderId)
+    public function setOrderId($orderId)
     {
         $this->orderId = $orderId;
     }

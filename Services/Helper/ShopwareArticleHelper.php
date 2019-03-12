@@ -935,8 +935,9 @@ ON duplicate key update afterbuy_id = $externalId;";
 
             if(!$valueArticle->getMainArticleId()) {
                 $shopwareArticle->setName($valueArticle->getName());
+                $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
             }
-            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
 
             $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));

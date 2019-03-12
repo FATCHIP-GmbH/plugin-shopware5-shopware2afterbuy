@@ -46,8 +46,6 @@ class ConnectionTestService extends AbstractReadDataService implements ReadDataI
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig);
-        $response = $api->getAfterbuyTime();
-
-        return $response;
+        return $api->getAfterbuyTime();
     }
 }

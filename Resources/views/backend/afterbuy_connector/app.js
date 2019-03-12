@@ -17,6 +17,16 @@ Ext.define('Shopware.apps.AfterbuyConnector', {
             url: '{url controller=AfterbuyConnector action=testConnection}',
             success: function(response) {
 
+                if(response.responseText == 'Afterbuy Connection not configured!') {
+                    Shopware.Notification.createGrowlMessage(
+                        '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                        response.responseText,
+                        'Afterbuy Conncetor'
+                    );
+
+                    return;
+                }
+
                 var status = JSON.parse(response.responseText);
 
                 if(status.success == true) {

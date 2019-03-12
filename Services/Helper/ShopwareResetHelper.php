@@ -3,6 +3,7 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use DateTime;
+use Doctrine\ORM\Query;
 use Exception;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use viaebShopwareAfterbuy\Models\Status;
@@ -82,6 +83,7 @@ class ShopwareResetHelper extends AbstractHelper
             ->setParameter('null', null)
             ->getQuery();
 
+        /** @var Query $builder */
         try {
                 $builder->execute();
         } catch (Exception $e) {

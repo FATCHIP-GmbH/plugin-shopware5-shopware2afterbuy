@@ -6,7 +6,6 @@ use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
-use Shopware\Bundle\MediaBundle\MediaService;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
 class ReadCategoriesService extends AbstractReadDataService implements ReadDataInterface

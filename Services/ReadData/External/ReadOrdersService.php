@@ -15,7 +15,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     /**
      * @param array $filter
      * @return array|null
-     * @throws \Exception
      */
     public function get(array $filter) {
         $data = $this->read($filter);

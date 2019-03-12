@@ -346,7 +346,7 @@ class AbstractHelper
         $album = $albumRepo->findOneBy(['name' => $albumName]);
 
         if(!$album === null) {
-            return;
+            return null;
         }
 
         $filesize = $mediaService->getSize($path);

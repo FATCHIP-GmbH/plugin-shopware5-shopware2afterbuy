@@ -939,7 +939,6 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
 
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
-
             $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
 
 

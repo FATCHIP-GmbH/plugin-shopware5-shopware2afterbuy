@@ -47,37 +47,39 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
         $this->logger->info('Storing ' . count($valueCategories) . ' items.', array('Categories', 'Write', 'Internal'));
 
-        $valueCategories = $categoryHelper->sortValueCategoriesByParentID($valueCategories);
+        $valueCategories = $categoryHelper->createCategoryTrees($valueCategories);
 
-        foreach ($valueCategories as $valueCategory) {
-            /**
-             * @var ShopwareCategory $shopwareCategory
-             */
-            $shopwareCategory = $categoryHelper->getEntity(
-                $valueCategory->getExternalIdentifier(),
-                $this->identifier,
-                $this->isAttribute
-            );
-
-            $shopwareCategory->setName($valueCategory->getName());
-            $shopwareCategory->setMetaDescription($valueCategory->getDescription());
-
-            if($shopwareCategory->getParent() === null) {
-                $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
-            }
-
-            $shopwareCategory->setPosition($valueCategory->getPosition());
-            $shopwareCategory->setCmsText($valueCategory->getCmsText());
-            $shopwareCategory->setActive($valueCategory->getActive());
-
-            $this->entityManager->persist($shopwareCategory);
-
-            try {
-                $this->entityManager->flush($shopwareCategory);
-            } catch (OptimisticLockException $e) {
-                $this->logger->error('Error saving category', array(json_encode($valueCategory)));
-            }
-        }
+//        $valueCategories = $categoryHelper->sortValueCategoriesByParentID($valueCategories);
+//
+//        foreach ($valueCategories as $valueCategory) {
+//            /**
+//             * @var ShopwareCategory $shopwareCategory
+//             */
+//            $shopwareCategory = $categoryHelper->getEntity(
+//                $valueCategory->getExternalIdentifier(),
+//                $this->identifier,
+//                $this->isAttribute
+//            );
+//
+//            $shopwareCategory->setName($valueCategory->getName());
+//            $shopwareCategory->setMetaDescription($valueCategory->getDescription());
+//
+//            if($shopwareCategory->getParent() === null) {
+//                $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
+//            }
+//
+//            $shopwareCategory->setPosition($valueCategory->getPosition());
+//            $shopwareCategory->setCmsText($valueCategory->getCmsText());
+//            $shopwareCategory->setActive($valueCategory->getActive());
+//
+//            $this->entityManager->persist($shopwareCategory);
+//
+//            try {
+//                $this->entityManager->flush($shopwareCategory);
+//            } catch (OptimisticLockException $e) {
+//                $this->logger->error('Error saving category', array(json_encode($valueCategory)));
+//            }
+//        }
 
         return $valueCategories;
     }

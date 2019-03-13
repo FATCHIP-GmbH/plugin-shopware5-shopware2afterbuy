@@ -2,6 +2,9 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Doctrine\ORM\OptimisticLockException;
+use viaebShopwareAfterbuy\ValueObjects\CategoryTree;
+use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
 
@@ -133,6 +136,76 @@ class ShopwareCategoryHelper extends AbstractHelper {
         return $valueCategories;
     }
 
+    /**
+     * @param CategoryTreeNode[] $valueCategories
+     *
+     * @return CategoryTreeNode[]
+     */
+    public function createCategoryTrees(array $valueCategories)
+    {
+        /** @var CategoryTreeNode[] $list */
+        $list = [];
+        /** @var CategoryTreeNode[] $tree */
+        $trees = [];
+
+        /** @var ValueCategory $category */
+        foreach ($valueCategories as $category) {
+            $list[$category->getExternalIdentifier()] = new CategoryTreeNode($category);
+        }
+
+        /**
+         * @var int $externalId
+         * @var CategoryTreeNode $node
+         */
+        foreach ($list as $externalId => $node) {
+            $parentId = $node->getValueCategory()->getParentIdentifier();
+
+            if ($parentId === 0) {
+                $trees[] = $node;
+            } else {
+                $parentNode = $list[$parentId];
+
+                $node->setParent($parentNode);
+                $parentNode->addChild($node);
+            }
+        }
+
+        return $trees;
+    }
+
+    /**
+     * @param ValueCategory $valueCategory
+     *
+     * @return ShopwareCategory
+     */
+    private function createShopwareCategory(ValueCategory $valueCategory)
+    {
+        /**
+         * @var ShopwareCategory $shopwareCategory
+         */
+        $shopwareCategory = $this->getEntity($valueCategory->getExternalIdentifier(), 'afterbuyCatalogId', true);
+
+        $shopwareCategory->setName($valueCategory->getName());
+        $shopwareCategory->setMetaDescription($valueCategory->getDescription());
+
+//        if($shopwareCategory->getParent() === null) {
+//            $shopwareCategory->setParent($this->findParentCategory($valueCategory, $this->identifier));
+//        }
+
+        $shopwareCategory->setPosition($valueCategory->getPosition());
+        $shopwareCategory->setCmsText($valueCategory->getCmsText());
+        $shopwareCategory->setActive($valueCategory->getActive());
+//
+//        $this->entityManager->persist($shopwareCategory);
+//
+//        try {
+//            $this->entityManager->flush($shopwareCategory);
+//        } catch (OptimisticLockException $e) {
+//            $this->logger->error('Error saving category', array(json_encode($valueCategory)));
+//        }
+
+        return $shopwareCategory;
+    }
     /**
      * @param ValueCategory $cat1
      * @param ValueCategory $cat2

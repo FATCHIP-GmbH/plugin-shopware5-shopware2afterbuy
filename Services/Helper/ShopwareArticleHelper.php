@@ -1271,4 +1271,22 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         return $imageMapping;
     }
+
+    /**
+     * @param array $columnConfig
+     * @return array
+     */
+    public function manipulateArticleList(array $columnConfig)
+    {
+        foreach ($columnConfig['data'] as $index => $entity) {
+            if ($entity['field'] === 'afterbuyId') {
+                $columnConfig['data'][$index]['show'] = true;
+            } elseif ($entity['field'] === 'afterbuyExportEnabled') {
+                $columnConfig['data'][$index]['show'] = $this->config;
+                $columnConfig['data'][$index]['type'] = 'boolean';
+            }
+        }
+
+        return $columnConfig;
+    }
 }

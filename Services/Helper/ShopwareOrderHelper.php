@@ -753,22 +753,4 @@ class ShopwareOrderHelper extends AbstractHelper
 
         return $orders;
     }
-
-    /**
-     * @param array $columnConfig
-     * @return array
-     */
-    public function manipulateArticleList(array $columnConfig)
-    {
-        foreach ($columnConfig['data'] as $index => $entity) {
-            if ($entity['field'] === 'afterbuyId') {
-                $columnConfig['data'][$index]['show'] = true;
-            } elseif ($entity['field'] === 'afterbuyExportEnabled') {
-                $columnConfig['data'][$index]['show'] = true;
-                $columnConfig['data'][$index]['type'] = 'boolean';
-            }
-        }
-
-        return $columnConfig;
-    }
 }

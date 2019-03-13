@@ -8,6 +8,7 @@ use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
+use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
 {
@@ -47,7 +48,10 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 
         $this->logger->info('Storing ' . count($valueCategories) . ' items.', array('Categories', 'Write', 'Internal'));
 
-        $valueCategories = $categoryHelper->createCategoryTrees($valueCategories);
+        /** @var CategoryTreeNode[] $valueCategoryTrees */
+        $valueCategoryTrees = $categoryHelper->createCategoryTrees($valueCategories);
+
+        $shopwareCategories = $categoryHelper->addCategoriesToShopware($valueCategoryTrees);
 
 //        $valueCategories = $categoryHelper->sortValueCategoriesByParentID($valueCategories);
 //
@@ -81,7 +85,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
 //            }
 //        }
 
-        return $valueCategories;
+        return $shopwareCategories;
     }
 
     /**

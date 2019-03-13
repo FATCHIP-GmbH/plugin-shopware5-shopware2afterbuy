@@ -160,17 +160,70 @@ class ShopwareCategoryHelper extends AbstractHelper {
         foreach ($list as $externalId => $node) {
             $parentId = $node->getValueCategory()->getParentIdentifier();
 
-            if ($parentId === 0) {
+            if ($parentId === '0') {
                 $trees[] = $node;
             } else {
                 $parentNode = $list[$parentId];
 
                 $node->setParent($parentNode);
-                $parentNode->addChild($node);
+                $parentNode->children[] = $node;
             }
         }
 
         return $trees;
+    }
+
+    /**
+     * @param CategoryTreeNode[] $valueCategoryTrees
+     * @return ShopwareCategory[]
+     */
+    public function addCategoriesToShopware(array $valueCategoryTrees)
+    {
+        /** @var ShopwareCategory[] $shopwareCategories */
+        $shopwareCategories = [];
+
+        /** @var CategoryTreeNode $current */
+        foreach ($valueCategoryTrees as $current) {
+            $stack = [];
+
+            do {
+                // walk to leftest children
+                do {
+                    $externalIdentifier = $current->getValueCategory()->getExternalIdentifier();
+                    if ( ! in_array($externalIdentifier, $shopwareCategories)) {
+                        $shopwareCategories[$externalIdentifier] = $this->createShopwareCategory(
+                            $current->getValueCategory()
+                        );
+
+                        $shopwareCategories[$externalIdentifier]->setParent(
+                            $this->findParentCategory($current->getValueCategory(), 'afterbuyCatalogId')
+                        );
+
+                        $this->entityManager->persist($shopwareCategories[$externalIdentifier]);
+                        try {
+                            $this->entityManager->flush();
+                        } catch (OptimisticLockException $e) {
+                            $this->logger->error(
+                                'Error saving category',
+                                array(json_encode($current->getValueCategory()))
+                            );
+                        }
+                    }
+
+                    if ($current->children !== CategoryTreeNode::NO_CHILDREN) {
+                        $stack[] = $current;
+
+                        $current = array_pop($current->children);
+                    } else {
+                        break;
+                    }
+                } while (true);
+
+                $current = array_pop($stack);
+            } while ( ! empty($stack));
+        }
+
+        return $shopwareCategories;
     }
 
     /**

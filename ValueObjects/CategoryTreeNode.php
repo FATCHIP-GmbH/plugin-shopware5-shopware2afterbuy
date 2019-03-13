@@ -12,7 +12,7 @@ class CategoryTreeNode
     /** @var CategoryTreeNode $parent */
     private $parent;
     /** @var CategoryTreeNode[] $children */
-    private $children;
+    public $children;
 
     /** @var ValueCategory */
     private $valueCategory;
@@ -38,30 +38,6 @@ class CategoryTreeNode
     public function setParent(CategoryTreeNode $parent)
     {
         $this->parent = $parent;
-    }
-
-    /**
-     * @return CategoryTreeNode[]
-     */
-    public function getChildren(): array
-    {
-        return $this->children;
-    }
-
-    /**
-     * @param CategoryTreeNode[] $children
-     */
-    public function setChildren(array $children)
-    {
-        $this->children = $children;
-    }
-
-    /**
-     * @param CategoryTreeNode $child
-     */
-    public function addChild(CategoryTreeNode $child)
-    {
-        $this->children[] = $child;
     }
 
     /**

@@ -9,6 +9,15 @@
             <parent identifiedBy="controller">ConfigurationMenu</parent>
             <children>
                 <entry>
+                    <name>Configuration</name>
+                    <label lang="en">Configuration</label>
+                    <label lang="de">Konfiguration</label>
+                    <controller>viaebConfigForm</controller>
+                    <action>index</action>
+                    <class>sprite-toolbox</class>
+                    <parent identifiedBy="controller">ConfigurationMenu</parent>
+                </entry>
+                <entry>
                     <name>TestConnection</name>
                     <label lang="en">Test Connection</label>
                     <label lang="de">Verbindungstest</label>

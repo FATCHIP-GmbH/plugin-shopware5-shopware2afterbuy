@@ -153,6 +153,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     getConnectionConfigFields: function () {
         return [
             {
+                xtype: 'textfield',
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
                 name: 'userName',
                 allowBlank: false,
@@ -201,7 +202,10 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                     const form = this.up('form').getForm();
                     if (form.isValid()) {
                         // Submit the Ajax request and handle the response
+
+
                         form.submit({
+                            url: '{url controller="viaebConfigForm" action="testConnectionConfig"}',
                             success: function(form, action) {
                                 Ext.Msg.alert('Success', action.result.msg);
                             },

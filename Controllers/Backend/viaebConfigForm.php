@@ -24,16 +24,6 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
     {
     }
 
-    public function resetAction()
-    {
-
-        $this->View()->assign([
-            'success' => $result['msg'] === 'success',
-            'data' => $result['data'],
-            'total' => count($result['data']),
-        ]);
-    }
-
     public function testConnectionConfigAction() {
         $testService = $this->container->get('viaeb_shopware_afterbuy.services.read_data.external.connection_test_service');
         $response = $testService->test(array(

@@ -31,11 +31,22 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
     }
 
     public function saveConnectionConfigAction() {
-        $request = $this->Request();
 
+        $this->View()->assign([
+            'success' => true,
+        ]);
 
-        $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
-        //TODO: save
+        try{
+            $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
+            $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
+            $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
+            $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
+        }
+        catch (\Exception $e) {
+            $this->View()->assign([
+                'success' => false,
+            ]);
+        }
 
         //TODO: clear config cache
     }

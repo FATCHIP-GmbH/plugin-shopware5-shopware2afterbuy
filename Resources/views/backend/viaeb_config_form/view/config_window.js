@@ -207,10 +207,18 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                         form.submit({
                             url: '{url controller="viaebConfigForm" action="testConnectionConfig"}',
                             success: function(form, action) {
-                                Ext.Msg.alert('Success', action.result.msg);
+                                Shopware.Notification.createGrowlMessage(
+                                    '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+                                    '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
+                                    'Afterbuy Conncetor'
+                                );
                             },
                             failure: function(form, action) {
-                                Ext.Msg.alert('Failed', action.result.msg);
+                                Shopware.Notification.createGrowlMessage(
+                                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                                    '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
+                                    'Afterbuy Conncetor'
+                                );
                             }
                         });
                     }
@@ -226,10 +234,18 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                         // Submit the Ajax request and handle the response
                         form.submit({
                             success: function(form, action) {
-                                Ext.Msg.alert('Success', action.result.msg);
+                                Shopware.Notification.createGrowlMessage(
+                                    '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+                                    '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
+                                    'Afterbuy Conncetor'
+                                );
                             },
                             failure: function(form, action) {
-                                Ext.Msg.alert('Failed', action.result.msg);
+                                Shopware.Notification.createGrowlMessage(
+                                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                                    '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
+                                    'Afterbuy Conncetor'
+                                );
                             }
                         });
                     }

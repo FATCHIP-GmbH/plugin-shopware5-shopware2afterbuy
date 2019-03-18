@@ -30,7 +30,8 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         ]);
     }
 
-    public function saveConnectionConfigAction() {
+    public function saveConnectionConfigAction()
+    {
         $request = $this->Request();
 
 
@@ -38,5 +39,12 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         //TODO: save
 
         //TODO: clear config cache
+        $data = [];
+
+        $this->View()->assign([
+            'success' => true,
+            'data' => $data,
+            'total' => count($data),
+        ]);
     }
 }

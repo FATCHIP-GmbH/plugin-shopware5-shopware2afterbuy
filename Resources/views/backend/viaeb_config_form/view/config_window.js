@@ -62,6 +62,8 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     },
 
     createGeneralConfigForm: function () {
+        const me = this;
+
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
             flex: 1,
@@ -73,7 +75,26 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 type: 'vbox',
                 align: 'stretch'
             },
-            items: [],
+            items: [
+                {
+                    xtype: 'fieldset',
+                    title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
+                    defaultType: 'textfield',
+                    autoScroll: true,
+                    flex: 1,
+                    defaults: {
+                        /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
+                        readOnly: true,
+                        /*{/if}*/
+                        labelStyle: 'font-weight: 700; text-align: right;',
+                        layout: 'anchor',
+                        labelWidth: 130,
+                        anchor: '100%'
+                    },
+                    items: me.getGeneralConfigFields(),
+                }
+            ],
+            buttons: me.getConnectionConfigButtons(),
 
         });
     },
@@ -154,6 +175,18 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 name: 'partnerPassword',
                 inputType: 'password',
                 value: '{config name="partnerPassword" namespace="viaebShopwareAfterbuy"}',
+            },
+        ];
+    },
+
+    getGeneralConfigFields: function () {
+        return [
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Testfield label{/s}',
+                name: 'testField',
+                allowBlank: false,
+                checkChangeBuffer: 300,
+                value: '{config name="testField" namespace="viaebShopwareAfterbuy"}',
             },
         ];
     },

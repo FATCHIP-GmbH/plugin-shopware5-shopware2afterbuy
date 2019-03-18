@@ -15,7 +15,7 @@
 
         <!-- DispatchEvents -->
 
-        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackend">
+        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_order" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendOrder">
             <argument id="models" type="service"/>
             <argument>%viaeb_shopware_afterbuy.plugin_dir%</argument>
             <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -23,6 +23,17 @@
             <tag name="shopware.event_subscriber" />
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
+            </call>
+        </service>
+
+        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_article_list" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendArticleList">
+            <argument id="models" type="service"/>
+            <argument>%viaeb_shopware_afterbuy.plugin_dir%</argument>
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
+            <tag name="shopware.event_subscriber" />
+            <call method="initHelper">
+                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper"/>
             </call>
         </service>
 

@@ -88,6 +88,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             value: me.snippets.infoText,
             htmlEncode: true,
             bodyPadding: 10,
+            url: '{url controller="viaebConfigForm" action="saveConnectionConfig"}',
 
             layout: {
                 type: 'vbox',

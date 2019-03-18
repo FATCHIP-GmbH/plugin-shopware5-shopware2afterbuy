@@ -23,7 +23,7 @@ class PostDispatchSecureBackendArticleList extends AbstractPostDispatchSecureBac
 
             $columnConfig = $this->controller->View()->getAssign();
 
-            $columnConfig = $orderHelper->manipulateArticleList($columnConfig);
+            $columnConfig = $orderHelper->manipulateArticleList($columnConfig, $this->config);
 
             $this->controller->View()->assign($columnConfig);
         }

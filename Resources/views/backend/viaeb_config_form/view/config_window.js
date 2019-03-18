@@ -165,7 +165,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 cls: 'button secondary',
                 handler: function() {
                     // The getForm() method returns the Ext.form.Basic instance:
-                    var form = this.up('form').getForm();
+                    const form = this.up('form').getForm();
                     if (form.isValid()) {
                         // Submit the Ajax request and handle the response
                         form.submit({
@@ -184,7 +184,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 cls: 'button primary',
                 handler: function() {
                     // The getForm() method returns the Ext.form.Basic instance:
-                    var form = this.up('form').getForm();
+                    const form = this.up('form').getForm();
                     if (form.isValid()) {
                         // Submit the Ajax request and handle the response
                         form.submit({

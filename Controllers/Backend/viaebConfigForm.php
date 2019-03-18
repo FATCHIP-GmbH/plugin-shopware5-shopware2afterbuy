@@ -8,12 +8,16 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
 
     protected $pluginName;
 
+    /** @var \Shopware\Components\CacheManager */
+    protected $cacheManager;
+
     public function init()
     {
         parent::init();
 
         $this->configWriter = Shopware()->Container()->get('config_writer');
         $this->pluginName = Shopware()->Container()->getParameter('viaeb_shopware_afterbuy.plugin_name');
+        $this->cacheManager = Shopware()->Container()->get('shopware.cache_manager');
     }
 
     public function indexAction()
@@ -48,6 +52,6 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             ]);
         }
 
-        //TODO: clear config cache
+        $this->cacheManager->clearConfigCache();
     }
 }

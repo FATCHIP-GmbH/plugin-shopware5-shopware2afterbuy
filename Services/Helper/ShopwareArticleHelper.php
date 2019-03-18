@@ -1282,6 +1282,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             if ($entity['field'] === 'afterbuyId') {
                 $columnConfig['data'][$index]['show'] = true;
             } elseif ($entity['field'] === 'afterbuyExportEnabled') {
+//                $columnConfig['data'][$index]['show'] = true;
                 $columnConfig['data'][$index]['show'] = $this->config;
                 $columnConfig['data'][$index]['type'] = 'boolean';
             }

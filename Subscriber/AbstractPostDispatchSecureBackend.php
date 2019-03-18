@@ -14,9 +14,9 @@ use Enlight_Event_EventArgs;
 use Enlight_View_Default;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Plugin\CachedConfigReader;
-use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
+use viaebShopwareAfterbuy\Services\Helper\AbstractHelper;
 
-class PostDispatchSecureBackend implements SubscriberInterface
+class AbstractPostDispatchSecureBackend implements SubscriberInterface
 {
     /**
      * @var ModelManager
@@ -37,7 +37,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
     /** @var Enlight_Controller_Action $controller */
     protected $controller;
 
-    /** @var ShopwareOrderHelper */
+    /** @var AbstractHelper */
     protected $helper;
 
     /**
@@ -58,7 +58,7 @@ class PostDispatchSecureBackend implements SubscriberInterface
         $this->config = $configReader->getByPluginName($pluginName);
     }
 
-    public function initHelper(ShopwareOrderHelper $helper) {
+    public function initHelper(AbstractHelper $helper) {
         $this->helper = $helper;
     }
 
@@ -81,33 +81,6 @@ class PostDispatchSecureBackend implements SubscriberInterface
 
         $this->view->extendsTemplate('backend/viaeb_extend_order/base/header.tpl');
 
-    }
-
-    public function onPostDispatchSecureBackendOrder(Enlight_Event_EventArgs $args)
-    {
-        if ($this->controller->Request()->getActionName() == 'load') {
-            $this->view->extendsTemplate('backend/viaeb_extend_order/view/list_view.js');
-            $this->view->extendsTemplate('backend/viaeb_extend_order/model/order_model.tpl');
-        } elseif ($this->controller->Request()->getActionName() === 'getList') {
-            $orders = $this->controller->View()->getAssign();
-
-            $orders = $this->helper->addAfterbuyOrderIdToOrders($orders);
-
-            $this->controller->View()->assign($orders);
-        }
-    }
-
-    public function onPostDispatchSecureBackendArticleList(Enlight_Event_EventArgs $args)
-    {
-        if ($this->controller->Request()->getActionName() == 'load') {
-            $this->view->extendsTemplate('backend/viaeb_extend_article_list/view/list_view.js');
-        } elseif ($this->controller->Request()->getActionName() == 'columnConfig') {
-            $columnConfig = $this->controller->View()->getAssign();
-
-            $columnConfig = $this->helper->manipulateArticleList($columnConfig);
-
-            $this->controller->View()->assign($columnConfig);
-        }
     }
 
     /**

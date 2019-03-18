@@ -12,8 +12,8 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
     {
         parent::init();
 
-        $this->configWriter = $this->container->get('config_writer');
-        $this->pluginName = $this->container->getParameter('');
+        $this->configWriter = Shopware()->Container()->get('config_writer');
+        $this->pluginName = Shopware()->Container()->getParameter('viaeb_shopware_afterbuy.plugin_name');
     }
 
     public function indexAction()

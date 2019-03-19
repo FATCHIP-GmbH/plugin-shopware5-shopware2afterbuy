@@ -59,12 +59,24 @@
             <description>Ist Afterbuy das führende System, werden Kategorien innerhalb dieser im Shop eingefügt.</description>
             <store>Shopware.apps.Base.store.Category</store>
         </element>
-        <element type="boolean">
+        <element type="select" required="true">
             <name>ExportAllArticles</name>
             <label lang="de">Alle Artikel exportieren</label>
             <label lang="en">exportAllArticles</label>
-            <value>true</value>
+            <value>1</value>
             <description>Ist Shopware das führende System, werden entweder alle or nur ausgewählte Artikel an Afterbuy übertragen.</description>
+            <store>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Ja</label>
+                    <label lang="en">Yes</label>
+                </option>
+                <option>
+                    <value>2</value>
+                    <label lang="de">Nein</label>
+                    <label lang="en">No</label>
+                </option>
+            </store>
         </element>
 
         <element type="button">

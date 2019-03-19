@@ -23,8 +23,6 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
     init: function () {
         const me = this;
 
-        console.log('dbg1');
-
         me.configWindow = me.getView('ConfigWindow').create();
 
         me.control({
@@ -40,8 +38,6 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
 
     saveAfterbuyConfig: function (form) {
         // The getForm() method returns the Ext.form.Basic instance:
-        console.log('dbg');
-
         const me = this;
 
         // The getForm() method returns the Ext.form.Basic instance:

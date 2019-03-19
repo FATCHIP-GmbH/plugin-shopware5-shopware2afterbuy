@@ -38,6 +38,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
     initComponent: function () {
         const me = this;
+        me.getConfigValues();
 
         me.registerEvents();
 
@@ -48,6 +49,45 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         me.items = me.form;
 
         me.callParent(arguments);
+    },
+
+    getConfigValues: function () {
+        const me = this;
+
+        Ext.Ajax.request({
+            url: '{url controller="viaebConfigForm" action="getConfigValues"}',
+            method: 'POST',
+            timeout: 180000,
+            scope: me,
+            success: function (resp) {
+                const me = this;
+
+                me.configValues = JSON.parse(resp.responseText).data;
+
+                me.configCollection.each(function (form) {
+                    const me = this;
+
+                    form.getForm().getFields().each(me.resetFieldValues, me);
+                }, me);
+            },
+            failure: function () {
+                Shopware.Notification.createGrowlMessage(
+                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                    '{s namespace="backend/afterbuy" name="getConfigValuesError"}Konfigurationsdaten konnten nicht gelesen werden!{/s}',
+                    'Afterbuy Conncetor'
+                );
+            },
+        });
+    },
+
+    resetFieldValues: function (item) {
+        const me = this;
+
+        console.log('dbg');
+
+        if (item.name in me.configValues) {
+            item.setValue(me.configValues[item.name]);
+        }
     },
 
     registerEvents: function () {
@@ -71,16 +111,17 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     createTabPanel: function () {
         const me = this;
 
+        me.configCollection = new Ext.util.MixedCollection();
+        me.configCollection.add(me.createConnectionConfigPanel());
+        me.configCollection.add(me.createGeneralConfigPanel());
+
         return Ext.create('Ext.tab.Panel', {
             layout: {
                 type: 'vbox',
                 align: 'center',
             },
 
-            items: [
-                me.createConnectionConfigPanel(),
-                me.createGeneralConfigPanel(),
-            ],
+            items: me.configCollection.getRange(),
         });
     },
 
@@ -139,18 +180,18 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
-                    defaultType: 'textfield',
+                    defaultType: 'combobox',
                     autoScroll: true,
                     flex: 1,
-                    defaults: {
-                        /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
-                        readOnly: true,
-                        /*{/if}*/
-                        labelStyle: 'font-weight: 700; text-align: right;',
-                        layout: 'anchor',
-                        labelWidth: 130,
-                        anchor: '100%'
-                    },
+                    // defaults: {
+                    //     /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
+                    //     readOnly: true,
+                    //     /*{/if}*/
+                    //     labelStyle: 'font-weight: 700; text-align: right;',
+                    //     layout: 'anchor',
+                    //     labelWidth: 130,
+                    //     anchor: '100%'
+                    // },
                     items: me.getGeneralConfigFields(),
                 }
             ],
@@ -165,24 +206,20 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 name: 'userName',
                 allowBlank: false,
                 checkChangeBuffer: 300,
-                value: '{config name="userName" namespace="viaebShopwareAfterbuy"}',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
                 name: 'userPassword',
                 inputType: 'password',
-                value: '{config name="userPassword" namespace="viaebShopwareAfterbuy"}',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
                 name: 'partnerId',
-                value: '{config name="partnerId" namespace="viaebShopwareAfterbuy"}',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
                 name: 'partnerPassword',
                 inputType: 'password',
-                value: '{config name="partnerPassword" namespace="viaebShopwareAfterbuy"}',
             },
         ];
     },
@@ -190,12 +227,40 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     getGeneralConfigFields: function () {
         return [
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=testfield1_user}Testfield1 label{/s}',
-                name: 'testField1',
-                allowBlank: false,
-                checkChangeBuffer: 300,
-                // value: '{config name="testField1" namespace="viaebShopwareAfterbuy"}',
-                value: 'q',
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
+                store: Ext.create('Ext.data.Store', {
+                    fields: [
+                        'value',
+                        'display',
+                    ],
+                    data: [
+                        { 'value': 1, 'display': 'Shopware' },
+                        { 'value': 2, 'display': 'Afterbuy' },
+                    ]
+                }),
+                queryMode: 'local',
+                displayField: 'display',
+                valueField: 'value',
+                forceSelection: true,
+                name: 'mainSystem',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
+                store: Ext.create('Ext.data.Store', {
+                    fields: [
+                        'value',
+                        'display',
+                    ],
+                    data: [
+                        { 'value': 1, 'display': 'Ja' },
+                        { 'value': 0, 'display': 'Nein' },
+                    ]
+                }),
+                queryMode: 'local',
+                displayField: 'display',
+                valueField: 'value',
+                forceSelection: true,
+                name: 'ExportAllArticles',
             },
         ];
     },

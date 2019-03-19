@@ -109,7 +109,8 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
             $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
-            $this->configWriter->save('testField1', $_REQUEST['testField1'], $this->pluginName);
+            $this->configWriter->save('mainSystem', intval($_REQUEST['mainSystem']), $this->pluginName);
+            $this->configWriter->save('ExportAllArticles', intval($_REQUEST['ExportAllArticles']), $this->pluginName);
         }
         catch (Exception $e) {
             $this->View()->assign([

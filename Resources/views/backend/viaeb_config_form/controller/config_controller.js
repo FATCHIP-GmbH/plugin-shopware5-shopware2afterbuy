@@ -22,16 +22,78 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
 
     init: function () {
         const me = this;
+
+        console.log('dbg1');
+
         me.configWindow = me.getView('ConfigWindow').create();
 
         me.control({
             'window[id=config_window]': {
-                'saveAfterbuyConfig': me.saveAfterbuyConfig,
+                // 'saveAfterbuyConfig': me.saveAfterbuyConfig,
+                'saveAfterbuyConfig': function () {
+                    console.log('received event');
+                },
             }
         })
     },
 
-    saveAfterbuyConfig: function () {
+    saveAfterbuyConfig: function (forms) {
+        // The getForm() method returns the Ext.form.Basic instance:
+        console.log('dbg');
+
+        const me = this;
+
+        let success = true;
+        let message = '';
+
+        for (let index = 0; index < forms.length; index++) {
+            const form = forms[index];
+
+            if (form.isValid()) {
+                // Submit the Ajax request and handle the response
+                form.submit({
+                    failure: function (form, action) {
+                        success = false;
+                    }
+                });
+            }
+        }
+
+        if (success) {
+            message = me.snippets.growlMessageSuccess;
+        } else {
+            message = me.snippets.growlMessageFailureServer;
+        }
+
+        Shopware.Notification.createGrowlMessage(
+            me.snippets.growlTitle,
+            message
+        );
+
+        // // The getForm() method returns the Ext.form.Basic instance:
+        // const form = this.up('form').getForm();
+        // if (form.isValid()) {
+        //     // Submit the Ajax request and handle the response
+        //     form.submit({
+        //         success: function(form, action) {
+        //             Shopware.Notification.createGrowlMessage(
+        //                 '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+        //                 '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
+        //                 'Afterbuy Conncetor'
+        //             );
+        //         },
+        //         failure: function(form, action) {
+        //             Shopware.Notification.createGrowlMessage(
+        //                 '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+        //                 '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
+        //                 'Afterbuy Conncetor'
+        //             );
+        //         }
+        //     });
+        // }
+    },
+
+    saveAfterbuyConfig_: function () {
         const me = this;
 
         Shopware.Notification.createGrowlMessage(

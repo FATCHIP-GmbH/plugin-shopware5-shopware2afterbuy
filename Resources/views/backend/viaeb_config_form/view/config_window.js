@@ -39,218 +39,232 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     initComponent: function () {
         const me = this;
 
+        me.registerEvents();
+
         me.title = me.snippets.title;
 
-        me.items = me.createItems();
+        me.items = me.createForm();
 
         me.callParent(arguments);
     },
 
-    createItems: function () {
+    // createForms: function () {
+    //     const me = this;
+    //
+    //     me.panels = [
+    //         me.createConnectionConfigPanel(),
+    //         me.createGeneralConfigPanel(),
+    //     ];
+    // },
+
+    createForm: function () {
         const me = this;
 
-        return Ext.create('Ext.tab.Panel', {
-            layout: {
-                type: 'vbox',
-                align: 'center',
-            },
-            items: [
-                me.createConnectionConfigForm(),
-                me.createGeneralConfigForm()
-            ],
-        });
-    },
-
-    createGeneralConfigForm: function () {
-        const me = this;
+        // me.createForms();
 
         return Ext.create('Ext.form.Panel', {
-            title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
-            flex: 1,
-            width: '100%',
-            htmlEncode: true,
-            bodyPadding: 10,
-
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                {
-                    xtype: 'fieldset',
-                    title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
-                    defaultType: 'textfield',
-                    autoScroll: true,
-                    flex: 1,
-                    defaults: {
-                        /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
-                        readOnly: true,
-                        /*{/if}*/
-                        labelStyle: 'font-weight: 700; text-align: right;',
-                        layout: 'anchor',
-                        labelWidth: 130,
-                        anchor: '100%'
-                    },
-                    items: me.getGeneralConfigFields(),
-                }
-            ],
-            buttons: me.getConnectionConfigButtons(),
-
-        });
-    },
-
-    createConnectionConfigForm: function () {
-        const me = this;
-
-        return Ext.create('Ext.form.Panel', {
-            title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
-            flex: 1,
-            width: '100%',
-            value: me.snippets.infoText,
-            htmlEncode: true,
-            bodyPadding: 10,
             url: '{url controller="viaebConfigForm" action="saveConnectionConfig"}',
-
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            items: [
-                {
-                    xtype: 'fieldset',
-                    title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
-                    defaultType: 'textfield',
-                    autoScroll: true,
-                    flex: 1,
-                    defaults: {
-                        /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
-                        readOnly: true,
-                        /*{/if}*/
-                        labelStyle: 'font-weight: 700; text-align: right;',
-                        layout: 'anchor',
-                        labelWidth: 130,
-                        anchor: '100%'
-                    },
-                    items: me.getConnectionConfigFields(),
-                }
-            ],
-            buttons: me.getConnectionConfigButtons(),
-        });
-    },
-
-    createStartButton: function () {
-        const me = this;
-
-        return Ext.create('Ext.button.Button', {
-            text: me.snippets.buttonText,
-            cls: 'primary',
-            handler: function () {
-                me.fireEvent('saveAfterbuyConfig');
-            },
-        });
-    },
-
-    getConnectionConfigFields: function () {
-        return [
-            {
+            // items: Ext.create('Ext.tab.Panel', {
+            //     layout: {
+            //         type: 'vbox',
+            //         align: 'center',
+            //     },
+            //
+            //     items: me.panels,
+            // }),
+            items: [{
+                name: 'test',
                 xtype: 'textfield',
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
-                name: 'userName',
-                allowBlank: false,
-                checkChangeBuffer: 300,
-                value: '{config name="userName" namespace="viaebShopwareAfterbuy"}',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
-                name: 'userPassword',
-                inputType: 'password',
-                value: '{config name="userPassword" namespace="viaebShopwareAfterbuy"}',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
-                name: 'partnerId',
-                value: '{config name="partnerId" namespace="viaebShopwareAfterbuy"}',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
-                name: 'partnerPassword',
-                inputType: 'password',
-                value: '{config name="partnerPassword" namespace="viaebShopwareAfterbuy"}',
-            },
-        ];
-    },
-
-    getGeneralConfigFields: function () {
-        return [
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Testfield label{/s}',
-                name: 'testField',
-                allowBlank: false,
-                checkChangeBuffer: 300,
-                value: '{config name="testField" namespace="viaebShopwareAfterbuy"}',
-            },
-        ];
-    },
-
-    getConnectionConfigButtons: function () {
-        return [
-            {
-                text: 'Test',
-                cls: 'button secondary',
-                handler: function() {
-                    // The getForm() method returns the Ext.form.Basic instance:
-                    const form = this.up('form').getForm();
-                    if (form.isValid()) {
-                        // Submit the Ajax request and handle the response
-
-
-                        form.submit({
-                            url: '{url controller="viaebConfigForm" action="testConnectionConfig"}',
-                            success: function(form, action) {
-                                Shopware.Notification.createGrowlMessage(
-                                    '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
-                                    '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
-                                    'Afterbuy Conncetor'
-                                );
-                            },
-                            failure: function(form, action) {
-                                Shopware.Notification.createGrowlMessage(
-                                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
-                                    '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
-                                    'Afterbuy Conncetor'
-                                );
-                            }
-                        });
-                    }
-                }
-            },
-            {
+                fieldLabel: 'test',
+            }],
+            buttons: [{
                 text: 'Submit',
                 cls: 'button primary',
-                handler: function() {
-                    // The getForm() method returns the Ext.form.Basic instance:
-                    const form = this.up('form').getForm();
-                    if (form.isValid()) {
-                        // Submit the Ajax request and handle the response
-                        form.submit({
-                            success: function(form, action) {
-                                Shopware.Notification.createGrowlMessage(
-                                    '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
-                                    '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
-                                    'Afterbuy Conncetor'
-                                );
-                            },
-                            failure: function(form, action) {
-                                Shopware.Notification.createGrowlMessage(
-                                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
-                                    '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
-                                    'Afterbuy Conncetor'
-                                );
-                            }
-                        });
-                    }
-                }
-            },
-        ];
-    }
+                handler: function () {
+                    me.fireEvent('saveAfterbuyConfig', me.items);
+                },
+            }],
+        });
+    },
+
+    // createGeneralConfigPanel: function () {
+    //     const me = this;
+    //
+    //     return Ext.create('Ext.form.Panel', {
+    //         title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
+    //         flex: 1,
+    //         width: '100%',
+    //         htmlEncode: true,
+    //         bodyPadding: 10,
+    //
+    //         layout: {
+    //             type: 'vbox',
+    //             align: 'stretch'
+    //         },
+    //         items: [
+    //             {
+    //                 xtype: 'fieldset',
+    //                 title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
+    //                 defaultType: 'textfield',
+    //                 autoScroll: true,
+    //                 flex: 1,
+    //                 defaults: {
+    //                     /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
+    //                     readOnly: true,
+    //                     /*{/if}*/
+    //                     labelStyle: 'font-weight: 700; text-align: right;',
+    //                     layout: 'anchor',
+    //                     labelWidth: 130,
+    //                     anchor: '100%'
+    //                 },
+    //                 items: me.getGeneralConfigFields(),
+    //             }
+    //         ],
+    //     });
+    // },
+    //
+    // createConnectionConfigPanel: function () {
+    //     const me = this;
+    //
+    //     return Ext.create('Ext.form.Panel', {
+    //         title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
+    //         flex: 1,
+    //         width: '100%',
+    //         value: me.snippets.infoText,
+    //         htmlEncode: true,
+    //         bodyPadding: 10,
+    //
+    //         layout: {
+    //             type: 'vbox',
+    //             align: 'stretch'
+    //         },
+    //         items: [
+    //             {
+    //                 xtype: 'fieldset',
+    //                 title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
+    //                 defaultType: 'textfield',
+    //                 autoScroll: true,
+    //                 flex: 1,
+    //                 defaults: {
+    //                     /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
+    //                     readOnly: true,
+    //                     /*{/if}*/
+    //                     labelStyle: 'font-weight: 700; text-align: right;',
+    //                     layout: 'anchor',
+    //                     labelWidth: 130,
+    //                     anchor: '100%'
+    //                 },
+    //                 items: me.getConnectionConfigFields(),
+    //             }
+    //         ],
+    //     });
+    // },
+    //
+    // createStartButton: function () {
+    //     const me = this;
+    //
+    //     return Ext.create('Ext.button.Button', {
+    //         text: me.snippets.buttonText,
+    //         cls: 'primary',
+    //         handler: function () {
+    //             me.fireEvent('saveAfterbuyConfig');
+    //         },
+    //     });
+    // },
+    //
+    // getConnectionConfigFields: function () {
+    //     return [
+    //         {
+    //             xtype: 'textfield',
+    //             fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
+    //             name: 'userName',
+    //             allowBlank: false,
+    //             checkChangeBuffer: 300,
+    //             value: '{config name="userName" namespace="viaebShopwareAfterbuy"}',
+    //         },
+    //         {
+    //             fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
+    //             name: 'userPassword',
+    //             inputType: 'password',
+    //             value: '{config name="userPassword" namespace="viaebShopwareAfterbuy"}',
+    //         },
+    //         {
+    //             fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
+    //             name: 'partnerId',
+    //             value: '{config name="partnerId" namespace="viaebShopwareAfterbuy"}',
+    //         },
+    //         {
+    //             fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
+    //             name: 'partnerPassword',
+    //             inputType: 'password',
+    //             value: '{config name="partnerPassword" namespace="viaebShopwareAfterbuy"}',
+    //         },
+    //     ];
+    // },
+    //
+    // getGeneralConfigFields: function () {
+    //     return [
+    //         {
+    //             fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Testfield label{/s}',
+    //             name: 'testField',
+    //             allowBlank: false,
+    //             checkChangeBuffer: 300,
+    //             value: '{config name="testField" namespace="viaebShopwareAfterbuy"}',
+    //         },
+    //     ];
+    // },
+
+    registerEvents: function () {
+        this.addEvents(
+            'saveAfterbuyConfig'
+        );
+    },
+
+    // getConnectionConfigButtons: function () {
+    //     return [
+    //         {
+    //             text: 'Test',
+    //             cls: 'button secondary',
+    //             handler: function () {
+    //                 // The getForm() method returns the Ext.form.Basic instance:
+    //                 const form = this.up('form').getForm();
+    //                 if (form.isValid()) {
+    //                     // Submit the Ajax request and handle the response
+    //
+    //
+    //                     form.submit({
+    //                         url: '{url controller="viaebConfigForm" action="testConnectionConfig"}',
+    //                         success: function (form, action) {
+    //                             Shopware.Notification.createGrowlMessage(
+    //                                 '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+    //                                 '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
+    //                                 'Afterbuy Conncetor'
+    //                             );
+    //                         },
+    //                         failure: function (form, action) {
+    //                             Shopware.Notification.createGrowlMessage(
+    //                                 '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+    //                                 '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
+    //                                 'Afterbuy Conncetor'
+    //                             );
+    //                         }
+    //                     });
+    //                 }
+    //             }
+    //         },
+    //         {
+    //             text: 'Submit',
+    //             cls: 'button primary',
+    //             type: 'submit',
+    //             // id: 'abc_button',
+    //             // handler: function () {
+    //             //     const me = this;
+    //             //
+    //             //     console.log('fire event');
+    //             //
+    //             //     me.fireEvent('saveAfterbuyConfig', me.items);
+    //             // }
+    //         },
+    //     ];
+    // }
 });

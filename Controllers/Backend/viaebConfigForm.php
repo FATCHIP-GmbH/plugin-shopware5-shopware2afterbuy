@@ -66,6 +66,36 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         }
     }
 
+    public function getConfigValuesAction() {
+        $query = Shopware()->Container()->get('dbal_connection')->createQueryBuilder();
+
+        $query->select([
+            'element.name',
+            'elementValues.value as value',
+        ]);
+
+        $query->from('s_core_config_elements', 'element', 'element.name')
+            ->leftJoin('element', 's_core_config_values', 'elementValues', 'elementValues.element_id = element.id AND elementValues.shop_id = :shopId')
+            ->setParameter(':shopId', 1);
+
+        $query->innerJoin('element', 's_core_config_forms', 'elementForm', 'elementForm.id = element.form_id')
+            ->andWhere('elementForm.name = :namespace')
+            ->setParameter(':namespace', $this->pluginName);
+
+        $values = $query->execute()->fetchAll();
+
+        $result = [];
+
+        foreach($values as $value) {
+            $result[$value['name']] = empty($value['value']) ? '' : unserialize($value['value']);
+        }
+
+        $this->view->assign([
+            'success' => true,
+            'data' => $result
+        ]);
+    }
+
     public function saveConnectionConfigAction() {
 
         $this->View()->assign([

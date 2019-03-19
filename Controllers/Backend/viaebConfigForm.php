@@ -73,6 +73,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
 
         $query->select([
             'element.name',
+            'element.value as def',
             'elementValues.value as value',
         ]);
 
@@ -89,7 +90,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         $result = [];
 
         foreach($values as $value) {
-            $result[$value['name']] = empty($value['value']) ? '' : unserialize($value['value']);
+            $result[$value['name']] = empty($value['value']) ? unserialize($value['def']) : unserialize($value['value']);
         }
 
         $this->view->assign([

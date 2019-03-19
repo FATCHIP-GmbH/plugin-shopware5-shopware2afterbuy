@@ -67,14 +67,14 @@
             <description>Ist Shopware das führende System, werden entweder alle or nur ausgewählte Artikel an Afterbuy übertragen.</description>
             <store>
                 <option>
+                    <value>0</value>
+                    <label lang="de">Nein</label>
+                    <label lang="en">No</label>
+                </option>
+                <option>
                     <value>1</value>
                     <label lang="de">Ja</label>
                     <label lang="en">Yes</label>
-                </option>
-                <option>
-                    <value>2</value>
-                    <label lang="de">Nein</label>
-                    <label lang="en">No</label>
                 </option>
             </store>
         </element>

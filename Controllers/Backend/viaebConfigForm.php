@@ -76,7 +76,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             'elementValues.value as value',
         ]);
 
-        $query->from('s_core_config_elements', 'element', 'element.name')
+        $query->from('s_core_config_elements', 'element')
             ->leftJoin('element', 's_core_config_values', 'elementValues', 'elementValues.element_id = element.id AND elementValues.shop_id = :shopId')
             ->setParameter(':shopId', 1);
 

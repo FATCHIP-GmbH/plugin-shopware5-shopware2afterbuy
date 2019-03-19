@@ -30,91 +30,66 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
         me.control({
             'window[id=config_window]': {
                 // 'saveAfterbuyConfig': me.saveAfterbuyConfig,
-                'saveAfterbuyConfig': function () {
+                'saveAfterbuyConfig': function (form) {
                     console.log('received event');
+                    me.saveAfterbuyConfig(form);
                 },
             }
         })
     },
 
-    saveAfterbuyConfig: function (forms) {
+    saveAfterbuyConfig: function (form) {
         // The getForm() method returns the Ext.form.Basic instance:
         console.log('dbg');
 
         const me = this;
 
-        let success = true;
-        let message = '';
+        // The getForm() method returns the Ext.form.Basic instance:
+        form = form.getForm();
 
-        for (let index = 0; index < forms.length; index++) {
-            const form = forms[index];
-
-            if (form.isValid()) {
-                // Submit the Ajax request and handle the response
-                form.submit({
-                    failure: function (form, action) {
-                        success = false;
-                    }
-                });
-            }
+        if (form.isValid()) {
+            // Submit the Ajax request and handle the response
+            form.submit({
+                success: function(form, action) {
+                    Shopware.Notification.createGrowlMessage(
+                        '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+                        '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
+                        'Afterbuy Conncetor'
+                    );
+                },
+                failure: function(form, action) {
+                    Shopware.Notification.createGrowlMessage(
+                        '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                        '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
+                        'Afterbuy Conncetor'
+                    );
+                }
+            });
         }
-
-        if (success) {
-            message = me.snippets.growlMessageSuccess;
-        } else {
-            message = me.snippets.growlMessageFailureServer;
-        }
-
-        Shopware.Notification.createGrowlMessage(
-            me.snippets.growlTitle,
-            message
-        );
-
-        // // The getForm() method returns the Ext.form.Basic instance:
-        // const form = this.up('form').getForm();
-        // if (form.isValid()) {
-        //     // Submit the Ajax request and handle the response
-        //     form.submit({
-        //         success: function(form, action) {
-        //             Shopware.Notification.createGrowlMessage(
-        //                 '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
-        //                 '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
-        //                 'Afterbuy Conncetor'
-        //             );
-        //         },
-        //         failure: function(form, action) {
-        //             Shopware.Notification.createGrowlMessage(
-        //                 '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
-        //                 '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
-        //                 'Afterbuy Conncetor'
-        //             );
-        //         }
-        //     });
-        // }
     },
-
-    saveAfterbuyConfig_: function () {
-        const me = this;
-
-        Shopware.Notification.createGrowlMessage(
-            me.snippets.growlTitle,
-            me.snippets.growlMessageStart
-        );
-
-        me.configWindow.close();
-
-        Ext.Ajax.request({
-            url: me.requestUrl,
-            method: 'POST',
-            timeout: 180000,
-            success: function (resp) {
-                me.onSuccess(resp, me);
-            },
-            failure: function (resp) {
-                me.onFailure(resp, me)
-            },
-        });
-    },
+    //
+    // saveAfterbuyConfig_: function () {
+    //     const me = this;
+    //
+    //     Shopware.Notification.createGrowlMessage(
+    //         me.snippets.growlTitle,
+    //         me.snippets.growlMessageStart
+    //     );
+    //
+    //     me.configWindow.close();
+    //
+    //     Ext.Ajax.request({
+    //         url: me.requestUrl,
+    //         method: 'POST',
+    //         timeout: 180000,
+    //         success: function (resp) {
+    //             me.onSuccess(resp, me);
+    //         },
+    //         failure: function (resp) {
+    //             me.onFailure(resp, me)
+    //         },
+    //     });
+    // },
 
     onSuccess: function (resp, me) {
         const response = JSON.parse(resp.responseText);

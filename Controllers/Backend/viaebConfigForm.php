@@ -1,6 +1,8 @@
 <?php
 
 
+use Exception;
+
 class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_Backend_ExtJs
 {
     /** @var \Shopware\Components\ConfigWriter $configWriter */
@@ -77,8 +79,9 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
             $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
+            $this->configWriter->save('testField1', $_REQUEST['testField1'], $this->pluginName);
         }
-        catch (\Exception $e) {
+        catch (Exception $e) {
             $this->View()->assign([
                 'success' => false,
             ]);

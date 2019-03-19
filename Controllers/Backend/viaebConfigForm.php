@@ -8,26 +8,62 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
 
     protected $pluginName;
 
+    /** @var \Shopware\Components\CacheManager */
+    protected $cacheManager;
+
     public function init()
     {
         parent::init();
 
         $this->configWriter = Shopware()->Container()->get('config_writer');
         $this->pluginName = Shopware()->Container()->getParameter('viaeb_shopware_afterbuy.plugin_name');
+        $this->cacheManager = Shopware()->Container()->get('shopware.cache_manager');
     }
 
     public function indexAction()
     {
     }
 
-    public function resetAction()
-    {
+    public function testConnectionConfigAction() {
+        $testService = $this->container->get('viaeb_shopware_afterbuy.services.read_data.external.connection_test_service');
+        $response = $testService->test(array(
+                'partnerId' => $_REQUEST['partnerId'],
+                'userName' => $_REQUEST['userName'],
+                'partnerPassword' => $_REQUEST['partnerPassword'],
+                'userPassword' => $_REQUEST['userPassword']
+            )
+        );
 
-        $this->View()->assign([
-            'success' => $result['msg'] === 'success',
-            'data' => $result['data'],
-            'total' => count($result['data']),
-        ]);
+        if(array_key_exists('AfterbuyTimeStamp', $response['Result'])) {
+            $this->view->assign([
+                'success' => true,
+            ]);
+
+            return;
+        }
+
+        if(array_key_exists('ErrorList', $response['Result']) && array_key_exists('Error', $response['Result']['ErrorList'])) {
+
+            if(array_key_exists('ErrorDescription', $response['Result']['ErrorList']['Error'])) {
+                $error = $response['Result']['ErrorList']['Error']['ErrorDescription'];
+            }
+            else {
+                $error = '';
+
+                foreach($response['Result']['ErrorList']['Error'] as $element) {
+                    $error .= $element['ErrorDescription'];
+                }
+            }
+
+            $this->view->assign([
+                'success' => false,
+                'data' => [
+                    'error' => $error,
+                ],
+            ]);
+
+            return;
+        }
     }
 
     public function saveConnectionConfigAction() {
@@ -48,6 +84,6 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             ]);
         }
 
-        //TODO: clear config cache
+        $this->cacheManager->clearConfigCache();
     }
 }

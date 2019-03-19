@@ -48,4 +48,19 @@ class ConnectionTestService extends AbstractReadDataService implements ReadDataI
         $api = new ApiClient($this->apiConfig);
         return $api->getAfterbuyTime();
     }
+
+    public function test(array $config) {
+        $apiTestConfig = [
+            'afterbuyAbiUrl'               => 'https://api.afterbuy.de/afterbuy/ABInterface.aspx',
+            'afterbuyShopInterfaceBaseUrl' => 'https://api.afterbuy.de/afterbuy/ShopInterfaceUTF8.aspx',
+            'afterbuyPartnerId'            => $config['partnerId'],
+            'afterbuyPartnerPassword'      => $config['partnerPassword'],
+            'afterbuyUsername'             => $config['userName'],
+            'afterbuyUserPassword'         => $config['userPassword'],
+            'logLevel'                     => '1',
+        ];
+
+        $api = new ApiClient($apiTestConfig);
+        return $api->getAfterbuyTime();
+    }
 }

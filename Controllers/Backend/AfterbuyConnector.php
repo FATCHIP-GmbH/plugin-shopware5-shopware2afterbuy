@@ -8,7 +8,19 @@ class Shopware_Controllers_Backend_AfterbuyConnector extends Shopware_Controller
     public function testConnectionAction() {
 
         $testService = $this->container->get('viaeb_shopware_afterbuy.services.read_data.external.connection_test_service');
-        $response = $testService->get(array());
+
+        if($_REQUEST['testdata'] === 1 || $_REQUEST['testdata'] === '1') {
+            $response = $testService->test(array(
+                    'partnerId' => $_REQUEST['partnerId'],
+                    'userName' => $_REQUEST['userName'],
+                    'partnerPassword' => $_REQUEST['partnerPassword'],
+                    'userPassword' => $_REQUEST['userPassword']
+                )
+            );
+        }
+        else {
+            $response = $testService->get(array());
+        }
 
         if(array_key_exists('AfterbuyTimeStamp', $response['Result'])) {
             $this->view->assign([

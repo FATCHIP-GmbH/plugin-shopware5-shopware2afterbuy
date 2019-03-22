@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
@@ -62,6 +63,8 @@ class AbstractHelper
 
     public $mediaStreamContext;
 
+    protected $dbal;
+
     /**
      * @param LoggerInterface $logger
      */
@@ -94,6 +97,11 @@ class AbstractHelper
     public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db): void
     {
         $this->db = $db;
+    }
+
+    public function initDbal(Connection $dbal)
+    {
+        $this->dbal = $dbal;
     }
 
     public function setConfig(CachedConfigReader $configReader, string $pluginName): void

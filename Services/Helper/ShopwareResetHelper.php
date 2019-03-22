@@ -24,6 +24,7 @@ class ShopwareResetHelper extends AbstractHelper
             'data' => [],
         ];
 
+        //TODO: separate into methods (1. reset attributes, 2. reset status)
         // reset all afterbuy attributes
         foreach ($this->entities as $entity) {
             if ($this->resetShopConnectionEntity($entity) !== 'success') {

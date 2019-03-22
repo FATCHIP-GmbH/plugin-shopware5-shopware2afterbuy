@@ -367,6 +367,16 @@
             </call>
         </service>
 
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_config_helper">
+            <argument id="models" type="service"/>
+            <call method="initDbal">
+                <argument type="service" id="dbal_connection"/>
+            </call>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
         <!-- Logger -->
 
         <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="false">

@@ -1,8 +1,6 @@
 <?php
 
 
-use Exception;
-
 class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_Backend_ExtJs
 {
     /** @var \Shopware\Components\ConfigWriter $configWriter */
@@ -13,6 +11,9 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
     /** @var \Shopware\Components\CacheManager */
     protected $cacheManager;
 
+    /** @var \viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper */
+    protected $configHelper;
+
     public function init()
     {
         parent::init();
@@ -20,82 +21,15 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         $this->configWriter = Shopware()->Container()->get('config_writer');
         $this->pluginName = Shopware()->Container()->getParameter('viaeb_shopware_afterbuy.plugin_name');
         $this->cacheManager = Shopware()->Container()->get('shopware.cache_manager');
-    }
-
-    public function indexAction()
-    {
-    }
-
-    public function testConnectionConfigAction() {
-        $testService = $this->container->get('viaeb_shopware_afterbuy.services.read_data.external.connection_test_service');
-        $response = $testService->test(array(
-                'partnerId' => $_REQUEST['partnerId'],
-                'userName' => $_REQUEST['userName'],
-                'partnerPassword' => $_REQUEST['partnerPassword'],
-                'userPassword' => $_REQUEST['userPassword']
-            )
-        );
-
-        if(array_key_exists('AfterbuyTimeStamp', $response['Result'])) {
-            $this->view->assign([
-                'success' => true,
-            ]);
-
-            return;
-        }
-
-        if(array_key_exists('ErrorList', $response['Result']) && array_key_exists('Error', $response['Result']['ErrorList'])) {
-
-            if(array_key_exists('ErrorDescription', $response['Result']['ErrorList']['Error'])) {
-                $error = $response['Result']['ErrorList']['Error']['ErrorDescription'];
-            }
-            else {
-                $error = '';
-
-                foreach($response['Result']['ErrorList']['Error'] as $element) {
-                    $error .= $element['ErrorDescription'];
-                }
-            }
-
-            $this->view->assign([
-                'success' => false,
-                'data' => [
-                    'error' => $error,
-                ],
-            ]);
-
-            return;
-        }
+        $this->configHelper = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.helper.shopware_config_helper');
     }
 
     public function getConfigValuesAction() {
-        $query = Shopware()->Container()->get('dbal_connection')->createQueryBuilder();
-
-        $query->select([
-            'element.name',
-            'element.value as def',
-            'elementValues.value as value',
-        ]);
-
-        $query->from('s_core_config_elements', 'element')
-            ->leftJoin('element', 's_core_config_values', 'elementValues', 'elementValues.element_id = element.id AND elementValues.shop_id = :shopId')
-            ->setParameter(':shopId', 1);
-
-        $query->innerJoin('element', 's_core_config_forms', 'elementForm', 'elementForm.id = element.form_id')
-            ->andWhere('elementForm.name = :namespace')
-            ->setParameter(':namespace', $this->pluginName);
-
-        $values = $query->execute()->fetchAll();
-
-        $result = [];
-
-        foreach($values as $value) {
-            $result[$value['name']] = empty($value['value']) ? unserialize($value['def']) : unserialize($value['value']);
-        }
+        $config = $this->configHelper->getConfigValues($this->pluginName);
 
         $this->view->assign([
             'success' => true,
-            'data' => $result
+            'data' => $config
         ]);
     }
 

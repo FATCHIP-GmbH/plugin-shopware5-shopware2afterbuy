@@ -32,8 +32,62 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                     console.log('received event');
                     me.saveAfterbuyConfig(form);
                 },
+                'testAfterbuyConfig': function (form) {
+                    console.log('received test event');
+                    me.testAfterbuyConfig(form);
+                },
             }
         })
+    },
+
+    testAfterbuyConfig: function (form) {
+        // The getForm() method returns the Ext.form.Basic instance:
+        const me = this;
+
+        // The getForm() method returns the Ext.form.Basic instance:
+        form = form.getForm();
+
+        if (form.isValid()) {
+            // Submit the Ajax request and handle the response
+            form.submit({ url: '{url controller="AfterbuyConnector" action="testConnection"}?testdata=1',
+                success: function(form, action) {
+                    Shopware.Notification.createGrowlMessage(
+                        '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
+                        '{s namespace="backend/afterbuy" name="connection"}Verbindung erfolgreich hergestellt{/s}',
+                        'Afterbuy Conncetor'
+                    );
+                },
+                failure: function(form, action) {
+                    let response = action.response;
+
+                    if(!response) {
+                        Shopware.Notification.createGrowlMessage(
+                            '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                            '{s namespace="backend/afterbuy" name="errorUnknown"}Unbekannter Fehler{/s}',
+                            'Afterbuy Conncetor'
+                        );
+                    }
+
+                    let status = JSON.parse(response.responseText);
+
+                    if(response.responseText == 'Afterbuy Connection not configured!') {
+                        Shopware.Notification.createGrowlMessage(
+                            '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                            response.responseText,
+                            'Afterbuy Conncetor'
+                        );
+
+                        return;
+                    }
+
+                    Shopware.Notification.createGrowlMessage(
+                        '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+                        status.data.error,
+                        'Afterbuy Conncetor'
+                    );
+                }
+            });
+        }
     },
 
     saveAfterbuyConfig: function (form) {

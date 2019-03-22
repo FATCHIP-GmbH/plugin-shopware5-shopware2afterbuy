@@ -103,7 +103,8 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             url: '{url controller="viaebConfigForm" action="saveConnectionConfig"}',
             items: me.createTabPanel(),
             buttons: [
-                me.createSubmitButton()
+                me.createTestButton(),
+                me.createSubmitButton(),
             ],
         });
     },
@@ -269,10 +270,22 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const me = this;
 
         return {
-            text: 'Submit',
+            text: '{s namespace="backend/viaebConfigForm" name=saveButton}Speichern{/s}',
             cls: 'button primary',
             handler: function () {
                 me.fireEvent('saveAfterbuyConfig', me.form);
+            },
+        };
+    },
+
+    createTestButton: function () {
+        const me = this;
+
+        return {
+            text: '{s namespace="backend/viaebConfigForm" name=testButton}Verbindungstest{/s}',
+            cls: 'button secondary',
+            handler: function () {
+                me.fireEvent('testAfterbuyConfig', me.form);
             },
         };
     },

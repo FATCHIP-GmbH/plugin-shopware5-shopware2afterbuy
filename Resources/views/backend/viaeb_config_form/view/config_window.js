@@ -99,6 +99,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
         return Ext.create('Ext.form.Panel', {
             url: '{url controller="viaebConfigForm" action="saveConnectionConfig"}',
+            layout: 'fit',
             items: me.createTabPanel(),
             buttons: [
                 me.createTestButton(),
@@ -116,8 +117,9 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         me.configCollection.add(me.createPaymentMappingConfigPanel());
 
         return Ext.create('Ext.tab.Panel', {
+            layout: 'fit',
             defaults: {
-                flex: 1,
+                overflowY: 'scroll',
                 htmlEncode: true,
                 bodyPadding: 10,
             },
@@ -135,7 +137,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
-                    flex: 1,
                     defaults: {
                         xtype: 'textfield',
                         forceSelection: true,
@@ -179,7 +180,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
-                    defaultType: 'combobox',
                     layout: {
                         type: 'column',
                     },

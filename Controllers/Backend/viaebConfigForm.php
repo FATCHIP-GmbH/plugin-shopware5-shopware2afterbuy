@@ -47,6 +47,9 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('mainSystem', intval($_REQUEST['mainSystem']), $this->pluginName);
             $this->configWriter->save('baseCategory', intval($_REQUEST['baseCategory']), $this->pluginName);
             $this->configWriter->save('ExportAllArticles', intval($_REQUEST['ExportAllArticles']), $this->pluginName);
+            $this->configWriter->save('targetShop', intval($_REQUEST['targetShop']), $this->pluginName);
+            $this->configWriter->save('shipping', intval($_REQUEST['shipping']), $this->pluginName);
+            $this->configWriter->save('customerGroup', intval($_REQUEST['customerGroup']), $this->pluginName);
         }
         catch (Exception $e) {
             $this->View()->assign([

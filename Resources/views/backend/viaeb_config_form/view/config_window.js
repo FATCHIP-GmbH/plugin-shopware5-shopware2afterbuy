@@ -113,6 +113,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         me.configCollection = new Ext.util.MixedCollection();
         me.configCollection.add(me.createConnectionConfigPanel());
         me.configCollection.add(me.createGeneralConfigPanel());
+        me.configCollection.add(me.createPaymentMappingConfigPanel());
 
         return Ext.create('Ext.tab.Panel', {
             layout: {
@@ -131,7 +132,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
             flex: 1,
             width: '100%',
-            // value: me.snippets.infoText,
             htmlEncode: true,
             bodyPadding: 10,
 
@@ -144,16 +144,9 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
                     defaultType: 'textfield',
-                    autoScroll: true,
                     flex: 1,
                     defaults: {
-                        /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
-                        readOnly: true,
-                        /*{/if}*/
-                        labelStyle: 'font-weight: 700; text-align: right;',
-                        layout: 'anchor',
-                        labelWidth: 130,
-                        anchor: '100%'
+                        forceSelection: true,
                     },
                     items: me.createConnectionConfigFields(),
                 }
@@ -185,9 +178,41 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                         displayField: 'name',
                         valueField: 'id',
                     },
-                    autoScroll: true,
                     flex: 1,
                     items: me.createGeneralConfigFields(),
+                }
+            ],
+        });
+    },
+
+    createPaymentMappingConfigPanel: function () {
+        const me = this;
+
+        return Ext.create('Ext.form.Panel', {
+            title: '{s namespace="backend/viaebConfigForm" name="config_payment_mapping_title"}Zahlungsarten Zuordnungen{/s}',
+            flex: 1,
+            width: '100%',
+            htmlEncode: true,
+            bodyPadding: 10,
+
+            layout: {
+                type: 'vbox',
+                align: 'stretch'
+            },
+            autoScroll: true,
+            items: [
+                {
+                    xtype: 'fieldset',
+                    title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
+                    defaultType: 'combobox',
+                    defaults: {
+                        forceSelection: true,
+                        displayField: 'description',
+                        valueField: 'id',
+                        store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                    },
+                    flex: 1,
+                    items: me.createPaymentMappingConfigFields(),
                 }
             ],
         });
@@ -259,7 +284,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return [
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
-                store: this.createSystemsStore(),
+                store: me.createSystemsStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
@@ -272,7 +297,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
-                store: this.createYesNoStore(),
+                store: me.createYesNoStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
@@ -292,6 +317,79 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
                 store: me.createRemoteStore(Shopware.apps.Base.store.CustomerGroup),
                 name: 'customerGroup',
+            },
+        ];
+    },
+
+    createPaymentMappingConfigFields: function () {
+        return [
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE}Zahlart RECHNUNG{/s}',
+                name: 'paymentINVOICE',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD}Zahlart KREDIT KARTE{/s}',
+                name: 'paymentCREDIT_CARD',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT}Zahlart LASTSCHRIFT{/s}',
+                name: 'paymentDIRECT_DEBIT',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentTRANSFER}Zahlart ÜBERWEISUNG{/s}',
+                name: 'paymentTRANSFER',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCASH_PAID}Zahlart BARZAHLUNG{/s}',
+                name: 'paymentCASH_PAID',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCASH_ON_DELIVERY}Zahlart NACHNAME{/s}',
+                name: 'paymentCASH_ON_DELIVERY',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentPAYPAL}Zahlart PAYPAL{/s}',
+                name: 'paymentPAYPAL',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE_TRANSFER}Zahlart RECHNUNG ÜBERWEISUNG{/s}',
+                name: 'paymentINVOICE_TRANSFER',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCLICKANDBUY}Zahlart CLICK AND BUY{/s}',
+                name: 'paymentCLICKANDBUY',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentEXPRESS_CREDITWORTHINESS}Zahlart ???{/s}',
+                name: 'paymentEXPRESS_CREDITWORTHINESS',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentPAYNET}Zahlart PAYNET{/s}',
+                name: 'paymentPAYNET',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCOD_CREDITWORTHINESS}Zahlart ???{/s}',
+                name: 'paymentCOD_CREDITWORTHINESS',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentEBAY_EXPRESS}Zahlart EBAY EXPRESS{/s}',
+                name: 'paymentEBAY_EXPRESS',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentMONEYBOOKERS}Zahlart MONEYBOOKERS{/s}',
+                name: 'paymentMONEYBOOKERS',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD_MB}Zahlart KREDIT KARTE MONEYBOOKERS{/s}',
+                name: 'paymentCREDIT_CARD_MB',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT_MB}Zahlart LASTSCHRIFT MONEYBOOKERS{/s}',
+                name: 'paymentDIRECT_DEBIT_MB',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentOTHERS}Zahlart ANDERE{/s}',
+                name: 'paymentOTHERS',
             },
         ];
     },

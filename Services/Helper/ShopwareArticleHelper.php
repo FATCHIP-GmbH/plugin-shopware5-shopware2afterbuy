@@ -1282,7 +1282,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         foreach ($columnConfig['data'] as $index => $entity) {
             if ($entity['field'] === 'afterbuyId') {
                 $columnConfig['data'][$index]['show'] = true;
-            } elseif ($entity['field'] === 'afterbuyExportEnabled' && $config['mainSystem'] != 2) {
+            } elseif ($entity['field'] === 'afterbuyExportEnabled' && $config['mainSystem'] != 2 && $config['ExportAllArticles'] == 0) {
                 $columnConfig['data'][$index]['show'] = true;
                 $columnConfig['data'][$index]['type'] = 'boolean';
             }

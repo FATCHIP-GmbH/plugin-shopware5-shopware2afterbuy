@@ -223,28 +223,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         ];
     },
 
-    getCategoryStore: function () {
-        const store = Ext.create('Shopware.apps.Base.store.Category');
-
-        store.load();
-
-        return store;
-    },
-
-    getYesNoStore: function () {
-        return Ext.create('Ext.data.Store', {
-            fields: [
-                'value',
-                'display',
-            ],
-            data: [
-                { 'value': 1, 'display': 'Ja' },
-                { 'value': 0, 'display': 'Nein' },
-            ]
-        });
-    },
-
-    getSystemsStore: function () {
+    createSystemsStore: function () {
         return Ext.create('Ext.data.Store', {
             fields: [
                 'value',
@@ -257,8 +236,21 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         });
     },
 
-    getShopStore: function () {
-        const store = Ext.create('Shopware.apps.Base.store.Shop');
+    createYesNoStore: function () {
+        return Ext.create('Ext.data.Store', {
+            fields: [
+                'value',
+                'display',
+            ],
+            data: [
+                { 'value': 1, 'display': 'Ja' },
+                { 'value': 0, 'display': 'Nein' },
+            ]
+        });
+    },
+
+    createRemoteStore: function(storeCls) {
+        const store = Ext.create(storeCls);
 
         store.load();
 
@@ -271,7 +263,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return [
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
-                store: this.getSystemsStore(),
+                store: this.createSystemsStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
@@ -280,7 +272,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
-                store: me.getCategoryStore(),
+                store: me.createRemoteStore('Shopware.apps.Base.store.Category'),
                 displayField: 'name',
                 valueField: 'id',
                 forceSelection: true,
@@ -288,7 +280,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
-                store: this.getYesNoStore(),
+                store: this.createYesNoStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
@@ -297,11 +289,27 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
-                store: me.getShopStore(),
+                store: me.createRemoteStore('Shopware.apps.Base.store.Shop'),
                 displayField: 'name',
                 valueField: 'id',
                 forceSelection: true,
                 name: 'targetShop',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=shipping}Versandart{/s}',
+                store: me.createRemoteStore(Shopware.apps.Base.store.Dispatch),
+                displayField: 'name',
+                valueField: 'id',
+                forceSelection: true,
+                name: 'shipping',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
+                store: me.createRemoteStore(Shopware.apps.Base.store.CustomerGroup),
+                displayField: 'name',
+                valueField: 'id',
+                forceSelection: true,
+                name: 'customerGroup',
             },
         ];
     },

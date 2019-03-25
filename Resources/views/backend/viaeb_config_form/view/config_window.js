@@ -155,7 +155,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                         labelWidth: 130,
                         anchor: '100%'
                     },
-                    items: me.getConnectionConfigFields(),
+                    items: me.createConnectionConfigFields(),
                 }
             ],
         });
@@ -180,24 +180,20 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
                     defaultType: 'combobox',
+                    defaults: {
+                        forceSelection: true,
+                        displayField: 'name',
+                        valueField: 'id',
+                    },
                     autoScroll: true,
                     flex: 1,
-                    // defaults: {
-                    //     /*{if !{acl_is_allowed privilege=create} && !{acl_is_allowed privilege=update}}*/
-                    //     readOnly: true,
-                    //     /*{/if}*/
-                    //     labelStyle: 'font-weight: 700; text-align: right;',
-                    //     layout: 'anchor',
-                    //     labelWidth: 130,
-                    //     anchor: '100%'
-                    // },
-                    items: me.getGeneralConfigFields(),
+                    items: me.createGeneralConfigFields(),
                 }
             ],
         });
     },
 
-    getConnectionConfigFields: function () {
+    createConnectionConfigFields: function () {
         return [
             {
                 xtype: 'textfield',
@@ -257,7 +253,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return store;
     },
 
-    getGeneralConfigFields: function () {
+    createGeneralConfigFields: function () {
         const me = this;
 
         return [
@@ -267,15 +263,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
-                forceSelection: true,
                 name: 'mainSystem',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
-                store: me.createRemoteStore('Shopware.apps.Base.store.Category'),
-                displayField: 'name',
-                valueField: 'id',
-                forceSelection: true,
+                store: me.createRemoteStore(Shopware.apps.Base.store.Category),
                 name: 'baseCategory',
             },
             {
@@ -284,31 +276,21 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
-                forceSelection: true,
                 name: 'ExportAllArticles',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
-                store: me.createRemoteStore('Shopware.apps.Base.store.Shop'),
-                displayField: 'name',
-                valueField: 'id',
-                forceSelection: true,
+                store: me.createRemoteStore(Shopware.apps.Base.store.Shop),
                 name: 'targetShop',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=shipping}Versandart{/s}',
                 store: me.createRemoteStore(Shopware.apps.Base.store.Dispatch),
-                displayField: 'name',
-                valueField: 'id',
-                forceSelection: true,
                 name: 'shipping',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
                 store: me.createRemoteStore(Shopware.apps.Base.store.CustomerGroup),
-                displayField: 'name',
-                valueField: 'id',
-                forceSelection: true,
                 name: 'customerGroup',
             },
         ];
@@ -337,52 +319,4 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
         };
     },
-
-    // getConnectionConfigButtons: function () {
-    //     return [
-    //         {
-    //             text: 'Test',
-    //             cls: 'button secondary',
-    //             handler: function () {
-    //                 // The getForm() method returns the Ext.form.Basic instance:
-    //                 const form = this.up('form').getForm();
-    //                 if (form.isValid()) {
-    //                     // Submit the Ajax request and handle the response
-    //
-    //
-    //                     form.submit({
-    //                         url: '{url controller="viaebConfigForm" action="testConnectionConfig"}',
-    //                         success: function (form, action) {
-    //                             Shopware.Notification.createGrowlMessage(
-    //                                 '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
-    //                                 '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
-    //                                 'Afterbuy Conncetor'
-    //                             );
-    //                         },
-    //                         failure: function (form, action) {
-    //                             Shopware.Notification.createGrowlMessage(
-    //                                 '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
-    //                                 '{s namespace="backend/afterbuy" name="saveConnectionError"}Verbindungsdaten konnten nicht gespeichert werden!{/s}',
-    //                                 'Afterbuy Conncetor'
-    //                             );
-    //                         }
-    //                     });
-    //                 }
-    //             }
-    //         },
-    //         {
-    //             text: 'Submit',
-    //             cls: 'button primary',
-    //             type: 'submit',
-    //             // id: 'abc_button',
-    //             // handler: function () {
-    //             //     const me = this;
-    //             //
-    //             //     console.log('fire event');
-    //             //
-    //             //     me.fireEvent('saveAfterbuyConfig', me.items);
-    //             // }
-    //         },
-    //     ];
-    // }
 });

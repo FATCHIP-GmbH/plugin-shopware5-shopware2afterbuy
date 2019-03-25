@@ -231,22 +231,47 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return store;
     },
 
+    getYesNoStore: function () {
+        return Ext.create('Ext.data.Store', {
+            fields: [
+                'value',
+                'display',
+            ],
+            data: [
+                { 'value': 1, 'display': 'Ja' },
+                { 'value': 0, 'display': 'Nein' },
+            ]
+        });
+    },
+
+    getSystemsStore: function () {
+        return Ext.create('Ext.data.Store', {
+            fields: [
+                'value',
+                'display',
+            ],
+            data: [
+                { 'value': 1, 'display': 'Shopware' },
+                { 'value': 2, 'display': 'Afterbuy' },
+            ]
+        });
+    },
+
+    getShopStore: function () {
+        const store = Ext.create('Shopware.apps.Base.store.Shop');
+
+        store.load();
+
+        return store;
+    },
+
     getGeneralConfigFields: function () {
         const me = this;
 
         return [
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
-                store: Ext.create('Ext.data.Store', {
-                    fields: [
-                        'value',
-                        'display',
-                    ],
-                    data: [
-                        { 'value': 1, 'display': 'Shopware' },
-                        { 'value': 2, 'display': 'Afterbuy' },
-                    ]
-                }),
+                store: this.getSystemsStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
@@ -256,7 +281,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
                 store: me.getCategoryStore(),
-                hiddenName: 'baseCategory',
                 displayField: 'name',
                 valueField: 'id',
                 forceSelection: true,
@@ -264,21 +288,20 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
-                store: Ext.create('Ext.data.Store', {
-                    fields: [
-                        'value',
-                        'display',
-                    ],
-                    data: [
-                        { 'value': 1, 'display': 'Ja' },
-                        { 'value': 0, 'display': 'Nein' },
-                    ]
-                }),
+                store: this.getYesNoStore(),
                 queryMode: 'local',
                 displayField: 'display',
                 valueField: 'value',
                 forceSelection: true,
                 name: 'ExportAllArticles',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
+                store: me.getShopStore(),
+                displayField: 'name',
+                valueField: 'id',
+                forceSelection: true,
+                name: 'targetShop',
             },
         ];
     },

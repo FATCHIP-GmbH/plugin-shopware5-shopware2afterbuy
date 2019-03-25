@@ -83,8 +83,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     resetFieldValues: function (item) {
         const me = this;
 
-        console.log('dbg');
-
         if (item.name in me.configValues) {
             item.setValue(me.configValues[item.name]);
         }
@@ -225,7 +223,17 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         ];
     },
 
+    getCategoryStore: function () {
+        const store = Ext.create('Shopware.apps.Base.store.Category');
+
+        store.load();
+
+        return store;
+    },
+
     getGeneralConfigFields: function () {
+        const me = this;
+
         return [
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
@@ -244,6 +252,15 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 valueField: 'value',
                 forceSelection: true,
                 name: 'mainSystem',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
+                store: me.getCategoryStore(),
+                hiddenName: 'baseCategory',
+                displayField: 'name',
+                valueField: 'id',
+                forceSelection: true,
+                name: 'baseCategory',
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',

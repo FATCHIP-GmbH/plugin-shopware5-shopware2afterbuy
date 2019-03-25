@@ -8,7 +8,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     },
 
     height: 420,
-    width: 500,
+    width: 900,
     border: true,
     layout: 'fit',
     autoShow: true,
@@ -116,9 +116,10 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         me.configCollection.add(me.createPaymentMappingConfigPanel());
 
         return Ext.create('Ext.tab.Panel', {
-            layout: {
-                type: 'vbox',
-                align: 'center',
+            defaults: {
+                flex: 1,
+                htmlEncode: true,
+                bodyPadding: 10,
             },
 
             items: me.configCollection.getRange(),
@@ -130,23 +131,15 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
-            flex: 1,
-            width: '100%',
-            htmlEncode: true,
-            bodyPadding: 10,
-
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
             items: [
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
-                    defaultType: 'textfield',
                     flex: 1,
                     defaults: {
+                        xtype: 'textfield',
                         forceSelection: true,
+                        allowBlank: false,
                     },
                     items: me.createConnectionConfigFields(),
                 }
@@ -159,26 +152,17 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
-            flex: 1,
-            width: '100%',
-            htmlEncode: true,
-            bodyPadding: 10,
-
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
             items: [
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
-                    defaultType: 'combobox',
                     defaults: {
+                        xtype: 'combobox',
                         forceSelection: true,
+                        allowBlank: false,
                         displayField: 'name',
                         valueField: 'id',
                     },
-                    flex: 1,
                     items: me.createGeneralConfigFields(),
                 }
             ],
@@ -187,32 +171,46 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
     createPaymentMappingConfigPanel: function () {
         const me = this;
+        const fields = me.createPaymentMappingConfigFields();
 
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_payment_mapping_title"}Zahlungsarten Zuordnungen{/s}',
-            flex: 1,
-            width: '100%',
-            htmlEncode: true,
-            bodyPadding: 10,
-
-            layout: {
-                type: 'vbox',
-                align: 'stretch'
-            },
-            autoScroll: true,
             items: [
                 {
                     xtype: 'fieldset',
                     title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
                     defaultType: 'combobox',
-                    defaults: {
-                        forceSelection: true,
-                        displayField: 'description',
-                        valueField: 'id',
-                        store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                    layout: {
+                        type: 'column',
                     },
-                    flex: 1,
-                    items: me.createPaymentMappingConfigFields(),
+                    defaults: {
+                        columnWidth: 0.5,
+                        xtype: 'container',
+                    },
+                    items: [
+                        {
+                            defaults: {
+                                xtype: 'combo',
+                                forceSelection: true,
+                                allowBlank: false,
+                                displayField: 'description',
+                                valueField: 'id',
+                                store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                            },
+                            items: fields.slice(0, fields.length / 2),
+                        },
+                        {
+                            defaults: {
+                                xtype: 'combo',
+                                forceSelection: true,
+                                allowBlank: false,
+                                displayField: 'description',
+                                valueField: 'id',
+                                store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                            },
+                            items: fields.slice(fields.length / 2),
+                        },
+                    ],
                 }
             ],
         });
@@ -224,8 +222,6 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 xtype: 'textfield',
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
                 name: 'userName',
-                allowBlank: false,
-                checkChangeBuffer: 300,
             },
             {
                 fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',

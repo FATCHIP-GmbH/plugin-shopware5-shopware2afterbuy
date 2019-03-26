@@ -15,25 +15,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
 
         me.items = [
             {
-                defaults: {
-                    xtype: 'combo',
-                    forceSelection: true,
-                    allowBlank: false,
-                    displayField: 'description',
-                    valueField: 'id',
-                    store: me.defaultStore,
-                },
+                defaults: me.childDefaults,
                 items: leftFields,
             },
             {
-                defaults: {
-                    xtype: 'combo',
-                    forceSelection: true,
-                    allowBlank: false,
-                    displayField: 'description',
-                    valueField: 'id',
-                    store: me.defaultStore,
-                },
+                defaults: me.childDefaults,
                 items: rightFields,
             },
         ];

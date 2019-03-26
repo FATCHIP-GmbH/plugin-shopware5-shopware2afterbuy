@@ -134,16 +134,15 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
             items: [
-                {
-                    xtype: 'fieldset',
+                Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
                     title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
-                    defaults: {
+                    childDefaults: {
                         xtype: 'textfield',
                         forceSelection: true,
                         allowBlank: false,
                     },
                     items: me.createConnectionConfigFields(),
-                }
+                }),
             ],
         });
     },
@@ -154,10 +153,9 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
             items: [
-                {
-                    xtype: 'fieldset',
+                Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
                     title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
-                    defaults: {
+                    childDefaults: {
                         xtype: 'combobox',
                         forceSelection: true,
                         allowBlank: false,
@@ -165,7 +163,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                         valueField: 'id',
                     },
                     items: me.createGeneralConfigFields(),
-                }
+                }),
             ],
         });
     },
@@ -179,35 +177,18 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             items: [
                 Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
                     title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
-                    defaultStore: me.createRemoteStore(Shopware.apps.Base.store.Payment),
                     items: fields,
+                    childDefaults: {
+                        xtype: 'combo',
+                        forceSelection: true,
+                        allowBlank: false,
+                        displayField: 'description',
+                        valueField: 'id',
+                        store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                    },
                 }),
             ],
         });
-    },
-
-    createConnectionConfigFields: function () {
-        return [
-            {
-                xtype: 'textfield',
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
-                name: 'userName',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
-                name: 'userPassword',
-                inputType: 'password',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
-                name: 'partnerId',
-            },
-            {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
-                name: 'partnerPassword',
-                inputType: 'password',
-            },
-        ];
     },
 
     createSystemsStore: function () {
@@ -242,6 +223,30 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         store.load();
 
         return store;
+    },
+
+    createConnectionConfigFields: function () {
+        return [
+            {
+                xtype: 'textfield',
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
+                name: 'userName',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
+                name: 'userPassword',
+                inputType: 'password',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
+                name: 'partnerId',
+            },
+            {
+                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
+                name: 'partnerPassword',
+                inputType: 'password',
+            },
+        ];
     },
 
     createGeneralConfigFields: function () {

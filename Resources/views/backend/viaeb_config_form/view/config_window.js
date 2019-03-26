@@ -17,6 +17,37 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         no: '{s namespace="backend/viaebConfigForm" name=no}nein{/s}',
         shopware: '{s namespace="backend/viaebConfigForm" name=shopware}Shopware{/s}',
         afterbuy: '{s namespace="backend/viaebConfigForm" name=afterbuy}Afterbuy{/s}',
+        label_user: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
+        label_userpw: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
+        label_partnerid: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
+        label_partnerpw: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
+        mainSystem: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
+        baseCategory: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
+        ExportAllArticles: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
+        targetShop: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
+        shipping: '{s namespace="backend/viaebConfigForm" name=shipping}Versandart{/s}',
+        customerGroup: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
+        saveButton: '{s namespace="backend/viaebConfigForm" name=saveButton}Speichern{/s}',
+        testButton: '{s namespace="backend/viaebConfigForm" name=testButton}Verbindungstest{/s}',
+        payment: {
+            INVOICE: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE}Vorkasse / Überweisung{/s}',
+            CREDIT_CARD: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD}Kreditkarte{/s}',
+            DIRECT_DEBIT: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT}Bankeinzug{/s}',
+            TRANSFER: '{s namespace="backend/viaebConfigForm" name=paymentTRANSFER}Überweisung{/s}',
+            CASH_PAID: '{s namespace="backend/viaebConfigForm" name=paymentCASH_PAID}Bar / Abholung{/s}',
+            CASH_ON_DELIVERY: '{s namespace="backend/viaebConfigForm" name=paymentCASH_ON_DELIVERY}Nachnahme{/s}',
+            PAYPAL: '{s namespace="backend/viaebConfigForm" name=paymentPAYPAL}PayPal{/s}',
+            INVOICE_TRANSFER: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE_TRANSFER}Überweisung / Rechnung{/s}',
+            CLICKANDBUY: '{s namespace="backend/viaebConfigForm" name=paymentCLICKANDBUY}ClickAndBuy{/s}',
+            EXPRESS_CREDITWORTHINESS: '{s namespace="backend/viaebConfigForm" name=paymentEXPRESS_CREDITWORTHINESS}Expresskauf / Bonicheck{/s}',
+            PAYNET: '{s namespace="backend/viaebConfigForm" name=paymentPAYNET}Sofortüberweisung (PayNet){/s}',
+            COD_CREDITWORTHINESS: '{s namespace="backend/viaebConfigForm" name=paymentCOD_CREDITWORTHINESS}Nachnahme / Bonicheck{/s}',
+            EBAY_EXPRESS: '{s namespace="backend/viaebConfigForm" name=paymentEBAY_EXPRESS}Ebay Express{/s}',
+            MONEYBOOKERS: '{s namespace="backend/viaebConfigForm" name=paymentMONEYBOOKERS}Moneybookers{/s}',
+            CREDIT_CARD_MB: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD_MB}Kreditkarte Moneybookers{/s}',
+            DIRECT_DEBIT_MB: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT_MB}Lastschrift Moneybookers{/s}',
+            OTHERS: '{s namespace="backend/viaebConfigForm" name=paymentOTHERS}Sonstige{/s}',
+        },
     },
 
     height: 600,
@@ -260,23 +291,25 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     },
 
     createConnectionConfigFields: function () {
+        const me = this;
+
         return [
             {
                 xtype: 'textfield',
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
+                fieldLabel: me.snippets.label_user,
                 name: 'userName',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
+                fieldLabel: me.snippets.label_userpw,
                 name: 'userPassword',
                 inputType: 'password',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
+                fieldLabel: me.snippets.label_partnerid,
                 name: 'partnerId',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
+                fieldLabel: me.snippets.label_partnerpw,
                 name: 'partnerPassword',
                 inputType: 'password',
             },
@@ -288,7 +321,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
         return [
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
+                fieldLabel: me.snippets.mainSystem,
                 store: me.createSystemsStore(),
                 queryMode: 'local',
                 displayField: 'display',
@@ -296,12 +329,12 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 name: 'mainSystem',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
+                fieldLabel: me.snippets.baseCategory,
                 store: me.createRemoteStore(Shopware.apps.Base.store.Category),
                 name: 'baseCategory',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
+                fieldLabel: me.snippets.ExportAllArticles,
                 store: me.createYesNoStore(),
                 queryMode: 'local',
                 displayField: 'display',
@@ -309,17 +342,17 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 name: 'ExportAllArticles',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
+                fieldLabel: me.snippets.targetShop,
                 store: me.createRemoteStore(Shopware.apps.Base.store.Shop),
                 name: 'targetShop',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=shipping}Versandart{/s}',
+                fieldLabel: me.snippets.shipping,
                 store: me.createRemoteStore(Shopware.apps.Base.store.Dispatch),
                 name: 'shipping',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
+                fieldLabel: me.snippets.customerGroup,
                 store: me.createRemoteStore(Shopware.apps.Base.store.CustomerGroup),
                 name: 'customerGroup',
             },
@@ -327,73 +360,75 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     },
 
     createPaymentMappingConfigFields: function () {
+        const me = this;
+
         return [
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE}Zahlart RECHNUNG{/s}',
+                fieldLabel: me.snippets.payment.INVOICE,
                 name: 'paymentINVOICE',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD}Zahlart KREDIT KARTE{/s}',
+                fieldLabel: me.snippets.payment.CREDIT_CARD,
                 name: 'paymentCREDIT_CARD',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT}Zahlart LASTSCHRIFT{/s}',
+                fieldLabel: me.snippets.payment.DIRECT_DEBIT,
                 name: 'paymentDIRECT_DEBIT',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentTRANSFER}Zahlart ÜBERWEISUNG{/s}',
+                fieldLabel: me.snippets.payment.TRANSFER,
                 name: 'paymentTRANSFER',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCASH_PAID}Zahlart BARZAHLUNG{/s}',
+                fieldLabel: me.snippets.payment.CASH_PAID,
                 name: 'paymentCASH_PAID',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCASH_ON_DELIVERY}Zahlart NACHNAME{/s}',
+                fieldLabel: me.snippets.payment.CASH_ON_DELIVERY,
                 name: 'paymentCASH_ON_DELIVERY',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentPAYPAL}Zahlart PAYPAL{/s}',
+                fieldLabel: me.snippets.payment.PAYPAL,
                 name: 'paymentPAYPAL',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentINVOICE_TRANSFER}Zahlart RECHNUNG ÜBERWEISUNG{/s}',
+                fieldLabel: me.snippets.payment.INVOICE_TRANSFER,
                 name: 'paymentINVOICE_TRANSFER',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCLICKANDBUY}Zahlart CLICK AND BUY{/s}',
+                fieldLabel: me.snippets.payment.CLICKANDBUY,
                 name: 'paymentCLICKANDBUY',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentEXPRESS_CREDITWORTHINESS}Zahlart ???{/s}',
+                fieldLabel: me.snippets.payment.EXPRESS_CREDITWORTHINESS,
                 name: 'paymentEXPRESS_CREDITWORTHINESS',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentPAYNET}Zahlart PAYNET{/s}',
+                fieldLabel: me.snippets.payment.PAYNET,
                 name: 'paymentPAYNET',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCOD_CREDITWORTHINESS}Zahlart ???{/s}',
+                fieldLabel: me.snippets.payment.COD_CREDITWORTHINESS,
                 name: 'paymentCOD_CREDITWORTHINESS',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentEBAY_EXPRESS}Zahlart EBAY EXPRESS{/s}',
+                fieldLabel: me.snippets.payment.EBAY_EXPRESS,
                 name: 'paymentEBAY_EXPRESS',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentMONEYBOOKERS}Zahlart MONEYBOOKERS{/s}',
+                fieldLabel: me.snippets.payment.MONEYBOOKERS,
                 name: 'paymentMONEYBOOKERS',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentCREDIT_CARD_MB}Zahlart KREDIT KARTE MONEYBOOKERS{/s}',
+                fieldLabel: me.snippets.payment.CREDIT_CARD_MB,
                 name: 'paymentCREDIT_CARD_MB',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentDIRECT_DEBIT_MB}Zahlart LASTSCHRIFT MONEYBOOKERS{/s}',
+                fieldLabel: me.snippets.payment.DIRECT_DEBIT_MB,
                 name: 'paymentDIRECT_DEBIT_MB',
             },
             {
-                fieldLabel: '{s namespace="backend/viaebConfigForm" name=paymentOTHERS}Zahlart ANDERE{/s}',
+                fieldLabel: me.snippets.payment.OTHERS,
                 name: 'paymentOTHERS',
             },
         ];
@@ -403,7 +438,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const me = this;
 
         return {
-            text: '{s namespace="backend/viaebConfigForm" name=saveButton}Speichern{/s}',
+            text: me.snippets.saveButton,
             cls: 'button primary',
             handler: function () {
                 me.fireEvent('saveAfterbuyConfig', me.form);
@@ -415,7 +450,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const me = this;
 
         return {
-            text: '{s namespace="backend/viaebConfigForm" name=testButton}Verbindungstest{/s}',
+            text: me.snippets.testButton,
             cls: 'button secondary',
             handler: function () {
                 me.fireEvent('testAfterbuyConfig', me.form);

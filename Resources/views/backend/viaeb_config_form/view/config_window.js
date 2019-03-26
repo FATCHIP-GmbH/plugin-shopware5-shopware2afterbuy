@@ -4,7 +4,19 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     id: 'config_window',
 
     snippets: {
-        title: '{s namespace="backend/viaebConfigForm" name="config_window_title"}Konfiguration{/s}',
+        config_window_title: '{s namespace="backend/viaebConfigForm" name="config_window_title"}Konfiguration{/s}',
+        error: '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
+        getConfigValuesError: '{s namespace="backend/afterbuy" name="getConfigValuesError"}Konfigurationsdaten konnten nicht gelesen werden!{/s}',
+        config_connection_title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
+        connection_settings: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
+        config_general_title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
+        general_settings: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
+        config_payment_mapping_title: '{s namespace="backend/viaebConfigForm" name="config_payment_mapping_title"}Zahlungsarten Zuordnungen{/s}',
+        payment_mapping: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
+        yes: '{s namespace="backend/viaebConfigForm" name=yes}ja{/s}',
+        no: '{s namespace="backend/viaebConfigForm" name=no}nein{/s}',
+        shopware: '{s namespace="backend/viaebConfigForm" name=shopware}Shopware{/s}',
+        afterbuy: '{s namespace="backend/viaebConfigForm" name=afterbuy}Afterbuy{/s}',
     },
 
     height: 600,
@@ -42,7 +54,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
         me.registerEvents();
 
-        me.title = me.snippets.title;
+        me.title = me.snippets.config_window_title;
 
         me.form = me.createForm();
 
@@ -72,8 +84,8 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             },
             failure: function () {
                 Shopware.Notification.createGrowlMessage(
-                    '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
-                    '{s namespace="backend/afterbuy" name="getConfigValuesError"}Konfigurationsdaten konnten nicht gelesen werden!{/s}',
+                    me.snippets.error,
+                    me.snippets.getConfigValuesError,
                     'Afterbuy Conncetor'
                 );
             },
@@ -132,10 +144,10 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const me = this;
 
         return Ext.create('Ext.form.Panel', {
-            title: '{s namespace="backend/viaebConfigForm" name="config_connection_title"}Verbindung{/s}',
+            title: me.snippets.config_connection_title,
             items: [
                 Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
-                    title: '{s namespace="backend/viaebConfigForm" name=connection_settings}Verbindungsdaten{/s}',
+                    title: me.snippets.connection_settings,
                     childDefaults: {
                         xtype: 'textfield',
                         forceSelection: true,
@@ -151,10 +163,10 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const me = this;
 
         return Ext.create('Ext.form.Panel', {
-            title: '{s namespace="backend/viaebConfigForm" name="config_general_title"}Allg. Einstellungen{/s}',
+            title: me.snippets.config_general_title,
             items: [
                 Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
-                    title: '{s namespace="backend/viaebConfigForm" name=general_settings}Einstellungen{/s}',
+                    title: me.snippets.general_settings,
                     childDefaults: {
                         xtype: 'combobox',
                         forceSelection: true,
@@ -173,10 +185,10 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         const fields = me.createPaymentMappingConfigFields();
 
         return Ext.create('Ext.form.Panel', {
-            title: '{s namespace="backend/viaebConfigForm" name="config_payment_mapping_title"}Zahlungsarten Zuordnungen{/s}',
+            title: me.snippets.config_payment_mapping_title,
             items: [
                 Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
-                    title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
+                    title: me.snippets.payment_mapping,
                     items: fields,
                     childDefaults: {
                         xtype: 'combo',
@@ -192,32 +204,48 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     },
 
     createSystemsStore: function () {
+        const me = this;
+
         return Ext.create('Ext.data.Store', {
             fields: [
                 'value',
                 'display',
             ],
             data: [
-                { 'value': 1, 'display': 'Shopware' },
-                { 'value': 2, 'display': 'Afterbuy' },
+                {
+                    'value': 1,
+                    'display': me.snippets.shopware,
+                },
+                {
+                    'value': 2,
+                    'display': me.snippets.afterbuy,
+                },
             ]
         });
     },
 
     createYesNoStore: function () {
+        const me = this;
+
         return Ext.create('Ext.data.Store', {
             fields: [
                 'value',
                 'display',
             ],
             data: [
-                { 'value': 1, 'display': 'Ja' },
-                { 'value': 0, 'display': 'Nein' },
+                {
+                    'value': 1,
+                    'display': me.snippets.yes,
+                },
+                {
+                    'value': 0,
+                    'display': me.snippets.no,
+                },
             ]
         });
     },
 
-    createRemoteStore: function(storeCls) {
+    createRemoteStore: function (storeCls) {
         const store = Ext.create(storeCls);
 
         store.load();

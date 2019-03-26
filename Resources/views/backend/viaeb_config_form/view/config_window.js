@@ -177,41 +177,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         return Ext.create('Ext.form.Panel', {
             title: '{s namespace="backend/viaebConfigForm" name="config_payment_mapping_title"}Zahlungsarten Zuordnungen{/s}',
             items: [
-                {
-                    xtype: 'fieldset',
+                Ext.create('Shopware.apps.viaebConfigForm.view.ColumnFieldSet', {
                     title: '{s namespace="backend/viaebConfigForm" name=payment_mapping}Zahlungsarten{/s}',
-                    layout: {
-                        type: 'column',
-                    },
-                    defaults: {
-                        columnWidth: 0.5,
-                        xtype: 'container',
-                    },
-                    items: [
-                        {
-                            defaults: {
-                                xtype: 'combo',
-                                forceSelection: true,
-                                allowBlank: false,
-                                displayField: 'description',
-                                valueField: 'id',
-                                store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
-                            },
-                            items: fields.slice(0, fields.length / 2),
-                        },
-                        {
-                            defaults: {
-                                xtype: 'combo',
-                                forceSelection: true,
-                                allowBlank: false,
-                                displayField: 'description',
-                                valueField: 'id',
-                                store: me.createRemoteStore(Shopware.apps.Base.store.Payment),
-                            },
-                            items: fields.slice(fields.length / 2),
-                        },
-                    ],
-                }
+                    defaultStore: me.createRemoteStore(Shopware.apps.Base.store.Payment),
+                    items: fields,
+                }),
             ],
         });
     },

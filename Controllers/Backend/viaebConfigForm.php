@@ -50,6 +50,23 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('targetShop', intval($_REQUEST['targetShop']), $this->pluginName);
             $this->configWriter->save('shipping', intval($_REQUEST['shipping']), $this->pluginName);
             $this->configWriter->save('customerGroup', intval($_REQUEST['customerGroup']), $this->pluginName);
+            $this->configWriter->save('paymentINVOICE', intval($_REQUEST['paymentINVOICE']), $this->pluginName);
+            $this->configWriter->save('paymentCREDIT_CARD', intval($_REQUEST['paymentCREDIT_CARD']), $this->pluginName);
+            $this->configWriter->save('paymentDIRECT_DEBIT', intval($_REQUEST['paymentDIRECT_DEBIT']), $this->pluginName);
+            $this->configWriter->save('paymentTRANSFER', intval($_REQUEST['paymentTRANSFER']), $this->pluginName);
+            $this->configWriter->save('paymentCASH_PAID', intval($_REQUEST['paymentCASH_PAID']), $this->pluginName);
+            $this->configWriter->save('paymentCASH_ON_DELIVERY', intval($_REQUEST['paymentCASH_ON_DELIVERY']), $this->pluginName);
+            $this->configWriter->save('paymentPAYPAL', intval($_REQUEST['paymentPAYPAL']), $this->pluginName);
+            $this->configWriter->save('paymentINVOICE_TRANSFER', intval($_REQUEST['paymentINVOICE_TRANSFER']), $this->pluginName);
+            $this->configWriter->save('paymentCLICKANDBUY', intval($_REQUEST['paymentCLICKANDBUY']), $this->pluginName);
+            $this->configWriter->save('paymentEXPRESS_CREDITWORTHINESS', intval($_REQUEST['paymentEXPRESS_CREDITWORTHINESS']), $this->pluginName);
+            $this->configWriter->save('paymentPAYNET', intval($_REQUEST['paymentPAYNET']), $this->pluginName);
+            $this->configWriter->save('paymentCOD_CREDITWORTHINESS', intval($_REQUEST['paymentCOD_CREDITWORTHINESS']), $this->pluginName);
+            $this->configWriter->save('paymentEBAY_EXPRESS', intval($_REQUEST['paymentEBAY_EXPRESS']), $this->pluginName);
+            $this->configWriter->save('paymentMONEYBOOKERS', intval($_REQUEST['paymentMONEYBOOKERS']), $this->pluginName);
+            $this->configWriter->save('paymentCREDIT_CARD_MB', intval($_REQUEST['paymentCREDIT_CARD_MB']), $this->pluginName);
+            $this->configWriter->save('paymentDIRECT_DEBIT_MB', intval($_REQUEST['paymentDIRECT_DEBIT_MB']), $this->pluginName);
+            $this->configWriter->save('paymentOTHERS', intval($_REQUEST['paymentOTHERS']), $this->pluginName);
         }
         catch (Exception $e) {
             $this->View()->assign([

@@ -109,15 +109,21 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
     createForm: function () {
         const me = this;
 
+        me.tabPanel = me.createTabPanel();
+
         return Ext.create('Ext.form.Panel', {
             url: '{url controller="viaebConfigForm" action="saveConnectionConfig"}',
             layout: 'fit',
-            items: me.createTabPanel(),
+            items: me.tabPanel,
             buttons: [
                 me.createTestButton(),
                 me.createSubmitButton(),
             ],
         });
+    },
+
+    setActiveTab: function (index) {
+        this.tabPanel.setActiveTab(index);
     },
 
     createTabPanel: function () {

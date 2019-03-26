@@ -91,13 +91,12 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
 
     saveAfterbuyConfig: function (form) {
         const me = this;
-
         // The getForm() method returns the Ext.form.Basic instance:
-        form = form.getForm();
+        const basicForm = form.getForm();
 
-        if (form.isValid()) {
+        if (basicForm.isValid()) {
             // Submit the Ajax request and handle the response
-            form.submit({
+            basicForm.submit({
                 success: function () {
                     Shopware.Notification.createGrowlMessage(
                         me.snippets.success,
@@ -113,6 +112,18 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                     );
                 }
             });
+        } else {
+            const allForms = form.query("form{ getForm() }");
+
+            let index = 0;
+
+            for (; index < allForms.length; index++) {
+                if (!allForms[index].getForm().isValid()) break;
+            }
+
+            me.configWindow.setActiveTab(index);
+
+            console.log('dbg');
         }
     },
 

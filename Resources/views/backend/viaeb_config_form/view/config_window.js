@@ -7,8 +7,8 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         title: '{s namespace="backend/viaebConfigForm" name="config_window_title"}Konfiguration{/s}',
     },
 
-    height: 420,
-    width: 900,
+    height: 600,
+    width: 800,
     border: true,
     layout: 'fit',
     autoShow: true,

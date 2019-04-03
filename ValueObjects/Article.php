@@ -75,6 +75,9 @@ class Article extends AbstractValueObject
     /** @var string */
     public $weight;
 
+    /** @var string */
+    private $discontinued;
+
     /**
      * @return string
      */
@@ -507,5 +510,21 @@ class Article extends AbstractValueObject
     public function isMainProduct()
     {
         return $this->mainArticleId === null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiscontinued()
+    {
+        return $this->discontinued;
+    }
+
+    /**
+     * @param string $discontinued
+     */
+    public function setDiscontinued(string $discontinued)
+    {
+        $this->discontinued = $discontinued;
     }
 }

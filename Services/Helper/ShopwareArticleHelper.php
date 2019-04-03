@@ -958,6 +958,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->setUnit($unit);
             $articleDetail->setPurchaseUnit($valueArticle->getBasePriceFactor());
             $articleDetail->setSupplierNumber($valueArticle->getSupplierNumber());
+            $articleDetail->setLastStock((int)$valueArticle->getDiscontinued());
+            // to be removed in SW6.0 - deprecated
+            $shopwareArticle->setLastStock((int)$valueArticle->getDiscontinued());
 
             if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);

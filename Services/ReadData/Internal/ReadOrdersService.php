@@ -36,7 +36,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         $this->logger->debug('Receiving orders from shop', $data);
 
         if($this->targetEntity === null) {
-
             return null;
         }
 
@@ -44,13 +43,18 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
         foreach($data as $entity) {
             /**
+             * @var \Shopware\Models\Order\Order $entity
+             */
+
+            /** ignore order if not valid */
+            if($entity->getBilling() === null || $entity->getDetails() === null) {
+                continue;
+            }
+
+            /**
              * @var Order $order
              */
             $order = new $this->targetEntity();
-
-            /**
-             * @var \Shopware\Models\Order\Order $entity
-             */
 
             $positions = new ArrayCollection();
 

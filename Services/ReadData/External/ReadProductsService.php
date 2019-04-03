@@ -67,6 +67,17 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setSupplierNumber($product['ManufacturerPartNumber']);
             $valueArticle->setDiscontinued($product['Discontinued']);
 
+            $valueArticle->setFree1($product['FreeValue1']);
+            $valueArticle->setFree2($product['FreeValue2']);
+            $valueArticle->setFree3($product['FreeValue3']);
+            $valueArticle->setFree4($product['FreeValue4']);
+            $valueArticle->setFree5($product['FreeValue5']);
+            $valueArticle->setFree6($product['FreeValue6']);
+            $valueArticle->setFree7($product['FreeValue7']);
+            $valueArticle->setFree8($product['FreeValue8']);
+            $valueArticle->setFree9($product['FreeValue9']);
+            $valueArticle->setFree10($product['FreeValue10']);
+
             /** @var AfterbuyProductsHelper $helper */
             $helper = $this->helper;
             $helper->addProductPictures($product, $valueArticle);

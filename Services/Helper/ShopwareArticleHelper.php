@@ -951,6 +951,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
+            $articleDetail->setWeight($valueArticle->getWeight());
 
             /** @var ShopwareUnit $unit */
             $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());

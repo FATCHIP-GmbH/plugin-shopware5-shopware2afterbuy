@@ -963,6 +963,17 @@ ON duplicate key update afterbuy_id = $externalId;";
             $this->getArticleAttributes($shopwareArticle, $articleDetail,
                 $valueArticle->getMainArticleId());
 
+            $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_4($valueArticle->getFree4());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_5($valueArticle->getFree5());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_6($valueArticle->getFree6());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_7($valueArticle->getFree7());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
+            $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
+
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
 
             $this->entityManager->persist($shopwareArticle);

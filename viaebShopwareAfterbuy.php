@@ -2,6 +2,8 @@
 
 namespace viaebShopwareAfterbuy;
 
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
@@ -33,25 +35,7 @@ class viaebShopwareAfterbuy extends Plugin
     {
         parent::install($context);
 
-        $service = $this->container->get('shopware_attribute.crud_service');
-
-        $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
-
-        $service->update('s_order_attributes', 'afterbuy_order_id', 'string', [
-            'label' => 'Afterbuy OrderId',
-            'displayInBackend' => true
-        ]);
-
-        $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
-        $service->update('s_articles_attributes', 'afterbuy_id', 'string');
-
-        $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
-            'label' => 'Artikel zu Afterbuy exportieren',
-            'supportText' => 'Wenn "Alle Artikel exportieren" in den Plugineinstellungen deaktiviert ist, werden nur Artikel exportiert, für die diese Funktionalität explizit gesetzt wurde',
-            'displayInBackend' => true,
-        ]);
-
-        Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
+        $this->updateAttributes();
 
         $em = $this->container->get('models');
         $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
@@ -59,6 +43,7 @@ class viaebShopwareAfterbuy extends Plugin
 
         $tableNames = array('afterbuy_status');
 
+        /** @var AbstractSchemaManager $schemaManager */
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         if (!$schemaManager->tablesExist($tableNames)) {
             $tool->createSchema($classes);
@@ -102,8 +87,44 @@ class viaebShopwareAfterbuy extends Plugin
         $tableNames = array('afterbuy_status');
 
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
+        /** @var AbstractSchemaManager $schemaManager */
         if ($schemaManager->tablesExist($tableNames)) {
             $tool->dropSchema($classes);
+        }
+    }
+
+    public function updateAttributes() {
+        $service = $this->container->get('shopware_attribute.crud_service');
+
+        $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
+
+        $service->update('s_order_attributes', 'afterbuy_order_id', 'string', [
+            'label' => 'Afterbuy OrderId',
+            'displayInBackend' => true
+        ]);
+
+        $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
+        $service->update('s_articles_attributes', 'afterbuy_id', 'string');
+
+        $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
+            'label' => 'Artikel zu Afterbuy exportieren',
+            'supportText' => 'Wenn "Alle Artikel exportieren" in den Plugineinstellungen deaktiviert ist, werden nur Artikel exportiert, für die diese Funktionalität explizit gesetzt wurde',
+            'displayInBackend' => true,
+        ]);
+
+        $this->createFreeTextAttributes($service);
+
+        Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
+    }
+
+    public function createFreeTextAttributes(CrudService $service) {
+
+        for($i = 1; $i <= 10; $i++) {
+            $service->update('s_articles_attributes', 'afterbuy_free_text_' . $i, 'string', [
+                'label' => 'Afterbuy Freitext ' . $i,
+                'displayInBackend' => true,
+                'custom' => true
+            ]);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Shopware\Models\Article\Unit as ShopwareUnit;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\ValueObjects\Article;
@@ -951,6 +952,10 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
 
+            /** @var ShopwareUnit $unit */
+            $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());
+            $articleDetail->setUnit($unit);
+
             if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);
                 $shopwareArticle->setActive(true);
@@ -973,6 +978,44 @@ ON duplicate key update afterbuy_id = $externalId;";
             } catch (OptimisticLockException $e) {
             }
         }
+    }
+
+    /**
+     * Returns the ShopwareUnit corresponding to the given unitString. If no unit exists with the given string, a new
+     * one will be created
+     *
+     * @param string $unitString
+     * @return ShopwareUnit
+     */
+    public function getUnitFromString(string $unitString)
+    {
+        $unit = $this->entityManager->getRepository(ShopwareUnit::class)->findOneBy(array('unit' => $unitString));
+
+        if ($unit === null) {
+            $unit = $this->createUnitFromString($unitString);
+        }
+
+        return $unit;
+    }
+
+    /**
+     * @param string $unitString
+     * @return ShopwareUnit
+     */
+    public function createUnitFromString(string $unitString)
+    {
+        $unit = new ShopwareUnit();
+        $unit->setUnit($unitString);
+        $unit->setName($unitString);
+
+        $this->entityManager->persist($unit);
+        try {
+            $this->entityManager->flush();
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving unit', array($unit));
+        }
+
+        return $unit;
     }
 
     /**

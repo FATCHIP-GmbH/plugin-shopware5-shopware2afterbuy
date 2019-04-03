@@ -51,12 +51,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             /**
              * @var ValueArticle $valueArticle
              */
-//            Maßeinheit:                               UnitOfQuantity
-//            Inhalt:                                   BasepriceFactor
-//            Grundeinheit:
-//            Herstellernummer:                         ProductBrand
-//            Gewicht:                                  Weight
-//            Checkbox Abverkauf wurde nicht gesetzt:
             $valueArticle = new $this->targetEntity();
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);

@@ -961,6 +961,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->setLastStock((int)$valueArticle->getDiscontinued());
             // to be removed in SW6.0 - deprecated
             $shopwareArticle->setLastStock((int)$valueArticle->getDiscontinued());
+            $articleDetail->setReferenceUnit(1);
 
             if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);

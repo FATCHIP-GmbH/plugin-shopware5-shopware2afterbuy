@@ -956,8 +956,8 @@ ON duplicate key update afterbuy_id = $externalId;";
             /** @var ShopwareUnit $unit */
             $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());
             $articleDetail->setUnit($unit);
-
             $articleDetail->setPurchaseUnit($valueArticle->getBasePriceFactor());
+            $articleDetail->setSupplierNumber($valueArticle->getSupplierNumber());
 
             if ($valueArticle->isActive()) {
                 $articleDetail->setActive(1);

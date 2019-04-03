@@ -70,6 +70,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setUnitOfQuantity($product['UnitOfQuantity']);
             $valueArticle->setBasePriceFactor($product['BasepriceFactor']);
             $valueArticle->setWeight($product['Weight']);
+            $valueArticle->setSupplierNumber($product['ManufacturerPartNumber']);
 
             /** @var AfterbuyProductsHelper $helper */
             $helper = $this->helper;

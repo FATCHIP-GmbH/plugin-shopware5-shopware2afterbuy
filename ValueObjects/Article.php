@@ -66,6 +66,63 @@ class Article extends AbstractValueObject
 
     public $externalCategoryIds = [];
 
+    /** @var string */
+    public $unitOfQuantity;
+
+    /** @var string */
+    public $basePriceFactor;
+
+    /** @var string */
+    public $weight;
+
+    /**
+     * @return string
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param string $weight
+     */
+    public function setWeight(string $weight)
+    {
+        $this->weight = $weight;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBasePriceFactor()
+    {
+        return $this->basePriceFactor;
+    }
+
+    /**
+     * @param string $basePriceFactor
+     */
+    public function setBasePriceFactor(string $basePriceFactor)
+    {
+        $this->basePriceFactor = $basePriceFactor;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnitOfQuantity()
+    {
+        return $this->unitOfQuantity;
+    }
+
+    /**
+     * @param string $unitOfQuantity
+     */
+    public function setUnitOfQuantity(string $unitOfQuantity)
+    {
+        $this->unitOfQuantity = $unitOfQuantity;
+    }
+
     /**
      * @var string
      */

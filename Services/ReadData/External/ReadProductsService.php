@@ -51,6 +51,12 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             /**
              * @var ValueArticle $valueArticle
              */
+//            Maßeinheit:                               UnitOfQuantity
+//            Inhalt:                                   BasepriceFactor
+//            Grundeinheit:
+//            Herstellernummer:                         ProductBrand
+//            Gewicht:                                  Weight
+//            Checkbox Abverkauf wurde nicht gesetzt:
             $valueArticle = new $this->targetEntity();
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);
@@ -61,6 +67,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setStockMin((int)$product['MinimumStock']);
             $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
             $valueArticle->setDescription($product['Description']);
+            $valueArticle->setUnitOfQuantity($product['UnitOfQuantity']);
+            $valueArticle->setBasePriceFactor($product['BasepriceFactor']);
+            $valueArticle->setWeight($product['Weight']);
 
             /** @var AfterbuyProductsHelper $helper */
             $helper = $this->helper;

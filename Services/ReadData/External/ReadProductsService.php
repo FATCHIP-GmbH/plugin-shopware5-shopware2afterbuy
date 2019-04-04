@@ -66,6 +66,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setWeight($product['Weight']);
             $valueArticle->setSupplierNumber($product['ManufacturerPartNumber']);
             $valueArticle->setDiscontinued($product['Discontinued']);
+            $valueArticle->setAnr($product['Anr']);
 
             $valueArticle->setFree1($product['FreeValue1']);
             $valueArticle->setFree2($product['FreeValue2']);

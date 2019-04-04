@@ -78,6 +78,8 @@ class Article extends AbstractValueObject
     /** @var string */
     private $discontinued;
 
+    public $anr;
+
     /**
      * @return string
      */
@@ -539,6 +541,24 @@ class Article extends AbstractValueObject
     {
         $this->discontinued = $discontinued;
     }
+
+    /**
+     * @return string
+     */
+    public function getAnr()
+    {
+        return $this->anr;
+    }
+
+    /**
+     * @param string $anr
+     */
+    public function setAnr(string $anr)
+    {
+        $this->anr = $anr;
+    }
+
+
 
     /**
      * @return mixed

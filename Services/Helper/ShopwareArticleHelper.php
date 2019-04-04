@@ -975,6 +975,8 @@ ON duplicate key update afterbuy_id = $externalId;";
             $this->getArticleAttributes($shopwareArticle, $articleDetail,
                 $valueArticle->getMainArticleId());
 
+            $articleDetail->getAttribute()->setAfterbuyInternalNumber($valueArticle->getAnr());
+
             $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
             $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
             $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());

@@ -75,6 +75,7 @@ class viaebShopwareAfterbuy extends Plugin
         $service->delete('s_articles_attributes', 'afterbuy_parent_id');
         $service->delete('s_articles_attributes', 'afterbuy_id');
         $service->delete('s_articles_attributes', 'afterbuy_export_enabled');
+        $service->delete('s_articles_attributes', 'afterbuy_internal_number');
 
         Shopware()->Models()->generateAttributeModels(['s_categories_attributes', 's_order_attributes', 's_articles_attributes']);
     }
@@ -104,6 +105,12 @@ class viaebShopwareAfterbuy extends Plugin
         ]);
 
         $service->update('s_articles_attributes', 'afterbuy_parent_id', 'string');
+
+        $service->update('s_articles_attributes', 'afterbuy_internal_number', 'string', [
+            'label' => 'Afterbuy interne Artikelnummer',
+            'displayInBackend' => true
+        ]);
+
         $service->update('s_articles_attributes', 'afterbuy_id', 'string');
 
         $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [

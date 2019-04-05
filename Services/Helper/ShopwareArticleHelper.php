@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Fatchip\Afterbuy\ApiClient;
 use Shopware\Models\Article\Unit as ShopwareUnit;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
@@ -910,6 +911,37 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
+    public function assignArticleProperties($valueArticles, $shopwareArticle) {
+
+        //TODO: 1. check if property for article is already set
+        if (!isset($shopwareArticle->propertyValues)) {
+
+            //TODO: 2. check if property exists in general
+            /** @var ShopwareArticle $shopwareArticle */
+            if ($shopwareArticle->getPropertyGroup()->getId()) {
+                //TODO: 2.1 create property (1. option & group) if not
+                $shopwareArticle->setPropertyGroup();
+
+                $propertyValues = [];
+
+                foreach ($valueArticles->articleProperties as $key => $value) {
+                    $propertyValues = [
+                        'filterGroupId' => 'getId',
+                        'propertyValues' => [
+                            [
+                                'option' => [ 'name' => $key ],
+                                'value' => $value
+                            ],
+                        ]
+                    ];
+                    $shopwareArticle->setPropertyValues($propertyValues);
+                }
+
+                //TODO: 2.2 assign to article
+            }
+        }
+    }
+
     /**
      * @param array $valueArticles
      * @param bool  $netInput
@@ -989,6 +1021,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
 
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
+            $this->assignArticleProperties($valueArticles, $shopwareArticle);
 
             $this->entityManager->persist($shopwareArticle);
 

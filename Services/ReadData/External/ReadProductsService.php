@@ -35,7 +35,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
     {
         $this->logger->debug('Receiving products from afterbuy', $products);
 
-        if ($this->targetEntity === null) {
+         if ($this->targetEntity === null) {
             return array();
         }
 
@@ -48,9 +48,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
-            /**
-             * @var ValueArticle $valueArticle
-             */
+            /** @var ValueArticle $valueArticle */
             $valueArticle = new $this->targetEntity();
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);
@@ -131,6 +129,39 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                         $variants[] = $variant;
                     }
                 }
+            }
+
+            //TODO: set properties if article without variants or is main article
+            if (!$valueArticle->getMainArticleId()) { // empty
+
+                $articleProperties = [];
+                foreach ($product['Attributes']['Attribut'] as $key => $value) {
+
+                    switch ($value['AttributType']) {
+                        case 0:
+                            $value['AttributType'] = 'Text';
+                            break;
+                        case 1:
+                            $value['AttributType'] = 'Textfeld';
+                            break;
+                        case 2:
+                            $value['AttributType'] = 'Dropdown';
+                            break;
+                        case 3:
+                            $value['AttributType'] = 'Link';
+                            break;
+                    }
+
+                    $articleProperties[] = [
+                        'name' => $value['AttributName'],
+                        'value' => $value['AttributValue'],
+                        'type' => $value['AttributType'],
+                        'required' => ($value['AttributRequired'] == '-1') ? false : true,
+                        'position' => $value['AttributPosition'],
+                    ];
+                }
+
+                $valueArticle->setArticleProperties($articleProperties);
             }
 
             if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {

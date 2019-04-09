@@ -1416,21 +1416,9 @@ ON duplicate key update afterbuy_id = $externalId;";
     public function createFilterOption(FilterGroup $filterGroup, string $optionName)
     {
         /** @var FilterOption[] $options */
-        $options = $filterGroup->getOptions();
+        $option = $this->entityManager->getRepository(FilterOption::class)->findOneBy(['name' => $optionName]);
 
-        $optionExists = false;
-
-        $option = null;
-
-        // does option exist in group?
-        foreach ($options as $option) {
-            if ($option->getName() === $optionName) {
-                $optionExists = true;
-                break;
-            }
-        }
-
-        if (!$optionExists) {
+        if ($option === null) {
             // create new option for group
             $option = new FilterOption();
             $option->setName($optionName);
@@ -1442,7 +1430,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             } catch (OptimisticLockException $e) {
                 $this->logger->error('Error saving FilterOption');
             }
+        }
 
+        if (!$option->getGroups()->contains($filterGroup)) {
             $filterGroup->addOption($option);
         }
 

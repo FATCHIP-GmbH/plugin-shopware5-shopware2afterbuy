@@ -929,7 +929,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             $filterOption = $this->createFilterOption($afterbuyGroup, $property['name']);
             $filterValue = $this->createFilterValue($filterOption, $property['value']);
 
-            $shopwareArticle->getPropertyValues()->add($filterValue);
+            if (!$shopwareArticle->getPropertyValues()->contains($filterValue)) {
+                $shopwareArticle->getPropertyValues()->add($filterValue);
+            }
         }
     }
 
@@ -1416,9 +1418,21 @@ ON duplicate key update afterbuy_id = $externalId;";
     public function createFilterOption(FilterGroup $filterGroup, string $optionName)
     {
         /** @var FilterOption[] $options */
-        $option = $this->entityManager->getRepository(FilterOption::class)->findOneBy(['name' => $optionName]);
+//        $option = $this->entityManager->getRepository(FilterOption::class)->findOneBy(['name' => $optionName]);
+        $options = $filterGroup->getOptions();
 
-        if ($option === null) {
+        $option = null;
+
+        $optionIsInGroup = false;
+
+        foreach ($options as $option) {
+            if ($option->getName() === $optionName) {
+                $optionIsInGroup = true;
+                break;
+            }
+        }
+
+        if (!$optionIsInGroup) {
             // create new option for group
             $option = new FilterOption();
             $option->setName($optionName);
@@ -1430,9 +1444,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             } catch (OptimisticLockException $e) {
                 $this->logger->error('Error saving FilterOption');
             }
-        }
 
-        if (!$option->getGroups()->contains($filterGroup)) {
             $filterGroup->addOption($option);
         }
 
@@ -1448,7 +1460,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         /** @var FilterValue $optionValues */
         $filterValue = $this->entityManager->getRepository(FilterValue::class)->findOneBy([
-            'name' => $valueName,
+            'value' => $valueName,
             'optionId' => $option->getId(),
         ]);
 

@@ -1441,30 +1441,21 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param FilterOption $option
-     * @param string $optionValue
+     * @param string $valueName
      * @return FilterValue
      */
-    public function createFilterValue(FilterOption $option, string $optionValue)
+    public function createFilterValue(FilterOption $option, string $valueName)
     {
-        /** @var FilterValue[] $optionValues */
-        $optionValues = $option->getValues();
+        /** @var FilterValue $optionValues */
+        $filterValue = $this->entityManager->getRepository(FilterValue::class)->findOneBy([
+            'name' => $valueName,
+            'optionId' => $option->getId(),
+        ]);
 
-        $valueExists = false;
-
-        $filterValue = null;
-
-        // does value exist in option?
-        foreach ($optionValues as $filterValue) {
-            if ($filterValue->getValue() === $optionValue) {
-                $valueExists = true;
-                break;
-            }
-        }
-
-        if (!$valueExists) {
+        if ($filterValue === null) {
             // create new value for option
             $position = sizeof($option->getValues());
-            $filterValue = new FilterValue($option, $optionValue);
+            $filterValue = new FilterValue($option, $valueName);
             $filterValue->setPosition($position);
 
             $this->entityManager->persist($filterValue);

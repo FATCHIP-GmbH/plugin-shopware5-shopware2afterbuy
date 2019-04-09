@@ -2,8 +2,14 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
 use Fatchip\Afterbuy\ApiClient;
 use Shopware\Models\Article\Unit as ShopwareUnit;
+use Shopware\Models\Property\Group as FilterGroup;
+use Shopware\Models\Property\Option as FilterOption;
+use Shopware\Models\Property\Repository as FilterRepository;
+use Shopware\Models\Property\Value as FilterValue;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\ValueObjects\Article;
@@ -911,34 +917,23 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
-    public function assignArticleProperties($valueArticles, $shopwareArticle) {
+    /**
+     * @param $valueArticle ValueArticle
+     * @param $shopwareArticle ShopwareArticle
+     */
+    public function assignArticleProperties($valueArticle, $shopwareArticle)
+    {
+        $afterbuyGroup = $this->createFilterGroup('Afterbuy');
 
-        //TODO: 1. check if property for article is already set
-        if (!isset($shopwareArticle->propertyValues)) {
+        if ($shopwareArticle->getPropertyGroup() === null) {
+            $shopwareArticle->setPropertyGroup($afterbuyGroup);
+        }
 
-            //TODO: 2. check if property exists in general
-            /** @var ShopwareArticle $shopwareArticle */
-            if ($shopwareArticle->getPropertyGroup()->getId()) {
-                //TODO: 2.1 create property (1. option & group) if not
-                $shopwareArticle->setPropertyGroup();
+        foreach ($valueArticle->getArticleProperties() as $property) {
+            $filterOption = $this->createFilterOption($afterbuyGroup, $property['name']);
+            $filterValue = $this->createFilterValue($filterOption, $property['value']);
 
-                $propertyValues = [];
-
-                foreach ($valueArticles->articleProperties as $key => $value) {
-                    $propertyValues = [
-                        'filterGroupId' => 'getId',
-                        'propertyValues' => [
-                            [
-                                'option' => [ 'name' => $key ],
-                                'value' => $value
-                            ],
-                        ]
-                    ];
-                    $shopwareArticle->setPropertyValues($propertyValues);
-                }
-
-                //TODO: 2.2 assign to article
-            }
+            $shopwareArticle->getPropertyValues()->add($filterValue);
         }
     }
 
@@ -1021,7 +1016,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
 
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
-            $this->assignArticleProperties($valueArticles, $shopwareArticle);
+            $this->assignArticleProperties($valueArticle, $shopwareArticle);
 
             $this->entityManager->persist($shopwareArticle);
 
@@ -1385,5 +1380,113 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         return $columnConfig;
+    }
+
+    /**
+     * @param string $groupName
+     * @return FilterGroup
+     */
+    public function createFilterGroup(string $groupName): FilterGroup
+    {
+        /** @var FilterGroup $filterGroup */
+        $filterGroup = $this->entityManager->getRepository(FilterGroup::class)->findOneBy(
+            ['name' => $groupName]
+        );
+
+        if ($filterGroup === null) {
+            // create new group
+            $filterGroup = new FilterGroup();
+            $filterGroup->setName($groupName);
+            $filterGroup->setPosition(0);
+            $filterGroup->setComparable(0);
+            $filterGroup->setSortMode(0);
+
+            $this->entityManager->persist($filterGroup);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterGroup');
+            }
+        }
+
+        return $filterGroup;
+    }
+
+    /**
+     * @param FilterGroup $filterGroup
+     * @param string $optionName
+     * @return FilterOption
+     */
+    public function createFilterOption(FilterGroup $filterGroup, string $optionName)
+    {
+        $options = $filterGroup->getOptions();
+
+        $optionExists = false;
+
+        $option = null;
+
+        // does option exist in group?
+        foreach ($options as $option) {
+            if ($option->getName() === $optionName) {
+                $optionExists = true;
+                break;
+            }
+        }
+
+        if (!$optionExists) {
+            // create new option for group
+            $option = new FilterOption();
+            $option->setName($optionName);
+            $option->setFilterable(1);
+
+            $this->entityManager->persist($option);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterOption');
+            }
+
+            $filterGroup->addOption($option);
+        }
+
+        return $option;
+    }
+
+    /**
+     * @param FilterOption $option
+     * @param string $optionValue
+     * @return FilterValue
+     */
+    public function createFilterValue(FilterOption $option, string $optionValue)
+    {
+        /** @var FilterValue[] $optionValues */
+        $optionValues = $option->getValues();
+
+        $valueExists = false;
+
+        $filterValue = null;
+
+        // does value exist in option?
+        foreach ($optionValues as $filterValue) {
+            if ($filterValue->getValue() === $optionValue) {
+                $valueExists = true;
+                break;
+            }
+        }
+
+        if (!$valueExists) {
+            // create new value for option
+            $position = sizeof($option->getValues());
+            $filterValue = new FilterValue($option, $optionValue);
+            $filterValue->setPosition($position);
+
+            $this->entityManager->persist($filterValue);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterValue');
+            }
+        }
+        return $filterValue;
     }
 }

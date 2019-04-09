@@ -131,37 +131,11 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 }
             }
 
-            //TODO: set properties if article without variants or is main article
-            if (!$valueArticle->getMainArticleId()) { // empty
-
-                $articleProperties = [];
-                foreach ($product['Attributes']['Attribut'] as $key => $value) {
-
-                    switch ($value['AttributType']) {
-                        case 0:
-                            $value['AttributType'] = 'Text';
-                            break;
-                        case 1:
-                            $value['AttributType'] = 'Textfeld';
-                            break;
-                        case 2:
-                            $value['AttributType'] = 'Dropdown';
-                            break;
-                        case 3:
-                            $value['AttributType'] = 'Link';
-                            break;
-                    }
-
-                    $articleProperties[] = [
-                        'name' => $value['AttributName'],
-                        'value' => $value['AttributValue'],
-                        'type' => $value['AttributType'],
-                        'required' => ($value['AttributRequired'] == '-1') ? false : true,
-                        'position' => $value['AttributPosition'],
-                    ];
-                }
-
-                $valueArticle->setArticleProperties($articleProperties);
+            if (
+                key_exists('BaseProductFlag', $product) and $product['BaseProductFlag'] !== '1'
+                or !key_exists('BaseProductFlag', $product)
+            ) {
+                $helper->readAttributes($valueArticle, $product);
             }
 
             if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {

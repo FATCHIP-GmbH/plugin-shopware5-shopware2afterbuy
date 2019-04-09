@@ -82,7 +82,7 @@ class Article extends AbstractValueObject
     public $anr;
 
     /** @var array */
-    public $articleProperties = [];
+    private $articleProperties = [];
 
     /**
      * @return string

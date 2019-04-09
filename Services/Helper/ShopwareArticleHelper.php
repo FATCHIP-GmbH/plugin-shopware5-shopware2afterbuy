@@ -2,13 +2,9 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\PersistentCollection;
-use Fatchip\Afterbuy\ApiClient;
 use Shopware\Models\Article\Unit as ShopwareUnit;
 use Shopware\Models\Property\Group as FilterGroup;
 use Shopware\Models\Property\Option as FilterOption;
-use Shopware\Models\Property\Repository as FilterRepository;
 use Shopware\Models\Property\Value as FilterValue;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
@@ -63,7 +59,7 @@ class ShopwareArticleHelper extends AbstractHelper
     /** @var ConfiguratorGroup[] */
     private $configuratorGroups;
 
-    public function fixMissingAttribute(ArticleDetail $detail): void
+    public function fixMissingAttribute(ArticleDetail $detail)
     {
         $attr = new ArticlesAttribute();
         $detail->setAttribute($attr);
@@ -344,7 +340,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ArticleDetail   $detail
      * @param array           $variants
      */
-    public function assignVariants(ShopwareArticle &$article, ArticleDetail $detail, array $variants): void
+    public function assignVariants(ShopwareArticle &$article, ArticleDetail $detail, array $variants)
     {
         if ( ! empty($variants)) {
             $groups = $this->getAssignableConfiguratorGroups($variants);
@@ -424,7 +420,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      *
      */
-    public function getConfiguratorOptions(): void
+    public function getConfiguratorOptions()
     {
         $options = $this->entityManager->createQueryBuilder()
             ->select('options')
@@ -441,7 +437,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return Set|null
      */
-    public function getAssignableConfiguratorSet(ShopwareArticle &$article, array $variants): ?Set
+    public function getAssignableConfiguratorSet(ShopwareArticle &$article, array $variants)
     {
         $configuratorSet = null;
 
@@ -655,7 +651,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return ShopwareArticle
      */
-    public function getMainArticle(string $number, string $name, $parent = ''): ?ShopwareArticle
+    public function getMainArticle(string $number, string $name, $parent = '')
     {
         $article = null;
 
@@ -810,7 +806,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      *
      */
-    public function initializeConfiguratorGroupCache(): void
+    public function initializeConfiguratorGroupCache()
     {
         $groups = $this->entityManager->createQueryBuilder()
             ->select('groups')
@@ -904,7 +900,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      */
-    public function setArticlesWithoutAnyActiveVariantToInactive(): void
+    public function setArticlesWithoutAnyActiveVariantToInactive()
     {
         $sql = 'UPDATE s_articles SET active = 0 WHERE id IN (
                 SELECT articleID FROM s_articles_details GROUP BY articleID HAVING BIT_OR(instock) = 0 
@@ -946,7 +942,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         array $valueArticles,
         bool $netInput,
         Group $customerGroup
-    ): void {
+    ) {
         foreach ($valueArticles as $valueArticle) {
             /** @var Article $valueArticle */
 
@@ -1069,7 +1065,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param array $valueArticles
      */
-    public function associateCategories(array $valueArticles): void
+    public function associateCategories(array $valueArticles)
     {
         foreach ($valueArticles as $valueArticle) {
             if ( ! $valueArticle->isMainProduct()) {
@@ -1112,7 +1108,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param ValueArticle[] $valueArticles
      */
-    public function associateImages(array $valueArticles): void
+    public function associateImages(array $valueArticles)
     {
         if ( ! $this->configuratorGroups) {
             $this->initializeConfiguratorGroupCache();
@@ -1152,7 +1148,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         ValueArticle $valueArticle,
         ProductPicture $productPicture,
         ArticleDetail $mainDetail
-    ): void {
+    ) {
         $media = $this->createMediaImage(
             $productPicture->getUrl(),
             'Artikel'
@@ -1227,7 +1223,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         ValueArticle $valueArticle,
         ImageMapping $imageMapping,
         ArticleImage $image
-    ): void {
+    ) {
         foreach ($valueArticle->variants as $variantOption) {
             $optionName = $variantOption['value'];
             $optionGroup = $variantOption['option'];
@@ -1419,6 +1415,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      */
     public function createFilterOption(FilterGroup $filterGroup, string $optionName)
     {
+        /** @var FilterOption[] $options */
         $options = $filterGroup->getOptions();
 
         $optionExists = false;
@@ -1487,6 +1484,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $this->logger->error('Error saving FilterValue');
             }
         }
+
         return $filterValue;
     }
 }

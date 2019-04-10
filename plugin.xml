@@ -9,6 +9,41 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
+    <changelog version="0.9.6">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>added: import of fields for basic price calculation</li>
+                    <li>added: import of attributes</li>
+                    <li>added: import of internal article nr</li>
+                    <li>added: import of free text fields</li>
+                    <li>added: custom config form</li>
+                    <li>added: option for target category</li>
+                    <li>fixed: error on order export</li>
+                </ul>
+            ]]>
+            </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>added: import of fields for basic price calculation</li>
+                    <li>added: import of attributes</li>
+                    <li>added: import of internal article nr</li>
+                    <li>added: import of free text fields</li>
+                    <li>added: custom config form</li>
+                    <li>added: option for target category</li>
+                    <li>fixed: error on order export</li>
+                </ul>
+            ]]></changes>
+    </changelog>
+    <changelog version="0.9.5">
+        <changes lang="de">Fixed Error with category import</changes>
+        <changes lang="en">Fixed Error with category import</changes>
+    </changelog>
+    <changelog version="0.9.4">
+        <changes lang="de">Refactoring</changes>
+        <changes lang="en">Refactoring</changes>
+    </changelog>
     <changelog version="0.9.3">
         <changes lang="de">
             <![CDATA[

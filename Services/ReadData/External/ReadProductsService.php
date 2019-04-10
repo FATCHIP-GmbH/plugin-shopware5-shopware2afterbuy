@@ -66,16 +66,16 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setDiscontinued($product['Discontinued']);
             $valueArticle->setAnr($product['Anr']);
 
-            $valueArticle->setFree2(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
+            $valueArticle->setFree1(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
             $valueArticle->setFree2(key_exists('FreeValue2', $product) ? $product['FreeValue2'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue3', $product) ? $product['FreeValue3'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue4', $product) ? $product['FreeValue4'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue5', $product) ? $product['FreeValue5'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue6', $product) ? $product['FreeValue6'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue7', $product) ? $product['FreeValue7'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue8', $product) ? $product['FreeValue8'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue9', $product) ? $product['FreeValue9'] : '');
-            $valueArticle->setFree2(key_exists('FreeValue10', $product) ? $product['FreeValue10'] : '');
+            $valueArticle->setFree3(key_exists('FreeValue3', $product) ? $product['FreeValue3'] : '');
+            $valueArticle->setFree4(key_exists('FreeValue4', $product) ? $product['FreeValue4'] : '');
+            $valueArticle->setFree5(key_exists('FreeValue5', $product) ? $product['FreeValue5'] : '');
+            $valueArticle->setFree6(key_exists('FreeValue6', $product) ? $product['FreeValue6'] : '');
+            $valueArticle->setFree7(key_exists('FreeValue7', $product) ? $product['FreeValue7'] : '');
+            $valueArticle->setFree8(key_exists('FreeValue8', $product) ? $product['FreeValue8'] : '');
+            $valueArticle->setFree9(key_exists('FreeValue9', $product) ? $product['FreeValue9'] : '');
+            $valueArticle->setFree10(key_exists('FreeValue10', $product) ? $product['FreeValue10'] : '');
 
             /** @var AfterbuyProductsHelper $helper */
             $helper = $this->helper;

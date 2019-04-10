@@ -373,33 +373,42 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      */
     public function readAttributes(ValueArticle $valueArticle, $product)
     {
-        if (!key_exists('Attributes', $product)) return;
-
         $articleProperties = [];
+
+        if(!array_key_exists('Attributes', $product) || !array_key_exists('Attribut', $product['Attributes'])) {
+            return;
+        }
+
         foreach ($product['Attributes']['Attribut'] as $key => $value) {
 
-            switch ($value['AttributType']) {
-                case 0:
-                    $value['AttributType'] = 'Text';
-                    break;
-                case 1:
-                    $value['AttributType'] = 'Textfeld';
-                    break;
-                case 2:
-                    $value['AttributType'] = 'Dropdown';
-                    break;
-                case 3:
-                    $value['AttributType'] = 'Link';
-                    break;
+            if(!is_array($value)) {
+                continue;
             }
 
-            $articleProperties[] = [
-                'name' => $value['AttributName'],
-                'value' => $value['AttributValue'],
-                'type' => $value['AttributType'],
-                'required' => ($value['AttributRequired'] == '-1') ? false : true,
-                'position' => $value['AttributPosition'],
-            ];
+            if(array_key_exists('AttributType', $value)) {
+                switch ($value['AttributType']) {
+                    case 0:
+                        $value['AttributType'] = 'Text';
+                        break;
+                    case 1:
+                        $value['AttributType'] = 'Textfeld';
+                        break;
+                    case 2:
+                        $value['AttributType'] = 'Dropdown';
+                        break;
+                    case 3:
+                        $value['AttributType'] = 'Link';
+                        break;
+                }
+
+                $articleProperties[] = [
+                    'name' => $value['AttributName'],
+                    'value' => $value['AttributValue'],
+                    'type' => $value['AttributType'],
+                    'required' => ($value['AttributRequired'] == '-1') ? false : true,
+                    'position' => $value['AttributPosition'],
+                ];
+            }
         }
 
         $valueArticle->setArticleProperties($articleProperties);

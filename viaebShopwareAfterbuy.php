@@ -9,6 +9,7 @@ use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Shopware\Components\Plugin\Context\UpdateContext;
 
 /**
  * Shopware-Plugin FatchipAfterbuy.
@@ -24,6 +25,15 @@ class viaebShopwareAfterbuy extends Plugin
         $container->setParameter('viaeb_shopware_afterbuy.plugin_name', $this->getName());
 
         parent::build($container);
+    }
+
+    /**
+     * @param UpdateContext $context
+     */
+    public function update(UpdateContext $context) {
+        parent::update($context);
+
+        $this->updateAttributes();
     }
 
     /**

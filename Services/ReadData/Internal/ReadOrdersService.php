@@ -21,7 +21,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $filter
      * @return array|null
      */
-    public function get(array $filter) :?array {
+    public function get(array $filter) {
         $data = $this->read($filter);
         return $this->transform($data);
     }
@@ -32,7 +32,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $data
      * @return array|null
      */
-    public function transform(array $data) :?array {
+    public function transform(array $data) {
         $this->logger->debug('Receiving orders from shop', $data);
 
         if($this->targetEntity === null) {
@@ -161,7 +161,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      * @param array $filter
      * @return array
      */
-    public function read(array $filter) :?array {
+    public function read(array $filter) {
 
         /**
          * @var Repository $repo

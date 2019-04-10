@@ -21,7 +21,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param array $data
      * @return array|null
      */
-    public function put(array $data) :?array {
+    public function put(array $data) {
         $data = $this->transform($data);
         return $this->send($data);
     }
@@ -34,7 +34,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param array $data
      * @return array
      */
-    public function transform(array $data) :array {
+    public function transform(array $data) {
 
         $this->logger->debug('Storing ' . count($data) . ' items.', array($data));
 

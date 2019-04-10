@@ -29,7 +29,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @return array
      */
-    public function put(array $valueCategories) :?array
+    public function put(array $valueCategories)
     {
         $catalogs = $this->transform($valueCategories);
 
@@ -55,7 +55,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      *
      * @return array
      */
-    public function send($catalogs) :?array
+    public function send($catalogs)
     {
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig, $this->logger);

@@ -55,12 +55,12 @@ class AbstractDataService {
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
-    public function setConfig(CachedConfigReader $configReader, string $pluginName): void
+    public function setConfig(CachedConfigReader $configReader, string $pluginName)
     {
         $this->config = $configReader->getByPluginName($pluginName);
 
@@ -80,7 +80,7 @@ class AbstractDataService {
         ];
     }
 
-    public function registerAPINamespaces(string $path): void
+    public function registerAPINamespaces(string $path)
     {
         Shopware()->Container()->get('loader')->registerNamespace(
             'Fatchip\Afterbuy',
@@ -93,14 +93,14 @@ class AbstractDataService {
      * @param string $identifier
      * @param bool $isAttribute
      */
-    public function initHelper(AbstractHelper $helper, $identifier = '', $isAttribute = false): void
+    public function initHelper(AbstractHelper $helper, $identifier = '', $isAttribute = false)
     {
         $this->helper = $helper;
         $this->identifier = $identifier;
         $this->isAttribute = $isAttribute;
     }
 
-    public function initMediaService(MediaService $mediaService): void
+    public function initMediaService(MediaService $mediaService)
     {
         $this->mediaService = $mediaService;
     }

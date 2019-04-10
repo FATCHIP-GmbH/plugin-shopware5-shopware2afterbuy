@@ -27,7 +27,7 @@ class CategoryTreeNode
     /**
      * @return CategoryTreeNode
      */
-    public function getParent(): string
+    public function getParent()
     {
         return $this->parent;
     }
@@ -43,7 +43,7 @@ class CategoryTreeNode
     /**
      * @return ValueCategory
      */
-    public function getValueCategory(): ValueCategory
+    public function getValueCategory()
     {
         return $this->valueCategory;
     }

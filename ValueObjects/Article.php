@@ -571,7 +571,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free1
      */
-    public function setFree1($free1): void
+    public function setFree1($free1)
     {
         $this->free1 = $free1;
     }
@@ -587,7 +587,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free2
      */
-    public function setFree2($free2): void
+    public function setFree2($free2)
     {
         $this->free2 = $free2;
     }
@@ -603,7 +603,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free3
      */
-    public function setFree3($free3): void
+    public function setFree3($free3)
     {
         $this->free3 = $free3;
     }
@@ -619,7 +619,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free4
      */
-    public function setFree4($free4): void
+    public function setFree4($free4)
     {
         $this->free4 = $free4;
     }
@@ -635,7 +635,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free5
      */
-    public function setFree5($free5): void
+    public function setFree5($free5)
     {
         $this->free5 = $free5;
     }
@@ -651,7 +651,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free6
      */
-    public function setFree6($free6): void
+    public function setFree6($free6)
     {
         $this->free6 = $free6;
     }
@@ -667,7 +667,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free7
      */
-    public function setFree7($free7): void
+    public function setFree7($free7)
     {
         $this->free7 = $free7;
     }
@@ -683,7 +683,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free8
      */
-    public function setFree8($free8): void
+    public function setFree8($free8)
     {
         $this->free8 = $free8;
     }
@@ -699,7 +699,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free9
      */
-    public function setFree9($free9): void
+    public function setFree9($free9)
     {
         $this->free9 = $free9;
     }
@@ -715,7 +715,7 @@ class Article extends AbstractValueObject
     /**
      * @param mixed $free10
      */
-    public function setFree10($free10): void
+    public function setFree10($free10)
     {
         $this->free10 = $free10;
     }

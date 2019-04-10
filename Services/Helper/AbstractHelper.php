@@ -68,7 +68,7 @@ class AbstractHelper
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -94,7 +94,7 @@ class AbstractHelper
         $this->attributeGetter = $attributeGetter;
     }
 
-    public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db): void
+    public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db)
     {
         $this->db = $db;
     }
@@ -104,7 +104,7 @@ class AbstractHelper
         $this->dbal = $dbal;
     }
 
-    public function setConfig(CachedConfigReader $configReader, string $pluginName): void
+    public function setConfig(CachedConfigReader $configReader, string $pluginName)
     {
         $this->config = $configReader->getByPluginName($pluginName);
     }
@@ -118,7 +118,7 @@ class AbstractHelper
      *
      * @return ModelEntity|null
      */
-    public function getEntity(string $identifier, string $field, $isAttribute = false, $create = true): ?ModelEntity
+    public function getEntity(string $identifier, string $field, $isAttribute = false, $create = true)
     {
         if ($isAttribute === true) {
             $entity = $this->getEntityByAttribute($identifier, $field);
@@ -138,7 +138,7 @@ class AbstractHelper
      *
      * @return Tax
      */
-    public function getTax(float $rate): ?Tax
+    public function getTax(float $rate)
     {
 
         $rate_s = number_format($rate, 2);
@@ -160,7 +160,7 @@ class AbstractHelper
     /**
      * @param float $rate
      */
-    public function createTax(float $rate): void
+    public function createTax(float $rate)
     {
         $tax = new Tax();
         $tax->setTax($rate);
@@ -174,7 +174,7 @@ class AbstractHelper
         }
     }
 
-    public function getTaxes(): void
+    public function getTaxes()
     {
         $taxes = $this->entityManager->createQueryBuilder()
             ->select('taxes')
@@ -224,7 +224,7 @@ class AbstractHelper
      *
      * @return ModelEntity
      */
-    public function createEntity(string $identifier, string $field, $isAttribute = false): ModelEntity
+    public function createEntity(string $identifier, string $field, $isAttribute = false)
     {
         $entity = new $this->entity();
 
@@ -248,7 +248,7 @@ class AbstractHelper
      * @param ModelEntity $entity
      * @param             $isAttribute
      */
-    public function setIdentifier(string $identifier, string $field, ModelEntity $entity, $isAttribute): void
+    public function setIdentifier(string $identifier, string $field, ModelEntity $entity, $isAttribute)
     {
 
         $setter = Helper::getSetterByField($field);
@@ -306,7 +306,7 @@ class AbstractHelper
         return $raw;
     }
 
-    public function initMediaService(MediaService $mediaService): void
+    public function initMediaService(MediaService $mediaService)
     {
         $this->mediaService = $mediaService;
     }

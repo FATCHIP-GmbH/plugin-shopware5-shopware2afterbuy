@@ -18,7 +18,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $images
      * @return array
      */
-    public function buildAfterbuyImages(array $images): array
+    public function buildAfterbuyImages(array $images)
     {
         $productPictures = [];
 
@@ -52,7 +52,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $afterbuyProductIds
      * @return array
      */
-    public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = []): array
+    public function submitAfterbuyVariantProducts(array $data, ApiClient $api, $afterbuyProductIds = [])
     {
         foreach ($data as $value) {
 
@@ -82,7 +82,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $value
      * @return array
      */
-    public function buildAfterbuyVariant(Article $variant, Article $value): array
+    public function buildAfterbuyVariant(Article $variant, Article $value)
     {
         $variants = $this->buildAfterbuyVariantOptions($variant);
         $variantImages = $this->buildAfterbuyImages($variant->getProductPictures());
@@ -122,7 +122,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $variant
      * @return array
      */
-    public function buildAfterbuyVariantOptions(Article $variant): array
+    public function buildAfterbuyVariantOptions(Article $variant)
     {
         $variants = [];
 
@@ -181,7 +181,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $afterbuyProductIds
      * @return array
      */
-    public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds): array
+    public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds)
     {
 
         $variantArticles = [];
@@ -211,7 +211,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param $ids
      * @return array
      */
-    public function buildAfterbuyCatalogAssignment($ids): array
+    public function buildAfterbuyCatalogAssignment($ids)
     {
         $catalogs = [];
 
@@ -235,7 +235,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param array $afterbuyProductIds
      * @return array
      */
-    public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = []): array
+    public function submitAfterbuySimpleProducts(array $data, ApiClient $api, $afterbuyProductIds = [])
     {
         $products = array(
             'Products' => array(
@@ -266,7 +266,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param ApiClient $api
      * @param array $afterbuyProductIds
      */
-    public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = []): void
+    public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = [])
     {
 
         if(count($products['Products'])) {
@@ -299,7 +299,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      * @param Article $value
      * @return array
      */
-    public function buildAfterbuySimpleProduct(Article $value): array
+    public function buildAfterbuySimpleProduct(Article $value)
     {
         $product = array(
             'Product' => array(

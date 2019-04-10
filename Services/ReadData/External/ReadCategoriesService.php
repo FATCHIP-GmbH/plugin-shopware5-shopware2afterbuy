@@ -15,7 +15,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return array|null
      */
-    public function get(array $filter) :?array
+    public function get(array $filter)
     {
         $data = $this->read($filter);
 
@@ -29,7 +29,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
      *
      * @return array|null
      */
-    public function transform(array $data) :?array
+    public function transform(array $data)
     {
         $this->logger->debug('Receiving categories from afterbuy', $data);
 

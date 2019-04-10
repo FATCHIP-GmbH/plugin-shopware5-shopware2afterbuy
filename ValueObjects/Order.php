@@ -180,7 +180,7 @@ class Order extends AbstractValueObject {
         $this->customerNumber = $customerNumber;
     }
 
-    public function addNetAmount(float $value, int $quantity): void
+    public function addNetAmount(float $value, int $quantity)
     {
         $this->amountNet += $value * $quantity;
     }
@@ -289,7 +289,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getAmount(): float
+    public function getAmount()
     {
         return $this->amount;
     }
@@ -401,7 +401,7 @@ class Order extends AbstractValueObject {
     /**
      * @return float
      */
-    public function getShippingNet(): float
+    public function getShippingNet()
     {
         return $this->shippingNet;
     }

@@ -49,7 +49,7 @@ class ShopwareOrderHelper extends AbstractHelper
         $this->targetGroup = $this->getDefaultGroup();
     }
 
-    public function getABCountryCodes(): array
+    public function getABCountryCodes()
     {
         return array(
             'AF' => 'AFG',
@@ -410,7 +410,7 @@ class ShopwareOrderHelper extends AbstractHelper
      * @param ShopwareOrder $order
      * @param int           $id
      */
-    public function setShippingType(ShopwareOrder &$order, int $id): void
+    public function setShippingType(ShopwareOrder &$order, int $id)
     {
         $order->setDispatch($this->getShippingType($id));
     }
@@ -432,7 +432,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->shippingType;
     }
 
-    public function setPositions(ValueOrder $value, ShopwareOrder &$order): void
+    public function setPositions(ValueOrder $value, ShopwareOrder &$order)
     {
         $details = $order->getDetails();
         $details->clear();
@@ -615,7 +615,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->entityManager->getRepository(Shop::class)->find($id);
     }
 
-    public function getCountries(): array
+    public function getCountries()
     {
         $countries = $this->entityManager->createQueryBuilder()
             ->select('countries')
@@ -626,7 +626,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $countries;
     }
 
-    public function getPaymentStates(): array
+    public function getPaymentStates()
     {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
@@ -642,7 +642,7 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @return array
      */
-    public function getShippingStates(): array
+    public function getShippingStates()
     {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
@@ -655,7 +655,7 @@ class ShopwareOrderHelper extends AbstractHelper
         return $states;
     }
 
-    public function getDetailStates(): array
+    public function getDetailStates()
     {
         $states = $this->entityManager->createQueryBuilder()
             ->select('states')
@@ -669,7 +669,7 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @return array
      */
-    public function getPaymentTypes(): array
+    public function getPaymentTypes()
     {
         $types = $this->entityManager->createQueryBuilder()
             ->select('types')

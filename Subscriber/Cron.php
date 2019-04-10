@@ -96,7 +96,7 @@ class Cron implements SubscriberInterface
         );
     }
 
-    public function updateProducts(\Shopware_Components_Cron_CronJob $job): string
+    public function updateProducts(\Shopware_Components_Cron_CronJob $job)
     {
         $filter = array(
             'categories' => array(),
@@ -121,7 +121,7 @@ class Cron implements SubscriberInterface
         return $output;
     }
 
-    public function updateOrders(\Shopware_Components_Cron_CronJob $job): string
+    public function updateOrders(\Shopware_Components_Cron_CronJob $job)
     {
         $filter = array();
         $output = '';

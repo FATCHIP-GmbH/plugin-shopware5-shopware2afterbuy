@@ -26,7 +26,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
     /**
      * @return ShopwareCategory|null
      */
-    public function getMainCategory() :?ShopwareCategory {
+    public function getMainCategory() {
         $baseCategoryId = 1;
 
         if(array_key_exists('baseCategory', $this->config) && $this->config['baseCategory']) {
@@ -274,7 +274,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      * @param array $ids
      * @throws \Zend_Db_Adapter_Exception
      */
-    public function updateExternalIds(array $ids): void
+    public function updateExternalIds(array $ids)
     {
         $sql = '';
 
@@ -298,7 +298,7 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
      * @param array $response
      * @return array
      */
-    public function getCatalogIdsFromResponse(array $response): array
+    public function getCatalogIdsFromResponse(array $response)
     {
         $catalogIds = [];
 
@@ -336,7 +336,7 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
      * @param array $ids
      * @return array
      */
-    public function getCatalogIdsRecursiveFromResponse($array, &$ids = []): array
+    public function getCatalogIdsRecursiveFromResponse($array, &$ids = [])
     {
 
         if(is_array($array) && array_key_exists('NewCatalog', $array)) {

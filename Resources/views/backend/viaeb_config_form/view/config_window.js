@@ -332,6 +332,8 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 fieldLabel: me.snippets.baseCategory,
                 store: me.createRemoteStore(Shopware.apps.Base.store.Category),
                 name: 'baseCategory',
+                forceSelection: false,
+                allowBlank: true,
             },
             {
                 fieldLabel: me.snippets.ExportAllArticles,

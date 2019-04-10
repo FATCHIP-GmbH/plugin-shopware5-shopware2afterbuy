@@ -3,6 +3,9 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Shopware\Models\Article\Unit as ShopwareUnit;
+use Shopware\Models\Property\Group as FilterGroup;
+use Shopware\Models\Property\Option as FilterOption;
+use Shopware\Models\Property\Value as FilterValue;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\ValueObjects\Article;
@@ -911,6 +914,28 @@ ON duplicate key update afterbuy_id = $externalId;";
     }
 
     /**
+     * @param $valueArticle ValueArticle
+     * @param $shopwareArticle ShopwareArticle
+     */
+    public function assignArticleProperties($valueArticle, $shopwareArticle)
+    {
+        $afterbuyGroup = $this->createFilterGroup('Afterbuy');
+
+        if ($shopwareArticle->getPropertyGroup() === null) {
+            $shopwareArticle->setPropertyGroup($afterbuyGroup);
+        }
+
+        foreach ($valueArticle->getArticleProperties() as $property) {
+            $filterOption = $this->createFilterOption($afterbuyGroup, $property['name']);
+            $filterValue = $this->createFilterValue($filterOption, $property['value']);
+
+            if (!$shopwareArticle->getPropertyValues()->contains($filterValue)) {
+                $shopwareArticle->getPropertyValues()->add($filterValue);
+            }
+        }
+    }
+
+    /**
      * @param array $valueArticles
      * @param bool  $netInput
      * @param Group $customerGroup
@@ -989,6 +1014,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
 
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
+            $this->assignArticleProperties($valueArticle, $shopwareArticle);
 
             $this->entityManager->persist($shopwareArticle);
 
@@ -1352,5 +1378,106 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         return $columnConfig;
+    }
+
+    /**
+     * @param string $groupName
+     * @return FilterGroup
+     */
+    public function createFilterGroup(string $groupName): FilterGroup
+    {
+        /** @var FilterGroup $filterGroup */
+        $filterGroup = $this->entityManager->getRepository(FilterGroup::class)->findOneBy(
+            ['name' => $groupName]
+        );
+
+        if ($filterGroup === null) {
+            // create new group
+            $filterGroup = new FilterGroup();
+            $filterGroup->setName($groupName);
+            $filterGroup->setPosition(0);
+            $filterGroup->setComparable(0);
+            $filterGroup->setSortMode(0);
+
+            $this->entityManager->persist($filterGroup);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterGroup');
+            }
+        }
+
+        return $filterGroup;
+    }
+
+    /**
+     * @param FilterGroup $filterGroup
+     * @param string $optionName
+     * @return FilterOption
+     */
+    public function createFilterOption(FilterGroup $filterGroup, string $optionName)
+    {
+        /** @var FilterOption[] $options */
+//        $option = $this->entityManager->getRepository(FilterOption::class)->findOneBy(['name' => $optionName]);
+        $options = $filterGroup->getOptions();
+
+        $option = null;
+
+        $optionIsInGroup = false;
+
+        foreach ($options as $option) {
+            if ($option->getName() === $optionName) {
+                $optionIsInGroup = true;
+                break;
+            }
+        }
+
+        if (!$optionIsInGroup) {
+            // create new option for group
+            $option = new FilterOption();
+            $option->setName($optionName);
+            $option->setFilterable(1);
+
+            $this->entityManager->persist($option);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterOption');
+            }
+
+            $filterGroup->addOption($option);
+        }
+
+        return $option;
+    }
+
+    /**
+     * @param FilterOption $option
+     * @param string $valueName
+     * @return FilterValue
+     */
+    public function createFilterValue(FilterOption $option, string $valueName)
+    {
+        /** @var FilterValue $optionValues */
+        $filterValue = $this->entityManager->getRepository(FilterValue::class)->findOneBy([
+            'value' => $valueName,
+            'optionId' => $option->getId(),
+        ]);
+
+        if ($filterValue === null) {
+            // create new value for option
+            $position = sizeof($option->getValues());
+            $filterValue = new FilterValue($option, $valueName);
+            $filterValue->setPosition($position);
+
+            $this->entityManager->persist($filterValue);
+            try {
+                $this->entityManager->flush();
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterValue');
+            }
+        }
+
+        return $filterValue;
     }
 }

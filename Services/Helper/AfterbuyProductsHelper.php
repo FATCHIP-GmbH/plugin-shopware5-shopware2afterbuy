@@ -366,4 +366,42 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
         }
     }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param $product
+     */
+    public function readAttributes(ValueArticle $valueArticle, $product)
+    {
+        if (!key_exists('Attributes', $product)) return;
+
+        $articleProperties = [];
+        foreach ($product['Attributes']['Attribut'] as $key => $value) {
+
+            switch ($value['AttributType']) {
+                case 0:
+                    $value['AttributType'] = 'Text';
+                    break;
+                case 1:
+                    $value['AttributType'] = 'Textfeld';
+                    break;
+                case 2:
+                    $value['AttributType'] = 'Dropdown';
+                    break;
+                case 3:
+                    $value['AttributType'] = 'Link';
+                    break;
+            }
+
+            $articleProperties[] = [
+                'name' => $value['AttributName'],
+                'value' => $value['AttributValue'],
+                'type' => $value['AttributType'],
+                'required' => ($value['AttributRequired'] == '-1') ? false : true,
+                'position' => $value['AttributPosition'],
+            ];
+        }
+
+        $valueArticle->setArticleProperties($articleProperties);
+    }
 }

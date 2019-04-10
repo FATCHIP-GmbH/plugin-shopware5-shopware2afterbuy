@@ -78,7 +78,11 @@ class Article extends AbstractValueObject
     /** @var string */
     private $discontinued;
 
+    /** @var string */
     public $anr;
+
+    /** @var array */
+    private $articleProperties = [];
 
     /**
      * @return string
@@ -556,6 +560,22 @@ class Article extends AbstractValueObject
     public function setAnr(string $anr)
     {
         $this->anr = $anr;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArticleProperties()
+    {
+        return $this->articleProperties;
+    }
+
+    /**
+     * @param array $articleProperties
+     */
+    public function setArticleProperties(array $articleProperties)
+    {
+        $this->articleProperties = $articleProperties;
     }
 
 

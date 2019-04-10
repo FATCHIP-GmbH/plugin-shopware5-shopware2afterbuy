@@ -35,7 +35,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
     {
         $this->logger->debug('Receiving products from afterbuy', $products);
 
-        if ($this->targetEntity === null) {
+         if ($this->targetEntity === null) {
             return array();
         }
 
@@ -48,9 +48,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
-            /**
-             * @var ValueArticle $valueArticle
-             */
+            /** @var ValueArticle $valueArticle */
             $valueArticle = new $this->targetEntity();
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);
@@ -68,16 +66,16 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setDiscontinued($product['Discontinued']);
             $valueArticle->setAnr($product['Anr']);
 
-            $valueArticle->setFree1($product['FreeValue1']);
-            $valueArticle->setFree2($product['FreeValue2']);
-            $valueArticle->setFree3($product['FreeValue3']);
-            $valueArticle->setFree4($product['FreeValue4']);
-            $valueArticle->setFree5($product['FreeValue5']);
-            $valueArticle->setFree6($product['FreeValue6']);
-            $valueArticle->setFree7($product['FreeValue7']);
-            $valueArticle->setFree8($product['FreeValue8']);
-            $valueArticle->setFree9($product['FreeValue9']);
-            $valueArticle->setFree10($product['FreeValue10']);
+            $valueArticle->setFree2(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue2', $product) ? $product['FreeValue2'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue3', $product) ? $product['FreeValue3'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue4', $product) ? $product['FreeValue4'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue5', $product) ? $product['FreeValue5'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue6', $product) ? $product['FreeValue6'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue7', $product) ? $product['FreeValue7'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue8', $product) ? $product['FreeValue8'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue9', $product) ? $product['FreeValue9'] : '');
+            $valueArticle->setFree2(key_exists('FreeValue10', $product) ? $product['FreeValue10'] : '');
 
             /** @var AfterbuyProductsHelper $helper */
             $helper = $this->helper;
@@ -131,6 +129,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                         $variants[] = $variant;
                     }
                 }
+            }
+
+            if (
+                key_exists('BaseProductFlag', $product) and $product['BaseProductFlag'] !== '1'
+                or !key_exists('BaseProductFlag', $product)
+            ) {
+                $helper->readAttributes($valueArticle, $product);
             }
 
             if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {

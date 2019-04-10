@@ -1384,7 +1384,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $groupName
      * @return FilterGroup
      */
-    public function createFilterGroup(string $groupName): FilterGroup
+    public function createFilterGroup(string $groupName)
     {
         /** @var FilterGroup $filterGroup */
         $filterGroup = $this->entityManager->getRepository(FilterGroup::class)->findOneBy(

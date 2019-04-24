@@ -967,9 +967,18 @@ ON duplicate key update afterbuy_id = $externalId;";
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
             $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
 
+            $shopwareOrdernumber = $valueArticle->getExternalIdentifier();
+            switch ($this->config['ordernumberMapping']) {
+                case 0:
+                    $shopwareOrdernumber = $valueArticle->getExternalIdentifier();
+                    break;
+                case 1:
+                    $shopwareOrdernumber = $valueArticle->getAnr();
+                    break;
+            }
 
             /** @var ArticleDetail $articleDetail */
-            $articleDetail = $this->getDetail($valueArticle->getExternalIdentifier(), $shopwareArticle);
+            $articleDetail = $this->getDetail($shopwareOrdernumber, $shopwareArticle);
 
             //set main values
             $articleDetail->setLastStock($valueArticle->getStockMin());
@@ -1012,6 +1021,10 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
             $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
             $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
+
+            // to make sure we store the 'Afterbuy ProductID' in case the user chooses to use Afterbuy artikelNr as
+            // order number
+            $articleDetail->getAttribute()->setAfterbuyId($valueArticle->getExternalIdentifier());
 
             $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
             $this->assignArticleProperties($valueArticle, $shopwareArticle);

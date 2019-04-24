@@ -339,6 +339,10 @@
             <argument type="string">\Shopware\Models\Article\Article</argument>
             <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
             <argument type="string">getArticle</argument>
+            <call method="setConfig">
+                <argument type="service" id="shopware.plugin.cached_config_reader" />
+                <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
+            </call>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
             </call>

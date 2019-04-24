@@ -950,7 +950,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
             /** @var ShopwareArticle $shopwareArticle */
             $shopwareArticle = $this->getMainArticle(
-                $valueArticle->getExternalIdentifier(),
+                $valueArticle->getOrdernunmber(),
                 $valueArticle->getName(),
                 $valueArticle->getMainArticleId()
             );
@@ -967,18 +967,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
             $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
 
-            $shopwareOrdernumber = $valueArticle->getExternalIdentifier();
-            switch ($this->config['ordernumberMapping']) {
-                case 0:
-                    $shopwareOrdernumber = $valueArticle->getExternalIdentifier();
-                    break;
-                case 1:
-                    $shopwareOrdernumber = $valueArticle->getAnr();
-                    break;
-            }
 
             /** @var ArticleDetail $articleDetail */
-            $articleDetail = $this->getDetail($shopwareOrdernumber, $shopwareArticle);
+            $articleDetail = $this->getDetail($valueArticle->getOrdernunmber(), $shopwareArticle);
 
             //set main values
             $articleDetail->setLastStock($valueArticle->getStockMin());
@@ -1078,7 +1069,7 @@ ON duplicate key update afterbuy_id = $externalId;";
     }
 
     /**
-     * @param array $valueArticles
+     * @param ValueArticle[] $valueArticles
      */
     public function associateCategories(array $valueArticles)
     {
@@ -1100,7 +1091,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
                 $category = $categoryAttribute->getCategory();
 
-                $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+                $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getOrdernunmber();
 
                 /** @var ArticleDetail $articleDetail */
                 $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
@@ -1131,7 +1122,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         foreach ($valueArticles as $valueArticle) {
 
-            $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier();
+            $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getOrdernunmber();
 
             /** @var ArticlesAttribute $attribute */
             $attribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
@@ -1175,7 +1166,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         /** @var ArticleDetail $articleDetail */
         $articleDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
-            ['number' => $valueArticle->getExternalIdentifier()]
+            ['number' => $valueArticle->getOrdernunmber()]
         );
 
         /** @var ModelRepository $imageRepo */

@@ -50,9 +50,28 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
             /** @var ValueArticle $valueArticle */
             $valueArticle = new $this->targetEntity();
+
+            $valueArticle->setExternalIdentifier($product['ProductID']);
+            $valueArticle->setAnr($product['Anr']);
+
+            switch ($this->config['ordernumberMapping']) {
+                case 0:
+                    $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
+                    break;
+                case 1:
+                    $valueArticle->setOrdernunmber($valueArticle->getAnr());
+                    if (
+                        !$valueArticle->getOrdernunmber()
+                        || $valueArticle->getOrdernunmber() === 0
+                        || $valueArticle->getOrdernunmber() === '0'
+                    ) {
+                        continue 2;
+                    }
+                    break;
+            }
+
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);
-            $valueArticle->setExternalIdentifier($product['ProductID']);
             $valueArticle->setPrice(Helper::convertDeString2Float($product['SellingPrice']));
             $valueArticle->setManufacturer($product['ProductBrand']);
             $valueArticle->setStock($product['Quantity']);
@@ -64,16 +83,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setWeight($product['Weight']);
             $valueArticle->setSupplierNumber($product['ManufacturerPartNumber']);
             $valueArticle->setDiscontinued($product['Discontinued']);
-            $valueArticle->setAnr($product['Anr']);
-
-            switch ($this->config['ordernumberMapping']) {
-                case 0:
-                    $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
-                    break;
-                case 1:
-                    $valueArticle->setOrdernunmber($valueArticle->getAnr());
-                    break;
-            }
 
             $valueArticle->setFree1(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
             $valueArticle->setFree2(key_exists('FreeValue2', $product) ? $product['FreeValue2'] : '');

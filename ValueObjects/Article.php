@@ -760,6 +760,7 @@ class Article extends AbstractValueObject
     public function setOrdernunmber(string $ordernunmber)
     {
         $this->ordernunmber = $ordernunmber;
+    }
 
     /**
      * @return bool

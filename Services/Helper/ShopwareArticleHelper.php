@@ -124,6 +124,15 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article->setInternalIdentifier($detail->getNumber());
         $article->setStockMin($detail->getStockMin());
         $article->setStock($detail->getInStock());
+        $article->setWeight($detail->getWeight());
+
+        if($detail->getPurchaseUnit()) {
+            $article->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
+        }
+
+        if($entity->getLastStock()) {
+            $article->setLastStock(true);
+        }
 
         $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
@@ -168,6 +177,15 @@ ON duplicate key update afterbuy_id = $externalId;";
         $variant->setSupplierNumber($detail->getSupplierNumber());
         $variant->setVariantId($detail->getId());
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+        $variant->setWeight($detail->getWeight());
+
+        if($detail->getPurchaseUnit()) {
+            $variant->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
+        }
+
+        if($detail->getLastStock()) {
+            $variant->setLastStock(true);
+        }
 
         $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;

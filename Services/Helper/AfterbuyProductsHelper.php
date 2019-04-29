@@ -99,6 +99,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'ManufacturerPartNumber' => $variant->getSupplierNumber(),
                 'Description' => $variant->getDescription(),
                 'ShortDescription' => $variant->getShortDescription(),
+                'Weight' => Helper::convertNumberToABString($variant->getWeight()),
                 'Quantity' => $variant->getStock(),
                 'UnitOfQuantity' => 'Stk',
                 'MinimumStock' => $variant->getStockMin(),
@@ -111,7 +112,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 ),
                 'ImageLargeURL' => $variant->getMainImageUrl(),
                 'ImageSmallURL' => $variant->getMainImageThumbnailUrl(),
-                'ProductPictures' => $variantImages
+                'ProductPictures' => $variantImages,
+                'Stock' => ($variant->isLastStock() === true) ? 1 : 0,
+                'Discontinued' => ($variant->isLastStock() === true) ? 1 : 0,
+                'BasepriceFactor' => $variant->getBasePriceFactor()
             )
         );
 
@@ -162,14 +166,18 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'Name' => $value->getName(),
                 'Description' => $value->getDescription(),
                 'ShortDescription' => $value->getShortDescription(),
+                'Weight' => Helper::convertNumberToABString($value->getWeight()),
                 'UnitOfQuantity' => 'Stk',
                 'TaxRate' => Helper::convertNumberToABString($value->getTax()),
+                'ManufacturerPartNumber' => $value->getSupplierNumber(),
                 'ProductBrand' => $value->getManufacturer(),
                 'AddBaseProducts' => $variantArticles,
                 'ImageLargeURL' => $value->getMainImageUrl(),
                 'ImageSmallURL' => $value->getMainImageThumbnailUrl(),
                 'ProductPictures' => $productImages,
                 'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
+                'Stock' => ($value->isLastStock() === true) ? 1 : 0,
+                'Discontinued' => ($value->isLastStock() === true) ? 1 : 0,
             )
         );
 
@@ -313,6 +321,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'ManufacturerPartNumber' => $value->getSupplierNumber(),
                 'Description' => $value->getDescription(),
                 'ShortDescription' => $value->getShortDescription(),
+                'Weight' => Helper::convertNumberToABString($value->getWeight()),
                 'Quantity' => $value->getStock(),
                 'UnitOfQuantity' => 'Stk',
                 'MinimumStock' => $value->getStockMin(),
@@ -322,6 +331,9 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'ImageLargeURL' => $value->getMainImageUrl(),
                 'ImageSmallURL' => $value->getMainImageThumbnailUrl(),
                 'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
+                'Stock' => ($value->isLastStock() === true) ? 1 : 0,
+                'Discontinued' => ($value->isLastStock() === true) ? 1 : 0,
+                'BasepriceFactor' => $value->getBasePriceFactor()
             )
         );
 

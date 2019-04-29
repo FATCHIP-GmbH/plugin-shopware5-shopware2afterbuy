@@ -66,6 +66,9 @@ class Article extends AbstractValueObject
 
     public $externalCategoryIds = [];
 
+    /** @var bool */
+    public $lastStock = false;
+
     /** @var string */
     public $unitOfQuantity;
 
@@ -757,5 +760,20 @@ class Article extends AbstractValueObject
     public function setOrdernunmber(string $ordernunmber)
     {
         $this->ordernunmber = $ordernunmber;
+
+    /**
+     * @return bool
+     */
+    public function isLastStock()
+    {
+        return $this->lastStock;
+    }
+
+    /**
+     * @param bool $lastStock
+     */
+    public function setLastStock(bool $lastStock)
+    {
+        $this->lastStock = $lastStock;
     }
 }

@@ -24,6 +24,9 @@
             <![CDATA[
                 <ul>
                     <li>added: additional fields for import</li>
+                    <li>fixed: show correct option label in plugin config</li>
+                    <li>fixed: import more than one subcategory</li>
+                    <li>added: selection in config to import products with Afterbuy internal Ordernumber or Product ID</li>
                 </ul>
             ]]></changes>
     </changelog>

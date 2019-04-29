@@ -3,10 +3,10 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
-use viaebShopwareAfterbuy\ValueObjects\CategoryTree;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
+use Zend_Db_Adapter_Exception;
 
 /**
  *
@@ -24,7 +24,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
     }
 
     /**
-     * @return ShopwareCategory|null
+     * @return ShopwareCategory|object|null
      */
     public function getMainCategory() {
         $baseCategoryId = 1;
@@ -220,7 +220,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
                 } while (true);
 
                 $current = array_pop($stack);
-            } while ( ! empty($stack));
+            } while ($current !== null);
         }
 
         return $shopwareCategories;
@@ -272,7 +272,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
     /**
      * @param array $ids
-     * @throws \Zend_Db_Adapter_Exception
+     * @throws Zend_Db_Adapter_Exception
      */
     public function updateExternalIds(array $ids)
     {

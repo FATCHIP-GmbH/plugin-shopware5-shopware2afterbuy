@@ -87,6 +87,9 @@ class Article extends AbstractValueObject
     /** @var array */
     private $articleProperties = [];
 
+    /** @var string $ordernunmber */
+    private $ordernunmber;
+
     /**
      * @return string
      */
@@ -742,6 +745,21 @@ class Article extends AbstractValueObject
     {
         $this->free10 = $free10;
     }
+
+    /**
+     * @return string
+     */
+    public function getOrdernunmber(): string
+    {
+        return $this->ordernunmber;
+    }
+
+    /**
+     * @param string $ordernunmber
+     */
+    public function setOrdernunmber(string $ordernunmber)
+    {
+        $this->ordernunmber = $ordernunmber;
 
     /**
      * @return bool

@@ -17,11 +17,14 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         no: '{s namespace="backend/viaebConfigForm" name=no}nein{/s}',
         shopware: '{s namespace="backend/viaebConfigForm" name=shopware}Shopware{/s}',
         afterbuy: '{s namespace="backend/viaebConfigForm" name=afterbuy}Afterbuy{/s}',
+        productId: '{s namespace="backend/viaebConfigForm" name=productId}Produkt ID{/s}',
+        articleNr: '{s namespace="backend/viaebConfigForm" name=articleNr}Artikelnummer{/s}',
         label_user: '{s namespace="backend/viaebConfigForm" name=label_user}Afterbuy User{/s}',
         label_userpw: '{s namespace="backend/viaebConfigForm" name=label_userpw}User Password{/s}',
         label_partnerid: '{s namespace="backend/viaebConfigForm" name=label_partnerid}Partner ID:{/s}',
         label_partnerpw: '{s namespace="backend/viaebConfigForm" name=label_partnerpw}Partner Pw:{/s}',
         mainSystem: '{s namespace="backend/viaebConfigForm" name=mainSystem}Datenführendes System{/s}',
+        ordernumberMapping: '{s namespace="backend/viaebConfigForm" name=ordernumberMapping}Bestellnummer Mapping{/s}',
         baseCategory: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
         ExportAllArticles: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
         targetShop: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
@@ -261,6 +264,27 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         });
     },
 
+    createOrdernumberMappingStore: function () {
+        const me = this;
+
+        return Ext.create('Ext.data.Store', {
+            fields: [
+                'value',
+                'display',
+            ],
+            data: [
+                {
+                    'value': 0,
+                    'display': me.snippets.productId,
+                },
+                {
+                    'value': 1,
+                    'display': me.snippets.articleNr,
+                },
+            ]
+        });
+    },
+
     createYesNoStore: function () {
         const me = this;
 
@@ -327,6 +351,15 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 displayField: 'display',
                 valueField: 'value',
                 name: 'mainSystem',
+            },
+            {
+                fieldLabel: me.snippets.ordernumberMapping,
+                store: me.createOrdernumberMappingStore(),
+                queryMode: 'local',
+                displayField: 'display',
+                valueField: 'value',
+                value: 0,
+                name: 'ordernumberMapping',
             },
             {
                 fieldLabel: me.snippets.baseCategory,

@@ -66,6 +66,15 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setDiscontinued($product['Discontinued']);
             $valueArticle->setAnr($product['Anr']);
 
+            switch ($this->config['ordernumberMapping']) {
+                case 0:
+                    $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
+                    break;
+                case 1:
+                    $valueArticle->setOrdernunmber($valueArticle->getAnr());
+                    break;
+            }
+
             $valueArticle->setFree1(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
             $valueArticle->setFree2(key_exists('FreeValue2', $product) ? $product['FreeValue2'] : '');
             $valueArticle->setFree3(key_exists('FreeValue3', $product) ? $product['FreeValue3'] : '');

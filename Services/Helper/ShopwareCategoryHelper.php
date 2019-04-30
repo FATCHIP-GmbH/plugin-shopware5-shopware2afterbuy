@@ -14,22 +14,25 @@ use Zend_Db_Adapter_Exception;
  * @package viaebShopwareAfterbuy\Services\Helper
  */
 
-class ShopwareCategoryHelper extends AbstractHelper {
+class ShopwareCategoryHelper extends AbstractHelper
+{
 
     /**
      * @return ShopwareCategory[]
      */
-    public function getAllCategories() {
+    public function getAllCategories()
+    {
         return $this->entityManager->getRepository($this->entity)->findAll();
     }
 
     /**
      * @return ShopwareCategory|object|null
      */
-    public function getMainCategory() {
+    public function getMainCategory()
+    {
         $baseCategoryId = 1;
 
-        if(array_key_exists('baseCategory', $this->config) && $this->config['baseCategory']) {
+        if (array_key_exists('baseCategory', $this->config) && $this->config['baseCategory']) {
             $baseCategoryId = $this->config['baseCategory'];
         }
 
@@ -40,7 +43,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
      * moved here
      *
      * @param ValueCategory $category
-     * @param string        $identifier
+     * @param string $identifier
      *
      * @return ShopwareCategory
      */
@@ -57,7 +60,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
             );
         }
 
-        if ( ! $parent) {
+        if (!$parent) {
             $parent = $this->getMainCategory();
         }
 
@@ -190,7 +193,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
                 // walk to leftest children
                 do {
                     $externalIdentifier = $current->getValueCategory()->getExternalIdentifier();
-                    if ( ! in_array($externalIdentifier, $shopwareCategories)) {
+                    if (!in_array($externalIdentifier, $shopwareCategories)) {
                         $shopwareCategories[$externalIdentifier] = $this->createShopwareCategory(
                             $current->getValueCategory()
                         );
@@ -259,6 +262,7 @@ class ShopwareCategoryHelper extends AbstractHelper {
 
         return $shopwareCategory;
     }
+
     /**
      * @param ValueCategory $cat1
      * @param ValueCategory $cat2
@@ -279,17 +283,17 @@ class ShopwareCategoryHelper extends AbstractHelper {
         $sql = '';
 
         //hotfix to avoid category duplicates
-        foreach ($ids as $internalId=>$externalId) {
+        foreach ($ids as $internalId => $externalId) {
             $sql .= "UPDATE s_categories_attributes SET afterbuy_catalog_id = $externalId WHERE afterbuy_catalog_id = $internalId;";
         }
 
-        foreach ($ids as $internalId=>$externalId) {
+        foreach ($ids as $internalId => $externalId) {
             $sql .= "INSERT INTO s_categories_attributes (categoryID, afterbuy_catalog_id)
 VALUES ($internalId, $externalId)
 ON duplicate key update afterbuy_catalog_id = $externalId;";
         }
 
-        if(!empty($sql)) {
+        if (!empty($sql)) {
             $this->db->query($sql);
         }
     }
@@ -302,55 +306,36 @@ ON duplicate key update afterbuy_catalog_id = $externalId;";
     {
         $catalogIds = [];
 
-        if(!is_array($response)) {
+        if (!is_array($response)) {
             return $catalogIds;
         }
 
-        if(!array_key_exists('Result', $response) || !array_key_exists('NewCatalogs', $response['Result'])) {
+        if (
+            !array_key_exists('Result', $response)
+            || !array_key_exists('NewCatalogs', $response['Result'])
+            || !array_key_exists('NewCatalog', $response['Result']['NewCatalogs'])
+        ) {
             return $catalogIds;
         }
 
-        foreach($response['Result']['NewCatalogs'] as $newCatalog) {
-            if(array_key_exists(1, $newCatalog)) {
-                foreach ($newCatalog as $sub) {
+        $catalogStack = [$response['Result']['NewCatalogs']['NewCatalog']];
+        while ($catalogStack !== []) {
+            $newCatalog = array_pop($catalogStack);
 
-                    if(array_key_exists('CatalogID', $sub) && array_key_exists('CatalogIDRequested', $sub)) {
-                        $catalogIds[$sub['CatalogIDRequested']] = $sub['CatalogID'];
-                    }
-
-                    $catalogIds = $this->getCatalogIdsRecursiveFromResponse($sub, $catalogIds);
-                }
+            if (is_array($newCatalog) && !array_key_exists(0, $newCatalog)) {
+                // single subcategory
+                $newCatalog = [$newCatalog];
             }
-            else {
-                $catalogIds[$newCatalog['CatalogIDRequested']] = $newCatalog['CatalogID'];
 
-                $catalogIds = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $catalogIds);
+            foreach ($newCatalog as $catalog) {
+                $catalogIds[$catalog['CatalogIDRequested']] = $catalog['CatalogID'];
+
+                if (array_key_exists('NewCatalog', $catalog)) {
+                    $catalogStack[] = $catalog['NewCatalog'];
+                }
             }
         }
 
         return $catalogIds;
-    }
-
-    /**
-     * @param $array
-     * @param array $ids
-     * @return array
-     */
-    public function getCatalogIdsRecursiveFromResponse($array, &$ids = [])
-    {
-
-        if(is_array($array) && array_key_exists('NewCatalog', $array)) {
-
-            foreach ($array['NewCatalog'] as $newCatalog) {
-
-                if(is_array($newCatalog) && array_key_exists('CatalogID', $newCatalog)) {
-                    $ids[$newCatalog['CatalogIDRequested']] = $newCatalog['CatalogID'];
-                }
-
-                $ids = $this->getCatalogIdsRecursiveFromResponse($newCatalog, $ids);
-            }
-        }
-
-        return $ids;
     }
 }

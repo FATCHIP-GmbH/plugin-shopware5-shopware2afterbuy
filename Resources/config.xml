@@ -78,9 +78,29 @@
                 </option>
             </store>
         </element>
+        <element type="combo" required="true">
+            <name>ordernumberMapping</name>
+            <label lang="de">Bestellnummer Mapping</label>
+            <label lang="en">Ordernumber Mapping</label>
+            <value>0</value>
+            <description>Bei Nutzung der Option "Produkt ID" werden von Afterbuy importierte Artikel mit der Bestellnummer entsprechend der Afterbuy-ProduktId versehen. Diese ist eineindeutig. Alternativ haben Sie hier die Möglichkeit, als Bestellnummer die Afterbuy-Artikelnummer zu vergeben. Dies wird zu Problemen führen, wenn Artikelnummern doppelt oder gar nicht vergeben sind!</description>
+
+            <store>
+                <option>
+                    <value>0</value>
+                    <label lang="de">Produkt ID</label>
+                    <label>Product ID</label>
+                </option>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Artikelnummer</label>
+                    <label>Article number</label>
+                </option>
+            </store>
+        </element>
 
         <element type="button">
-            <name>Spacer2</name>
+            <name>Spacer3</name>
             <label>Bestellimporteinstellungen</label>
             <value>1</value>
         </element>
@@ -96,24 +116,6 @@
             <label lang="de">Versandart</label>
             <label lang="en">Shipping type</label>
             <store>Shopware.apps.Base.store.Dispatch</store>
-        </element>
-        <element type="combo" required="true">
-            <name>ordernumberMapping</name>
-            <label lang="de">Bestellnummer Mapping</label>
-            <label lang="en">Ordernumber Mapping</label>
-            <value>0</value>
-            <store>
-                <option>
-                    <value>0</value>
-                    <label lang="de">Produkt ID</label>
-                    <label>Product ID</label>
-                </option>
-                <option>
-                    <value>1</value>
-                    <label lang="de">Artikelnummer</label>
-                    <label>Article number</label>
-                </option>
-            </store>
         </element>
         <element type="combo" required="true">
             <name>customerGroup</name>

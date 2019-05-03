@@ -216,6 +216,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                     },
                     items: me.createGeneralConfigFields(),
                 }),
+                Shopware.Notification.createBlockMessage('{s namespace="backend/viaebConfigForm" name=adviceMapping}Bestellnummer Mapping: Bei Nutzung der Option "Produkt ID" werden von Afterbuy importierte Artikel mit der Bestellnummer entsprechend der Afterbuy-ProduktId versehen. Diese ist eineindeutig. Alternativ haben Sie hier die Möglichkeit, als Bestellnummer die Afterbuy-Artikelnummer zu vergeben. Dies wird zu Problemen führen, wenn Artikelnummern doppelt oder gar nicht vergeben sind!{/s}', 'error'),
             ],
         });
     },

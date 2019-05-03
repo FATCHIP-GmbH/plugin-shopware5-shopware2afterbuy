@@ -56,7 +56,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
             ['Picture1', 'Image'],
         ];
 
-        if ($data && ! is_array($data[0])) {
+        if (is_array($data) && ! array_key_exists(0, $data)) {
             $data = array($data);
         }
 
@@ -96,8 +96,12 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         /** @var ApiClient $api */
         $api = new ApiClient($this->apiConfig, $this->logger);
 
-        // do {
         $catalogsResult = $api->getCatalogsFromAfterbuy(200, 2, 0, $filter);
+
+        if (array_key_exists('ErrorList', $catalogsResult['Result'])) {
+            return [];
+        }
+
         $catalogs = $catalogsResult['Result']['Catalogs']['Catalog'];
 
         if ( ! $catalogs) {

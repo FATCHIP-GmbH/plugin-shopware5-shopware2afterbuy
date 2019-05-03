@@ -9,6 +9,23 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
+    <changelog version="0.9.8">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>fixed: category export id association</li>
+                    <li>fixed: afterbuy association reset</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes>
+            <![CDATA[
+                <ul>
+                    <li>fixed: category export id association</li>
+                    <li>fixed: afterbuy association reset</li>
+                </ul>
+            ]]></changes>
+    </changelog>
     <changelog version="0.9.7">
         <changes lang="de">
             <![CDATA[

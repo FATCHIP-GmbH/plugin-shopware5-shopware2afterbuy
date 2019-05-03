@@ -80,13 +80,13 @@ class ShopwareResetHelper extends AbstractHelper
             $builder->set('a.' . $name, ':null');
         }
 
-        $builder
-            ->setParameter('null', null)
-            ->getQuery();
-
         /** @var Query $builder */
         try {
-                $builder->execute();
+            $builder
+                ->setParameter('null', null)
+                ->getQuery()
+                ->execute();
+
         } catch (Exception $e) {
             return 'failure';
         }

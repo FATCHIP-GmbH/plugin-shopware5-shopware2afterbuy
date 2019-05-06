@@ -749,7 +749,7 @@ class Article extends AbstractValueObject
     /**
      * @return string
      */
-    public function getOrdernunmber(): string
+    public function getOrdernunmber()
     {
         return $this->ordernunmber;
     }

@@ -100,7 +100,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'EkundenNr' => $value->getCustomerNumber(),
                 'Kundenerkennung' => 1,
                 'NoeBayNameAktu' => 1,
-                'Artikelerkennung' => 13,
+                'Artikelerkennung' => ($this->config['ordernumberMapping'] === 0) ? 0 : 1,
                 'VID' => $internalIdentifyer,
                 'SoldCurrency' => $value->getCurrency(),
                 'SetPay' => $value->isCleared() ? 1 : 0,
@@ -118,6 +118,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
                 $orders[$internalIdentifyer]['Artikelnr_' . $i] = $position->getInternalIdentifier();
                 $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
+
                 $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
 
                 $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();

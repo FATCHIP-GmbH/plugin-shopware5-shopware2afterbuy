@@ -669,7 +669,7 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @return ShopwareArticle
      */
-    public function getMainArticle(string $number, string $name, $parent = '')
+    public function getMainArticle(string $number, string $name, $parent = '', $externalIdentifyer = '')
     {
         $article = null;
 
@@ -684,7 +684,13 @@ ON duplicate key update afterbuy_id = $externalId;";
             /**
              * @var ArticlesAttribute $article
              */
-            $article = $this->getArticleFromAttribute($number);
+
+            if($this->config['ordernumberMapping'] == 1) {
+                $article = $this->getArticleFromAttribute($externalIdentifyer);
+            }
+            else {
+                $article = $this->getArticleFromAttribute($number);
+            }
 
             if ( ! $article) {
                 $article = $this->entityManager
@@ -970,7 +976,8 @@ ON duplicate key update afterbuy_id = $externalId;";
             $shopwareArticle = $this->getMainArticle(
                 $valueArticle->getOrdernunmber(),
                 $valueArticle->getName(),
-                $valueArticle->getMainArticleId()
+                $valueArticle->getMainArticleId(),
+                $valueArticle->getExternalIdentifier()
             );
 
             if ( ! $shopwareArticle) {
@@ -1140,16 +1147,14 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         foreach ($valueArticles as $valueArticle) {
 
-            $mainArticleId = $valueArticle->getMainArticleId() ?: $valueArticle->getOrdernunmber();
-
             /** @var ArticlesAttribute $attribute */
             $attribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
-                ['afterbuyParentId' => $mainArticleId]
+                ['afterbuyParentId' => $valueArticle->getMainArticleId() ?: $valueArticle->getExternalIdentifier()]
             );
 
             if ( ! $attribute) {
                 $mainDetail = $this->entityManager->getRepository(ArticleDetail::class)->findOneBy(
-                    ['number' => $mainArticleId]
+                    ['number' => $valueArticle->getOrdernunmber()]
                 );
             } else {
                 $mainDetail = $attribute->getArticle()->getMainDetail();

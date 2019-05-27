@@ -1,4 +1,4 @@
-#Funktionsbeschreibung
+# Funktionsbeschreibung
 
 ## führendes System Shopware
 Artikel und Kategorien (noch nicht übermittelt oder geändert seit letztem Export) werden von Shopware an Afterbuy übertragen.
@@ -9,12 +9,12 @@ Der Status von abgeschlossenen Bestellungen wird vor jedem Bestellimport an Afte
 Artikel und Kategorien werden von Afterbuy importiert.
 Im Shop getätigte Bestellungen werden an Afterbuy übermittelt.
 
-#Voraussetzungen
+# Voraussetzungen
 - php-curl
 - PHP 7.1
 - Shopware 5.3
 
-#Beschränkungen
+# Beschränkungen
 - max. 250 Varianten je Artikel
 
 # Anmerkungen

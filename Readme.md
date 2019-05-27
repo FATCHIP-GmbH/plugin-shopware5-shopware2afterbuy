@@ -24,7 +24,7 @@ Die Konfiguration bezüglich des führenden Systems sollte nicht im Betrieb geä
 Das nicht führende System sollte vor Beginn der Synchronisation geleert werden.
 
 ## Cronjobs & Commands
-Diese Erweiterung stellt stellt 2 Shopware-Cronjobs und alternativ 2 Commands für den Updateprozess bereit.
+Diese Erweiterung stellt 2 Shopware-Cronjobs und alternativ 2 Commands für den Updateprozess bereit.
 
 ### Cronjobs
 Die Cronjobs (Update Products & Update Orders) müssen nach Installation konfiguriert und aktiviert werden.

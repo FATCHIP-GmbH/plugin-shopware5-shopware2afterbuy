@@ -116,7 +116,12 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                  * @var OrderPosition $position
                  */
 
-                $orders[$internalIdentifyer]['Artikelnr_' . $i] = $position->getInternalIdentifier();
+                $mainNumber = $position->getExternalIdentifier();
+                if(empty($mainNumber)) {
+                    $mainNumber = preg_replace('~\D~', '', $position->getInternalIdentifier());
+                }
+
+                $orders[$internalIdentifyer]['Artikelnr_' . $i] = $mainNumber;
                 $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
 
                 $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();

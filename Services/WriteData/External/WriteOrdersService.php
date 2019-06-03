@@ -117,7 +117,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                  */
 
                 $mainNumber = $position->getExternalIdentifier();
-                if(empty($mainNumber)) {
+                if(!is_numeric($mainNumber)) {
                     $mainNumber = preg_replace('~\D~', '', $position->getInternalIdentifier());
                 }
 

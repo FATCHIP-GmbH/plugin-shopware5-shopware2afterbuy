@@ -386,7 +386,7 @@
         <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="false">
             <argument>%kernel.logs_dir%/afterbuy_%kernel.environment%.log</argument>
             <argument>14</argument>
-            <argument>%kernel.default_error_level%</argument>
+            <argument>%afterbuy.default_error_level%</argument>
             <call method="pushProcessor">
                 <argument type="service" id="monolog.processor.uid" />
             </call>

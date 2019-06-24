@@ -21,7 +21,7 @@ class viaebShopwareAfterbuy extends Plugin
     */
     public function build(ContainerBuilder $container)
     {
-        if ($container->hasParameter('afterbuy.default_error_level')) {
+        if ($container->hasParameter('kernel.default_error_level')) {
             $loglevel = $container->getParameter('kernel.default_error_level');
         } else {
             $loglevel = 100;

@@ -14,6 +14,7 @@
             <![CDATA[
                 <ul>
                     <li>fixed: kernel.default_error_level not found exception</li>
+                    <li>fixed: product nr. association</li>
                 </ul>
             ]]>
         </changes>
@@ -21,6 +22,7 @@
             <![CDATA[
                 <ul>
                     <li>fixed: kernel.default_error_level not found exception</li>
+                    <li>fixed: product nr. association</li>
                 </ul>
             ]]></changes>
     </changelog>

@@ -3,6 +3,7 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
+use Shopware\Models\Attribute\Order as OrderAttributes;
 use viaebShopwareAfterbuy\ValueObjects\Address as ValueAddress;
 use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
 use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
@@ -336,14 +337,26 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @return array
      */
-    public function getUnexportedOrders()
+    public function getUnexportedOrders(array $config)
     {
-        $orders = $this->entityManager->createQueryBuilder()
+        $query = $this->entityManager->createQueryBuilder();
+
+        $query
             ->select(['orders'])
             ->from(ShopwareOrder::class, 'orders', 'orders.id')
             ->leftJoin('orders.attribute', 'attributes')
             ->where('attributes.afterbuyOrderId IS NULL')
             ->orWhere("attributes.afterbuyOrderId = ''")
+            ->andWhere('orders.number != 0');
+
+        if(!empty($config["minOrderDate"])) {
+            $minOrderDate = new \DateTime($config["minOrderDate"]);
+
+            $query->andWhere('orders.orderTime > :minOrderDate')
+                ->setParameters(array('minOrderDate' => $minOrderDate));
+        }
+
+        $orders = $query
             ->getQuery()
             ->setMaxResults(200)
             ->getResult();
@@ -394,7 +407,8 @@ class ShopwareOrderHelper extends AbstractHelper
 
         $orders = $this->entityManager->createQueryBuilder()
             ->select(['attributes.afterbuyOrderId'])
-            ->from(\Shopware\Models\Attribute\Order::class, 'attributes')
+            ->from(OrderAttributes::class,
+                'attributes')
             ->leftJoin('attributes.order', 'orders')
             ->where('attributes.afterbuyOrderId IS NOT NULL')
             ->andWhere("attributes.afterbuyOrderId != ''")

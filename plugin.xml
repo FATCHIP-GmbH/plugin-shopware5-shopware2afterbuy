@@ -9,6 +9,24 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
+    <changelog version="0.9.12">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>New: added min order date for export</li>
+                    <li>fixed: submission of unfinished orders</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes>
+            <![CDATA[
+                <ul>
+                    <li>New: added min order date for export</li>
+                    <li>fixed: submission of unfinished orders</li>
+                </ul>
+            ]]></changes>
+    </changelog>
+
     <changelog version="0.9.11">
         <changes lang="de">
             <![CDATA[

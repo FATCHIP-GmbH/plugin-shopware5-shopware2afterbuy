@@ -27,6 +27,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
         ordernumberMapping: '{s namespace="backend/viaebConfigForm" name=ordernumberMapping}Bestellnummer Mapping{/s}',
         baseCategory: '{s namespace="backend/viaebConfigForm" name=baseCategory}Stammkategorie{/s}',
         ExportAllArticles: '{s namespace="backend/viaebConfigForm" name=ExportAllArticles}Alle Artikel exportieren{/s}',
+        MinOrderDate: '{s namespace="backend/viaebConfigForm" name=MinOrderdate}Bestellungen exportieren ab{/s}',
         targetShop: '{s namespace="backend/viaebConfigForm" name=targetShop}Zielshop für Bestellungen{/s}',
         shipping: '{s namespace="backend/viaebConfigForm" name=shipping}Versandart{/s}',
         customerGroup: '{s namespace="backend/viaebConfigForm" name=customerGroup}Kundengruppe{/s}',
@@ -128,6 +129,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
 
     resetFieldValues: function (item) {
         const me = this;
+
+        if(me.configValues['minOrderDate'] && me.configValues['minOrderDate'].includes('T')) {
+            var myDate = Ext.Date.parse(me.configValues['minOrderDate'].substring(0,10), 'Y-m-d');
+            me.configValues['minOrderDate'] = Ext.Date.format(myDate, 'd.m.Y');
+        }
 
         if (item.name in me.configValues) {
             item.setValue(me.configValues[item.name]);
@@ -367,6 +373,15 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                 store: me.createRemoteStore(Shopware.apps.Base.store.Category),
                 name: 'baseCategory',
                 forceSelection: false,
+                allowBlank: true,
+            },
+            {
+                xtype: 'datefield',
+                fieldLabel: me.snippets.MinOrderDate,
+                //dateFormat:'Y-m-dTH:i:s',
+                submitFormat:'Y-m-d 00:00:00',
+                format: 'd.m.Y',
+                name: 'minOrderDate',
                 allowBlank: true,
             },
             {

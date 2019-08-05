@@ -101,9 +101,23 @@
 
         <element type="button">
             <name>Spacer3</name>
+            <label>Bestellexporteinstellungen</label>
+            <value>1</value>
+        </element>
+
+        <element type="date">
+            <name>minOrderDate</name>
+            <label lang="de">Bestellungen neuer als</label>
+            <label lang="en">Orders from</label>
+            <description>Nur Bestellungen neuer als das festgelegte Datum exportieren</description>
+        </element>
+
+        <element type="button">
+            <name>Spacer4</name>
             <label>Bestellimporteinstellungen</label>
             <value>1</value>
         </element>
+
         <element type="combo" required="true">
             <name>targetShop</name>
             <label lang="de">Zielshop für Bestellungen</label>

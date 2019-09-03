@@ -47,7 +47,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('mainSystem', intval($_REQUEST['mainSystem']), $this->pluginName);
             $this->configWriter->save('ordernumberMapping', intval($_REQUEST['ordernumberMapping']), $this->pluginName);
 
-            $this->configWriter->save('minOrderDate', str_replace(" ", "T", $_REQUEST['minOrderDate'], $this->pluginName));
+            $this->configWriter->save('minOrderDate', str_replace(" ", "T", $_REQUEST['minOrderDate']), $this->pluginName);
 
             $this->configWriter->save('baseCategory', intval($_REQUEST['baseCategory']), $this->pluginName);
             $this->configWriter->save('ExportAllArticles', intval($_REQUEST['ExportAllArticles']), $this->pluginName);

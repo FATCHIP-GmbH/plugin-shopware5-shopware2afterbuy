@@ -167,7 +167,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         /**
          * @var Repository $repo
          */
-        $data = $this->helper->getUnexportedOrders();
+        $data = $this->helper->getUnexportedOrders($this->config);
 
         if(!$data) {
             $this->logger->error('No data received', array('Orders', 'Read', 'Internal'));

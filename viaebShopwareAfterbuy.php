@@ -12,6 +12,8 @@ use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Shopware\Components\Plugin\Context\UpdateContext;
+use Zend_Db_Adapter_Exception;
+use Zend_Db_Statement_Exception;
 
 /**
  * Shopware-Plugin FatchipAfterbuy.
@@ -42,6 +44,10 @@ class viaebShopwareAfterbuy extends Plugin
     public function update(UpdateContext $context) {
         parent::update($context);
 
+        if ($context->assertMinimumVersion('5.6')) {
+            $this->fixDefaultValueTypes();
+        }
+
         $this->updateAttributes();
     }
 
@@ -54,6 +60,8 @@ class viaebShopwareAfterbuy extends Plugin
     public function install(InstallContext $context)
     {
         parent::install($context);
+
+        $this->fixDefaultValueTypes();
 
         $this->updateAttributes();
 
@@ -77,6 +85,50 @@ class viaebShopwareAfterbuy extends Plugin
 
             $em->persist($status);
             $em->flush();
+        }
+    }
+
+    /**
+     * Since SW 5.6 config values will be expected as string. But during installation of plugin, the values will be read
+     * as int from .xml file. When default values in .xml file are stored as string like in
+     * &lt;value&gt;"1"&lt;/value&gt;, this value will be stored as string in db, but with double quotation marks, like
+     * in 's:1:""0"";'.
+     *
+     * This function replaces the integer default values by string values.
+     */
+    public function fixDefaultValueTypes()
+    {
+        // Retrieve the default config setting from the configs
+        // mainSystem, ExportAllArticles, ordernumberMapping
+        $sql = '
+                SELECT name, value
+                FROM s_core_config_elements
+                WHERE name="mainSystem" OR name="ExportAllArticles" OR name="ordernumberMapping"
+                ';
+
+        try {
+            $stmt = Shopware()->Db()->query($sql);
+
+            while ($row = $stmt->fetch()) {
+                $fields = explode(':', rtrim($row['value'], ';'));
+
+                // if datatype is int
+                if ($fields[0] === 'i') {
+                    $sql = '
+                        UPDATE s_core_config_elements
+                        SET value=?
+                        WHERE name=?
+                    ';
+                    // replace int value by its string equivalent
+                    // ex: 'i:0;' => 's:1:"0";'
+                    Shopware()->Db()->query($sql, [
+                        implode(':', ['s', sizeof($fields[1]), '"' . $fields[1] . '"']) . ';',
+                        $row['name'],
+                    ]);
+                }
+            }
+        } catch (Zend_Db_Adapter_Exception $e) {
+        } catch (Zend_Db_Statement_Exception $e) {
         }
     }
 

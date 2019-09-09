@@ -50,13 +50,13 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
             $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
-            $this->configWriter->save('mainSystem', intval($_REQUEST['mainSystem']), $this->pluginName);
-            $this->configWriter->save('ordernumberMapping', intval($_REQUEST['ordernumberMapping']), $this->pluginName);
+            $this->configWriter->save('mainSystem', $_REQUEST['mainSystem'], $this->pluginName);
+            $this->configWriter->save('ordernumberMapping', $_REQUEST['ordernumberMapping'], $this->pluginName);
 
             $this->configWriter->save('minOrderDate', str_replace(" ", "T", $_REQUEST['minOrderDate']), $this->pluginName);
 
             $this->configWriter->save('baseCategory', intval($_REQUEST['baseCategory']), $this->pluginName);
-            $this->configWriter->save('ExportAllArticles', intval($_REQUEST['ExportAllArticles']), $this->pluginName);
+            $this->configWriter->save('ExportAllArticles', $_REQUEST['ExportAllArticles'], $this->pluginName);
             $this->configWriter->save('targetShop', intval($_REQUEST['targetShop']), $this->pluginName);
             $this->configWriter->save('shipping', intval($_REQUEST['shipping']), $this->pluginName);
             $this->configWriter->save('customerGroup', intval($_REQUEST['customerGroup']), $this->pluginName);

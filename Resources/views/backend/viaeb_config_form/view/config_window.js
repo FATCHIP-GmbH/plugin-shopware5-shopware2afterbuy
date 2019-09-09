@@ -260,11 +260,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             ],
             data: [
                 {
-                    'value': 1,
+                    'value': "1",
                     'display': me.snippets.shopware,
                 },
                 {
-                    'value': 2,
+                    'value': "2",
                     'display': me.snippets.afterbuy,
                 },
             ]
@@ -281,11 +281,11 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             ],
             data: [
                 {
-                    'value': 0,
+                    'value': "0",
                     'display': me.snippets.productId,
                 },
                 {
-                    'value': 1,
+                    'value': "1",
                     'display': me.snippets.articleNr,
                 },
             ]
@@ -302,12 +302,12 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
             ],
             data: [
                 {
-                    'value': 1,
-                    'display': me.snippets.yes,
+                    'value': "0",
+                    'display': me.snippets.no,
                 },
                 {
-                    'value': 0,
-                    'display': me.snippets.no,
+                    'value': "1",
+                    'display': me.snippets.yes,
                 },
             ]
         });

@@ -492,7 +492,11 @@ ON duplicate key update afterbuy_id = $externalId;";
             $attr = $this->createAttributes($article, $detail, $parent);
             $detail->setAttribute($attr);
         } else {
-            return $detail->getAttribute();
+            $attr = $detail->getAttribute();
+        }
+
+        if ($parent) {
+            $attr->setAfterbuyParentId($parent);
         }
 
         return $attr;
@@ -532,10 +536,6 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         $attr->setArticle($article);
         $attr->setArticleDetail($detail);
-
-        if ($parent) {
-            $attr->setAfterbuyParentId($parent);
-        }
 
         return $attr;
     }
@@ -650,12 +650,16 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $number
      *
-     * @return object|ArticlesAttribute|null
+     * @return \Shopware\Models\Article\Article|null
      */
     public function getArticleFromAttribute(string $number)
     {
         $article = $this->entityManager->getRepository(ArticlesAttribute::class)
             ->findOneBy(array('afterbuyParentId' => $number));
+
+        if($article) {
+            return $article->getArticleDetail()->getArticle();
+        }
 
         return $article;
     }
@@ -698,7 +702,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     ->findOneBy(array('number' => $number));
             } else {
                 //If Baseproduct we just will set the name
-                $article->getArticle()->setName($name);
+                $article->setName($name);
                 $this->entityManager->persist($article);
 
                 return null;
@@ -706,7 +710,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         if ($article !== null) {
-            return $article->getArticle();
+            return $article;
         }
 
         return $this->createMainArticle();
@@ -1025,6 +1029,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $this->getArticleAttributes($shopwareArticle, $articleDetail,
                 $valueArticle->getMainArticleId());
 
+            //TODO: check if external number should be put in here
             $articleDetail->getAttribute()->setAfterbuyInternalNumber($valueArticle->getAnr());
 
             $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
@@ -1124,9 +1129,13 @@ ON duplicate key update afterbuy_id = $externalId;";
                 );
 
                 if ($articleDetail === null) {
-                    $articleDetail = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
+                    $detailAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
+
+                    if($detailAttribute) {
+                        $articleDetail = $detailAttribute->getArticleDetail();
+                    }
                 }
 
                 if ($articleDetail && $article = $articleDetail->getArticle()) {
@@ -1157,7 +1166,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     ['number' => $valueArticle->getOrdernunmber()]
                 );
             } else {
-                $mainDetail = $attribute->getArticle()->getMainDetail();
+                $mainDetail = $attribute->getArticleDetail()->getArticle()->getMainDetail();
             }
 
 

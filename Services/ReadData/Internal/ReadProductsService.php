@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
+use Shopware\Models\Article\Article;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
@@ -57,7 +58,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
-            /** @var \Shopware\Models\Article\Article $entity */
+            /** @var Article $entity */
             $article = $helper->setArticleMainValues($entity, $this->targetEntity);
             $helper->assignCategories($article, $entity);
             $helper->assignArticleImages($entity, $article);

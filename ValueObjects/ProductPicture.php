@@ -1,4 +1,5 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\ValueObjects;
 
@@ -50,6 +51,7 @@ class ProductPicture
     }
 
     /**
+     * @noinspection PhpUnused
      * @return string
      */
     public function getAltText()

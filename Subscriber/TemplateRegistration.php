@@ -1,8 +1,11 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Subscriber;
 
 use Enlight\Event\SubscriberInterface;
+use Enlight_Event_EventArgs;
+use Enlight_Template_Manager;
 
 class TemplateRegistration implements SubscriberInterface
 {
@@ -12,15 +15,15 @@ class TemplateRegistration implements SubscriberInterface
     private $pluginDirectory;
 
     /**
-     * @var \Enlight_Template_Manager
+     * @var Enlight_Template_Manager
      */
     private $templateManager;
 
     /**
      * @param $pluginDirectory
-     * @param \Enlight_Template_Manager $templateManager
+     * @param Enlight_Template_Manager $templateManager
      */
-    public function __construct($pluginDirectory, \Enlight_Template_Manager $templateManager)
+    public function __construct($pluginDirectory, Enlight_Template_Manager $templateManager)
     {
         $this->pluginDirectory = $pluginDirectory;
         $this->templateManager = $templateManager;
@@ -36,7 +39,9 @@ class TemplateRegistration implements SubscriberInterface
         ];
     }
 
-    public function onPreDispatch(\Enlight_Event_EventArgs $args)
+    public function onPreDispatch(
+        /** @noinspection PhpUnusedParameterInspection */ Enlight_Event_EventArgs $args
+    )
     {
         $this->templateManager->addTemplateDir($this->pluginDirectory . '/Resources/views');
     }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 19.02.19
- * Time: 14:00
- */
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Subscriber;
 
@@ -72,7 +67,11 @@ class AbstractPostDispatchSecureBackend implements SubscriberInterface
         ];
     }
 
-    public function onPostDispatchSecureBackendIndex(Enlight_Event_EventArgs $args)
+
+    /** @noinspection PhpUnused */
+    public function onPostDispatchSecureBackendIndex(
+        /** @noinspection PhpUnusedParameterInspection */ Enlight_Event_EventArgs $args
+    )
     {
         // afterbuy is carrying system
         if ($this->config['mainSystem'] == 2) {

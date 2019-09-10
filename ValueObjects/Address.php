@@ -1,28 +1,9 @@
 <?php
-/**
- * Shopware 5
- * Copyright (c) shopware AG
- *
- * According to our dual licensing model, this program can be used either
- * under the terms of the GNU Affero General Public License, version 3,
- * or under a proprietary license.
- *
- * The texts of the GNU Affero General Public License with an additional
- * permission and of our proprietary license can be found at and
- * in the LICENSE file you have received along with this program.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * "Shopware" is a registered trademark of shopware AG.
- * The licensing of the program under the AGPLv3 does not imply a
- * trademark license. Therefore any rights, title and interest in
- * our trademarks remain entirely with us.
- */
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\ValueObjects;
+
+use DateTime;
 
 class Address extends AbstractValueObject
 {
@@ -128,12 +109,12 @@ class Address extends AbstractValueObject
     protected $email = 'no.mail@set.org';
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $birthday;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getBirthday()
     {
@@ -141,14 +122,12 @@ class Address extends AbstractValueObject
     }
 
     /**
-     * @param \DateTime $birthday
+     * @param DateTime $birthday
      */
-    public function setBirthday(\DateTime $birthday)
+    public function setBirthday(DateTime $birthday)
     {
         $this->birthday = $birthday;
     }
-
-
 
     /**
      * @return string
@@ -175,6 +154,7 @@ class Address extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @param string $department
      */
     public function setDepartment(string $department)
@@ -311,6 +291,7 @@ class Address extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @return string
      */
     public function getVatId()
@@ -348,6 +329,7 @@ class Address extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @return string
      */
     public function getAdditionalAddressLine2()
@@ -356,6 +338,7 @@ class Address extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @param string $additionalAddressLine2
      */
     public function setAdditionalAddressLine2(string $additionalAddressLine2)

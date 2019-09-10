@@ -1,7 +1,10 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
+use Doctrine\ORM\ORMException;
+use Exception;
 use Shopware\Models\Order\Order;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -19,11 +22,6 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      */
     protected $countries;
 
-    /**
-     * @var Shop
-     */
-    protected $targetShop;
-
     /** @var ShopwareOrderHelper */
     public $helper;
 
@@ -31,6 +29,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param array $data
      * @return mixed
+     * @throws ORMException
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -43,6 +42,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      *
      * @param array $data
      * @return mixed
+     * @throws ORMException
      */
     public function transform(array $data) {
 
@@ -66,7 +66,7 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
         try {
             $this->entityManager->flush();
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error('Error updating order state');
         }
 

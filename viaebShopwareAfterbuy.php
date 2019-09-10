@@ -1,8 +1,10 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 namespace viaebShopwareAfterbuy;
 
+use DateTime;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
@@ -47,6 +49,7 @@ class viaebShopwareAfterbuy extends Plugin
      * @param InstallContext $context
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\Tools\ToolsException
+     * @throws \Doctrine\ORM\ORMException
      */
     public function install(InstallContext $context)
     {
@@ -55,7 +58,7 @@ class viaebShopwareAfterbuy extends Plugin
         $this->updateAttributes();
 
         $em = $this->container->get('models');
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
 
         $tableNames = array('afterbuy_status');
@@ -67,10 +70,10 @@ class viaebShopwareAfterbuy extends Plugin
 
             $status = new Status();
             $status->setId(1);
-            $status->setLastProductExport(new \DateTime('1970-01-01'));
-            $status->setLastProductImport(new \DateTime('1970-01-01'));
-            $status->setLastOrderImport(new \DateTime('1970-01-01'));
-            $status->setLastStatusExport(new \DateTime('1970-01-01'));
+            $status->setLastProductExport(new DateTime('1970-01-01'));
+            $status->setLastProductImport(new DateTime('1970-01-01'));
+            $status->setLastOrderImport(new DateTime('1970-01-01'));
+            $status->setLastStatusExport(new DateTime('1970-01-01'));
 
             $em->persist($status);
             $em->flush();
@@ -87,6 +90,7 @@ class viaebShopwareAfterbuy extends Plugin
 
     public function deleteAttributes() {
         $service = $this->container->get('shopware_attribute.crud_service');
+
         $service->delete('s_categories_attributes', 'afterbuy_catalog_id');
         $service->delete('s_order_attributes', 'afterbuy_order_id');
         $service->delete('s_articles_attributes', 'afterbuy_parent_id');
@@ -99,7 +103,7 @@ class viaebShopwareAfterbuy extends Plugin
 
     public function deleteSchema() {
         $em = $this->container->get('models');
-        $tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
 
         $tableNames = array('afterbuy_status');

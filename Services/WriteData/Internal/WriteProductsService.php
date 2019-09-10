@@ -4,6 +4,7 @@ namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\OptimisticLockException;
 
+use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -22,6 +23,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @param array $data
      *
      * @return array
+     * @throws ORMException
      */
     public function put(array $data)
     {
@@ -35,6 +37,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * could may be moved into separate helper
      *
      * @param ValueArticle[] $valueArticles
+     * @throws ORMException
      */
     public function transform(array $valueArticles)
     {
@@ -75,6 +78,7 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
         } catch (OptimisticLockException $e) {
             $this->logger->error('Error storing products', $targetData);
             exit('Error storing products');
+        } catch (ORMException $e) {
         }
 
         if(!empty($targetData)) {

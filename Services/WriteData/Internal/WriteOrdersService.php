@@ -1,7 +1,10 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
+use Doctrine\ORM\ORMException;
+use Exception;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -28,6 +31,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param array $data
      * @return mixed
+     * @throws ORMException
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -40,6 +44,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      *
      * @param array $data
      * @return mixed
+     * @throws ORMException
      */
     public function transform(array $data) {
         /** @var ShopwareOrderHelper $helper */
@@ -144,7 +149,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             $this->storeSubmissionDate('lastOrderImport');
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error($e->getMessage(), $targetData);
         }
 

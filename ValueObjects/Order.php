@@ -1,7 +1,9 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\ValueObjects;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use viaebShopwareAfterbuy\ValueObjects\Address as AddressAlias;
 
@@ -87,12 +89,12 @@ class Order extends AbstractValueObject {
     public $shipped = false;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $createDate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $updateDate;
 
@@ -129,6 +131,7 @@ class Order extends AbstractValueObject {
     }
 
     /**
+     * @noinspection PhpUnused
      * @return int
      */
     public function getPaymentTypeId()
@@ -327,6 +330,7 @@ class Order extends AbstractValueObject {
     }
 
     /**
+     * @noinspection PhpUnused
      * @param float $amountNet
      */
     public function setAmountNet(float $amountNet)
@@ -447,7 +451,7 @@ class Order extends AbstractValueObject {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreateDate()
     {
@@ -455,15 +459,16 @@ class Order extends AbstractValueObject {
     }
 
     /**
-     * @param \DateTime $createDate
+     * @param DateTime $createDate
      */
-    public function setCreateDate(\DateTime $createDate)
+    public function setCreateDate(DateTime $createDate)
     {
         $this->createDate = $createDate;
     }
 
     /**
-     * @return \DateTime
+     * @noinspection PhpUnused
+     * @return DateTime
      */
     public function getUpdateDate()
     {
@@ -471,15 +476,11 @@ class Order extends AbstractValueObject {
     }
 
     /**
-     * @param \DateTime $updateDate
+     * @noinspection PhpUnused
+     * @param DateTime $updateDate
      */
-    public function setUpdateDate(\DateTime $updateDate)
+    public function setUpdateDate(DateTime $updateDate)
     {
         $this->updateDate = $updateDate;
     }
-
-
-
-
-
 }

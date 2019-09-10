@@ -1,8 +1,12 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use DateTime;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Shopware\Models\Attribute\Order as OrderAttributes;
 use viaebShopwareAfterbuy\ValueObjects\Address as ValueAddress;
 use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
@@ -307,6 +311,7 @@ class ShopwareOrderHelper extends AbstractHelper
 
     /**
      * @param array $values
+     * @throws ORMException
      */
     public function setAfterBuyIds(array $values)
     {
@@ -335,7 +340,9 @@ class ShopwareOrderHelper extends AbstractHelper
     }
 
     /**
+     * @param array $config
      * @return array
+     * @throws Exception
      */
     public function getUnexportedOrders(array $config)
     {
@@ -350,7 +357,7 @@ class ShopwareOrderHelper extends AbstractHelper
             ->andWhere('orders.number != 0');
 
         if(!empty($config["minOrderDate"])) {
-            $minOrderDate = new \DateTime($config["minOrderDate"]);
+            $minOrderDate = new DateTime($config["minOrderDate"]);
 
             $query->andWhere('orders.orderTime > :minOrderDate')
                 ->setParameters(array('minOrderDate' => $minOrderDate));
@@ -432,7 +439,7 @@ class ShopwareOrderHelper extends AbstractHelper
     /**
      * @param int $id
      *
-     * @return object|\Shopware\Models\Dispatch\Dispatch|null
+     * @return object|Dispatch|null
      */
     public function getShippingType(int $id)
     {
@@ -481,7 +488,10 @@ class ShopwareOrderHelper extends AbstractHelper
 
             $detail->setArticleName($position->getName());
 
-            $tax = $this->getTax($position->getTax());
+            try {
+                $tax = $this->getTax($position->getTax());
+            } catch (ORMException $e) {
+            }
 
             $detail->setTaxRate($position->getTax());
 
@@ -733,16 +743,28 @@ class ShopwareOrderHelper extends AbstractHelper
         $address->setAdditionalAddressLine1($billingAddress->getAdditionalAddressLine1());
         $address->setCustomer($customer);
 
-        $this->entityManager->persist($customer);
-        $this->entityManager->persist($address);
+        try {
+            $this->entityManager->persist($customer);
+        } catch (ORMException $e) {
+            $this->logger->error('Error storing customer.');
+        }
+
+        try {
+            $this->entityManager->persist($address);
+        } catch (ORMException $e) {
+            $this->logger->error('Error storing customer address.');
+        }
 
         $customer->setDefaultBillingAddress($address);
         $customer->setDefaultShippingAddress($address);
-        $this->entityManager->persist($customer);
 
         try {
+            $this->entityManager->persist($customer);
             $this->entityManager->flush();
         } catch (OptimisticLockException $e) {
+            $this->logger->error('Error writing customer data.');
+        } catch (ORMException $e) {
+            $this->logger->error('Error writing customer data.');
         }
 
         return $customer;

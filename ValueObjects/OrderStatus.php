@@ -1,6 +1,9 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\ValueObjects;
+
+use DateTime;
 
 class OrderStatus extends AbstractValueObject {
 
@@ -10,12 +13,12 @@ class OrderStatus extends AbstractValueObject {
     protected $afterbuyOrderId;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $paymentDate;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $shippingDate;
 
@@ -57,7 +60,7 @@ class OrderStatus extends AbstractValueObject {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getPaymentDate()
     {
@@ -65,15 +68,15 @@ class OrderStatus extends AbstractValueObject {
     }
 
     /**
-     * @param \DateTime $paymentDate
+     * @param DateTime $paymentDate
      */
-    public function setPaymentDate(\DateTime $paymentDate)
+    public function setPaymentDate(DateTime $paymentDate)
     {
         $this->paymentDate = $paymentDate;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getShippingDate()
     {
@@ -81,9 +84,9 @@ class OrderStatus extends AbstractValueObject {
     }
 
     /**
-     * @param \DateTime $shippingDate
+     * @param DateTime $shippingDate
      */
-    public function setShippingDate(\DateTime $shippingDate)
+    public function setShippingDate(DateTime $shippingDate)
     {
         $this->shippingDate = $shippingDate;
     }

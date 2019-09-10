@@ -1,4 +1,5 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\ValueObjects;
 
@@ -355,6 +356,7 @@ class Article extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @return mixed
      */
     public function getPseudoPrice()
@@ -363,6 +365,7 @@ class Article extends AbstractValueObject
     }
 
     /**
+     * @noinspection PhpUnused
      * @param mixed $pseudoPrice
      */
     public function setPseudoPrice($pseudoPrice)

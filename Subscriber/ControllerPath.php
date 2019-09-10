@@ -5,6 +5,7 @@ namespace viaebShopwareAfterbuy\Subscriber;
 use Enlight\Event\SubscriberInterface;
 use Enlight_Event_EventArgs;
 
+/** @noinspection PhpUnused */
 class ControllerPath implements SubscriberInterface
 {
     public static function getSubscribedEvents()
@@ -18,12 +19,18 @@ class ControllerPath implements SubscriberInterface
         ];
     }
 
-    public function getViaebResetShopConnectionController(Enlight_Event_EventArgs $args)
+    /** @noinspection PhpUnused */
+    public function getViaebResetShopConnectionController(
+        /** @noinspection PhpUnusedParameterInspection */ Enlight_Event_EventArgs $args
+    )
     {
         return __DIR__ . '/../Controllers/Backend/viaebResetShopConnection.php';
     }
 
-    public function getViaebConfigFormController(Enlight_Event_EventArgs $args)
+    /** @noinspection PhpUnused */
+    public function getViaebConfigFormController(
+        /** @noinspection PhpUnusedParameterInspection */ Enlight_Event_EventArgs $args
+    )
     {
         return __DIR__ . '/../Controllers/Backend/viaebConfigForm.php';
     }

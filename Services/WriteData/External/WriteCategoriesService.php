@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
+use Exception;
 use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
@@ -67,7 +68,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         try {
             $this->helper->updateExternalIds($catalogIds);
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error('Could not store external category ids');
         }
 

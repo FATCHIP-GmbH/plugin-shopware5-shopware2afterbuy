@@ -1,8 +1,10 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
@@ -179,6 +181,7 @@ class ShopwareCategoryHelper extends AbstractHelper
     /**
      * @param CategoryTreeNode[] $valueCategoryTrees
      * @return ShopwareCategory[]
+     * @throws ORMException
      */
     public function addCategoriesToShopware(array $valueCategoryTrees)
     {

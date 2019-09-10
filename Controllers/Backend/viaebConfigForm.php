@@ -1,17 +1,21 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
+use Shopware\Components\CacheManager;
+use Shopware\Components\ConfigWriter;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper;
 
 class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_Backend_ExtJs
 {
-    /** @var \Shopware\Components\ConfigWriter $configWriter */
+    /** @var ConfigWriter $configWriter */
     protected $configWriter;
 
     protected $pluginName;
 
-    /** @var \Shopware\Components\CacheManager */
+    /** @var CacheManager */
     protected $cacheManager;
 
-    /** @var \viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper */
+    /** @var ShopwareConfigHelper */
     protected $configHelper;
 
     public function init()
@@ -24,6 +28,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         $this->configHelper = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.helper.shopware_config_helper');
     }
 
+    /** @noinspection PhpUnused */
     public function getConfigValuesAction() {
         $config = $this->configHelper->getConfigValues($this->pluginName);
 
@@ -33,6 +38,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         ]);
     }
 
+    /** @noinspection PhpUnused */
     public function saveConnectionConfigAction() {
 
         $this->View()->assign([

@@ -1,8 +1,10 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Commands;
 
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
+use viaebShopwareAfterbuy\Services\WriteData\Internal\WriteOrdersService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +20,7 @@ class ImportOrders extends ShopwareCommand
     protected $readDataService;
 
     /**
-     * @var \viaebShopwareAfterbuy\Services\WriteData\Internal\WriteOrdersService
+     * @var WriteOrdersService
      */
     protected $writeDataService;
 

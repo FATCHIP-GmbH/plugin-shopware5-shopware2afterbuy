@@ -1,7 +1,10 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\ReadData\External;
 
+use DateTime;
+use Exception;
 use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
@@ -59,9 +62,9 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $value->setAmount(Helper::convertDeString2Float($entity['PaymentInfo']['FullAmount']));
 
             try {
-                $value->setCreateDate(new \DateTime($entity['OrderDate']));
+                $value->setCreateDate(new DateTime($entity['OrderDate']));
             }
-            catch(\Exception $e) {
+            catch(Exception $e) {
                 //handle annoying datetime exception
             }
 

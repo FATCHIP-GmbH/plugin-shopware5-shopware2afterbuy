@@ -2,6 +2,8 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
+use DateTime;
+use Exception;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
@@ -42,10 +44,10 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
 
             //should be replaced by values from status history
             try {
-                $status->setPaymentDate(new \DateTime());
-                $status->setShippingDate(new \DateTime());
+                $status->setPaymentDate(new DateTime());
+                $status->setShippingDate(new DateTime());
             }
-            catch(\Exception $e) {
+            catch(Exception $e) {
                 //ugly datetime exception handling
             }
             $status->setAmount($order->getInvoiceAmount());

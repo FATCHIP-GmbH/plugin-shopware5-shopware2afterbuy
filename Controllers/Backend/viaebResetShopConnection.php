@@ -1,4 +1,5 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 use viaebShopwareAfterbuy\Services\Helper\ShopwareResetHelper;
 
@@ -8,6 +9,7 @@ class Shopware_Controllers_Backend_viaebResetShopConnection extends Shopware_Con
     {
     }
 
+    /** @noinspection PhpUnused */
     public function resetAction()
     {
         /** @var ShopwareResetHelper $shopwareResetHelper */

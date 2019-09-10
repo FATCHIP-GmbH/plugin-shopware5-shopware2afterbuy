@@ -2,12 +2,11 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
-use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
-use Shopware\Models\Category\Category as ShopwareCategory;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 
 class WriteCategoriesService extends AbstractWriteDataService implements WriteDataInterface
@@ -25,6 +24,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     /**
      * @param array $data
      * @return mixed
+     * @throws ORMException
      */
     public function put(array $data)
     {
@@ -38,6 +38,7 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @param ValueCategory[] $valueCategories
      *
      * @return mixed
+     * @throws ORMException
      */
     public function transform(array $valueCategories)
     {

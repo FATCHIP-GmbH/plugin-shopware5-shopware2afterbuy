@@ -1,9 +1,11 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Enlight_Components_Db_Adapter_Pdo_Mysql;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
@@ -61,8 +63,9 @@ class AbstractHelper
     /** @var LoggerInterface */
     protected $logger;
 
-    public $mediaStreamContext;
-
+    /**
+     * @var Connection
+     */
     protected $dbal;
 
     /**
@@ -94,16 +97,26 @@ class AbstractHelper
         $this->attributeGetter = $attributeGetter;
     }
 
+    /**
+     * @param Enlight_Components_Db_Adapter_Pdo_Mysql $db
+     */
     public function initDb(Enlight_Components_Db_Adapter_Pdo_Mysql $db)
     {
         $this->db = $db;
     }
 
+    /**
+     * @param Connection $dbal
+     */
     public function initDbal(Connection $dbal)
     {
         $this->dbal = $dbal;
     }
 
+    /**
+     * @param CachedConfigReader $configReader
+     * @param string $pluginName
+     */
     public function setConfig(CachedConfigReader $configReader, string $pluginName)
     {
         $this->config = $configReader->getByPluginName($pluginName);
@@ -137,6 +150,7 @@ class AbstractHelper
      * @param float $rate
      *
      * @return Tax
+     * @throws ORMException
      */
     public function getTax(float $rate)
     {
@@ -159,6 +173,7 @@ class AbstractHelper
 
     /**
      * @param float $rate
+     * @throws ORMException
      */
     public function createTax(float $rate)
     {
@@ -174,6 +189,9 @@ class AbstractHelper
         }
     }
 
+    /**
+     *
+     */
     public function getTaxes()
     {
         $taxes = $this->entityManager->createQueryBuilder()
@@ -306,6 +324,9 @@ class AbstractHelper
         return $raw;
     }
 
+    /**
+     * @param MediaService $mediaService
+     */
     public function initMediaService(MediaService $mediaService)
     {
         $this->mediaService = $mediaService;
@@ -316,6 +337,7 @@ class AbstractHelper
      * @param $albumName
      *
      * @return Media
+     * @throws ORMException
      */
     public function createMediaImage($url, $albumName = 'Artikel')
     {

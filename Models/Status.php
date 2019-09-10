@@ -2,6 +2,7 @@
 
 namespace viaebShopwareAfterbuy\Models;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use \Shopware\Components\Model\ModelEntity;
 
@@ -21,25 +22,25 @@ class Status extends ModelEntity {
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastOrderImport;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastProductImport;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastProductExport;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @var \DateTime
+     * @var DateTime
      */
     private $lastStatusExport;
 
@@ -60,7 +61,7 @@ class Status extends ModelEntity {
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastOrderImport()
     {
@@ -68,15 +69,15 @@ class Status extends ModelEntity {
     }
 
     /**
-     * @param \DateTime $lastOrderImport
+     * @param DateTime $lastOrderImport
      */
-    public function setLastOrderImport(\DateTime $lastOrderImport)
+    public function setLastOrderImport(DateTime $lastOrderImport)
     {
         $this->lastOrderImport = $lastOrderImport;
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
     public function getLastProductImport()
     {
@@ -84,15 +85,16 @@ class Status extends ModelEntity {
     }
 
     /**
-     * @param \DateTime $lastProductImport
+     * @param DateTime $lastProductImport
      */
-    public function setLastProductImport(\DateTime $lastProductImport)
+    public function setLastProductImport(DateTime $lastProductImport)
     {
         $this->lastProductImport = $lastProductImport;
     }
 
     /**
-     * @return \DateTime
+     * @noinspection PhpUnused
+     * @return DateTime
      */
     public function getLastStatusExport()
     {
@@ -100,15 +102,16 @@ class Status extends ModelEntity {
     }
 
     /**
-     * @param \DateTime $lastStatusExport
+     * @param DateTime $lastStatusExport
      */
-    public function setLastStatusExport(\DateTime $lastStatusExport)
+    public function setLastStatusExport(DateTime $lastStatusExport)
     {
         $this->lastStatusExport = $lastStatusExport;
     }
 
     /**
-     * @return \DateTime
+     * @noinspection PhpUnused
+     * @return DateTime
      */
     public function getLastProductExport()
     {
@@ -116,12 +119,10 @@ class Status extends ModelEntity {
     }
 
     /**
-     * @param \DateTime $lastProductExport
+     * @param DateTime $lastProductExport
      */
-    public function setLastProductExport(\DateTime $lastProductExport)
+    public function setLastProductExport(DateTime $lastProductExport)
     {
         $this->lastProductExport = $lastProductExport;
     }
-
-
 }

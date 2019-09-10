@@ -1,7 +1,9 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Exception;
 use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\ValueObjects\Article;
 use viaebShopwareAfterbuy\ValueObjects\ProductPicture;
@@ -252,7 +254,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
 
         foreach($data as $value) {
             /**
-             * @var \viaebShopwareAfterbuy\ValueObjects\Article $value
+             * @var ValueArticle $value
              */
 
             if($value->getVariantArticles()) {
@@ -282,7 +284,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
             try {
                 $response = $api->updateShopProducts($products);
             }
-            catch (\Exception $e) {
+            catch (Exception $e) {
                 $this->logger->error($e->getMessage(), array($e->getFile(), $products));
                 exit($e->getMessage());
             }

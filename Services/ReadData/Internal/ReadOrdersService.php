@@ -2,9 +2,9 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
+use Exception;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityNotFoundException;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Address;
@@ -20,6 +20,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     /**
      * @param array $filter
      * @return array|null
+     * @throws Exception
      */
     public function get(array $filter) {
         $data = $this->read($filter);
@@ -91,18 +92,14 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $billingAddress->setCountry($entity->getBilling()->getCountry()->getIso());
             $billingAddress->setPhone($entity->getBilling()->getPhone());
 
-            try {
-                if ($entity->getCustomer()) {
-                    $billingAddress->setEmail($entity->getCustomer()->getEmail());
-                    $order->setCustomerNumber($entity->getCustomer()->getNumber());
-                }
-
-                if ($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
-                    $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
-                }
+            if ($entity->getCustomer()) {
+                $billingAddress->setEmail($entity->getCustomer()->getEmail());
+                $order->setCustomerNumber($entity->getCustomer()->getNumber());
             }
-            catch(EntityNotFoundException $e) {
-                $this->logger->error($e->getMessage());
+
+            if ($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
+                /** @noinspection PhpParamsInspection */
+                $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
             }
 
             $shippingAddress = new Address();
@@ -120,6 +117,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $order->setBillingAddress($billingAddress);
             $order->setShippingAddress($shippingAddress);
 
+            /** @noinspection PhpParamsInspection */
             $order->setCreateDate($entity->getOrderTime());
             $order->setShipping($entity->getInvoiceShipping());
 
@@ -127,7 +125,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 $shippingType = $entity->getDispatch();
                 $order->setShippingType($shippingType->getName());
             }
-            catch(\Exception $e) {
+            catch(Exception $e) {
                 $order->setShippingType('Standard');
             }
 
@@ -161,6 +159,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      *
      * @param array $filter
      * @return array
+     * @throws Exception
      */
     public function read(array $filter) {
 

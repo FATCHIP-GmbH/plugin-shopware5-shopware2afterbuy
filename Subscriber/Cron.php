@@ -3,6 +3,7 @@
 namespace viaebShopwareAfterbuy\Subscriber;
 
 use Enlight\Event\SubscriberInterface;
+use Shopware_Components_Cron_CronJob;
 use viaebShopwareAfterbuy\Services\ReadData\External\ReadOrdersService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\Services\WriteData\External\WriteOrdersService;
@@ -96,7 +97,10 @@ class Cron implements SubscriberInterface
         );
     }
 
-    public function updateProducts(\Shopware_Components_Cron_CronJob $job)
+    /** @noinspection PhpUnused */
+    public function updateProducts(
+        /** @noinspection PhpUnusedParameterInspection */ Shopware_Components_Cron_CronJob $job
+    )
     {
         $filter = array(
             'categories' => array(),
@@ -121,7 +125,10 @@ class Cron implements SubscriberInterface
         return $output;
     }
 
-    public function updateOrders(\Shopware_Components_Cron_CronJob $job)
+    /** @noinspection PhpUnused */
+    public function updateOrders(
+        /** @noinspection PhpUnusedParameterInspection */ Shopware_Components_Cron_CronJob $job
+    )
     {
         $filter = array();
         $output = '';

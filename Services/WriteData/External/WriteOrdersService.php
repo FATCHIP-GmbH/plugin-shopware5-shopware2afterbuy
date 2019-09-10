@@ -1,7 +1,9 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
+use Exception;
 use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
@@ -169,7 +171,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         try {
             $this->helper->setAfterBuyIds($submitted);
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error('Error storing external order ids', array($e->getMessage()));
         }
 

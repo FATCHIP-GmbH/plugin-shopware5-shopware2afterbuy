@@ -2,6 +2,8 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData;
 
+use DateTime;
+use Exception;
 use viaebShopwareAfterbuy\Components\Helper;
 use viaebShopwareAfterbuy\Services\AbstractDataService;
 use viaebShopwareAfterbuy\Models\Status;
@@ -35,11 +37,11 @@ class AbstractWriteDataService extends AbstractDataService {
         }
 
         try {
-            $status->$setter(new \DateTime());
+            $status->$setter(new DateTime());
             $this->entityManager->persist($status);
             $this->entityManager->flush();
         }
-        catch(\Exception $e) {
+        catch(Exception $e) {
             $this->logger->error('Error updating submission date', array($field));
         }
     }

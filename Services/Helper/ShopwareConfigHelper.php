@@ -2,12 +2,6 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
-use DateTime;
-use Doctrine\ORM\Query;
-use Exception;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use viaebShopwareAfterbuy\Models\Status;
-
 class ShopwareConfigHelper extends AbstractHelper
 {
 

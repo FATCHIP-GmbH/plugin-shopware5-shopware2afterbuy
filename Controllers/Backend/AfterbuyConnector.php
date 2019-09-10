@@ -1,10 +1,12 @@
 <?php
+/** @noinspection SpellCheckingInspection */
 
 class Shopware_Controllers_Backend_AfterbuyConnector extends Shopware_Controllers_Backend_ExtJs
 {
     public function indexAction() {
     }
 
+    /** @noinspection PhpUnused */
     public function testConnectionAction() {
 
         $testService = $this->container->get('viaeb_shopware_afterbuy.services.read_data.external.connection_test_service');

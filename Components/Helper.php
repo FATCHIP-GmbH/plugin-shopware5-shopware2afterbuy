@@ -3,8 +3,6 @@
 namespace viaebShopwareAfterbuy\Components;
 
 class Helper {
-
-
     /**
      * returns setter name as string for given property
      *

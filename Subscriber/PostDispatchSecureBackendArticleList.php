@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: roman
- * Date: 19.02.19
- * Time: 14:00
- */
+/** @noinspection SpellCheckingInspection */
 
 namespace viaebShopwareAfterbuy\Subscriber;
 
@@ -13,6 +8,7 @@ use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
 class PostDispatchSecureBackendArticleList extends AbstractPostDispatchSecureBackend
 {
 
+    /** @noinspection PhpUnused */
     public function onPostDispatchSecureBackendArticleList()
     {
         if ($this->controller->Request()->getActionName() == 'load') {

@@ -708,7 +708,8 @@ ON duplicate key update afterbuy_id = $externalId;";
             if ( ! $article) {
                 $article = $this->entityManager
                     ->getRepository(ArticleDetail::class)
-                    ->findOneBy(array('number' => $number));
+                    ->findOneBy(array('number' => $number))
+                    ->getArticle();
             } else {
                 //If Baseproduct we just will set the name
                 $article->setName($name);

@@ -97,6 +97,6 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
          */
         $categoryHelper = $this->helper;
 
-        return $categoryHelper->getAllCategories();
+        return $categoryHelper->getFilteredCategoryList();
     }
 }

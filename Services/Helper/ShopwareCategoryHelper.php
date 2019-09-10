@@ -3,8 +3,7 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use Shopware\Components\Model\QueryBuilder;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use Shopware\Models\Category\Category as ShopwareCategory;
@@ -20,11 +19,35 @@ class ShopwareCategoryHelper extends AbstractHelper
 {
 
     /**
+     * Returns all categories including 'Root' category.
+     *
      * @return ShopwareCategory[]
      */
     public function getAllCategories()
     {
         return $this->entityManager->getRepository($this->entity)->findAll();
+    }
+
+    /**
+     * @param array $filter
+     * @return ShopwareCategory[]
+     * @see QueryBuilder::addFilter()
+     */
+    public function getFilteredCategoryList(array $filter = []) {
+        $defaultFilter = [
+            'property' => 'parent',
+            'expression' => '!=',
+            'value' => 'NULL',
+        ];
+
+        $filter[] = $defaultFilter;
+
+        /** @var QueryBuilder $builder */
+        $builder = $this->entityManager->getRepository($this->entity)->createQueryBuilder('category');
+        $builder->select([]);
+        $builder->addFilter($filter);
+
+        return $builder->getQuery()->getResult();
     }
 
     /**
@@ -181,7 +204,6 @@ class ShopwareCategoryHelper extends AbstractHelper
     /**
      * @param CategoryTreeNode[] $valueCategoryTrees
      * @return ShopwareCategory[]
-     * @throws ORMException
      */
     public function addCategoriesToShopware(array $valueCategoryTrees)
     {

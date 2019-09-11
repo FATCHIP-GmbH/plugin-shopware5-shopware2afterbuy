@@ -143,6 +143,10 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @return mixed
      */
     public function send($targetData) {
+        /** @var ShopwareOrderHelper $helper */
+        $helper = $this->helper;
+
+        $helper->resetArticleChangeTime($targetData);
 
         try {
             $this->entityManager->flush();

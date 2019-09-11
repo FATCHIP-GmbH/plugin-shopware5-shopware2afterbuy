@@ -4,6 +4,7 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use Doctrine\ORM\ORMException;
+use Shopware\Models\Article\Repository;
 use Shopware\Models\Article\Unit as ShopwareUnit;
 use Shopware\Models\Property\Group as FilterGroup;
 use Shopware\Models\Property\Option as FilterOption;
@@ -650,6 +651,33 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $article = $this->entityManager->getRepository(ArticleDetail::class)
             ->findOneBy(array('number' => $number));
+
+        return $article;
+    }
+
+    /**
+     * @param $externalIdentifier
+     * @return ArticleDetail
+     */
+    public function getArticleByExternalIdentifier($externalIdentifier)
+    {
+        /** @var Repository $repository */
+        $repository = $this->entityManager->getRepository(ArticleDetail::class);
+
+        /** @var \Shopware\Components\Model\QueryBuilder $builder */
+        $builder = $repository->createQueryBuilder('detail');
+        $builder->select(['detail'])
+            ->leftJoin('detail.attribute', 'a')
+            ->where('a.afterbuyId=:externalId')
+            ->setParameter('externalId', $externalIdentifier);
+
+        try {
+            $article = $builder->getQuery()->getOneOrNullResult();
+        } catch (NonUniqueResultException $e) {
+            $this->logger->error($e->getMessage());
+
+            return null;
+        }
 
         return $article;
     }

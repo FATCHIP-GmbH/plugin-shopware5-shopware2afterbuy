@@ -7,9 +7,11 @@ use DateTime;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Attribute\Order as OrderAttributes;
 use viaebShopwareAfterbuy\ValueObjects\Address as ValueAddress;
 use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
+use viaebShopwareAfterbuy\ValueObjects\Order;
 use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 use Shopware\Models\Customer\Address;
 use Shopware\Models\Customer\Customer;
@@ -788,5 +790,39 @@ class ShopwareOrderHelper extends AbstractHelper
         }
 
         return $orders;
+    }
+
+    /**
+     * @param Order[] $orders
+     */
+    public function resetArticleChangeTime(array $orders)
+    {
+        foreach ($orders as $order) {
+            /** @var OrderPosition $position */
+            foreach ($order->getPositions() as $position) {
+                $externalIdentifier = $position->getExternalIdentifier();
+
+                /** @var ShopwareArticleHelper $articleHelper */
+                $articleHelper = Shopware()->Container()->get(
+                    'viaeb_shopware_afterbuy.services.helper.shopware_article_helper'
+                );
+                /** @var ArticleDetail $detail */
+                $detail = $articleHelper->getArticleByExternalIdentifier($externalIdentifier);
+
+                $detail->getArticle()->setChanged();
+
+                try {
+                    $this->entityManager->persist($detail);
+                } catch (ORMException $e) {
+                    $this->logger->error($e->getMessage());
+                }
+            }
+        }
+
+        try {
+            $this->entityManager->flush();
+        } catch (ORMException $e) {
+            $this->logger->error($e->getMessage());
+        }
     }
 }

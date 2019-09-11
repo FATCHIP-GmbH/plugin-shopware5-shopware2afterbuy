@@ -305,6 +305,9 @@
             <argument type="string">\Shopware\Models\Order\Order</argument>
             <argument type="string">\Shopware\Models\Attribute\Order</argument>
             <argument type="string">getOrder</argument>
+            <call method="init">
+                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper" />
+            </call>
             <call method="preFetch">
 
             </call>

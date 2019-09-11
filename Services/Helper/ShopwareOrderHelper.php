@@ -46,6 +46,14 @@ class ShopwareOrderHelper extends AbstractHelper
 
     protected $shippingType;
 
+    /** @var ShopwareArticleHelper */
+    protected $articleHelper;
+
+    public function init(ShopwareArticleHelper $articleHelper)
+    {
+        $this->articleHelper = $articleHelper;
+    }
+
     public function preFetch()
     {
         $this->paymentStates = $this->getPaymentStates();
@@ -467,6 +475,9 @@ class ShopwareOrderHelper extends AbstractHelper
 
             $detail = new Detail();
 
+            $articleDetail = $this->articleHelper->getArticleByExternalIdentifier($position->getExternalIdentifier());
+            $detail->setArticleId($articleDetail->getArticleId());
+
             $detail->setNumber($value->getExternalIdentifier());
             $detail->setTax($position->getTax());
             $detail->setQuantity($position->getQuantity());
@@ -481,11 +492,7 @@ class ShopwareOrderHelper extends AbstractHelper
                 $detail->setStatus($this->detailStates['1']);
             }
 
-            if ($position->getInternalIdentifier() !== null) {
-                $detail->setArticleNumber($position->getInternalIdentifier());
-            } else {
-                $detail->setArticleNumber($position->getExternalIdentifier());
-            }
+            $detail->setArticleNumber($articleDetail->getNumber());
 
 
             $detail->setArticleName($position->getName());
@@ -499,7 +506,6 @@ class ShopwareOrderHelper extends AbstractHelper
 
             $detail->setTax($tax);
             $detail->setOrder($order);
-            $detail->setArticleId(0);
 
             $details->add($detail);
         }
@@ -802,12 +808,8 @@ class ShopwareOrderHelper extends AbstractHelper
             foreach ($order->getPositions() as $position) {
                 $externalIdentifier = $position->getExternalIdentifier();
 
-                /** @var ShopwareArticleHelper $articleHelper */
-                $articleHelper = Shopware()->Container()->get(
-                    'viaeb_shopware_afterbuy.services.helper.shopware_article_helper'
-                );
                 /** @var ArticleDetail $detail */
-                $detail = $articleHelper->getArticleByExternalIdentifier($externalIdentifier);
+                $detail = $this->articleHelper->getArticleByExternalIdentifier($externalIdentifier);
 
                 $detail->getArticle()->setChanged();
 

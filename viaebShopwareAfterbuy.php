@@ -61,7 +61,9 @@ class viaebShopwareAfterbuy extends Plugin
     {
         parent::install($context);
 
-        $this->fixDefaultValueTypes();
+        if ($context->assertMinimumVersion('5.6')) {
+            $this->fixDefaultValueTypes();
+        }
 
         $this->updateAttributes();
 

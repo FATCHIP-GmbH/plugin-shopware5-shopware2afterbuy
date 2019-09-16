@@ -190,7 +190,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             $variant->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
         }
 
-        if($detail->getLastStock()) {
+        // Method getLastSotck() is in sw53 in Article. Since sw54 it is in ArticleDetail.
+        $object = method_exists($detail, 'getLastStiock') ? $detail : $entity;
+        if($object->getLastStock()) {
             $variant->setLastStock(true);
         }
 

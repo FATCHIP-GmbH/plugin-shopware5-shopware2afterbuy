@@ -592,7 +592,9 @@ class ShopwareOrderHelper extends AbstractHelper
          */
         $order->setInvoiceAmount($value->getAmount());
         $order->setInvoiceShipping($value->getShipping());
-        $order->setInvoiceShippingTaxRate($value->getShippingTax());
+        if (method_exists($order, 'setInvoiceShippingTaxRate')) {
+            $order->setInvoiceShippingTaxRate($value->getShippingTax());
+        }
         $order->setOrderTime($value->getCreateDate());
         $order->setTransactionId($value->getTransactionId());
 

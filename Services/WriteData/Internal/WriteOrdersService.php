@@ -181,7 +181,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         //if the shop is the data carrying system, we do only import new orders,
         //otherwise we will receive states from afterbuy for update
-        if($this->config['mainSystem'] !== 1) {
+        if((int)$this->config['mainSystem'] !== 1) {
             $filterField = 'ModDate';
         } else {
             $filterField = 'AuctionEndDate';

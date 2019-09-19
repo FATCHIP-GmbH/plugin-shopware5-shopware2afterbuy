@@ -55,7 +55,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setExternalIdentifier($product['ProductID']);
             $valueArticle->setAnr($product['Anr']);
 
-            switch ($this->config['ordernumberMapping']) {
+            switch ((int)$this->config['ordernumberMapping']) {
                 case 0:
                     $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
                     break;

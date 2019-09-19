@@ -57,7 +57,7 @@ class Cron implements SubscriberInterface
         $config = $configReader->getByPluginName($pluginName);
 
         //if afterbuy data carrying system
-        if($config['mainSystem'] == 2) {
+        if((int)$config['mainSystem'] == 2) {
             $this->readOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_orders_service');
 

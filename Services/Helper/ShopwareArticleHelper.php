@@ -728,7 +728,7 @@ ON duplicate key update afterbuy_id = $externalId;";
              * @var ArticlesAttribute $article
              */
 
-            if($this->config['ordernumberMapping'] == 1) {
+            if((int)$this->config['ordernumberMapping'] == 1) {
                 $article = $this->getArticleFromAttribute($externalIdentifyer);
             }
             else {
@@ -1471,7 +1471,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         foreach ($columnConfig['data'] as $index => $entity) {
             if ($entity['field'] === 'afterbuyId') {
                 $columnConfig['data'][$index]['show'] = true;
-            } elseif ($entity['field'] === 'afterbuyExportEnabled' && $config['mainSystem'] != 2 && $config['ExportAllArticles'] == 0) {
+            } elseif ($entity['field'] === 'afterbuyExportEnabled' && $config['mainSystem'] != 2 && (int)$config['ExportAllArticles'] == 0) {
                 $columnConfig['data'][$index]['show'] = true;
                 $columnConfig['data'][$index]['type'] = 'boolean';
             }

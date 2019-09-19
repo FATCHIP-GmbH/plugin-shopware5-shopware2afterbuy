@@ -100,7 +100,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
      */
     public function read(array $filter) {
 
-        $data = $this->helper->getUnexportedArticles($filter['submitAll'], $this->config['ExportAllArticles']);
+        $data = $this->helper->getUnexportedArticles($filter['submitAll'], (int)$this->config['ExportAllArticles']);
 
         if(!$data || empty($data)) {
             return array();

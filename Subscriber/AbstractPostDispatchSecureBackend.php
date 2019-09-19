@@ -74,7 +74,7 @@ class AbstractPostDispatchSecureBackend implements SubscriberInterface
     )
     {
         // afterbuy is carrying system
-        if ($this->config['mainSystem'] == 2) {
+        if ((int)$this->config['mainSystem'] == 2) {
             return;
         }
 

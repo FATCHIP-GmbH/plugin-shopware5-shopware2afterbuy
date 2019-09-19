@@ -45,7 +45,7 @@ class UpdateProducts extends ShopwareCommand
         $config = $configReader->getByPluginName($pluginName);
 
         //if afterbuy data carrying system
-        if($config['mainSystem'] == 2) {
+        if((int)$config['mainSystem'] == 2) {
             $this->readCategoriesService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_categories_service');
             $this->writeCategoriesService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_categories_service');
 

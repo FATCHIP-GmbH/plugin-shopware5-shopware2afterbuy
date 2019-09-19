@@ -197,6 +197,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         $variantArticles = [];
 
         foreach($value->getVariantArticles() as $variant) {
+            /** @var ValueArticle $variant */
             if(array_key_exists($variant->getVariantId(), $afterbuyProductIds)) {
                 $variant->setExternalIdentifier($afterbuyProductIds[$variant->getVariantId()]);
             }

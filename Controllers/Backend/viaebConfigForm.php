@@ -46,6 +46,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         ]);
 
         try{
+            //TODO: typecast related to Shopware Version ordernumberMapping mainSystem ExportAllArticles
             $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);

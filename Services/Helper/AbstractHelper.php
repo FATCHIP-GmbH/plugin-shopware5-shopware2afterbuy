@@ -413,6 +413,30 @@ class AbstractHelper
     }
 
     /**
+     * @return mixed|string
+     */
+    public static function getShopwareVersion() {
+        $currentVersion = '';
+
+        if(defined('\Shopware::VERSION')) {
+            $currentVersion = \Shopware::VERSION;
+        }
+
+        //get old composer versions
+        if($currentVersion === '___VERSION___' && class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions')) {
+            $currentVersion = \ShopwareVersion::parseVersion(
+                \PackageVersions\Versions::getVersion('shopware/shopware')
+            )['version'];
+        }
+
+        if(!$currentVersion || $currentVersion === '___VERSION___') {
+            $currentVersion = Shopware()->Container()->getParameter('shopware.release.version');
+        }
+
+        return $currentVersion;
+    }
+
+    /**
      * @param string $url
      *
      * @return string

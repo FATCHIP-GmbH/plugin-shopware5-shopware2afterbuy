@@ -3,6 +3,8 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Doctrine\ORM\ORMException;
+use Exception;
 use Shopware\Components\Model\QueryBuilder;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
@@ -17,10 +19,10 @@ use Zend_Db_Adapter_Exception;
 
 class ShopwareCategoryHelper extends AbstractHelper
 {
-
     /**
      * Returns all categories including 'Root' category.
      *
+     * @noinspection PhpUnused
      * @return ShopwareCategory[]
      */
     public function getAllCategories()
@@ -204,6 +206,7 @@ class ShopwareCategoryHelper extends AbstractHelper
     /**
      * @param CategoryTreeNode[] $valueCategoryTrees
      * @return ShopwareCategory[]
+     * @throws ORMException
      */
     public function addCategoriesToShopware(array $valueCategoryTrees)
     {
@@ -230,7 +233,7 @@ class ShopwareCategoryHelper extends AbstractHelper
                         $this->entityManager->persist($shopwareCategories[$externalIdentifier]);
                         try {
                             $this->entityManager->flush();
-                        } catch (OptimisticLockException $e) {
+                        } catch (Exception $e) {
                             $this->logger->error(
                                 'Error saving category',
                                 array(json_encode($current->getValueCategory()))

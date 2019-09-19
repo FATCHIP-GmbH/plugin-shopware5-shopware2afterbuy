@@ -65,7 +65,7 @@ class AbstractDataService {
     {
         $this->config = $configReader->getByPluginName($pluginName);
 
-        if(empty($config)) {
+        if(empty($this->config)) {
             return;
         }
 

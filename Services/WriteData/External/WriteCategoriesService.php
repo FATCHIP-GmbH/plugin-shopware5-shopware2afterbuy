@@ -72,7 +72,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
             $this->logger->error('Could not store external category ids');
         }
 
-
         return $catalogIds;
     }
 }

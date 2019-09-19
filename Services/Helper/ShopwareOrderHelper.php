@@ -476,7 +476,15 @@ class ShopwareOrderHelper extends AbstractHelper
             $detail = new Detail();
 
             $articleDetail = $this->articleHelper->getArticleByExternalIdentifier($position->getExternalIdentifier());
-            $detail->setArticleId($articleDetail->getArticleId());
+
+            if(!empty($articleDetail)) {
+                $detail->setArticleId($articleDetail->getArticleId());
+                $detail->setArticleNumber($articleDetail->getNumber());
+            }
+            else {
+                $detail->setArticleNumber($value->getExternalIdentifier());
+                $detail->setArticleId(-1);
+            }
 
             $detail->setNumber($value->getExternalIdentifier());
             $detail->setTax($position->getTax());
@@ -490,12 +498,7 @@ class ShopwareOrderHelper extends AbstractHelper
                 $detail->setStatus($this->detailStates['3']);
             } else {
                 $detail->setStatus($this->detailStates['1']);
-            }
-
-            $detail->setArticleNumber($articleDetail->getNumber());
-
-
-            $detail->setArticleName($position->getName());
+            }            $detail->setArticleName($position->getName());
 
             try {
                 $tax = $this->getTax($position->getTax());
@@ -813,7 +816,9 @@ class ShopwareOrderHelper extends AbstractHelper
                 /** @var ArticleDetail $detail */
                 $detail = $this->articleHelper->getArticleByExternalIdentifier($externalIdentifier);
 
-                $detail->getArticle()->setChanged();
+                if(empty($detail)) {
+                    continue;
+                }
 
                 try {
                     $this->entityManager->persist($detail);

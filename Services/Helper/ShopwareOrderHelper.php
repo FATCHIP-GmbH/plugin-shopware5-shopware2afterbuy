@@ -483,7 +483,7 @@ class ShopwareOrderHelper extends AbstractHelper
             }
             else {
                 $detail->setArticleNumber($value->getExternalIdentifier());
-                $detail->setArticleId(-1);
+                $detail->setArticleId(0);
             }
 
             $detail->setNumber($value->getExternalIdentifier());
@@ -804,6 +804,7 @@ class ShopwareOrderHelper extends AbstractHelper
     }
 
     /**
+     * TODO: Optimize performance
      * @param Order[] $orders
      */
     public function resetArticleChangeTime(array $orders)

@@ -735,11 +735,16 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $article = $this->getArticleFromAttribute($number);
             }
 
+            //TODO: fix here
             if ( ! $article) {
-                $article = $this->entityManager
+                $detail = $this->entityManager
                     ->getRepository(ArticleDetail::class)
-                    ->findOneBy(array('number' => $number))
-                    ->getArticle();
+                    ->findOneBy(array('number' => $number));
+
+                if(!empty($detail)) {
+                    $article = $detail->getArticle();
+                }
+
             } else {
                 //If Baseproduct we just will set the name
                 $article->setName($name);

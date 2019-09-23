@@ -123,6 +123,10 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                     $mainNumber = preg_replace('~\D~', '', $position->getInternalIdentifier());
                 }
 
+                if(empty($mainNumber)) {
+                    $mainNumber = 0;
+                }
+
                 $orders[$internalIdentifyer]['Artikelnr_' . $i] = $mainNumber;
                 $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
 

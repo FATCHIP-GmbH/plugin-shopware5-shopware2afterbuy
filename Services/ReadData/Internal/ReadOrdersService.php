@@ -67,6 +67,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
                 if($position->getEan()) {
                     $orderPosition->setExternalIdentifier($position->getEan());
                 }
+
                 $orderPosition->setInternalIdentifier($position->getArticleNumber());
                 $orderPosition->setName($position->getArticleName());
                 $orderPosition->setPrice($position->getPrice());

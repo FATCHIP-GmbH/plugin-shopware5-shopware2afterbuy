@@ -55,7 +55,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
         foreach($data as $entity) {
 
             if(empty($entity)) {
-                $this->logger->error('Expty article object');
+                $this->logger->error('Empty article object');
                 continue;
             }
 

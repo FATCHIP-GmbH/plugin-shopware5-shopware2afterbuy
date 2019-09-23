@@ -21,7 +21,7 @@ class Helper {
     }
 
     public static function convertNumberToABString($value) {
-        $value = number_format($value, 2);
+        $value = number_format((float)$value, 2);
         $value = str_replace(',', '', $value);
         $value = str_replace('.', ',', $value);
 

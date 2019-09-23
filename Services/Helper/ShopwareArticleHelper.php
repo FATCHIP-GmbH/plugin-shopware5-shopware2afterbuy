@@ -130,7 +130,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article->setInternalIdentifier($detail->getNumber());
         $article->setStockMin($detail->getStockMin());
         $article->setStock($detail->getInStock());
-        $article->setWeight($detail->getWeight());
+        $article->setWeight((string) $detail->getWeight());
 
         if($detail->getPurchaseUnit()) {
             $article->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
@@ -184,7 +184,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $variant->setSupplierNumber($detail->getSupplierNumber());
         $variant->setVariantId($detail->getId());
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
-        $variant->setWeight($detail->getWeight());
+        $variant->setWeight((string) $detail->getWeight());
 
         if($detail->getPurchaseUnit()) {
             $variant->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
@@ -266,6 +266,10 @@ ON duplicate key update afterbuy_id = $externalId;";
             foreach ($images as $index => $image) {
 
                 /** @var Image $image */
+                if($image->getMedia() === null || $image->getParent() === null) {
+                    continue;
+                }
+
 
                 try {
                     if ($detail === null) {

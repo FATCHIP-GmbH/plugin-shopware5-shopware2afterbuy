@@ -54,7 +54,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
         foreach($data as $entity) {
 
-            if(empty($entity) || $entity->getTax() === null) {
+            if(empty($entity)) {
+                $this->logger->error('Expty article object');
+                continue;
+            }
+
+            if($entity->getTax() === null || $entity->getMainDetail() === null) {
+                $this->logger->error('Invalid article', array('article' => $entity->getId()));
                 continue;
             }
 

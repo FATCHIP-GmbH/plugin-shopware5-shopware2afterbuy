@@ -266,7 +266,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             foreach ($images as $index => $image) {
 
                 /** @var Image $image */
-                if($image->getMedia() === null || $image->getParent() === null) {
+                if($image->getMedia() === null && $image->getParent() === null) {
                     continue;
                 }
 

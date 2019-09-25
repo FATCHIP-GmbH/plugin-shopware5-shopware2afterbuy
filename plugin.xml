@@ -9,12 +9,14 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
-    <changelog version="0.9.12">
+    <changelog version="0.9.20">
         <changes lang="de">
             <![CDATA[
                 <ul>
                     <li>New: added min order date for export</li>
+                    <li>New: Support for SW 5.6</li>
                     <li>fixed: drop invalid articles</li>
+                    <li>fixed: category association</li>
                     <li>fixed: order submission params</li>
                     <li>fixed: submission of unfinished orders</li>
                 </ul>
@@ -24,7 +26,9 @@
             <![CDATA[
                 <ul>
                     <li>New: added min order date for export</li>
+                    <li>New: Support for SW 5.6</li>
                     <li>fixed: drop invalid articles</li>
+                    <li>fixed: category association</li>
                     <li>fixed: order submission params</li>
                     <li>fixed: submission of unfinished orders</li>
                 </ul>

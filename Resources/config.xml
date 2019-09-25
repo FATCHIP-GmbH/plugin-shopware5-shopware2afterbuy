@@ -52,7 +52,7 @@
             <label>Artikeleinstellungen</label>
             <value>1</value>
         </element>
-        <element type="combo" required="true">
+        <element type="combo">
             <name>baseCategory</name>
             <label lang="de">Stammkategorie</label>
             <label lang="en"></label>

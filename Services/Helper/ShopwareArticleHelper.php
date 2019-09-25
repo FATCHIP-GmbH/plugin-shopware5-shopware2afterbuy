@@ -270,7 +270,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
-
                 try {
                     if ($detail === null) {
                         $path = $image->getMedia()->getPath();
@@ -1192,9 +1191,16 @@ ON duplicate key update afterbuy_id = $externalId;";
                 );
 
                 if ($articleDetail === null) {
+                    //TODO: fix detail retrieval
                     $detailAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
+
+                    if($detailAttribute === null) {
+                        $detailAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
+                            ['afterbuyParentId' => $valueArticle->getExternalIdentifier()]
+                        );
+                    }
 
                     if($detailAttribute) {
                         $articleDetail = $detailAttribute->getArticleDetail();

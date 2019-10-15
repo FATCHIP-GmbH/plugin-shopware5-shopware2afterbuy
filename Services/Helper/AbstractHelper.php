@@ -416,14 +416,20 @@ class AbstractHelper
      * @return mixed|string
      */
     public static function getShopwareVersion() {
+        /** @noinspection DuplicatedCode */
         $currentVersion = '';
 
         if(defined('\Shopware::VERSION')) {
+            /** @noinspection PhpFullyQualifiedNameUsageInspection */
+            /** @noinspection PhpUndefinedClassConstantInspection */
             $currentVersion = \Shopware::VERSION;
         }
 
         //get old composer versions
         if($currentVersion === '___VERSION___' && class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions')) {
+            /** @noinspection PhpFullyQualifiedNameUsageInspection */
+            /** @noinspection PhpUndefinedClassConstantInspection */
+            /** @noinspection PhpUndefinedClassInspection */
             $currentVersion = \ShopwareVersion::parseVersion(
                 \PackageVersions\Versions::getVersion('shopware/shopware')
             )['version'];

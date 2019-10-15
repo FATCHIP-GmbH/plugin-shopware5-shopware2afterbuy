@@ -9,7 +9,6 @@ use Shopware\Models\Order\Order;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
-use Shopware\Models\Shop\Shop;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface {
 

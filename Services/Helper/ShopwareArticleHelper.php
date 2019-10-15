@@ -133,6 +133,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article->setWeight((string) $detail->getWeight());
 
         if($detail->getPurchaseUnit()) {
+            //TODO: conversion is specific for writing method, should be converted there
             $article->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
         }
 
@@ -141,13 +142,14 @@ ON duplicate key update afterbuy_id = $externalId;";
             $article->setLastStock(true);
         }
 
+        /** @var Price $price */
         $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
 
         $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput);
-
         $article->setPrice($price);
+        $article->setBuyingPrice($detail->getPurchasePrice());
 
         $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
         $article->setSupplierNumber($detail->getSupplierNumber());
@@ -219,6 +221,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput);
 
         $variant->setPrice($price);
+        $variant->setBuyingPrice($detail->getPurchasePrice());
 
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
 
@@ -357,6 +360,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         $article->setDescription($entity->getDescriptionLong());
         $article->setShortDescription($entity->getDescription());
+        $article->setKeywords($entity->getKeywords());
 
         $article->setTax($entity->getTax()->getTax());
 
@@ -738,7 +742,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $article = $this->getArticleFromAttribute($number);
             }
 
-            //TODO: fix here
             if ( ! $article) {
                 $detail = $this->entityManager
                     ->getRepository(ArticleDetail::class)
@@ -1046,13 +1049,20 @@ ON duplicate key update afterbuy_id = $externalId;";
                 continue;
             }
 
+            //main article values
             if(!$valueArticle->getMainArticleId()) {
                 $shopwareArticle->setName($valueArticle->getName());
                 $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+                $shopwareArticle->setKeywords($valueArticle->getKeywords());
+                $shopwareArticle->setDescription($valueArticle->getShortDescription());
             }
 
-            $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
-            $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
+            try {
+                $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
+                $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
+            } catch (ORMException $e) {
+                $this->logger->error('ORMException while storing data!');
+            }
 
 
             /** @var ArticleDetail $articleDetail */
@@ -1064,6 +1074,7 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->setInStock($valueArticle->getStock());
             $articleDetail->setEan($valueArticle->getEan());
             $articleDetail->setWeight($valueArticle->getWeight());
+            $articleDetail->setPurchasePrice($valueArticle->getBuyingPrice());
 
             /** @var ShopwareUnit $unit */
             $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());
@@ -1071,7 +1082,6 @@ ON duplicate key update afterbuy_id = $externalId;";
             $articleDetail->setPurchaseUnit($valueArticle->getBasePriceFactor());
             $articleDetail->setSupplierNumber($valueArticle->getSupplierNumber());
             $articleDetail->setLastStock((int)$valueArticle->getDiscontinued());
-
 
             /** @noinspection PhpDeprecationInspection */
             $shopwareArticle->setLastStock((int)$valueArticle->getDiscontinued());
@@ -1089,19 +1099,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             $this->getArticleAttributes($articleDetail,
                 $valueArticle->getMainArticleId());
 
-            //TODO: check if external number should be put in here
             $articleDetail->getAttribute()->setAfterbuyInternalNumber($valueArticle->getAnr());
 
-            $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_4($valueArticle->getFree4());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_5($valueArticle->getFree5());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_6($valueArticle->getFree6());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_7($valueArticle->getFree7());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
+            $this->storeAfterbuyAttributes($articleDetail, $valueArticle);
 
             // to make sure we store the 'Afterbuy ProductID' in case the user chooses to use Afterbuy artikelNr as
             // order number
@@ -1118,6 +1118,19 @@ ON duplicate key update afterbuy_id = $externalId;";
             } catch (OptimisticLockException $e) {
             }
         }
+    }
+
+    public function storeAfterbuyAttributes(ArticleDetail &$articleDetail, ValueArticle $valueArticle) {
+        $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_4($valueArticle->getFree4());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_5($valueArticle->getFree5());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_6($valueArticle->getFree6());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_7($valueArticle->getFree7());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
     }
 
     /**
@@ -1191,7 +1204,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                 );
 
                 if ($articleDetail === null) {
-                    //TODO: fix detail retrieval
                     $detailAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
@@ -1593,4 +1605,5 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         return $filterValue;
     }
+
 }

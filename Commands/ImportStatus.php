@@ -3,6 +3,7 @@
 
 namespace viaebShopwareAfterbuy\Commands;
 
+use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStatusService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
@@ -63,6 +64,11 @@ EOF
         $filter = $this->writeDataService->getOrdersForRequestingStatusUpdate();
 
         $data = $this->readDataService->get($filter);
-        $this->writeDataService->put($data);
+
+        try {
+            $this->writeDataService->put($data);
+        } catch (ORMException $e) {
+            $output->writeln('ORMException while storing data!');
+        }
     }
 }

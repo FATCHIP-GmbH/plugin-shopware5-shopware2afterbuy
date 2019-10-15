@@ -313,6 +313,12 @@
             </call>
         </service>
 
+        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyOrderHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper">
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
+            </call>
+        </service>
+
         <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_products_helper">
             <argument id="models" type="service"/>
             <call method="setLogger">

@@ -31,7 +31,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     /**
      * @param array $data
      * @return mixed
-     * @throws ORMException
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -44,7 +43,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      *
      * @param array $data
      * @return mixed
-     * @throws ORMException
      */
     public function transform(array $data) {
         /** @var ShopwareOrderHelper $helper */
@@ -131,7 +129,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             $helper->setShippingType($order, $this->config['shipping']);
 
-            $this->entityManager->persist($order);
+            try {
+                $this->entityManager->persist($order);
+            } catch (ORMException $e) {
+                $this->logger->error('ORMException while storing order');
+            }
         }
 
         return $data;

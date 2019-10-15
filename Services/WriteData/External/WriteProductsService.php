@@ -43,7 +43,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
          */
         $helper = $this->helper;
 
-        //TODO: move to send method
         $afterbuyProductIds = $helper->submitAfterbuySimpleProducts($data, $api);
 
         $afterbuyProductIds = $helper->submitAfterbuyVariantProducts($data, $api, $afterbuyProductIds);

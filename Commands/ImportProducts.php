@@ -3,6 +3,7 @@
 
 namespace viaebShopwareAfterbuy\Commands;
 
+use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\Services\WriteData\Internal\WriteProductsService;
@@ -65,6 +66,11 @@ EOF
 
         $data = $this->readDataService->get($filter);
         $output->writeln('Got ' . count($data) . ' Products');
-        $this->writeDataService->put($data);
+
+        try {
+            $this->writeDataService->put($data);
+        } catch (ORMException $e) {
+            $output->writeln('ORMException while storing data');
+        }
     }
 }

@@ -32,9 +32,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
     public function transform(array $data) {
         $this->logger->debug('Receiving products from shop', $data);
 
-        /**
-         * @var ShopwareArticleHelper $helper
-         */
+        /** @var ShopwareArticleHelper $helper */
         $helper = $this->helper;
 
         if($this->targetEntity === null) {
@@ -86,9 +84,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
                     $helper->assignArticleImages($entity, $variant, $detail);
 
-                    if($article->getVariantArticles() !== null) {
-                        $article->getVariantArticles()->add($variant);
-                    }
+                    $article->getVariantArticles()->add($variant);
                 }
             }
 

@@ -22,6 +22,17 @@ class Article extends AbstractValueObject
      */
     public $internalIdentifier;
 
+
+    /**
+     * @var string
+     */
+    public $keywords;
+
+    /**
+     * @var float
+     */
+    public $buyingPrice = 0.00;
+
     /**
      * @var int
      */
@@ -47,24 +58,54 @@ class Article extends AbstractValueObject
      */
     public $ean;
 
+    /**
+     * @var
+     */
     public $stockMin;
 
+    /**
+     * @var float
+     */
     public $pseudoPrice;
 
+    /**
+     * @var float
+     */
     public $tax;
 
+    /**
+     * @var array
+     */
     public $variants = [];
 
+    /**
+     * @var
+     */
     public $mainArticleId;
 
+    /**
+     * @var string
+     */
     public $description;
 
+    /**
+     * @var
+     */
     public $supplierNumber;
 
+    /**
+     * @var string
+     */
     public $shortDescription;
 
+    /**
+     * @var
+     */
     public $variantId;
 
+    /**
+     * @var array
+     */
     public $externalCategoryIds = [];
 
     /** @var bool */
@@ -149,15 +190,45 @@ class Article extends AbstractValueObject
      */
     public $mainImageThumbnailUrl;
 
+    /**
+     * @var
+     */
     public $free1;
+    /**
+     * @var
+     */
     public $free2;
+    /**
+     * @var
+     */
     public $free3;
+    /**
+     * @var
+     */
     public $free4;
+    /**
+     * @var
+     */
     public $free5;
+    /**
+     * @var
+     */
     public $free6;
+    /**
+     * @var
+     */
     public $free7;
+    /**
+     * @var
+     */
     public $free8;
+    /**
+     * @var
+     */
     public $free9;
+    /**
+     * @var
+     */
     public $free10;
 
 
@@ -234,6 +305,9 @@ class Article extends AbstractValueObject
     /** @var ProductPicture[] */
     private $productPictures = [];
 
+    /**
+     * @var ArrayCollection
+     */
     protected $variantArticles;
 
     /**
@@ -269,6 +343,9 @@ class Article extends AbstractValueObject
     }
 
 
+    /**
+     * Article constructor.
+     */
     public function __construct()
     {
         $this->variantArticles = new ArrayCollection();
@@ -534,6 +611,9 @@ class Article extends AbstractValueObject
         $this->productPictures[] = $productPicture;
     }
 
+    /**
+     * @return bool
+     */
     public function isMainProduct()
     {
         return $this->mainArticleId === null;
@@ -586,8 +666,6 @@ class Article extends AbstractValueObject
     {
         $this->articleProperties = $articleProperties;
     }
-
-
 
     /**
      * @return mixed
@@ -779,5 +857,37 @@ class Article extends AbstractValueObject
     public function setLastStock(bool $lastStock)
     {
         $this->lastStock = $lastStock;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBuyingPrice()
+    {
+        return $this->buyingPrice;
+    }
+
+    /**
+     * @param float $buyingPrice
+     */
+    public function setBuyingPrice(float $buyingPrice)
+    {
+        $this->buyingPrice = $buyingPrice;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeywords()
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param string $keywords
+     */
+    public function setKeywords(string $keywords)
+    {
+        $this->keywords = $keywords;
     }
 }

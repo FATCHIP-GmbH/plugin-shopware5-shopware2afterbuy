@@ -100,6 +100,8 @@ class viaebShopwareAfterbuy extends Plugin
      */
     public function fixDefaultValueTypes()
     {
+        //TODO: avoid collisions!
+
         // Retrieve the default config setting from the configs
         // mainSystem, ExportAllArticles, ordernumberMapping
         $sql = '

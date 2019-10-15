@@ -27,7 +27,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
     /**
      * transforms api input into ValueArticle (targetEntity)
-     *
+     * TODO: refactor
      * @param array $products
      *
      * @return ValueArticle[]
@@ -55,6 +55,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $valueArticle->setExternalIdentifier($product['ProductID']);
             $valueArticle->setAnr($product['Anr']);
 
+            /** TODO: move + refactor start */
             switch ((int)$this->config['ordernumberMapping']) {
                 case 0:
                     $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
@@ -70,6 +71,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     }
                     break;
             }
+            /** TODO: move end */
 
             $valueArticle->setEan($product['EAN']);
             $valueArticle->setName($product['Name']);
@@ -100,6 +102,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             $helper = $this->helper;
             $helper->addProductPictures($product, $valueArticle);
 
+            /** TODO: move start */
             // catalogs - categories
             if (array_key_exists('Catalogs', $product) && array_key_exists('CatalogID', $product['Catalogs'])) {
                 $catalogIDs = $product['Catalogs']['CatalogID'];
@@ -109,11 +112,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
 
                 $valueArticle->setExternalCategoryIds($catalogIDs);
             }
+            /** TODO: move end */
 
             if ((int)$product['Quantity'] > (int)$product['MinimumStock'] && Helper::convertDeString2Float($product['SellingPrice'] > 0)) {
                 $valueArticle->setActive(true);
             }
 
+            /** TODO: move start */
             $variants = [];
 
             if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product['BaseProductFlag'] !== '1'
@@ -149,7 +154,9 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                     }
                 }
             }
+            /** TODO: move end */
 
+            /** TODO: move start */
             if (
                 key_exists('BaseProductFlag', $product) and $product['BaseProductFlag'] !== '1'
                 or !key_exists('BaseProductFlag', $product)
@@ -160,6 +167,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {
                 $valueArticle->setVariants($variants);
             }
+            /** TODO: move end */
 
             if(!$valueArticle->getMainArticleId()) {
                 $valueArticles[] = $valueArticle;

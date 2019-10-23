@@ -4,8 +4,11 @@ namespace viaebShopwareAfterbuy;
 
 use DateTime;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\SchemaTool;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
+use Shopware\Models\Payment\Payment;
+use Shopware\Models\Payment\Repository;
 use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
@@ -49,6 +52,8 @@ class viaebShopwareAfterbuy extends Plugin
         }
 
         $this->updateAttributes();
+
+        $this->crateFallbackPayment();
     }
 
     /**
@@ -88,6 +93,8 @@ class viaebShopwareAfterbuy extends Plugin
             $em->persist($status);
             $em->flush();
         }
+        $this->crateFallbackPayment();
+
     }
 
     /**
@@ -209,6 +216,29 @@ class viaebShopwareAfterbuy extends Plugin
                 'displayInBackend' => true,
                 'custom' => true
             ]);
+        }
+    }
+
+    public function crateFallbackPayment()
+    {
+        /** @var EntityManager $em */
+        $em = $this->container->get('models');
+        /** @var Repository $shopRepository */
+        $shopRepository = $em->getRepository(Payment::class);
+
+        $payment = new Payment();
+        $payment_array = [
+            'name' => 'ab_uni',
+            'description' => 'Afterbuy Universal',
+            'additionalDescription' => 'Fallback payment for Afterbuy',
+            '' => 'Fallback payment for Afterbuy',
+        ];
+
+        if (!$shopRepository->findOneBy(['name' => $payment_array['name']])) {
+            $payment->fromArray($payment_array);
+
+            $em->persist($payment);
+            $em->flush();
         }
     }
 }

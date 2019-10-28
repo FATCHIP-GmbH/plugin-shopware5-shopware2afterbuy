@@ -240,7 +240,7 @@ Ext.define('Shopware.apps.viaebConfigForm.view.ConfigWindow', {
                     childDefaults: {
                         xtype: 'combo',
                         forceSelection: true,
-                        allowBlank: false,
+                        allowBlank: true,
                         displayField: 'description',
                         valueField: 'id',
                         store: me.createRemoteStore(Shopware.apps.Base.store.Payment),

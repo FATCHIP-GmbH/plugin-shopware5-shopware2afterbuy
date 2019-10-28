@@ -133,7 +133,6 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article->setWeight((string) $detail->getWeight());
 
         if($detail->getPurchaseUnit()) {
-            //TODO: conversion is specific for writing method, should be converted there
             $article->setBasePriceFactor(Helper::convertNumberToABString($detail->getPurchaseUnit()));
         }
 

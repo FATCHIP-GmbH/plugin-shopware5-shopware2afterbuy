@@ -4,6 +4,7 @@ namespace viaebShopwareAfterbuy\Services\Helper;
 
 class ShopwareConfigHelper extends AbstractHelper
 {
+    public static $AB_UNI_PAYMENT = 'ab_uni';
 
     public function getConfigValues($pluginName) {
         $query = $this->dbal->createQueryBuilder();

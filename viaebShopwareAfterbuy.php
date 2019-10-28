@@ -15,6 +15,7 @@ use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Shopware\Components\Plugin\Context\UpdateContext;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper;
 use Zend_Db_Adapter_Exception;
 use Zend_Db_Statement_Exception;
 
@@ -228,10 +229,9 @@ class viaebShopwareAfterbuy extends Plugin
 
         $payment = new Payment();
         $payment_array = [
-            'name' => 'ab_uni',
+            'name' => ShopwareConfigHelper::$AB_UNI_PAYMENT,
             'description' => 'Afterbuy Universal',
             'additionalDescription' => 'Fallback payment for Afterbuy',
-            '' => 'Fallback payment for Afterbuy',
         ];
 
         if (!$shopRepository->findOneBy(['name' => $payment_array['name']])) {

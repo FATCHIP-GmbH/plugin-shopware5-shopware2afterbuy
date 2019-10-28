@@ -601,7 +601,7 @@ class ShopwareOrderHelper extends AbstractHelper
         if ($config['payment' . $value->getPaymentType()]) {
             $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
         } else {
-            $order->setPayment(array_values($this->paymentTypes)[0]);
+            $order->setPayment($this->paymentTypes[0]);
         }
     }
 
@@ -760,6 +760,8 @@ class ShopwareOrderHelper extends AbstractHelper
     }
 
     /**
+     * Returns an indexed array of Payments
+     *
      * @return array
      */
     public function getPaymentTypes()
@@ -770,7 +772,24 @@ class ShopwareOrderHelper extends AbstractHelper
             ->getQuery()
             ->getResult();
 
-        return $types;
+        $smallestId = '';
+        $abUniId = '';
+
+        /** @var Payment $type */
+        foreach ($types as $id => $type) {
+            if ($type->getName() === ShopwareConfigHelper::$AB_UNI_PAYMENT) {
+                $abUniId = $id;
+            }
+
+            if ($smallestId === '' || $smallestId > $id) {
+                $smallestId = $id;
+            }
+        }
+
+        $types[$smallestId - 1] = $types[$abUniId];
+        unset($types[$abUniId]);
+
+        return array_values($types);
     }
 
     /**

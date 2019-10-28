@@ -112,14 +112,14 @@ class viaebShopwareAfterbuy extends Plugin
      */
     public function fixDefaultValueTypes()
     {
-        //TODO: avoid collisions!
-
         // Retrieve the default config setting from the configs
         // mainSystem, ExportAllArticles, ordernumberMapping
         $sql = '
-                SELECT name, value
-                FROM s_core_config_elements
-                WHERE name="mainSystem" OR name="ExportAllArticles" OR name="ordernumberMapping"
+                SELECT el.name, el.value
+                FROM s_core_config_elements el
+                LEFT JOIN s_core_config_forms form
+                ON el.form_id = form.id
+                WHERE (el.name="mainSystem" OR el.name="ExportAllArticles" OR el.name="ordernumberMapping") AND form.name="viaebShopwareAfterbuy"
                 ';
 
         try {

@@ -5,7 +5,10 @@ namespace viaebShopwareAfterbuy;
 use DateTime;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
 use Shopware\Models\Payment\Payment;
 use Shopware\Models\Payment\Repository;
@@ -59,9 +62,9 @@ class viaebShopwareAfterbuy extends Plugin
 
     /**
      * @param InstallContext $context
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\Tools\ToolsException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws OptimisticLockException
+     * @throws ToolsException
+     * @throws ORMException
      */
     public function install(InstallContext $context)
     {
@@ -73,6 +76,7 @@ class viaebShopwareAfterbuy extends Plugin
 
         $this->updateAttributes();
 
+        /** @var EntityManager $em */
         $em = $this->container->get('models');
         $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
@@ -166,6 +170,7 @@ class viaebShopwareAfterbuy extends Plugin
     }
 
     public function deleteSchema() {
+        /** @var EntityManager $em */
         $em = $this->container->get('models');
         $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
@@ -180,6 +185,7 @@ class viaebShopwareAfterbuy extends Plugin
     }
 
     public function updateAttributes() {
+        /** @var CrudService $service */
         $service = $this->container->get('shopware_attribute.crud_service');
 
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');

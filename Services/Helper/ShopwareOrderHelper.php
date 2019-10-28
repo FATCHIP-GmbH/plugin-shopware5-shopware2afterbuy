@@ -766,30 +766,18 @@ class ShopwareOrderHelper extends AbstractHelper
      */
     public function getPaymentTypes()
     {
+        $AB_UNI_PAYMENT = ShopwareConfigHelper::$AB_UNI_PAYMENT;
         $types = $this->entityManager->createQueryBuilder()
             ->select('types')
             ->from(Payment::class, 'types', 'types.id')
+            ->addSelect("(CASE WHEN types.name = '" . $AB_UNI_PAYMENT . "' THEN 0 ELSE 1 END) AS HIDDEN mainSort")
+            ->orderBy('mainSort')
             ->getQuery()
             ->getResult();
 
-        $smallestId = '';
-        $abUniId = '';
+        $types = array_values($types);
 
-        /** @var Payment $type */
-        foreach ($types as $id => $type) {
-            if ($type->getName() === ShopwareConfigHelper::$AB_UNI_PAYMENT) {
-                $abUniId = $id;
-            }
-
-            if ($smallestId === '' || $smallestId > $id) {
-                $smallestId = $id;
-            }
-        }
-
-        $types[$smallestId - 1] = $types[$abUniId];
-        unset($types[$abUniId]);
-
-        return array_values($types);
+        return $types;
     }
 
     /**

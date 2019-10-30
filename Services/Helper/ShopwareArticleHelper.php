@@ -704,12 +704,15 @@ ON duplicate key update afterbuy_id = $externalId;";
             return $article->getArticleDetail()->getArticle();
         }
 
+        // TODO: refactor
         return $article;
     }
 
     /**
      * returns article. if not available article is needs to be created
      * TODO: refactor
+     * TODO: why separate externalIdentifier?
+     * TODO: we should use one identifier, which IS the external or the internal in respect to config
      *
      * @param string $number
      * @param string $name
@@ -735,6 +738,7 @@ ON duplicate key update afterbuy_id = $externalId;";
              * @var ArticlesAttribute $article
              */
 
+            // TODO: refactor if/else into the helper method, so we can abuse the call to know, whether the current product is a baseProduct or a singleProduct
             if((int)$this->config['ordernumberMapping'] == 1) {
                 $article = $this->getArticleFromAttribute($externalIdentifyer);
             }

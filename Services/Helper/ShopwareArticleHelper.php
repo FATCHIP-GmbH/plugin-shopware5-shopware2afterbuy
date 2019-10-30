@@ -710,6 +710,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * returns article. if not available article is needs to be created
+     * TODO: refactor
      *
      * @param string $number
      * @param string $name
@@ -755,8 +756,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                 //If Baseproduct we just will set the name
                 $article->setName($name);
                 $this->entityManager->persist($article);
-
-                return null;
             }
         }
 
@@ -1045,10 +1044,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $valueArticle->getExternalIdentifier()
             );
 
-            if ( ! $shopwareArticle) {
-                continue;
-            }
-
             //main article values
             if(!$valueArticle->getMainArticleId()) {
                 $shopwareArticle->setName($valueArticle->getName());
@@ -1057,13 +1052,19 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $shopwareArticle->setDescription($valueArticle->getShortDescription());
             }
 
+            // TODO: has to be true if afterbuy article is variations set
+            if ( ! $shopwareArticle) {
+                $this->entityManager->persist($shopwareArticle);
+                $this->entityManager->flush();
+                continue;
+            }
+
             try {
                 $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
                 $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
             } catch (ORMException $e) {
                 $this->logger->error('ORMException while storing data!');
             }
-
 
             /** @var ArticleDetail $articleDetail */
             $articleDetail = $this->getDetail($valueArticle->getOrdernunmber(), $shopwareArticle);

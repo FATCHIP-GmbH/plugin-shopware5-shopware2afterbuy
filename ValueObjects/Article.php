@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Article extends AbstractValueObject
 {
+    public static $BASE_PRODUCT_FLAG__VARIATION_SET = '1';
+    public static $BASE_PRODUCT_FLAG__PRODUCT_SET = '2';
+    public static $BASE_PRODUCT_FLAG__SET_ENTITY = '3';
 
     /**
      * we cannot define external identifier types, we have to handle those as strings
@@ -131,6 +134,9 @@ class Article extends AbstractValueObject
 
     /** @var string $ordernunmber */
     private $ordernunmber;
+
+    /** @var string $baseProductFlag */
+    private $baseProductFlag;
 
     /**
      * @return string
@@ -889,5 +895,19 @@ class Article extends AbstractValueObject
     public function setKeywords(string $keywords)
     {
         $this->keywords = $keywords;
+    }
+
+    /**
+     * @return string
+     */
+    public  function getBaseProductFlag(){
+        return $this->baseProductFlag;
+    }
+
+    /**
+     * @param string $baseProductFlag
+     */
+    public  function setBaseProductFlag(string $baseProductFlag) {
+        $this->baseProductFlag = $baseProductFlag;
     }
 }

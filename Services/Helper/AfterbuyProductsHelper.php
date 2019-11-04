@@ -522,8 +522,12 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
         $variants = [];
 
         // variants without attribute option association
-        if (!array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product['BaseProductFlag'] !== '1'
-            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])) {
+        if (
+            !array_key_exists('Attributes', $product)
+            && array_key_exists('BaseProducts', $product)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])
+        ) {
             $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 
             $variants[] = array(
@@ -533,8 +537,12 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
         }
 
         // variants assigned via after attribute options (e.g. color, size)
-        if (array_key_exists('Attributes', $product) && array_key_exists('BaseProducts', $product) && $product['BaseProductFlag'] !== '1'
-            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])) {
+        if (
+            array_key_exists('Attributes', $product)
+            && array_key_exists('BaseProducts', $product)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])
+        ) {
             $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
 
 
@@ -558,13 +566,17 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
         }
 
         if (
-            key_exists('BaseProductFlag', $product) and $product['BaseProductFlag'] !== '1'
+            key_exists('BaseProductFlag', $product)
+            and $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
             or !key_exists('BaseProductFlag', $product)
         ) {
             $this->readAttributes($valueArticle, $product);
         }
 
-        if ( ! empty($variants) && $product['BaseProductFlag'] !== '1') {
+        if (
+            ! empty($variants)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+        ) {
             $valueArticle->setVariants($variants);
         }
 

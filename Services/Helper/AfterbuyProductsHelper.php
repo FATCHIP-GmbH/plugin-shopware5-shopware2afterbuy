@@ -521,6 +521,10 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
     public function setVariants(ValueArticle $valueArticle, array $product) {
         $variants = [];
 
+        if (array_key_exists('BaseProductFlag', $product)) {
+            $valueArticle->setBaseProductFlag($product['BaseProductFlag']);
+        }
+
         // variants without attribute option association
         if (
             !array_key_exists('Attributes', $product)

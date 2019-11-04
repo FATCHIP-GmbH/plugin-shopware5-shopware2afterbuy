@@ -1055,8 +1055,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $shopwareArticle->setDescription($valueArticle->getShortDescription());
             }
 
-            // TODO: has to be true if afterbuy article is variations set
-            if ( ! $shopwareArticle) {
+            if ($valueArticle->getBaseProductFlag() === Article::$BASE_PRODUCT_FLAG__VARIATION_SET) {
                 $this->entityManager->persist($shopwareArticle);
                 $this->entityManager->flush();
                 continue;

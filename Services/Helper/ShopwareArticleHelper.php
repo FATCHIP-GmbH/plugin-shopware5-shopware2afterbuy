@@ -593,7 +593,6 @@ ON duplicate key update afterbuy_id = $externalId;";
         return $price;
     }
 
-
     /**
      * @param string $supplierName
      *
@@ -780,7 +779,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param string $number
-     * @return |null
+     * @return ShopwareArticle|null
      */
     public function getMainArticleFromDetailNumber(string $number) {
         $article = null;

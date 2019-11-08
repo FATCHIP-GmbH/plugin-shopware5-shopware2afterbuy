@@ -3,16 +3,12 @@
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
 use Exception;
-use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order;
 use Shopware\Models\Order\Repository;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
-    /** @var ShopwareOrderHelper */
-    public $helper;
-
     /**
      * @param array $filter
      * @return array|null

@@ -22,9 +22,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      */
     protected $isAttribute;
 
-    /** @var ShopwareCategoryHelper $helper */
-    public $helper;
-
     /**
      * @param ValueCategory[] $valueCategories
      *

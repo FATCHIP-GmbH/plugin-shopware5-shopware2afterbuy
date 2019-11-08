@@ -15,10 +15,6 @@ use Shopware\Models\Customer\Group as CustomerGroup;
 
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface
 {
-
-    /** @var ShopwareArticleHelper $helper */
-    public $helper;
-
     /**
      * @param array $data
      *
@@ -37,7 +33,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * could may be moved into separate helper
      *
      * @param ValueArticle[] $valueArticles
-     * @throws ORMException
      */
     public function transform(array $valueArticles)
     {

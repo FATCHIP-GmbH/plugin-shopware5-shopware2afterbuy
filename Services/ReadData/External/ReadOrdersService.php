@@ -12,6 +12,11 @@ use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order;
 
+/**
+ * Class ReadOrdersService
+ * @package viaebShopwareAfterbuy\Services\ReadData\External
+ * @property AfterbuyOrderHelper $helper
+ */
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
 
     /**
@@ -39,9 +44,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
         if(!array_key_exists('Orders', $data['Result'])) {
             return array();
         }
-
-        /** @var AfterbuyOrderHelper $helper */
-        $helper = $this->helper;
         $targetData = array();
 
         //handle single result
@@ -67,13 +69,13 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $value->setCustomerNumber('AB' . $entity['BuyerInfo']['BillingAddress']['AfterbuyUserID']);
 
-            $helper->setPaymentType($value, $entity);
-            $helper->buildOrderPositions($value, $entity);
-            $helper->setShippingCosts($value, $entity);
-            $helper->setShipmentStatus($value, $entity);
-            $helper->setTransactionDetails($value, $entity);
-            $helper->setBillingAddress($value, $entity);
-            $helper->setShippingAddress($value, $entity);
+            $this->helper->setPaymentType($value, $entity);
+            $this->helper->buildOrderPositions($value, $entity);
+            $this->helper->setShippingCosts($value, $entity);
+            $this->helper->setShipmentStatus($value, $entity);
+            $this->helper->setTransactionDetails($value, $entity);
+            $this->helper->setBillingAddress($value, $entity);
+            $this->helper->setShippingAddress($value, $entity);
 
             $value->setPaid(Helper::convertDeString2Float($entity['PaymentInfo']['AlreadyPaid']));
 

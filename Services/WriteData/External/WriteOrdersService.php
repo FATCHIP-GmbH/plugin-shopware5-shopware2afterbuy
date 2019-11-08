@@ -12,12 +12,14 @@ use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order;
 use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 
+/**
+ * Class WriteOrdersService
+ * @package viaebShopwareAfterbuy\Services\WriteData\External
+ * @property ShopwareOrderHelper $helper
+ */
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
     protected $ABCountries;
-
-    /** @var ShopwareOrderHelper $helper */
-    public $helper;
 
     /**
      * @param array $data
@@ -42,12 +44,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         $orders = [];
 
-        /**
-         * @var ShopwareOrderHelper $helper
-         */
-        $helper = $this->helper;
-
-        $this->ABCountries = $helper->getABCountryCodes();
+        $this->ABCountries = $this->helper->getABCountryCodes();
         
         foreach($data as $value) {
             /**

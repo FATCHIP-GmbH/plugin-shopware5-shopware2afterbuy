@@ -9,6 +9,11 @@ use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
 
+/**
+ * Class ReadProductsService
+ * @package viaebShopwareAfterbuy\Services\ReadData\External
+ * @property AfterbuyProductsHelper $helper
+ */
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface
 {
     /**
@@ -38,9 +43,6 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             return array();
         }
 
-        /** @var AfterbuyProductsHelper $helper */
-        $helper = $this->helper;
-
         /** @var ValueArticle[] $valueArticles */
         $valueArticles = array();
 
@@ -50,17 +52,17 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 continue;
             }
 
-            $valueArticle = $helper->createValueArticle($product, $this->targetEntity);
+            $valueArticle = $this->helper->createValueArticle($product, $this->targetEntity);
 
             //ignore product if article number is not valid
             if(empty($valueArticle->getOrdernunmber() || $valueArticle->getOrdernunmber() === 0 || $valueArticle->getOrdernunmber() === '0')) {
                 continue;
             }
 
-            $valueArticle = $helper->setDefaultArticleValues($valueArticle, $product);
-            $helper->addProductPictures($product, $valueArticle);
-            $valueArticle = $helper->addCatalogs($valueArticle, $product);
-            $valueArticle = $helper->setVariants($valueArticle, $product);
+            $valueArticle = $this->helper->setDefaultArticleValues($valueArticle, $product);
+            $this->helper->addProductPictures($product, $valueArticle);
+            $valueArticle = $this->helper->addCatalogs($valueArticle, $product);
+            $valueArticle = $this->helper->setVariants($valueArticle, $product);
 
             if(!$valueArticle->getMainArticleId()) {
                 $valueArticles[] = $valueArticle;

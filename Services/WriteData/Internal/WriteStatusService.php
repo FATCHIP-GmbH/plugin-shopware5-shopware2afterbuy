@@ -21,10 +21,6 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      */
     protected $countries;
 
-    /** @var ShopwareOrderHelper */
-    public $helper;
-
-
     /**
      * @param array $data
      * @return mixed

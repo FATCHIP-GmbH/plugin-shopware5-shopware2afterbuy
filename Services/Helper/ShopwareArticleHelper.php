@@ -62,6 +62,9 @@ class ShopwareArticleHelper extends AbstractHelper
     /** @var ConfiguratorGroup[] */
     private $configuratorGroups;
 
+    /**
+     * @param ArticleDetail $detail
+     */
     public function fixMissingAttribute(ArticleDetail $detail)
     {
         $attr = new ArticlesAttribute();
@@ -655,6 +658,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         return $supplier;
     }
 
+    /**
+     * @param string $number
+     * @return object|null
+     */
     public function getArticleByNumber(string $number)
     {
         $article = $this->entityManager->getRepository(ArticleDetail::class)
@@ -704,14 +711,11 @@ ON duplicate key update afterbuy_id = $externalId;";
             return $article->getArticleDetail()->getArticle();
         }
 
-        // TODO: refactor
         return $article;
     }
 
     /**
      * returns article. if not available article is needs to be created
-     * TODO: refactor
-     * TODO: why separate externalIdentifier?
      * TODO: we should use one identifier, which IS the external or the internal in respect to config
      *
      * @param string $number
@@ -726,39 +730,28 @@ ON duplicate key update afterbuy_id = $externalId;";
     {
         $article = null;
 
+        //article variant
         if ($parent) {
             $article = $this->getArticleFromAttribute($parent);
 
             if(!$article) {
                 $article = $this->getArticleByNumber($parent);
             }
+        }
 
-        } else {
-            /**
-             * @var ArticlesAttribute $article
-             */
+        //main article
+        if(!$parent) {
+            $article = $this->getMainArticleByIdentifyer($number, $externalIdentifyer);
 
-            // TODO: refactor if/else into the helper method, so we can abuse the call to know, whether the current product is a baseProduct or a singleProduct
-            if((int)$this->config['ordernumberMapping'] == 1) {
-                $article = $this->getArticleFromAttribute($externalIdentifyer);
-            }
-            else {
-                $article = $this->getArticleFromAttribute($number);
-            }
-
-            if ( ! $article) {
-                $detail = $this->entityManager
-                    ->getRepository(ArticleDetail::class)
-                    ->findOneBy(array('number' => $number));
-
-                if(!empty($detail)) {
-                    $article = $detail->getArticle();
-                }
-
-            } else {
-                //If Baseproduct we just will set the name
+            //update main article name
+            if($article) {
                 $article->setName($name);
                 $this->entityManager->persist($article);
+            }
+
+            //fallback get article via number of detail
+            if (!$article) {
+                $article = $this->getMainArticleFromDetailNumber($number);
             }
         }
 
@@ -767,6 +760,40 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
 
         return $this->createMainArticle();
+    }
+
+    /**
+     * @param string $number
+     * @param string $externalIdentifyer
+     * @return ShopwareArticle|null
+     */
+    public function getMainArticleByIdentifyer(string $number, string $externalIdentifyer) {
+        if((int)$this->config['ordernumberMapping'] == 1) {
+            $article = $this->getArticleFromAttribute($externalIdentifyer);
+        }
+        else {
+            $article = $this->getArticleFromAttribute($number);
+        }
+
+        return $article;
+    }
+
+    /**
+     * @param string $number
+     * @return |null
+     */
+    public function getMainArticleFromDetailNumber(string $number) {
+        $article = null;
+
+        $detail = $this->entityManager
+            ->getRepository(ArticleDetail::class)
+            ->findOneBy(array('number' => $number));
+
+        if(!empty($detail)) {
+            $article = $detail->getArticle();
+        }
+
+        return $article;
     }
 
     /**
@@ -1123,6 +1150,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         }
     }
 
+    /**
+     * @param ArticleDetail $articleDetail
+     * @param ValueArticle $valueArticle
+     */
     public function storeAfterbuyAttributes(ArticleDetail &$articleDetail, ValueArticle $valueArticle) {
         $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
         $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());

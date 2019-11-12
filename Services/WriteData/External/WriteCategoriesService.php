@@ -4,7 +4,6 @@ namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Exception;
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;

@@ -67,10 +67,6 @@ EOF
         $data = $this->readDataService->get($filter);
         $output->writeln('Got ' . count($data) . ' Products');
 
-        try {
-            $this->writeDataService->put($data);
-        } catch (ORMException $e) {
-            $output->writeln('ORMException while storing data');
-        }
+        $this->writeDataService->put($data);
     }
 }

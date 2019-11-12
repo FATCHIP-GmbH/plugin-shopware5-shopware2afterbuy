@@ -6,7 +6,6 @@ use Doctrine\ORM\OptimisticLockException;
 
 use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Models\Status;
-use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
@@ -19,7 +18,6 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      * @param array $data
      *
      * @return array
-     * @throws ORMException
      */
     public function put(array $data)
     {
@@ -70,10 +68,9 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
     {
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error storing products', $targetData);
             exit('Error storing products');
-        } catch (ORMException $e) {
         }
 
         if(!empty($targetData)) {

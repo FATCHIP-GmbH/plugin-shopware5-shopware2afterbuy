@@ -103,6 +103,7 @@ class ShopwareResetHelper extends AbstractHelper
                 ->getQuery()
                 ->execute();
         } catch (Exception $e) {
+            $this->logger->error('Error executing reset query!');
         }
     }
 }

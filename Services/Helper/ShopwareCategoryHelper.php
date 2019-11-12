@@ -3,7 +3,6 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
-use Doctrine\ORM\ORMException;
 use Exception;
 use Shopware\Components\Model\QueryBuilder;
 use viaebShopwareAfterbuy\ValueObjects\CategoryTreeNode;
@@ -206,7 +205,6 @@ class ShopwareCategoryHelper extends AbstractHelper
     /**
      * @param CategoryTreeNode[] $valueCategoryTrees
      * @return ShopwareCategory[]
-     * @throws ORMException
      */
     public function addCategoriesToShopware(array $valueCategoryTrees)
     {
@@ -230,8 +228,8 @@ class ShopwareCategoryHelper extends AbstractHelper
                             $this->findParentCategory($current->getValueCategory(), 'afterbuyCatalogId')
                         );
 
-                        $this->entityManager->persist($shopwareCategories[$externalIdentifier]);
                         try {
+                            $this->entityManager->persist($shopwareCategories[$externalIdentifier]);
                             $this->entityManager->flush();
                         } catch (Exception $e) {
                             $this->logger->error(
@@ -272,21 +270,9 @@ class ShopwareCategoryHelper extends AbstractHelper
         $shopwareCategory->setName($valueCategory->getName());
         $shopwareCategory->setMetaDescription($valueCategory->getDescription());
 
-//        if($shopwareCategory->getParent() === null) {
-//            $shopwareCategory->setParent($this->findParentCategory($valueCategory, $this->identifier));
-//        }
-
         $shopwareCategory->setPosition($valueCategory->getPosition());
         $shopwareCategory->setCmsText($valueCategory->getCmsText());
         $shopwareCategory->setActive($valueCategory->getActive());
-//
-//        $this->entityManager->persist($shopwareCategory);
-//
-//        try {
-//            $this->entityManager->flush($shopwareCategory);
-//        } catch (OptimisticLockException $e) {
-//            $this->logger->error('Error saving category', array(json_encode($valueCategory)));
-//        }
 
         return $shopwareCategory;
     }

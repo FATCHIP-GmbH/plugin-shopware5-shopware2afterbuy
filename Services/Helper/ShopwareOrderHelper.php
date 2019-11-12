@@ -328,10 +328,8 @@ class ShopwareOrderHelper extends AbstractHelper
         );
     }
 
-
     /**
      * @param array $values
-     * @throws ORMException
      */
     public function setAfterBuyIds(array $values)
     {
@@ -349,12 +347,17 @@ class ShopwareOrderHelper extends AbstractHelper
              */
             $order->getAttribute()->setAfterbuyOrderId($values[$order->getNumber()]);
 
-            $this->entityManager->persist($order);
+            try {
+                $this->entityManager->persist($order);
+            } catch (ORMException $e) {
+                $this->logger->error('Error storing afterbuy ids');
+                exit('Error storing afterbuy ids');
+            }
         }
 
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error storing afterbuy ids');
         }
     }
@@ -389,7 +392,6 @@ class ShopwareOrderHelper extends AbstractHelper
             ->getResult();
 
         return $orders;
-
     }
 
     /**
@@ -524,11 +526,7 @@ class ShopwareOrderHelper extends AbstractHelper
                 $detail->setStatus($this->detailStates['1']);
             }            $detail->setArticleName($position->getName());
 
-            try {
-                $tax = $this->getTax($position->getTax());
-            } catch (ORMException $e) {
-            }
-
+            $tax = $this->getTax($position->getTax());
             $detail->setTaxRate($position->getTax());
 
             $detail->setTax($tax);
@@ -849,9 +847,7 @@ class ShopwareOrderHelper extends AbstractHelper
         try {
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error writing customer data.');
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error writing customer data.');
         }
 

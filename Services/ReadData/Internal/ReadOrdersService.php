@@ -2,7 +2,6 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
-use Exception;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order;
@@ -12,7 +11,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
     /**
      * @param array $filter
      * @return array|null
-     * @throws Exception
      */
     public function get(array $filter) {
         $data = $this->read($filter);
@@ -73,7 +71,6 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
      *
      * @param array $filter
      * @return array
-     * @throws Exception
      */
     public function read(array $filter) {
 

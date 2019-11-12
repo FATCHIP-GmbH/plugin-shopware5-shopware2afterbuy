@@ -65,10 +65,6 @@ EOF
 
         $data = $this->readDataService->get($filter);
 
-        try {
-            $this->writeDataService->put($data);
-        } catch (ORMException $e) {
-            $output->writeln('ORMException while storing data!');
-        }
+        $this->writeDataService->put($data);
     }
 }

@@ -84,6 +84,7 @@ class viaebShopwareAfterbuy extends Plugin
         $tableNames = array('afterbuy_status');
 
         /** @var AbstractSchemaManager $schemaManager */
+        /** @noinspection PhpUndefinedMethodInspection */
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         if (!$schemaManager->tablesExist($tableNames)) {
             $tool->createSchema($classes);
@@ -114,6 +115,7 @@ class viaebShopwareAfterbuy extends Plugin
     {
         // Retrieve the default config setting from the configs
         // mainSystem, ExportAllArticles, ordernumberMapping
+        /** @noinspection SqlResolve */
         $sql = '
                 SELECT el.name, el.value
                 FROM s_core_config_elements el
@@ -143,8 +145,7 @@ class viaebShopwareAfterbuy extends Plugin
                     ]);
                 }
             }
-        } catch (Zend_Db_Adapter_Exception $e) {
-        } catch (Zend_Db_Statement_Exception $e) {
+        } catch (Zend_Db_Adapter_Exception | Zend_Db_Statement_Exception $e) {
         }
     }
 
@@ -177,6 +178,7 @@ class viaebShopwareAfterbuy extends Plugin
 
         $tableNames = array('afterbuy_status');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         /** @var AbstractSchemaManager $schemaManager */
         if ($schemaManager->tablesExist($tableNames)) {

@@ -39,10 +39,7 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
         $values = [];
 
         foreach ($orders as $order) {
-            /**
-             * @var Order $order
-             */
-
+            /** @var Order $order */
             if(!$order->getAttribute()->getAfterbuyOrderId()) {
                 continue;
             }
@@ -65,7 +62,6 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
 
         return $values;
     }
-
 
     /**
      * @param array $filter

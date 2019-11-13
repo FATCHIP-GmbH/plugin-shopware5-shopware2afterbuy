@@ -599,7 +599,7 @@ class ShopwareOrderHelper extends AbstractHelper
         if ($config['payment' . $value->getPaymentType()]) {
             $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
         } else {
-            $order->setPayment($this->paymentTypes[0]);
+            $order->setPayment($this->paymentTypes["default"]);
         }
     }
 
@@ -779,7 +779,7 @@ class ShopwareOrderHelper extends AbstractHelper
             ->getResult();
 
         if(!empty($default)) {
-            $types[0] = array_values($default)[0];
+            $types["default"] = array_values($default)[0];
         }
 
         return $types;

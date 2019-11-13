@@ -70,12 +70,12 @@ class AfterbuyOrderHelper extends AbstractHelper
      * @param array $entity
      */
     public function setPaymentType(Order &$value, array $entity) {
-        if(array_key_exists('PaymentFunction', $entity['PaymentInfo'])) {
-            $value->setPaymentType($entity['PaymentInfo']['PaymentFunction']);
-        }
-
         if(array_key_exists('PaymentID', $entity['PaymentInfo'])) {
             $value->setPaymentType($entity['PaymentInfo']['PaymentID']);
+        }
+
+        if(array_key_exists('PaymentFunction', $entity['PaymentInfo'])) {
+            $value->setPaymentType($entity['PaymentInfo']['PaymentFunction']);
         }
     }
 

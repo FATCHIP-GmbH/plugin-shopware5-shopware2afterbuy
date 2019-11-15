@@ -125,6 +125,10 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         return array();
     }
 
+    /**
+     * @param bool $force
+     * @return array
+     */
     public function getOrderImportDateFilter(bool $force) {
 
         if($force) {

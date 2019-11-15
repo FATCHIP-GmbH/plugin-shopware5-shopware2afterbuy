@@ -57,6 +57,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             $internalIdentifyer = $value->getInternalIdentifier();
 
+            /** @noinspection PhpNonStrictObjectEqualityInspection */
             $orders[$value->getInternalIdentifier()] = array(
                 'PosAnz' => $value->getPositions()->count(),
                 'Kbenutzername' => $value->getCustomerNumber(),
@@ -68,6 +69,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'KPLZ' => $value->getBillingAddress()->getZipcode(),
                 'KOrt' => $value->getBillingAddress()->getCity(),
                 'KLand' => $this->ABCountries[$value->getBillingAddress()->getCountry()],
+
+                'Lieferanschrift' => ($value->getBillingAddress()->compare($value->getShippingAddress())) ? 0 : 1,
 
                 'KLFirma' => $value->getShippingAddress()->getCompany(),
                 'KLVorname' => $value->getShippingAddress()->getFirstname(),

@@ -983,7 +983,7 @@ class ShopwareOrderHelper extends AbstractHelper
             $order->setShippingType('Standard');
         }
 
-        $order->setPaymentType($entity->getPayment()->getName());
+        $order->setPaymentType($entity->getPayment()->getDescription());
         $order->setPaymentTypeId($entity->getPayment()->getId());
 
         if($entity->getTaxFree()) {

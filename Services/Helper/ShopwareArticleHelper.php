@@ -658,7 +658,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $article = $this->entityManager->getRepository(ArticleDetail::class)
             ->findOneBy(array('number' => $number));
 
-        return $article;
+        if($article !== null) {
+            return $article->getArticle();
+        }
+
+       return null;
     }
 
     /**
@@ -755,7 +759,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             return $article;
         }
 
-        return $this->createMainArticle();
+        $article = $this->createMainArticle();
+
+        return $article;
     }
 
     /**

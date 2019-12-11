@@ -4,7 +4,6 @@ namespace viaebShopwareAfterbuy\Services\WriteData\External;
 
 use Exception;
 use Fatchip\Afterbuy\ApiClient;
-use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
@@ -21,9 +20,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @var bool $isAttribute
      */
     protected $isAttribute;
-
-    /** @var ShopwareCategoryHelper $helper */
-    public $helper;
 
     /**
      * @param ValueCategory[] $valueCategories

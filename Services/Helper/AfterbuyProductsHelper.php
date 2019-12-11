@@ -6,16 +6,16 @@ namespace viaebShopwareAfterbuy\Services\Helper;
 use Exception;
 use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\ValueObjects\Article;
+use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
 use viaebShopwareAfterbuy\ValueObjects\ProductPicture;
 use viaebShopwareAfterbuy\Components\Helper;
-use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
 
 /**
  * Class ShopwareArticleHelper
  * @package viaebShopwareAfterbuy\Services\Helper
  */
-class AfterbuyProductsHelper extends ShopwareArticleHelper {
-
+class AfterbuyProductsHelper extends ShopwareArticleHelper
+{
     /**
      * @param array $images
      * @return array
@@ -101,10 +101,12 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'ManufacturerPartNumber' => $variant->getSupplierNumber(),
                 'Description' => $variant->getDescription(),
                 'ShortDescription' => $variant->getShortDescription(),
+                'Keywords' => $variant->getKeywords(),
                 'Weight' => Helper::convertNumberToABString($variant->getWeight()),
                 'Quantity' => $variant->getStock(),
                 'UnitOfQuantity' => 'Stk',
                 'MinimumStock' => $variant->getStockMin(),
+                'BuyingPrice' => Helper::convertNumberToABString($variant->getBuyingPrice()),
                 'SellingPrice' => Helper::convertNumberToABString($variant->getPrice()),
                 'TaxRate' => Helper::convertNumberToABString($variant->getTax()),
                 'ProductBrand' => $value->getManufacturer(),
@@ -168,6 +170,7 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'Name' => $value->getName(),
                 'Description' => $value->getDescription(),
                 'ShortDescription' => $value->getShortDescription(),
+                'Keywords' => $value->getKeywords(),
                 'Weight' => Helper::convertNumberToABString($value->getWeight()),
                 'UnitOfQuantity' => 'Stk',
                 'TaxRate' => Helper::convertNumberToABString($value->getTax()),
@@ -193,7 +196,6 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      */
     public function buildAfterbuyVariantAssignment(Article $value, array $afterbuyProductIds)
     {
-
         $variantArticles = [];
 
         foreach($value->getVariantArticles() as $variant) {
@@ -279,7 +281,6 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
      */
     public function sendAfterbuyProducts(array $products, ApiClient $api, &$afterbuyProductIds = [])
     {
-
         if(count($products['Products'])) {
 
             try {
@@ -328,7 +329,9 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
                 'Quantity' => $value->getStock(),
                 'UnitOfQuantity' => 'Stk',
                 'MinimumStock' => $value->getStockMin(),
+                'BuyingPrice' => Helper::convertNumberToABString($value->getBuyingPrice()),
                 'SellingPrice' => Helper::convertNumberToABString($value->getPrice()),
+                'Keywords' => $value->getKeywords(),
                 'TaxRate' => Helper::convertNumberToABString($value->getTax()),
                 'ProductBrand' => $value->getManufacturer(),
                 'ImageLargeURL' => $value->getMainImageUrl(),
@@ -427,5 +430,160 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper {
         }
 
         $valueArticle->setArticleProperties($articleProperties);
+    }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param array $product
+     * @return ValueArticle
+     */
+    public function setDefaultArticleValues(ValueArticle $valueArticle, array $product) {
+        $valueArticle->setEan($product['EAN']);
+        $valueArticle->setName($product['Name']);
+        $valueArticle->setPrice(Helper::convertDeString2Float($product['SellingPrice']));
+        $valueArticle->setManufacturer($product['ProductBrand']);
+        $valueArticle->setStock($product['Quantity']);
+        $valueArticle->setStockMin((int)$product['MinimumStock']);
+        $valueArticle->setTax(Helper::convertDeString2Float($product['TaxRate']));
+        $valueArticle->setDescription($product['Description']);
+        $valueArticle->setShortDescription($product['ShortDescription']);
+        $valueArticle->setUnitOfQuantity($product['UnitOfQuantity']);
+        $valueArticle->setBasePriceFactor($product['BasepriceFactor']);
+        $valueArticle->setWeight($product['Weight']);
+        $valueArticle->setSupplierNumber($product['ManufacturerPartNumber']);
+        $valueArticle->setDiscontinued($product['Discontinued']);
+        $valueArticle->setBuyingPrice(Helper::convertDeString2Float($product['BuyingPrice']));
+        $valueArticle->setKeywords($product['Keywords']);
+
+        $valueArticle->setFree1(key_exists('FreeValue1', $product) ? $product['FreeValue1'] : '');
+        $valueArticle->setFree2(key_exists('FreeValue2', $product) ? $product['FreeValue2'] : '');
+        $valueArticle->setFree3(key_exists('FreeValue3', $product) ? $product['FreeValue3'] : '');
+        $valueArticle->setFree4(key_exists('FreeValue4', $product) ? $product['FreeValue4'] : '');
+        $valueArticle->setFree5(key_exists('FreeValue5', $product) ? $product['FreeValue5'] : '');
+        $valueArticle->setFree6(key_exists('FreeValue6', $product) ? $product['FreeValue6'] : '');
+        $valueArticle->setFree7(key_exists('FreeValue7', $product) ? $product['FreeValue7'] : '');
+        $valueArticle->setFree8(key_exists('FreeValue8', $product) ? $product['FreeValue8'] : '');
+        $valueArticle->setFree9(key_exists('FreeValue9', $product) ? $product['FreeValue9'] : '');
+        $valueArticle->setFree10(key_exists('FreeValue10', $product) ? $product['FreeValue10'] : '');
+
+        if ((int)$product['Quantity'] > (int)$product['MinimumStock'] && Helper::convertDeString2Float($product['SellingPrice'] > 0)) {
+            $valueArticle->setActive(true);
+        }
+
+        return $valueArticle;
+    }
+
+    /**
+     * @param array $product
+     * @param string $targetEntity
+     * @return ValueArticle
+     */
+    public function createValueArticle(array $product, string $targetEntity) {
+        /** @var ValueArticle $valueArticle */
+        $valueArticle = new $targetEntity();
+
+        $valueArticle->setExternalIdentifier($product['ProductID']);
+        $valueArticle->setAnr($product['Anr']);
+
+        if((int)$this->config['ordernumberMapping'] === 1) {
+            $valueArticle->setOrdernunmber($valueArticle->getAnr());
+        }
+        else {
+            $valueArticle->setOrdernunmber($valueArticle->getExternalIdentifier());
+        }
+
+        return $valueArticle;
+    }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param array $product
+     * @return ValueArticle
+     */
+    public function addCatalogs(ValueArticle $valueArticle, array $product) {
+        if (array_key_exists('Catalogs', $product) && array_key_exists('CatalogID', $product['Catalogs'])) {
+            $catalogIDs = $product['Catalogs']['CatalogID'];
+            if ( ! is_array($catalogIDs)) {
+                $catalogIDs = [$catalogIDs];
+            }
+
+            $valueArticle->setExternalCategoryIds($catalogIDs);
+        }
+
+        return $valueArticle;
+    }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param array $product
+     * @return ValueArticle
+     */
+    public function setVariants(ValueArticle $valueArticle, array $product) {
+        $variants = [];
+
+        if (array_key_exists('BaseProductFlag', $product)) {
+            $valueArticle->setBaseProductFlag($product['BaseProductFlag']);
+        }
+
+        // variants without attribute option association
+        if (
+            !array_key_exists('Attributes', $product)
+            && array_key_exists('BaseProducts', $product)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])
+        ) {
+            $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
+
+            $variants[] = array(
+                'option' => 'Variation',
+                'value'  => $product['Name'],
+            );
+        }
+
+        // variants assigned via after attribute options (e.g. color, size)
+        if (
+            array_key_exists('Attributes', $product)
+            && array_key_exists('BaseProducts', $product)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+            && array_key_exists('BaseProductID', $product['BaseProducts']['BaseProduct'])
+        ) {
+            $valueArticle->setMainArticleId($product['BaseProducts']['BaseProduct']['BaseProductID']);
+
+
+            if (array_key_exists('AttributName', $product['Attributes']['Attribut'])) {
+                $variants[] = array(
+                    'option' => $product['Attributes']['Attribut']['AttributName'],
+                    'value'  => $product['Attributes']['Attribut']['AttributValue'],
+                );
+            } else {
+                $variants = [];
+
+                foreach ($product['Attributes']['Attribut'] as $option) {
+                    $variant = array(
+                        'option' => $option['AttributName'],
+                        'value'  => $option['AttributValue'],
+                    );
+
+                    $variants[] = $variant;
+                }
+            }
+        }
+
+        if (
+            key_exists('BaseProductFlag', $product)
+            and $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+            or !key_exists('BaseProductFlag', $product)
+        ) {
+            $this->readAttributes($valueArticle, $product);
+        }
+
+        if (
+            ! empty($variants)
+            && $valueArticle->getBaseProductFlag() !== ValueArticle::$BASE_PRODUCT_FLAG__VARIATION_SET
+        ) {
+            $valueArticle->setVariants($variants);
+        }
+
+        return $valueArticle;
     }
 }

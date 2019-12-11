@@ -4,8 +4,9 @@
 namespace viaebShopwareAfterbuy\ValueObjects;
 
 use DateTime;
+use JsonSerializable;
 
-class Address extends AbstractValueObject
+class Address extends AbstractValueObject implements JsonSerializable
 {
     /**
      * Contains the name of the address address company
@@ -112,6 +113,23 @@ class Address extends AbstractValueObject
      * @var DateTime
      */
     protected $birthday;
+
+    /**
+     * @return array
+     */
+    function jsonSerialize() {
+        return [
+            'company' => $this->company,
+            'firstname' => $this->firstname,
+            'lastname' => $this->lastname,
+            'street' => $this->street,
+            'additionalAddressLine1' => $this->additionalAddressLine1,
+            'zip' => $this->zipcode,
+            'city' => $this->city,
+            'country' => $this->country,
+            'phone' => $this->phone
+        ];
+    }
 
     /**
      * @return DateTime
@@ -386,5 +404,13 @@ class Address extends AbstractValueObject
         $this->email = $email;
     }
 
-
+    /**
+     * used to compare billing and shippings address by ignoring several properties. relevant properties are defined in jsonSerialize
+     *
+     * @param Address $addr
+     * @return bool
+     */
+    public function compare(Address $addr) {
+        return json_encode($this) === json_encode($addr);
+    }
 }

@@ -4,9 +4,11 @@
 namespace viaebShopwareAfterbuy\Services\Helper;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
+use Shopware\Components\Model\ModelEntity;
 use Shopware\Models\Article\Detail as ArticleDetail;
 use Shopware\Models\Attribute\Order as OrderAttributes;
 use viaebShopwareAfterbuy\ValueObjects\Address as ValueAddress;
@@ -30,7 +32,6 @@ use Shopware\Models\Payment\Payment;
 
 class ShopwareOrderHelper extends AbstractHelper
 {
-
     protected $paymentStates;
 
     protected $shippingStates;
@@ -49,11 +50,17 @@ class ShopwareOrderHelper extends AbstractHelper
     /** @var ShopwareArticleHelper */
     protected $articleHelper;
 
+    /**
+     * @param ShopwareArticleHelper $articleHelper
+     */
     public function init(ShopwareArticleHelper $articleHelper)
     {
         $this->articleHelper = $articleHelper;
     }
 
+    /**
+     *
+     */
     public function preFetch()
     {
         $this->paymentStates = $this->getPaymentStates();
@@ -64,6 +71,9 @@ class ShopwareOrderHelper extends AbstractHelper
         $this->targetGroup = $this->getDefaultGroup();
     }
 
+    /**
+     * @return array
+     */
     public function getABCountryCodes()
     {
         return array(
@@ -318,10 +328,8 @@ class ShopwareOrderHelper extends AbstractHelper
         );
     }
 
-
     /**
      * @param array $values
-     * @throws ORMException
      */
     public function setAfterBuyIds(array $values)
     {
@@ -339,12 +347,17 @@ class ShopwareOrderHelper extends AbstractHelper
              */
             $order->getAttribute()->setAfterbuyOrderId($values[$order->getNumber()]);
 
-            $this->entityManager->persist($order);
+            try {
+                $this->entityManager->persist($order);
+            } catch (ORMException $e) {
+                $this->logger->error('Error storing afterbuy ids');
+                exit('Error storing afterbuy ids');
+            }
         }
 
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error storing afterbuy ids');
         }
     }
@@ -379,9 +392,12 @@ class ShopwareOrderHelper extends AbstractHelper
             ->getResult();
 
         return $orders;
-
     }
 
+    /**
+     * @param ShopwareOrder $order
+     * @return bool
+     */
     public function isFullfilled(ShopwareOrder $order)
     {
         $completelyPaid = $order->getPaymentStatus()->getId() === 12;
@@ -391,6 +407,9 @@ class ShopwareOrderHelper extends AbstractHelper
         return $completelyPaid && ($completelyDelivered || $completed);
     }
 
+    /**
+     * @return mixed
+     */
     public function getNewFullfilledOrders()
     {
         $lastExport = $this->entityManager->getRepository(Status::class)->find(1);
@@ -420,6 +439,9 @@ class ShopwareOrderHelper extends AbstractHelper
         return $orders;
     }
 
+    /**
+     * @return array
+     */
     public function getUnfullfilledOrders() {
 
         $orders = $this->entityManager->createQueryBuilder()
@@ -463,6 +485,10 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->shippingType;
     }
 
+    /**
+     * @param Order $value
+     * @param ShopwareOrder $order
+     */
     public function setPositions(ValueOrder $value, ShopwareOrder &$order)
     {
         $details = $order->getDetails();
@@ -500,11 +526,7 @@ class ShopwareOrderHelper extends AbstractHelper
                 $detail->setStatus($this->detailStates['1']);
             }            $detail->setArticleName($position->getName());
 
-            try {
-                $tax = $this->getTax($position->getTax());
-            } catch (ORMException $e) {
-            }
-
+            $tax = $this->getTax($position->getTax());
             $detail->setTaxRate($position->getTax());
 
             $detail->setTax($tax);
@@ -514,6 +536,12 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param Order $value
+     * @param ShopwareOrder $order
+     * @param Customer $customer
+     * @param string $type
+     */
     public function setAddress(ValueOrder $value, ShopwareOrder &$order, Customer $customer, $type = 'billing')
     {
         if ($type === 'billing') {
@@ -571,10 +599,14 @@ class ShopwareOrderHelper extends AbstractHelper
         if ($config['payment' . $value->getPaymentType()]) {
             $order->setPayment($this->paymentTypes[$config['payment' . $value->getPaymentType()]]);
         } else {
-            $order->setPayment(array_values($this->paymentTypes)[0]);
+            $order->setPayment($this->paymentTypes["default"]);
         }
     }
 
+    /**
+     * @param Order $value
+     * @param ShopwareOrder $order
+     */
     public function setOrderTaxValues(ValueOrder $value, ShopwareOrder &$order)
     {
         if ( ! $value->getAmountNet()) {
@@ -588,6 +620,11 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param Order $value
+     * @param ShopwareOrder $order
+     * @param Shop $shop
+     */
     public function setOrderMainValues(ValueOrder $value, ShopwareOrder &$order, Shop $shop)
     {
         /**
@@ -634,6 +671,10 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param Order $value
+     * @param ShopwareOrder $order
+     */
     public function setPaymentStatus(ValueOrder $value, ShopwareOrder &$order)
     {
         if ($value->getPaid() > 0) {
@@ -647,11 +688,18 @@ class ShopwareOrderHelper extends AbstractHelper
         }
     }
 
+    /**
+     * @param int $id
+     * @return object|null
+     */
     public function getShop(int $id)
     {
         return $this->entityManager->getRepository(Shop::class)->find($id);
     }
 
+    /**
+     * @return mixed
+     */
     public function getCountries()
     {
         $countries = $this->entityManager->createQueryBuilder()
@@ -663,6 +711,9 @@ class ShopwareOrderHelper extends AbstractHelper
         return $countries;
     }
 
+    /**
+     * @return mixed
+     */
     public function getPaymentStates()
     {
         $states = $this->entityManager->createQueryBuilder()
@@ -692,6 +743,9 @@ class ShopwareOrderHelper extends AbstractHelper
         return $states;
     }
 
+    /**
+     * @return mixed
+     */
     public function getDetailStates()
     {
         $states = $this->entityManager->createQueryBuilder()
@@ -704,19 +758,39 @@ class ShopwareOrderHelper extends AbstractHelper
     }
 
     /**
+     * Returns an indexed array of Payments
+     *
      * @return array
      */
     public function getPaymentTypes()
     {
+        $AB_UNI_PAYMENT = ShopwareConfigHelper::$AB_UNI_PAYMENT;
+        $default = $this->entityManager->createQueryBuilder()
+            ->select('types')
+            ->from(Payment::class, 'types', 'types.id')
+            ->where("types.name = '" . $AB_UNI_PAYMENT . "'" )
+            ->getQuery()
+            ->getResult();
+
         $types = $this->entityManager->createQueryBuilder()
             ->select('types')
             ->from(Payment::class, 'types', 'types.id')
             ->getQuery()
             ->getResult();
 
+        if(!empty($default)) {
+            $types["default"] = array_values($default)[0];
+        }
+
         return $types;
     }
 
+    /**
+     * @param Order $order
+     * @param ValueAddress $billingAddress
+     * @param Shop $shop
+     * @return object|Customer|null
+     */
     public function getCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop)
     {
         $customer = $this->entityManager->getRepository(Customer::class)
@@ -729,6 +803,12 @@ class ShopwareOrderHelper extends AbstractHelper
         return $this->createCustomer($order, $billingAddress, $shop);
     }
 
+    /**
+     * @param Order $order
+     * @param ValueAddress $billingAddress
+     * @param Shop $shop
+     * @return Customer
+     */
     public function createCustomer(ValueOrder $order, ValueAddress $billingAddress, Shop $shop)
     {
         $customer = new Customer();
@@ -774,15 +854,16 @@ class ShopwareOrderHelper extends AbstractHelper
         try {
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error writing customer data.');
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error writing customer data.');
         }
 
         return $customer;
     }
 
+    /**
+     * @return object|null
+     */
     public function getDefaultGroup()
     {
         return $this->entityManager->getRepository(Group::class)->findOneBy(array());
@@ -804,7 +885,7 @@ class ShopwareOrderHelper extends AbstractHelper
     }
 
     /**
-     * TODO: Optimize performance
+     *
      * @param Order[] $orders
      */
     public function resetArticleChangeTime(array $orders)
@@ -833,6 +914,111 @@ class ShopwareOrderHelper extends AbstractHelper
             $this->entityManager->flush();
         } catch (ORMException $e) {
             $this->logger->error($e->getMessage());
+        }
+    }
+
+    /**
+     * @param Billing|Shipping|ModelEntity $entity
+     * @return ValueAddress
+     */
+    public function buildAddress(ModelEntity $entity) {
+        $address = new ValueAddress();
+        $address->setFirstname($entity->getFirstName());
+        $address->setLastname($entity->getLastName());
+        $address->setCompany($entity->getCompany());
+        $address->setStreet($entity->getStreet());
+
+        if($entity->getAdditionalAddressLine1()) {
+            $address->setAdditionalAddressLine1($entity->getAdditionalAddressLine1());
+        }
+        $address->setZipcode($entity->getZipCode());
+        $address->setCity($entity->getCity());
+        $address->setCountry($entity->getCountry()->getIso());
+        $address->setPhone($entity->getPhone());
+
+        return $address;
+    }
+
+    /**
+     * @param ShopwareOrder|ModelEntity $entity
+     * @return ArrayCollection
+     */
+    public function buildPositions(ShopwareOrder $entity) {
+        $positions = new ArrayCollection();
+
+        foreach($entity->getDetails() as $position) {
+            /**
+             * @var Detail $position
+             */
+            $orderPosition = new OrderPosition();
+            if($position->getEan()) {
+                $orderPosition->setExternalIdentifier($position->getEan());
+            }
+
+            $orderPosition->setInternalIdentifier($position->getArticleNumber());
+            $orderPosition->setName($position->getArticleName());
+            $orderPosition->setPrice($position->getPrice());
+            $orderPosition->setQuantity($position->getQuantity());
+            $orderPosition->setTax($position->getTaxRate());
+
+            $positions->add($orderPosition);
+        }
+
+        return $positions;
+    }
+
+    /**
+     * @param Order $order
+     * @param ShopwareOrder $entity
+     */
+    public function setOrderValues(Order &$order, ShopwareOrder $entity) {
+        /** @noinspection PhpParamsInspection */
+        $order->setCreateDate($entity->getOrderTime());
+        $order->setShipping($entity->getInvoiceShipping());
+
+        try {
+            $order->setShippingType($entity->getDispatch()->getName());
+        }
+        catch(Exception $e) {
+            $order->setShippingType('Standard');
+        }
+
+        $order->setPaymentType($entity->getPayment()->getDescription());
+        $order->setPaymentTypeId($entity->getPayment()->getId());
+
+        if($entity->getTaxFree()) {
+            $order->setTaxFree(true);
+        }
+        $order->setInternalIdentifier($entity->getNumber());
+        $order->setCurrency($entity->getCurrency());
+        $order->setTransactionId($entity->getTransactionId());
+    }
+
+    /**
+     * @param Order $order
+     * @param ShopwareOrder $entity
+     */
+    public function setOrderStatus(Order &$order, ShopwareOrder $entity) {
+        if($entity->getPaymentStatus()->getId() === 12) {
+            $order->setPaid(true);
+            $order->setCleared(true);
+        }
+    }
+
+    /**
+     * @param Order $order
+     * @param ValueAddress $billingAddress
+     * @param ShopwareOrder $entity
+     */
+    public function setOrderCustomerData(Order &$order, ValueAddress &$billingAddress, ShopwareOrder $entity) {
+        if ($entity->getCustomer()) {
+            $billingAddress->setEmail($entity->getCustomer()->getEmail());
+            $order->setCustomerNumber($entity->getCustomer()->getNumber());
+        }
+
+        if ($entity->getCustomer() && $entity->getCustomer()->getBirthday()) {
+            /** @noinspection PhpParamsInspection */
+            $billingAddress->setBirthday($entity->getCustomer()->getBirthday());
         }
     }
 }

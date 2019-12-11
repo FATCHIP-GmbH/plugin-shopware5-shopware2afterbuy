@@ -4,14 +4,21 @@ namespace viaebShopwareAfterbuy;
 
 use DateTime;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
 use Shopware\Bundle\AttributeBundle\Service\CrudService;
+use Shopware\Models\Payment\Payment;
+use Shopware\Models\Payment\Repository;
 use viaebShopwareAfterbuy\Models\Status;
 use Shopware\Components\Plugin;
 use Shopware\Components\Plugin\Context\InstallContext;
 use Shopware\Components\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Shopware\Components\Plugin\Context\UpdateContext;
+use viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper;
 use Zend_Db_Adapter_Exception;
 use Zend_Db_Statement_Exception;
 
@@ -49,13 +56,15 @@ class viaebShopwareAfterbuy extends Plugin
         }
 
         $this->updateAttributes();
+
+        $this->crateFallbackPayment();
     }
 
     /**
      * @param InstallContext $context
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\Tools\ToolsException
-     * @throws \Doctrine\ORM\ORMException
+     * @throws OptimisticLockException
+     * @throws ToolsException
+     * @throws ORMException
      */
     public function install(InstallContext $context)
     {
@@ -67,6 +76,7 @@ class viaebShopwareAfterbuy extends Plugin
 
         $this->updateAttributes();
 
+        /** @var EntityManager $em */
         $em = $this->container->get('models');
         $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
@@ -74,6 +84,7 @@ class viaebShopwareAfterbuy extends Plugin
         $tableNames = array('afterbuy_status');
 
         /** @var AbstractSchemaManager $schemaManager */
+        /** @noinspection PhpUndefinedMethodInspection */
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         if (!$schemaManager->tablesExist($tableNames)) {
             $tool->createSchema($classes);
@@ -88,6 +99,8 @@ class viaebShopwareAfterbuy extends Plugin
             $em->persist($status);
             $em->flush();
         }
+        $this->crateFallbackPayment();
+
     }
 
     /**
@@ -102,10 +115,13 @@ class viaebShopwareAfterbuy extends Plugin
     {
         // Retrieve the default config setting from the configs
         // mainSystem, ExportAllArticles, ordernumberMapping
+        /** @noinspection SqlResolve */
         $sql = '
-                SELECT name, value
-                FROM s_core_config_elements
-                WHERE name="mainSystem" OR name="ExportAllArticles" OR name="ordernumberMapping"
+                SELECT el.name, el.value
+                FROM s_core_config_elements el
+                LEFT JOIN s_core_config_forms form
+                ON el.form_id = form.id
+                WHERE (el.name="mainSystem" OR el.name="ExportAllArticles" OR el.name="ordernumberMapping") AND form.name="viaebShopwareAfterbuy"
                 ';
 
         try {
@@ -129,8 +145,7 @@ class viaebShopwareAfterbuy extends Plugin
                     ]);
                 }
             }
-        } catch (Zend_Db_Adapter_Exception $e) {
-        } catch (Zend_Db_Statement_Exception $e) {
+        } catch (Zend_Db_Adapter_Exception | Zend_Db_Statement_Exception $e) {
         }
     }
 
@@ -156,12 +171,14 @@ class viaebShopwareAfterbuy extends Plugin
     }
 
     public function deleteSchema() {
+        /** @var EntityManager $em */
         $em = $this->container->get('models');
         $tool = new SchemaTool($em);
         $classes = [$em->getClassMetadata(Status::class)];
 
         $tableNames = array('afterbuy_status');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $schemaManager = Shopware()->Container()->get('models')->getConnection()->getSchemaManager();
         /** @var AbstractSchemaManager $schemaManager */
         if ($schemaManager->tablesExist($tableNames)) {
@@ -170,6 +187,7 @@ class viaebShopwareAfterbuy extends Plugin
     }
 
     public function updateAttributes() {
+        /** @var CrudService $service */
         $service = $this->container->get('shopware_attribute.crud_service');
 
         $service->update('s_categories_attributes', 'afterbuy_catalog_id', 'string');
@@ -207,6 +225,28 @@ class viaebShopwareAfterbuy extends Plugin
                 'displayInBackend' => true,
                 'custom' => true
             ]);
+        }
+    }
+
+    public function crateFallbackPayment()
+    {
+        /** @var EntityManager $em */
+        $em = $this->container->get('models');
+        /** @var Repository $shopRepository */
+        $shopRepository = $em->getRepository(Payment::class);
+
+        $payment = new Payment();
+        $payment_array = [
+            'name' => ShopwareConfigHelper::$AB_UNI_PAYMENT,
+            'description' => 'Afterbuy Universal',
+            'additionalDescription' => 'Fallback payment for Afterbuy',
+        ];
+
+        if (!$shopRepository->findOneBy(['name' => $payment_array['name']])) {
+            $payment->fromArray($payment_array);
+
+            $em->persist($payment);
+            $em->flush();
         }
     }
 }

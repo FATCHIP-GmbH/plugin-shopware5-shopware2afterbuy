@@ -150,11 +150,9 @@ class AbstractHelper
      * @param float $rate
      *
      * @return Tax
-     * @throws ORMException
      */
     public function getTax(float $rate)
     {
-
         $rate_s = number_format($rate, 2);
 
         if ( ! $this->taxes) {
@@ -173,7 +171,6 @@ class AbstractHelper
 
     /**
      * @param float $rate
-     * @throws ORMException
      */
     public function createTax(float $rate)
     {
@@ -181,10 +178,11 @@ class AbstractHelper
         $tax->setTax($rate);
         $tax->setName($rate);
 
-        $this->entityManager->persist($tax);
+
         try {
+            $this->entityManager->persist($tax);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving tax rule', array($rate));
         }
     }
@@ -295,7 +293,6 @@ class AbstractHelper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
 
-
         /**
          * this enables self signed ssl certificates.
          * as long requests are possible via http, mitm-attacks  will always be a problem
@@ -337,7 +334,6 @@ class AbstractHelper
      * @param $albumName
      *
      * @return Media
-     * @throws ORMException
      */
     public function createMediaImage($url, $albumName = 'Artikel')
     {
@@ -397,10 +393,11 @@ class AbstractHelper
         $media->setExtension($path_info['extension']);
         $media->setType(Media::TYPE_IMAGE);
 
-        $this->entityManager->persist($media);
         try {
+            $this->entityManager->persist($media);
             $this->entityManager->flush($media);
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
+            $this->logger->error($e->getMessage());
         }
 
         if ($media->getType() === Media::TYPE_IMAGE && ! in_array($media->getExtension(), ['tif', 'tiff'], true)
@@ -416,14 +413,20 @@ class AbstractHelper
      * @return mixed|string
      */
     public static function getShopwareVersion() {
+        /** @noinspection DuplicatedCode */
         $currentVersion = '';
 
         if(defined('\Shopware::VERSION')) {
+            /** @noinspection PhpFullyQualifiedNameUsageInspection */
+            /** @noinspection PhpUndefinedClassConstantInspection */
             $currentVersion = \Shopware::VERSION;
         }
 
         //get old composer versions
         if($currentVersion === '___VERSION___' && class_exists('ShopwareVersion') && class_exists('PackageVersions\Versions')) {
+            /** @noinspection PhpFullyQualifiedNameUsageInspection */
+            /** @noinspection PhpUndefinedClassConstantInspection */
+            /** @noinspection PhpUndefinedClassInspection */
             $currentVersion = \ShopwareVersion::parseVersion(
                 \PackageVersions\Versions::getVersion('shopware/shopware')
             )['version'];

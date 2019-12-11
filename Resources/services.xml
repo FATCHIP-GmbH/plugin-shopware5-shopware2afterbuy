@@ -204,7 +204,7 @@
         <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadOrdersService" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
             <argument id="models" type="service"/>
             <call method="initHelper">
-                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
+                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper"/>
                 <argument type="string">number</argument>
                 <argument>false</argument>
             </call>
@@ -310,6 +310,13 @@
             </call>
             <call method="preFetch">
 
+            </call>
+        </service>
+
+        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyOrderHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper">
+            <argument id="models" type="service"/>
+            <call method="setLogger">
+                <argument type="service" id="afterbuy.logger" />
             </call>
         </service>
 

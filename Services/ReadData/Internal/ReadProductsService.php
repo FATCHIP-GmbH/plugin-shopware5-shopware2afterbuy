@@ -7,12 +7,14 @@ use viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 
+/**
+ * Class ReadProductsService
+ * @package viaebShopwareAfterbuy\Services\ReadData\Internal
+ * @property ShopwareArticleHelper $helper
+ */
 class ReadProductsService extends AbstractReadDataService implements ReadDataInterface {
 
     protected $customerGroup;
-
-    /** @var ShopwareArticleHelper */
-    public $helper;
 
     /**
      * @param array $filter
@@ -32,16 +34,11 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
     public function transform(array $data) {
         $this->logger->debug('Receiving products from shop', $data);
 
-        /**
-         * @var ShopwareArticleHelper $helper
-         */
-        $helper = $this->helper;
-
         if($this->targetEntity === null) {
             return array();
         }
 
-        $this->customerGroup = $helper->getDefaultCustomerGroup($this->config['customerGroup']);
+        $this->customerGroup = $this->helper->getDefaultCustomerGroup($this->config['customerGroup']);
 
         if($this->customerGroup === null) {
             $this->logger->error('Default customer group not defined');
@@ -65,13 +62,13 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
             }
 
             /** @var Article $entity */
-            $article = $helper->setArticleMainValues($entity, $this->targetEntity);
-            $helper->assignCategories($article, $entity);
-            $helper->assignArticleImages($entity, $article);
+            $article = $this->helper->setArticleMainValues($entity, $this->targetEntity);
+            $this->helper->assignCategories($article, $entity);
+            $this->helper->assignArticleImages($entity, $article);
 
             if(!$entity->getConfiguratorSet()) {
                 //simple article
-                $helper->setSimpleArticleValues($entity, $article, $netInput);
+                $this->helper->setSimpleArticleValues($entity, $article, $netInput);
             }
             else {
                 $article->setInternalIdentifier('AB' . $entity->getMainDetail()->getNumber());
@@ -82,13 +79,11 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                         $this->helper->fixMissingAttribute($detail);
                     }
 
-                    $variant = $helper->setVariantValues($entity, $detail, $this->targetEntity, $netInput);
+                    $variant = $this->helper->setVariantValues($entity, $detail, $this->targetEntity, $netInput);
 
-                    $helper->assignArticleImages($entity, $variant, $detail);
+                    $this->helper->assignArticleImages($entity, $variant, $detail);
 
-                    if($article->getVariantArticles() !== null) {
-                        $article->getVariantArticles()->add($variant);
-                    }
+                    $article->getVariantArticles()->add($variant);
                 }
             }
 

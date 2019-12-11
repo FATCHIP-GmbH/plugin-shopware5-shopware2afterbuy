@@ -11,66 +11,51 @@ use viaebShopwareAfterbuy\Models\Status;
 
 class ShopwareResetHelper extends AbstractHelper
 {
-    protected $entities;
+    protected $shopwareAttributesArray;
 
     public function initHelper($entities)
     {
-        $this->entities = $entities;
+        $this->shopwareAttributesArray = $entities;
     }
 
     public function resetShopConnection()
+    {
+        $result = $this->resetAttributes();
+
+        // reset table afterbuy_status
+        $this->resetStatus();
+
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    private function resetAttributes()
     {
         $result = [
             'msg' => 'success',
             'data' => [],
         ];
 
-        //TODO: separate into methods (1. reset attributes, 2. reset status)
-        // reset all afterbuy attributes
-        foreach ($this->entities as $entity) {
-            if ($this->resetShopConnectionEntity($entity) !== 'success') {
+        foreach ($this->shopwareAttributesArray as $shopwareAttributes) {
+            if ($this->resetShopConnectionEntity($shopwareAttributes) !== 'success') {
                 $result['msg'] = 'failure';
-                $result['data'][] = $entity;
+                $result['data'][] = $shopwareAttributes;
             }
         }
-
-        // reset table afterbuy_status
-
-        /** @var ClassMetadata $metadata */
-        $metadata = $this->entityManager->getClassMetadata(Status::class);
-
-        $builder = $this->entityManager->createQueryBuilder();
-        $builder->update(Status::class, 'a');
-
-        foreach ($metadata->fieldMappings as $name => $column) {
-            // skip id column
-            if ($column['type'] !== 'datetime') {
-                continue;
-            }
-
-            $builder->set('a.' . $name, ':null');
-        }
-
-        try {
-            $builder
-                ->setParameter('null', new DateTime('01-01-1970'))
-                ->getQuery()
-                ->execute();
-        } catch (Exception $e) {
-        }
-
         return $result;
     }
 
-    private function resetShopConnectionEntity($entity)
+    private function resetShopConnectionEntity($shopwareAttributes)
     {
         $prefix = 'afterbuy';
 
         /** @var ClassMetadata $metadata */
-        $metadata = $this->entityManager->getClassMetadata($entity);
+        $metadata = $this->entityManager->getClassMetadata($shopwareAttributes);
 
         $builder = $this->entityManager->createQueryBuilder();
-        $builder->update($entity, 'a');
+        $builder->update($shopwareAttributes, 'a');
 
         foreach ($metadata->fieldMappings as $name => $column) {
             // skip column names not starting with 'afterbuy'
@@ -93,5 +78,32 @@ class ShopwareResetHelper extends AbstractHelper
         }
 
         return 'success';
+    }
+
+    private function resetStatus()
+    {
+        /** @var ClassMetadata $metadata */
+        $metadata = $this->entityManager->getClassMetadata(Status::class);
+
+        $builder = $this->entityManager->createQueryBuilder();
+        $builder->update(Status::class, 'a');
+
+        foreach ($metadata->fieldMappings as $name => $column) {
+            // skip id column
+            if ($column['type'] !== 'datetime') {
+                continue;
+            }
+
+            $builder->set('a.' . $name, ':null');
+        }
+
+        try {
+            $builder
+                ->setParameter('null', new DateTime('01-01-1970'))
+                ->getQuery()
+                ->execute();
+        } catch (Exception $e) {
+            $this->logger->error('Error executing reset query!');
+        }
     }
 }

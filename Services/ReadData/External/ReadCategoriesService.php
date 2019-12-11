@@ -62,9 +62,7 @@ class ReadCategoriesService extends AbstractReadDataService implements ReadDataI
         }
 
         foreach ($data as $entity) {
-            /**
-             * @var Category $value
-             */
+            /** @var Category $value */
             $value = new $this->targetEntity();
 
             foreach ($fieldMappings as list($afterbuyVar, $valueObjVar)) {

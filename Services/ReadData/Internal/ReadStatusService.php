@@ -13,6 +13,10 @@ use Shopware\Models\Order\Order;
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface
 {
 
+    /**
+     * @param array $filter
+     * @return array|mixed
+     */
     public function get(array $filter)
     {
         $data = $this->read($filter);
@@ -20,6 +24,10 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
         return $this->transform($data);
     }
 
+    /**
+     * @param array $orders
+     * @return array|mixed
+     */
     public function transform(array $orders)
     {
         $this->logger->debug('Receiving updated orders from shop', $orders);
@@ -31,10 +39,7 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
         $values = [];
 
         foreach ($orders as $order) {
-            /**
-             * @var Order $order
-             */
-
+            /** @var Order $order */
             if(!$order->getAttribute()->getAfterbuyOrderId()) {
                 continue;
             }
@@ -58,7 +63,10 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
         return $values;
     }
 
-
+    /**
+     * @param array $filter
+     * @return mixed
+     */
     public function read(array $filter)
     {
         /**

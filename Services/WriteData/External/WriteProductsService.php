@@ -7,13 +7,13 @@ use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
-use Shopware\Models\Customer\Group;
 
-
+/**
+ * Class WriteProductsService
+ * @package viaebShopwareAfterbuy\Services\WriteData\External
+ * @property AfterbuyProductsHelper $helper
+ */
 class WriteProductsService extends AbstractWriteDataService implements WriteDataInterface {
-    /** @var AfterbuyProductsHelper */
-    public $helper;
-
     /**
      * @param null|array $data
      * @return mixed
@@ -32,29 +32,19 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
      */
     public function transform(array $data) {
         $this->logger->debug('Storing ' . count($data) . ' items.', array($data));
-        /**
-         * @var Group $customerGroup
-         */
 
         $api = new ApiClient($this->apiConfig, $this->logger);
 
-        /**
-         * @var AfterbuyProductsHelper $helper
-         */
-        $helper = $this->helper;
+        $afterbuyProductIds = $this->helper->submitAfterbuySimpleProducts($data, $api);
 
-        //TODO: move to send method
-        $afterbuyProductIds = $helper->submitAfterbuySimpleProducts($data, $api);
-
-        $afterbuyProductIds = $helper->submitAfterbuyVariantProducts($data, $api, $afterbuyProductIds);
+        $afterbuyProductIds = $this->helper->submitAfterbuyVariantProducts($data, $api, $afterbuyProductIds);
 
         return $afterbuyProductIds;
     }
 
-
     /**
      * @param $targetData
-     * @return mixed     *
+     * @return mixed
      */
     public function send($targetData) {
 

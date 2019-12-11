@@ -42,18 +42,6 @@ class ImportCategories extends ShopwareCommand
         $this
             ->setName('Afterbuy:Import:Categories')
             ->setDescription('Import Categories from Afterbuy')
-            /*->addArgument(
-                'my-argument',
-                InputArgument::REQUIRED,
-                'An required argument (positional)'
-            )
-            ->addOption(
-                'my-option',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'An optional *option*',
-                'My-Default-Value'
-            )*/
             ->setHelp(<<<EOF
 The <info>%command.name%</info> implements a command.
 EOF

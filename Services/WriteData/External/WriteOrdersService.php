@@ -12,12 +12,14 @@ use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order;
 use viaebShopwareAfterbuy\ValueObjects\OrderPosition;
 
+/**
+ * Class WriteOrdersService
+ * @package viaebShopwareAfterbuy\Services\WriteData\External
+ * @property ShopwareOrderHelper $helper
+ */
 class WriteOrdersService extends AbstractWriteDataService implements WriteDataInterface {
 
     protected $ABCountries;
-
-    /** @var ShopwareOrderHelper $helper */
-    public $helper;
 
     /**
      * @param array $data
@@ -42,12 +44,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         $orders = [];
 
-        /**
-         * @var ShopwareOrderHelper $helper
-         */
-        $helper = $this->helper;
-
-        $this->ABCountries = $helper->getABCountryCodes();
+        $this->ABCountries = $this->helper->getABCountryCodes();
         
         foreach($data as $value) {
             /**
@@ -60,6 +57,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             $internalIdentifyer = $value->getInternalIdentifier();
 
+            /** @noinspection PhpNonStrictObjectEqualityInspection */
             $orders[$value->getInternalIdentifier()] = array(
                 'PosAnz' => $value->getPositions()->count(),
                 'Kbenutzername' => $value->getCustomerNumber(),
@@ -71,6 +69,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'KPLZ' => $value->getBillingAddress()->getZipcode(),
                 'KOrt' => $value->getBillingAddress()->getCity(),
                 'KLand' => $this->ABCountries[$value->getBillingAddress()->getCountry()],
+
+                'Lieferanschrift' => ($value->getBillingAddress()->compare($value->getShippingAddress())) ? 0 : 1,
 
                 'KLFirma' => $value->getShippingAddress()->getCompany(),
                 'KLVorname' => $value->getShippingAddress()->getFirstname(),

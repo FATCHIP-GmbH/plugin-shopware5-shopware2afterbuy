@@ -1,6 +1,8 @@
 <?php
 /** @noinspection SpellCheckingInspection */
 
+/** @noinspection PhpUnused */
+
 class Shopware_Controllers_Backend_AfterbuyConnector extends Shopware_Controllers_Backend_ExtJs
 {
     public function indexAction() {

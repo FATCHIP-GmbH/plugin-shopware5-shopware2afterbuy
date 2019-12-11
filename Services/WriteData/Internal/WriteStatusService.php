@@ -3,13 +3,11 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
-use Doctrine\ORM\ORMException;
 use Exception;
 use Shopware\Models\Order\Order;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
-use Shopware\Models\Shop\Shop;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface {
 
@@ -22,14 +20,9 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      */
     protected $countries;
 
-    /** @var ShopwareOrderHelper */
-    public $helper;
-
-
     /**
      * @param array $data
      * @return mixed
-     * @throws ORMException
      */
     public function put(array $data) {
         $data = $this->transform($data);
@@ -42,7 +35,6 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      *
      * @param array $data
      * @return mixed
-     * @throws ORMException
      */
     public function transform(array $data) {
 
@@ -60,7 +52,12 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
 
             $this->helper->setShippingStatus($value, $order);
 
-            $this->entityManager->persist($order);
+            try {
+                $this->entityManager->persist($order);
+            }
+            catch(Exception $e) {
+                $this->logger->error('Error updating order state', array($order->getId()));
+            }
         }
 
         try {

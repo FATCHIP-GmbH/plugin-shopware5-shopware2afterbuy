@@ -2,7 +2,6 @@
 
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
-use Doctrine\ORM\ORMException;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
@@ -24,7 +23,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
     /**
      * @param array $data
      * @return mixed
-     * @throws ORMException
      */
     public function put(array $data)
     {
@@ -38,7 +36,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
      * @param ValueCategory[] $valueCategories
      *
      * @return mixed
-     * @throws ORMException
      */
     public function transform(array $valueCategories)
     {
@@ -53,38 +50,6 @@ class WriteCategoriesService extends AbstractWriteDataService implements WriteDa
         $valueCategoryTrees = $categoryHelper->createCategoryTrees($valueCategories);
 
         $shopwareCategories = $categoryHelper->addCategoriesToShopware($valueCategoryTrees);
-
-//        $valueCategories = $categoryHelper->sortValueCategoriesByParentID($valueCategories);
-//
-//        foreach ($valueCategories as $valueCategory) {
-//            /**
-//             * @var ShopwareCategory $shopwareCategory
-//             */
-//            $shopwareCategory = $categoryHelper->getEntity(
-//                $valueCategory->getExternalIdentifier(),
-//                $this->identifier,
-//                $this->isAttribute
-//            );
-//
-//            $shopwareCategory->setName($valueCategory->getName());
-//            $shopwareCategory->setMetaDescription($valueCategory->getDescription());
-//
-//            if($shopwareCategory->getParent() === null) {
-//                $shopwareCategory->setParent($categoryHelper->findParentCategory($valueCategory, $this->identifier));
-//            }
-//
-//            $shopwareCategory->setPosition($valueCategory->getPosition());
-//            $shopwareCategory->setCmsText($valueCategory->getCmsText());
-//            $shopwareCategory->setActive($valueCategory->getActive());
-//
-//            $this->entityManager->persist($shopwareCategory);
-//
-//            try {
-//                $this->entityManager->flush($shopwareCategory);
-//            } catch (OptimisticLockException $e) {
-//                $this->logger->error('Error saving category', array(json_encode($valueCategory)));
-//            }
-//        }
 
         return $shopwareCategories;
     }

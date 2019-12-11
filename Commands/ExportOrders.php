@@ -41,18 +41,6 @@ class ExportOrders extends ShopwareCommand
         $this
             ->setName('Afterbuy:Export:Orders')
             ->setDescription('Submit orders to Afterbuy')
-            /*->addArgument(
-                'my-argument',
-                InputArgument::REQUIRED,
-                'An required argument (positional)'
-            )
-            ->addOption(
-                'my-option',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'An optional *option*',
-                'My-Default-Value'
-            )*/
             ->setHelp(<<<EOF
 The <info>%command.name%</info> implements a command.
 EOF

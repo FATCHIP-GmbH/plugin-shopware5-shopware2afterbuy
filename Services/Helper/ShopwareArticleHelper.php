@@ -62,6 +62,9 @@ class ShopwareArticleHelper extends AbstractHelper
     /** @var ConfiguratorGroup[] */
     private $configuratorGroups;
 
+    /**
+     * @param ArticleDetail $detail
+     */
     public function fixMissingAttribute(ArticleDetail $detail)
     {
         $attr = new ArticlesAttribute();
@@ -70,9 +73,7 @@ class ShopwareArticleHelper extends AbstractHelper
         try {
             $this->entityManager->persist($detail);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error saving attribute');
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving attribute');
         }
     }
@@ -141,13 +142,14 @@ ON duplicate key update afterbuy_id = $externalId;";
             $article->setLastStock(true);
         }
 
+        /** @var Price $price */
         $price = $detail->getPrices()->filter(function (Price $price) {
             return $price->getCustomerGroup() === $this->customerGroup;
         })->first();
 
         $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput);
-
         $article->setPrice($price);
+        $article->setBuyingPrice($detail->getPurchasePrice());
 
         $article->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
         $article->setSupplierNumber($detail->getSupplierNumber());
@@ -219,6 +221,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput);
 
         $variant->setPrice($price);
+        $variant->setBuyingPrice($detail->getPurchasePrice());
 
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
 
@@ -357,6 +360,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         $article->setDescription($entity->getDescriptionLong());
         $article->setShortDescription($entity->getDescription());
+        $article->setKeywords($entity->getKeywords());
 
         $article->setTax($entity->getTax()->getTax());
 
@@ -369,7 +373,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ShopwareArticle $article
      * @param ArticleDetail $detail
      * @param array $variants
-     * @throws ORMException
      */
     public function assignVariants(ShopwareArticle &$article, ArticleDetail $detail, array $variants)
     {
@@ -397,7 +400,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param array $variants
      *
      * @return array
-     * @throws ORMException
      */
     public function getAssignableConfiguratorOptions(array $variants)
     {
@@ -420,10 +422,10 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $attr = new ConfiguratorOption();
                 $option->setAttribute($attr);
 
-                $this->entityManager->persist($option);
                 try {
+                    $this->entityManager->persist($option);
                     $this->entityManager->flush($option);
-                } catch (OptimisticLockException $e) {
+                } catch (OptimisticLockException | ORMException $e) {
                     $this->logger->error('Error assigning configurator options', array(json_encode($option)));
                 }
 
@@ -587,12 +589,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         return $price;
     }
 
-
     /**
      * @param string $supplierName
      *
      * @return Supplier|string
-     * @throws ORMException
      */
     public function getSupplier(string $supplierName)
     {
@@ -614,7 +614,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $name
      *
      * @return Supplier
-     * @throws ORMException
      */
     public function createSupplier(string $name)
     {
@@ -624,12 +623,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         $attribute = new ArticleSupplier();
         $supplier->setAttribute($attribute);
 
-        $this->entityManager->persist($supplier);
         try {
+            $this->entityManager->persist($supplier);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error saving supplier', array($name));
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving supplier', array($name));
         }
 
@@ -652,12 +649,20 @@ ON duplicate key update afterbuy_id = $externalId;";
         return $supplier;
     }
 
+    /**
+     * @param string $number
+     * @return object|null
+     */
     public function getArticleByNumber(string $number)
     {
         $article = $this->entityManager->getRepository(ArticleDetail::class)
             ->findOneBy(array('number' => $number));
 
-        return $article;
+        if($article !== null) {
+            return $article->getArticle();
+        }
+
+       return null;
     }
 
     /**
@@ -706,6 +711,7 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * returns article. if not available article is needs to be created
+     * TODO: we should use one identifier, which IS the external or the internal in respect to config
      *
      * @param string $number
      * @param string $name
@@ -713,47 +719,39 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @param string $externalIdentifyer
      * @return ShopwareArticle
-     * @throws ORMException
      */
     public function getMainArticle(string $number, string $name, $parent = '', $externalIdentifyer = '')
     {
         $article = null;
 
+        //article variant
         if ($parent) {
             $article = $this->getArticleFromAttribute($parent);
 
             if(!$article) {
                 $article = $this->getArticleByNumber($parent);
             }
+        }
 
-        } else {
-            /**
-             * @var ArticlesAttribute $article
-             */
+        //main article
+        if(!$parent) {
+            $article = $this->getMainArticleByIdentifyer($number, $externalIdentifyer);
 
-            if((int)$this->config['ordernumberMapping'] == 1) {
-                $article = $this->getArticleFromAttribute($externalIdentifyer);
-            }
-            else {
-                $article = $this->getArticleFromAttribute($number);
-            }
-
-            //TODO: fix here
-            if ( ! $article) {
-                $detail = $this->entityManager
-                    ->getRepository(ArticleDetail::class)
-                    ->findOneBy(array('number' => $number));
-
-                if(!empty($detail)) {
-                    $article = $detail->getArticle();
-                }
-
-            } else {
-                //If Baseproduct we just will set the name
+            //update main article name
+            if($article) {
                 $article->setName($name);
-                $this->entityManager->persist($article);
 
-                return null;
+                try {
+                    $this->entityManager->persist($article);
+                }
+                catch(ORMException $e) {
+                    $this->logger->error($e->getMessage());
+                }
+            }
+
+            //fallback get article via number of detail
+            if (!$article) {
+                $article = $this->getMainArticleFromDetailNumber($number);
             }
         }
 
@@ -761,7 +759,43 @@ ON duplicate key update afterbuy_id = $externalId;";
             return $article;
         }
 
-        return $this->createMainArticle();
+        $article = $this->createMainArticle();
+
+        return $article;
+    }
+
+    /**
+     * @param string $number
+     * @param string $externalIdentifyer
+     * @return ShopwareArticle|null
+     */
+    public function getMainArticleByIdentifyer(string $number, string $externalIdentifyer) {
+        if((int)$this->config['ordernumberMapping'] == 1) {
+            $article = $this->getArticleFromAttribute($externalIdentifyer);
+        }
+        else {
+            $article = $this->getArticleFromAttribute($number);
+        }
+
+        return $article;
+    }
+
+    /**
+     * @param string $number
+     * @return ShopwareArticle|null
+     */
+    public function getMainArticleFromDetailNumber(string $number) {
+        $article = null;
+
+        $detail = $this->entityManager
+            ->getRepository(ArticleDetail::class)
+            ->findOneBy(array('number' => $number));
+
+        if(!empty($detail)) {
+            $article = $detail->getArticle();
+        }
+
+        return $article;
     }
 
     /**
@@ -799,20 +833,16 @@ ON duplicate key update afterbuy_id = $externalId;";
      * creates and returns the main article
      *
      * @return ShopwareArticle
-     * @throws ORMException
      */
     public function createMainArticle()
     {
         $article = new ShopwareArticle();
-
         $article->setName(uniqid('', true));
 
-        $this->entityManager->persist($article);
         try {
+            $this->entityManager->persist($article);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error saving temporary main article');
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving temporary main article');
         }
 
@@ -838,7 +868,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param array $variants
      *
      * @return array
-     * @throws ORMException
      */
     public function getAssignableConfiguratorGroups(array $variants)
     {
@@ -865,7 +894,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param string $name
      *
      * @return ConfiguratorGroup
-     * @throws ORMException
      */
     public function createConfiguratorGroup(string $name)
     {
@@ -874,12 +902,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         $group->setDescription($name);
         $group->setPosition(1337);
 
-        $this->entityManager->persist($group);
         try {
+            $this->entityManager->persist($group);
             $this->entityManager->flush($group);
-        } catch (OptimisticLockException $e) {
-            $this->logger->error('Error saving configurator group', array($name));
-        } catch (ORMException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving configurator group', array($name));
         }
 
@@ -1000,7 +1026,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param $valueArticle ValueArticle
      * @param $shopwareArticle ShopwareArticle
-     * @throws ORMException
      */
     public function assignArticleProperties($valueArticle, $shopwareArticle)
     {
@@ -1021,10 +1046,58 @@ ON duplicate key update afterbuy_id = $externalId;";
     }
 
     /**
+     * @param ValueArticle $valueArticle
+     * @param ShopwareArticle $shopwareArticle
+     */
+    public function setMainArticleValues(Article $valueArticle, ShopwareArticle &$shopwareArticle) {
+        if(!$valueArticle->getMainArticleId()) {
+            $shopwareArticle->setName($valueArticle->getName());
+            $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+            $shopwareArticle->setKeywords($valueArticle->getKeywords());
+            $shopwareArticle->setDescription($valueArticle->getShortDescription());
+        }
+    }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param ArticleDetail $articleDetail
+     */
+    public function setDetailValues(Article $valueArticle, ArticleDetail &$articleDetail) {
+        $articleDetail->setLastStock($valueArticle->getStockMin());
+
+        $articleDetail->setInStock($valueArticle->getStock());
+        $articleDetail->setEan($valueArticle->getEan());
+        $articleDetail->setWeight($valueArticle->getWeight());
+        $articleDetail->setPurchasePrice($valueArticle->getBuyingPrice());
+
+        /** @var ShopwareUnit $unit */
+        $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());
+        $articleDetail->setUnit($unit);
+        $articleDetail->setPurchaseUnit($valueArticle->getBasePriceFactor());
+        $articleDetail->setSupplierNumber($valueArticle->getSupplierNumber());
+        $articleDetail->setLastStock((int)$valueArticle->getDiscontinued());
+        $articleDetail->setReferenceUnit(1);
+    }
+
+    /**
+     * @param ValueArticle $valueArticle
+     * @param ArticleDetail $articleDetail
+     * @param ShopwareArticle $shopwareArticle
+     */
+    public function setArticleActiveState(Article $valueArticle, ArticleDetail &$articleDetail, ShopwareArticle &$shopwareArticle) {
+        /** @noinspection PhpDeprecationInspection */
+        $shopwareArticle->setLastStock((int)$valueArticle->getDiscontinued());
+
+        if ($valueArticle->isActive()) {
+            $articleDetail->setActive(1);
+            $shopwareArticle->setActive(true);
+        }
+    }
+
+    /**
      * @param array $valueArticles
      * @param bool $netInput
      * @param Group $customerGroup
-     * @throws ORMException
      */
     public function importArticle(
         array $valueArticles,
@@ -1042,82 +1115,67 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $valueArticle->getExternalIdentifier()
             );
 
-            if ( ! $shopwareArticle) {
-                continue;
-            }
+            $this->setMainArticleValues($valueArticle, $shopwareArticle);
 
-            if(!$valueArticle->getMainArticleId()) {
-                $shopwareArticle->setName($valueArticle->getName());
-                $shopwareArticle->setDescriptionLong($valueArticle->getDescription());
+            if ($valueArticle->getBaseProductFlag() === Article::$BASE_PRODUCT_FLAG__VARIATION_SET) {
+
+                try {
+                    $this->entityManager->persist($shopwareArticle);
+                    $this->entityManager->flush();
+                }
+                catch(OptimisticLockException | ORMException $e) {
+                    $this->logger->error('Error storing base article values!');
+                }
+                continue;
             }
 
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));
             $shopwareArticle->setTax($this->getTax($valueArticle->getTax()));
 
-
             /** @var ArticleDetail $articleDetail */
             $articleDetail = $this->getDetail($valueArticle->getOrdernunmber(), $shopwareArticle);
-
-            //set main values
-            $articleDetail->setLastStock($valueArticle->getStockMin());
-
-            $articleDetail->setInStock($valueArticle->getStock());
-            $articleDetail->setEan($valueArticle->getEan());
-            $articleDetail->setWeight($valueArticle->getWeight());
-
-            /** @var ShopwareUnit $unit */
-            $unit = $this->getUnitFromString($valueArticle->getUnitOfQuantity());
-            $articleDetail->setUnit($unit);
-            $articleDetail->setPurchaseUnit($valueArticle->getBasePriceFactor());
-            $articleDetail->setSupplierNumber($valueArticle->getSupplierNumber());
-            $articleDetail->setLastStock((int)$valueArticle->getDiscontinued());
-
-
-            /** @noinspection PhpDeprecationInspection */
-            $shopwareArticle->setLastStock((int)$valueArticle->getDiscontinued());
-            $articleDetail->setReferenceUnit(1);
-
-            if ($valueArticle->isActive()) {
-                $articleDetail->setActive(1);
-                $shopwareArticle->setActive(true);
-            }
-
             $price = Helper::convertPrice($valueArticle->getPrice(), $valueArticle->getTax(), false, $netInput);
 
+            $this->setDetailValues($valueArticle, $articleDetail);
+            $this->setArticleActiveState($valueArticle, $articleDetail, $shopwareArticle);
             $this->storePrices($articleDetail, $customerGroup, $price);
-
-            $this->getArticleAttributes($articleDetail,
-                $valueArticle->getMainArticleId());
-
-            //TODO: check if external number should be put in here
+            $this->getArticleAttributes($articleDetail, $valueArticle->getMainArticleId());
             $articleDetail->getAttribute()->setAfterbuyInternalNumber($valueArticle->getAnr());
-
-            $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_4($valueArticle->getFree4());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_5($valueArticle->getFree5());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_6($valueArticle->getFree6());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_7($valueArticle->getFree7());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
-            $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
+            $this->storeAfterbuyAttributes($articleDetail, $valueArticle);
 
             // to make sure we store the 'Afterbuy ProductID' in case the user chooses to use Afterbuy artikelNr as
             // order number
             $articleDetail->getAttribute()->setAfterbuyId($valueArticle->getExternalIdentifier());
 
-            $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
-            $this->assignArticleProperties($valueArticle, $shopwareArticle);
-
-            $this->entityManager->persist($shopwareArticle);
-
             //have to flush cuz parent is not getting found otherwise
             try {
+                $this->assignVariants($shopwareArticle, $articleDetail, $valueArticle->variants);
+                $this->assignArticleProperties($valueArticle, $shopwareArticle);
+
+                $this->entityManager->persist($shopwareArticle);
+
                 $this->entityManager->flush();
-            } catch (OptimisticLockException $e) {
+            } catch (OptimisticLockException | ORMException $e) {
+                $this->logger->error($e->getMessage());
             }
         }
+    }
+
+    /**
+     * @param ArticleDetail $articleDetail
+     * @param ValueArticle $valueArticle
+     */
+    public function storeAfterbuyAttributes(ArticleDetail &$articleDetail, ValueArticle $valueArticle) {
+        $articleDetail->getAttribute()->setAfterbuyFreeText_1($valueArticle->getFree1());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_2($valueArticle->getFree2());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_3($valueArticle->getFree3());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_4($valueArticle->getFree4());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_5($valueArticle->getFree5());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_6($valueArticle->getFree6());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_7($valueArticle->getFree7());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_8($valueArticle->getFree8());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_9($valueArticle->getFree9());
+        $articleDetail->getAttribute()->setAfterbuyFreeText_10($valueArticle->getFree10());
     }
 
     /**
@@ -1126,7 +1184,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      *
      * @param string $unitString
      * @return ShopwareUnit
-     * @throws ORMException
      */
     public function getUnitFromString(string $unitString)
     {
@@ -1142,7 +1199,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $unitString
      * @return ShopwareUnit
-     * @throws ORMException
      */
     public function createUnitFromString(string $unitString)
     {
@@ -1150,10 +1206,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         $unit->setUnit($unitString);
         $unit->setName($unitString);
 
-        $this->entityManager->persist($unit);
         try {
+            $this->entityManager->persist($unit);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
             $this->logger->error('Error saving unit', array($unit));
         }
 
@@ -1191,7 +1247,6 @@ ON duplicate key update afterbuy_id = $externalId;";
                 );
 
                 if ($articleDetail === null) {
-                    //TODO: fix detail retrieval
                     $detailAttribute = $this->entityManager->getRepository(ArticlesAttribute::class)->findOneBy(
                         ['afterbuyParentId' => $mainArticleId]
                     );
@@ -1216,7 +1271,6 @@ ON duplicate key update afterbuy_id = $externalId;";
 
     /**
      * @param ValueArticle[] $valueArticles
-     * @throws ORMException
      */
     public function associateImages(array $valueArticles)
     {
@@ -1251,7 +1305,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ValueArticle $valueArticle
      * @param ProductPicture $productPicture
      * @param ArticleDetail $mainDetail
-     * @throws ORMException
      */
     private function associateImage(
         ValueArticle $valueArticle,
@@ -1327,7 +1380,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ValueArticle $valueArticle
      * @param ImageMapping $imageMapping
      * @param ArticleImage $image
-     * @throws ORMException
      */
     private function associateVariantImage(
         ValueArticle $valueArticle,
@@ -1382,10 +1434,15 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
         }
 
-        if ( ! $image->getMappings()->count()) {
-            $image->getMappings()->add($imageMapping);
-        } else {
-            $this->entityManager->persist($imageMapping);
+        try {
+            if (!$image->getMappings()->count()) {
+                $image->getMappings()->add($imageMapping);
+            } else {
+                $this->entityManager->persist($imageMapping);
+            }
+        }
+        catch (ORMException $e) {
+            $this->logger->error('Error storing variant image association');
         }
     }
 
@@ -1395,7 +1452,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ShopwareArticle $article
      *
      * @return ArticleImage
-     * @throws ORMException
      */
     public function createParentImage(
         Media $media,
@@ -1411,11 +1467,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $image->setExtension($media->getExtension());
         $image->setMedia($media);
 
-        $this->entityManager->persist($image);
-
         try {
+            $this->entityManager->persist($image);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
+            $this->logger->error($e->getMessage());
         }
 
         return $image;
@@ -1426,7 +1482,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param ArticleDetail $detail
      *
      * @return ArticleImage
-     * @throws ORMException
      */
     public function createChildImage(ArticleImage $parent, ArticleDetail $detail)
     {
@@ -1437,11 +1492,11 @@ ON duplicate key update afterbuy_id = $externalId;";
         $image->setParent($parent);
         $image->setArticleDetail($detail);
 
-        $this->entityManager->persist($image);
-
         try {
+            $this->entityManager->persist($image);
             $this->entityManager->flush();
-        } catch (OptimisticLockException $e) {
+        } catch (OptimisticLockException | ORMException $e) {
+            $this->logger->error($e->getMessage());
         }
 
         return $image;
@@ -1493,7 +1548,6 @@ ON duplicate key update afterbuy_id = $externalId;";
     /**
      * @param string $groupName
      * @return FilterGroup
-     * @throws ORMException
      */
     public function createFilterGroup(string $groupName)
     {
@@ -1510,10 +1564,10 @@ ON duplicate key update afterbuy_id = $externalId;";
             $filterGroup->setComparable(0);
             $filterGroup->setSortMode(0);
 
-            $this->entityManager->persist($filterGroup);
             try {
+                $this->entityManager->persist($filterGroup);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException $e) {
+            } catch (OptimisticLockException | ORMException $e) {
                 $this->logger->error('Error saving FilterGroup');
             }
         }
@@ -1525,7 +1579,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param FilterGroup $filterGroup
      * @param string $optionName
      * @return FilterOption
-     * @throws ORMException
      */
     public function createFilterOption(FilterGroup $filterGroup, string $optionName)
     {
@@ -1550,10 +1603,10 @@ ON duplicate key update afterbuy_id = $externalId;";
             $option->setName($optionName);
             $option->setFilterable(1);
 
-            $this->entityManager->persist($option);
             try {
+                $this->entityManager->persist($option);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException $e) {
+            } catch (OptimisticLockException | ORMException $e) {
                 $this->logger->error('Error saving FilterOption');
             }
 
@@ -1567,7 +1620,6 @@ ON duplicate key update afterbuy_id = $externalId;";
      * @param FilterOption $option
      * @param string $valueName
      * @return FilterValue
-     * @throws ORMException
      */
     public function createFilterValue(FilterOption $option, string $valueName)
     {
@@ -1583,14 +1635,16 @@ ON duplicate key update afterbuy_id = $externalId;";
             $filterValue = new FilterValue($option, $valueName);
             $filterValue->setPosition($position);
 
-            $this->entityManager->persist($filterValue);
+
             try {
+                $this->entityManager->persist($filterValue);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException $e) {
+            } catch (OptimisticLockException | ORMException $e) {
                 $this->logger->error('Error saving FilterValue');
             }
         }
 
         return $filterValue;
     }
+
 }

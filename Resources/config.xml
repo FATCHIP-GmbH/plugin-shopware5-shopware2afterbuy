@@ -137,7 +137,7 @@
             <label lang="en">Customer group</label>
             <store>Shopware.apps.Base.store.CustomerGroup</store>
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentINVOICE</name>
             <label lang="de">Zahlungsart INVOICE</label>
             <label lang="en">Payment INVOICE</label>
@@ -146,7 +146,7 @@
                     <displayField>description</displayField>
             </options>
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCREDIT_CARD</name>
             <label lang="de">Zahlungsart CREDIT_CARD</label>
             <label lang="en">Payment CREDIT_CARD</label>
@@ -155,7 +155,7 @@
                 <displayField>description</displayField>
             </options>
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentDIRECT_DEBIT</name>
             <label lang="de">Zahlungsart DIRECT_DEBIT</label>
             <label lang="en">Payment DIRECT_DEBIT</label>
@@ -165,7 +165,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentTRANSFER</name>
             <label lang="de">Zahlungsart TRANSFER</label>
             <label lang="en">Payment TRANSFER</label>
@@ -175,7 +175,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCASH_PAID</name>
             <label lang="de">Zahlungsart CASH_PAID</label>
             <label lang="en">Payment CASH_PAID</label>
@@ -185,7 +185,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCASH_ON_DELIVERY</name>
             <label lang="de">Zahlungsart CASH_ON_DELIVERY</label>
             <label lang="en">Payment CASH_ON_DELIVERY</label>
@@ -195,7 +195,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentPAYPAL</name>
             <label lang="de">Zahlungsart PAYPAL</label>
             <label lang="en">Payment PAYPAL</label>
@@ -205,7 +205,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentINVOICE_TRANSFER</name>
             <label lang="de">Zahlungsart INVOICE_TRANSFER</label>
             <label lang="en">Payment INVOICE_TRANSFER</label>
@@ -215,7 +215,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCLICKANDBUY</name>
             <label lang="de">Zahlungsart CLICKANDBUY</label>
             <label lang="en">Payment CLICKANDBUY</label>
@@ -225,7 +225,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentEXPRESS_CREDITWORTHINESS</name>
             <label lang="de">Zahlungsart EXPRESS_CREDITWORTHINESS</label>
             <label lang="en">Payment EXPRESS_CREDITWORTHINESS</label>
@@ -235,7 +235,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentPAYNET</name>
             <label lang="de">Zahlungsart PAYNET</label>
             <label lang="en">Payment PAYNET</label>
@@ -245,7 +245,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCOD_CREDITWORTHINESS</name>
             <label lang="de">Zahlungsart COD_CREDITWORTHINESS</label>
             <label lang="en">Payment COD_CREDITWORTHINESS</label>
@@ -255,7 +255,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentEBAY_EXPRESS</name>
             <label lang="de">Zahlungsart EBAY_EXPRESS</label>
             <label lang="en">Payment EBAY_EXPRESS</label>
@@ -265,7 +265,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentMONEYBOOKERS</name>
             <label lang="de">Zahlungsart MONEYBOOKERS</label>
             <label lang="en">Payment MONEYBOOKERS</label>
@@ -275,7 +275,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentCREDIT_CARD_MB</name>
             <label lang="de">Zahlungsart CREDIT_CARD_MB</label>
             <label lang="en">Payment CREDIT_CARD_MB</label>
@@ -285,7 +285,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentDIRECT_DEBIT_MB</name>
             <label lang="de">Zahlungsart DIRECT_DEBIT_MB</label>
             <label lang="en">Payment DIRECT_DEBIT_MB</label>
@@ -295,7 +295,7 @@
             </options>
 
         </element>
-        <element type="combo" required="true">
+        <element type="combo" required="false">
             <name>paymentOTHERS</name>
             <label lang="de">Zahlungsart OTHERS</label>
             <label lang="en">Payment OTHERS</label>

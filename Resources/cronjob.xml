@@ -16,5 +16,12 @@
         <interval>86400</interval>
         <disableOnError>false</disableOnError>
     </cronjob>
+    <cronjob>
+        <name>Sync Stock</name>
+        <action>Shopware_CronJob_AfterbuyUpdateStock</action>
+        <active>false</active>
+        <interval>3600</interval>
+        <disableOnError>false</disableOnError>
+    </cronjob>
 
 </cronjobs>

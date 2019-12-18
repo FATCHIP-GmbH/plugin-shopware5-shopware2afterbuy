@@ -97,6 +97,12 @@
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
+        <service id="viaeb_shopware_afterbuy.commands.update_stock" class="viaebShopwareAfterbuy\Commands\UpdateStock">
+            <tag name="console.command" />
+            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
+        </service>
+
         <service id="viaeb_shopware_afterbuy.commands.update_orders" class="viaebShopwareAfterbuy\Commands\UpdateOrders">
             <tag name="console.command" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -117,6 +123,24 @@
         <!-- Connection test -->
 
         <service class="viaebShopwareAfterbuy\Services\ReadData\External\ConnectionTestService" id="viaeb_shopware_afterbuy.services.read_data.external.connection_test_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        </service>
+
+        <!-- Stock -->
+
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadStockService" id="viaeb_shopware_afterbuy.services.read_data.external.read_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="setTarget">
+                <argument type="string">viaebShopwareAfterbuy\ValueObjects\Stock</argument>
+            </call>
+        </service>
+
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStockService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+            <argument id="models" type="service"/>
+            <call method="initHelper">
+                <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper"/>
+                <argument type="string">number</argument>
+                <argument>false</argument>
+            </call>
         </service>
 
         <!-- Products -->

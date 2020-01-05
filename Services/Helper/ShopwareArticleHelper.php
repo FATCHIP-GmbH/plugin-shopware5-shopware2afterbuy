@@ -73,7 +73,9 @@ class ShopwareArticleHelper extends AbstractHelper
         try {
             $this->entityManager->persist($detail);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving attribute');
+        } catch (ORMException $e) {
             $this->logger->error('Error saving attribute');
         }
     }

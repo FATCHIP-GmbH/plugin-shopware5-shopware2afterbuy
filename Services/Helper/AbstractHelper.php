@@ -182,7 +182,9 @@ class AbstractHelper
         try {
             $this->entityManager->persist($tax);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving tax rule', array($rate));
+        } catch (ORMException $e) {
             $this->logger->error('Error saving tax rule', array($rate));
         }
     }

@@ -357,7 +357,9 @@ class ShopwareOrderHelper extends AbstractHelper
 
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error storing afterbuy ids');
+        } catch (ORMException $e) {
             $this->logger->error('Error storing afterbuy ids');
         }
     }

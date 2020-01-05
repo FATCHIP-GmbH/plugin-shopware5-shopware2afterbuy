@@ -398,7 +398,9 @@ class AbstractHelper
         try {
             $this->entityManager->persist($media);
             $this->entityManager->flush($media);
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error($e->getMessage());
+        } catch (ORMException $e) {
             $this->logger->error($e->getMessage());
         }
 

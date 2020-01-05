@@ -856,7 +856,9 @@ class ShopwareOrderHelper extends AbstractHelper
         try {
             $this->entityManager->persist($customer);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error writing customer data.');
+        } catch (ORMException $e) {
             $this->logger->error('Error writing customer data.');
         }
 

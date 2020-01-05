@@ -427,7 +427,9 @@ ON duplicate key update afterbuy_id = $externalId;";
                 try {
                     $this->entityManager->persist($option);
                     $this->entityManager->flush($option);
-                } catch (OptimisticLockException | ORMException $e) {
+                } catch (OptimisticLockException $e) {
+                    $this->logger->error('Error assigning configurator options', array(json_encode($option)));
+                } catch (ORMException $e) {
                     $this->logger->error('Error assigning configurator options', array(json_encode($option)));
                 }
 

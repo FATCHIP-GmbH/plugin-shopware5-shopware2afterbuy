@@ -630,7 +630,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($supplier);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving supplier', array($name));
+        } catch (ORMException $e) {
             $this->logger->error('Error saving supplier', array($name));
         }
 
@@ -846,7 +848,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($article);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving temporary main article');
+        } catch (ORMException $e) {
             $this->logger->error('Error saving temporary main article');
         }
 
@@ -909,7 +913,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($group);
             $this->entityManager->flush($group);
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving configurator group', array($name));
+        } catch (ORMException $e) {
             $this->logger->error('Error saving configurator group', array($name));
         }
 
@@ -1127,7 +1133,9 @@ ON duplicate key update afterbuy_id = $externalId;";
                     $this->entityManager->persist($shopwareArticle);
                     $this->entityManager->flush();
                 }
-                catch(OptimisticLockException | ORMException $e) {
+                catch(OptimisticLockException $e) {
+                    $this->logger->error('Error storing base article values!');
+                } catch (ORMException $e) {
                     $this->logger->error('Error storing base article values!');
                 }
                 continue;
@@ -1159,7 +1167,9 @@ ON duplicate key update afterbuy_id = $externalId;";
                 $this->entityManager->persist($shopwareArticle);
 
                 $this->entityManager->flush();
-            } catch (OptimisticLockException | ORMException $e) {
+            } catch (OptimisticLockException $e) {
+                $this->logger->error($e->getMessage());
+            } catch (ORMException $e) {
                 $this->logger->error($e->getMessage());
             }
         }
@@ -1213,7 +1223,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($unit);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error saving unit', array($unit));
+        } catch (ORMException $e) {
             $this->logger->error('Error saving unit', array($unit));
         }
 
@@ -1474,7 +1486,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($image);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error($e->getMessage());
+        } catch (ORMException $e) {
             $this->logger->error($e->getMessage());
         }
 
@@ -1499,7 +1513,9 @@ ON duplicate key update afterbuy_id = $externalId;";
         try {
             $this->entityManager->persist($image);
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error($e->getMessage());
+        } catch (ORMException $e) {
             $this->logger->error($e->getMessage());
         }
 
@@ -1571,7 +1587,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             try {
                 $this->entityManager->persist($filterGroup);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException | ORMException $e) {
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterGroup');
+            } catch (ORMException $e) {
                 $this->logger->error('Error saving FilterGroup');
             }
         }
@@ -1610,7 +1628,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             try {
                 $this->entityManager->persist($option);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException | ORMException $e) {
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterOption');
+            } catch (ORMException $e) {
                 $this->logger->error('Error saving FilterOption');
             }
 
@@ -1643,7 +1663,9 @@ ON duplicate key update afterbuy_id = $externalId;";
             try {
                 $this->entityManager->persist($filterValue);
                 $this->entityManager->flush();
-            } catch (OptimisticLockException | ORMException $e) {
+            } catch (OptimisticLockException $e) {
+                $this->logger->error('Error saving FilterValue');
+            } catch (ORMException $e) {
                 $this->logger->error('Error saving FilterValue');
             }
         }

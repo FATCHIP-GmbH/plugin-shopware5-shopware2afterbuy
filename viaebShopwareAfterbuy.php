@@ -145,7 +145,8 @@ class viaebShopwareAfterbuy extends Plugin
                     ]);
                 }
             }
-        } catch (Zend_Db_Adapter_Exception | Zend_Db_Statement_Exception $e) {
+        } catch (Zend_Db_Adapter_Exception $e) {
+        } catch (Zend_Db_Statement_Exception $e) {
         }
     }
 

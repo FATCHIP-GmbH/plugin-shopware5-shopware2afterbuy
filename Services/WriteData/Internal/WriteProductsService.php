@@ -68,7 +68,10 @@ class WriteProductsService extends AbstractWriteDataService implements WriteData
     {
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException $e) {
+            $this->logger->error('Error storing products', $targetData);
+            exit('Error storing products');
+        } catch (ORMException $e) {
             $this->logger->error('Error storing products', $targetData);
             exit('Error storing products');
         }

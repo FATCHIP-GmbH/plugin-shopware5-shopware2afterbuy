@@ -51,6 +51,16 @@ class Cron implements SubscriberInterface
      * @var WriteDataInterface
      */
     protected $writeProductsService;
+    /**
+     * @var ReadDataInterface
+     */
+    protected $readStockService;
+
+    /**
+     * @var WriteDataInterface
+     */
+    protected $writeStockService;
+
 
     public function __construct(CachedConfigReader $configReader, string $pluginName)
     {
@@ -69,6 +79,9 @@ class Cron implements SubscriberInterface
 
             $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_orders_service');
             $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_status_service');
+
+            $this->readStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_stock_service');
+            $this->writeStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service');
         }
         //shopware is data carrying system otherwise
         else {
@@ -93,8 +106,23 @@ class Cron implements SubscriberInterface
     {
         return array(
             'Shopware_CronJob_AfterbuyUpdateProducts' => 'updateProducts',
-            'Shopware_CronJob_AfterbuyUpdateOrders' => 'updateOrders'
+            'Shopware_CronJob_AfterbuyUpdateOrders' => 'updateOrders',
+            'Shopware_CronJob_AfterbuyUpdateStock' => 'updateStock'
         );
+    }
+
+    public function updateStock() {
+        $filter = array(
+            'categories' => array(),
+            'products' => array(
+                'submitAll' => false
+            )
+        );
+
+        if(!empty($this->readStockService)) {
+            $products = $this->readStockService->get($filter['products']);
+            $this->writeStockService->put($products);
+        }
     }
 
     /** @noinspection PhpUnused */

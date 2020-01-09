@@ -24,7 +24,7 @@ class Stock extends AbstractValueObject
     /**
      * @return string
      */
-    public function getIdentifyer(): string
+    public function getIdentifyer()
     {
         return $this->identifyer;
     }

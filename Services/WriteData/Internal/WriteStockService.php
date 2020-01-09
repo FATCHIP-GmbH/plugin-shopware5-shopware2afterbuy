@@ -69,7 +69,10 @@ class WriteStockService extends AbstractWriteDataService implements WriteDataInt
     {
         try {
             $this->entityManager->flush();
-        } catch (OptimisticLockException | ORMException $e) {
+        } catch (OptimisticLockException$e) {
+            $this->logger->error('Error storing stock', $targetData);
+            exit('Error storing stock');
+        } catch (ORMException $e) {
             $this->logger->error('Error storing stock', $targetData);
             exit('Error storing stock');
         }

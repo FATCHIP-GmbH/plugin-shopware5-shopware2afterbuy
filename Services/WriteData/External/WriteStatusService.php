@@ -50,7 +50,8 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
                     ),
                     'ShippingInfo' => array(
                         'DeliveryDate' => date_format($order->getShippingDate(), 'd.m.Y H:i:s')
-                    )
+                    ),
+                    'AdditionalInfo' => $order->getTrackingNumber()
                 )
             );
         }

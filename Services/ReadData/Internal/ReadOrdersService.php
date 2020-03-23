@@ -61,6 +61,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
             $this->helper->setOrderValues($order, $entity);
             $this->helper->setOrderStatus($order, $entity);
 
+            if ($trackingNumber = $entity->getTrackingCode()) {
+                $order->setTrackingNumber($trackingNumber);
+            }
+
             $targetData[] = $order;
         }
 

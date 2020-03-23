@@ -60,6 +60,10 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
             catch(Exception $e) {
                 $this->logger->error('Error updating order state', array($shopwareOrder->getId()));
             }
+
+            if ($trackingNumber = $valueOrder->getTrackingNumber()) {
+                $shopwareOrder->setTrackingCode($trackingNumber);
+            }
         }
 
         try {

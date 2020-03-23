@@ -57,6 +57,10 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
             }
             $status->setAmount($shopwareOrder->getInvoiceAmount());
 
+            if ($trackingNumber = $shopwareOrder->getTrackingCode()) {
+                $status->setTrackingNumber($trackingNumber);
+            }
+
             $values[] = $status;
         }
 

@@ -9,6 +9,38 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.3.0" />
+    <changelog version="0.11.1">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Neu: Tracking Code wird übertragen</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>New: Tracking code will be transferred</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
+    <changelog version="0.11.0">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Neu: Cronjob und Command zum Synchronisieren des Bestandes</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>New: Cronjob and Command for stock sync</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="0.10.1">
         <changes lang="de">
             <![CDATA[

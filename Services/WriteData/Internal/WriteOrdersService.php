@@ -154,7 +154,13 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             return array();
         }
 
-        $filterField = 'ModDate';
+        //if the shop is the data carrying system, we do only import new orders,
+        //otherwise we will receive states from afterbuy for update
+        if((int)$this->config['mainSystem'] !== 1) {
+            $filterField = 'ModDate';
+        } else {
+            $filterField = 'AuctionEndDate';
+        }
 
         $filterDate = date_format($lastDate->getLastOrderImport(), 'd.m.Y H:i:s');
 

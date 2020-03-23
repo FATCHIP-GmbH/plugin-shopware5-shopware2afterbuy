@@ -79,6 +79,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
             $value->setPaid(Helper::convertDeString2Float($entity['PaymentInfo']['AlreadyPaid']));
 
+            if (array_key_exists('AdditionalInfo', $entity)) {
+                $value->setTrackingNumber($entity['AdditionalInfo']);
+            }
+
             $targetData[] = $value;
         }
 

@@ -28,6 +28,11 @@ class OrderStatus extends AbstractValueObject {
     protected $amount;
 
     /**
+     * @var string
+     */
+    public $trackingNumber;
+
+    /**
      * @return float
      */
     public function getAmount()
@@ -89,6 +94,22 @@ class OrderStatus extends AbstractValueObject {
     public function setShippingDate(DateTime $shippingDate)
     {
         $this->shippingDate = $shippingDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTrackingNumber()
+    {
+        return $this->trackingNumber;
+    }
+
+    /**
+     * @param string $trackingNumber
+     */
+    public function setTrackingNumber(string $trackingNumber)
+    {
+        $this->trackingNumber = $trackingNumber;
     }
 
 

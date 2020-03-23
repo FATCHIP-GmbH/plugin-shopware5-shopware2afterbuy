@@ -115,6 +115,11 @@ class Order extends AbstractValueObject {
     public $paymentTypeId;
 
     /**
+     * @var string
+     */
+    public $trackingNumber;
+
+    /**
      * @return bool
      */
     public function isCleared()
@@ -482,5 +487,21 @@ class Order extends AbstractValueObject {
     public function setUpdateDate(DateTime $updateDate)
     {
         $this->updateDate = $updateDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTrackingNumber()
+    {
+        return $this->trackingNumber;
+    }
+
+    /**
+     * @param string $trackingNumber
+     */
+    public function setTrackingNumber($trackingNumber)
+    {
+        $this->trackingNumber = $trackingNumber;
     }
 }

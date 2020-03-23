@@ -4,10 +4,11 @@
 namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
 use Exception;
-use Shopware\Models\Order\Order;
+use Shopware\Models\Order\Order as ShopwareOrder;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
+use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface {
 
@@ -38,25 +39,30 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
      */
     public function transform(array $data) {
 
-        foreach($data as $value) {
-            /** @var Order $order */
-            $order = $this->helper->getEntity($value->getExternalIdentifier(), 'afterbuyOrderId', true);
+        /** @var ValueOrder $valueOrder */
+        foreach($data as $valueOrder) {
+            /** @var ShopwareOrder $shopwareOrder */
+            $shopwareOrder = $this->helper->getEntity($valueOrder->getExternalIdentifier(), 'afterbuyOrderId', true);
 
-            if($order->getId() === null) {
+            if($shopwareOrder->getId() === null) {
                 continue;
             }
 
-            if($order->getPaymentStatus()->getName() !== 'completely_paid') {
-                $this->helper->setPaymentStatus($value, $order);
+            if($shopwareOrder->getPaymentStatus()->getName() !== 'completely_paid') {
+                $this->helper->setPaymentStatus($valueOrder, $shopwareOrder);
             }
 
-            $this->helper->setShippingStatus($value, $order);
+            $this->helper->setShippingStatus($valueOrder, $shopwareOrder);
 
             try {
-                $this->entityManager->persist($order);
+                $this->entityManager->persist($shopwareOrder);
             }
             catch(Exception $e) {
-                $this->logger->error('Error updating order state', array($order->getId()));
+                $this->logger->error('Error updating order state', array($shopwareOrder->getId()));
+            }
+
+            if ($trackingNumber = $valueOrder->getTrackingNumber()) {
+                $shopwareOrder->setTrackingCode($trackingNumber);
             }
         }
 

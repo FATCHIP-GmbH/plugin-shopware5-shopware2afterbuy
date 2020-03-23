@@ -8,7 +8,7 @@ use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\OrderStatus;
-use Shopware\Models\Order\Order;
+use Shopware\Models\Order\Order as ShopwareOrder;
 
 class ReadStatusService extends AbstractReadDataService implements ReadDataInterface
 {
@@ -38,14 +38,14 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
 
         $values = [];
 
-        foreach ($orders as $order) {
-            /** @var Order $order */
-            if(!$order->getAttribute()->getAfterbuyOrderId()) {
+        foreach ($orders as $shopwareOrder) {
+            /** @var ShopwareOrder $shopwareOrder */
+            if(!$shopwareOrder->getAttribute()->getAfterbuyOrderId()) {
                 continue;
             }
 
             $status = new OrderStatus();
-            $status->setAfterbuyOrderId($order->getAttribute()->getAfterbuyOrderId());
+            $status->setAfterbuyOrderId($shopwareOrder->getAttribute()->getAfterbuyOrderId());
 
             //should be replaced by values from status history
             try {
@@ -55,7 +55,11 @@ class ReadStatusService extends AbstractReadDataService implements ReadDataInter
             catch(Exception $e) {
                 //ugly datetime exception handling
             }
-            $status->setAmount($order->getInvoiceAmount());
+            $status->setAmount($shopwareOrder->getInvoiceAmount());
+
+            if ($trackingNumber = $shopwareOrder->getTrackingCode()) {
+                $status->setTrackingNumber($trackingNumber);
+            }
 
             $values[] = $status;
         }

@@ -5,12 +5,13 @@ namespace viaebShopwareAfterbuy\Services\WriteData\Internal;
 
 use Doctrine\ORM\ORMException;
 use Exception;
-use Shopware\Models\Order\Order;
+use Shopware\Models\Order\Order as ShopwareOrder;
 use viaebShopwareAfterbuy\Models\Status;
 use viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper;
 use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use Shopware\Models\Shop\Shop;
+use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
 
 /**
  * Class WriteOrdersService
@@ -53,15 +54,16 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $this->targetShop = $this->helper->getShop($this->config['targetShop']);
         $this->countries = $this->helper->getCountries();
 
-        foreach($data as $value) {
+        /** @var ValueOrder $valueOrder */
+        foreach($data as $valueOrder) {
             //log and ignore order if country is not setup in shop
-            if(!$this->countries[strtoupper($value->getBillingAddress()->getCountry())] ) {
-                $this->logger->error('Country is not available in Shop config.', array($value->getBillingAddress()->getCountry()));
+            if(!$this->countries[strtoupper($valueOrder->getBillingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($valueOrder->getBillingAddress()->getCountry()));
                 continue;
             }
 
-            if($value->getShippingAddress() && !$this->countries[strtoupper($value->getShippingAddress()->getCountry())] ) {
-                $this->logger->error('Country is not available in Shop config.', array($value->getShippingAddress()->getCountry()));
+            if($valueOrder->getShippingAddress() && !$this->countries[strtoupper($valueOrder->getShippingAddress()->getCountry())] ) {
+                $this->logger->error('Country is not available in Shop config.', array($valueOrder->getShippingAddress()->getCountry()));
                 continue;
             }
 
@@ -69,34 +71,38 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $this->logger->error('Default shipping import type not set.');
                 exit('Default shipping import type not set.');
             }
-            /** @var Order $order */
-            $order = $this->helper->getEntity($value->getExternalIdentifier(), 'number');
+            /** @var ShopwareOrder $shopwareOrder */
+            $shopwareOrder = $this->helper->getEntity($valueOrder->getExternalIdentifier(), 'number');
 
             //fullfilled orders should not get updated
-            if($order->getId() && $this->helper->isFullfilled($order)) {
+            if($shopwareOrder->getId() && $this->helper->isFullfilled($shopwareOrder)) {
                 continue;
             }
 
-            $this->helper->setOrderMainValues($value, $order, $this->targetShop);
-            $this->helper->setOrderTaxValues($value, $order);
-            $this->helper->setPaymentStatus($value, $order);
-            $this->helper->setShippingStatus($value, $order);
-            $this->helper->setPaymentType($value, $order, $this->config);
+            $this->helper->setOrderMainValues($valueOrder, $shopwareOrder, $this->targetShop);
+            $this->helper->setOrderTaxValues($valueOrder, $shopwareOrder);
+            $this->helper->setPaymentStatus($valueOrder, $shopwareOrder);
+            $this->helper->setShippingStatus($valueOrder, $shopwareOrder);
+            $this->helper->setPaymentType($valueOrder, $shopwareOrder, $this->config);
 
-            $customer = $this->helper->getCustomer($value, $value->getBillingAddress(), $this->targetShop);
-            $order->setCustomer($customer);
+            $customer = $this->helper->getCustomer($valueOrder, $valueOrder->getBillingAddress(), $this->targetShop);
+            $shopwareOrder->setCustomer($customer);
 
             if($customer === null) {
                 continue;
             }
 
-            $this->helper->setAddress($value, $order, $customer);
-            $this->helper->setAddress($value, $order, $customer, 'shipping');
-            $this->helper->setPositions($value, $order);
-            $this->helper->setShippingType($order, $this->config['shipping']);
+            $this->helper->setAddress($valueOrder, $shopwareOrder, $customer);
+            $this->helper->setAddress($valueOrder, $shopwareOrder, $customer, 'shipping');
+            $this->helper->setPositions($valueOrder, $shopwareOrder);
+            $this->helper->setShippingType($shopwareOrder, $this->config['shipping']);
+
+            if ($valueOrder->getTrackingNumber()) {
+                $shopwareOrder->setTrackingCode($valueOrder->getTrackingNumber());
+            }
 
             try {
-                $this->entityManager->persist($order);
+                $this->entityManager->persist($shopwareOrder);
             } catch (ORMException $e) {
                 $this->logger->error('ORMException while storing order');
             }

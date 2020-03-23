@@ -2,9 +2,10 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
+use Shopware\Models\Order\Order as ShopwareOrder;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopwareAfterbuy\ValueObjects\Order;
+use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
 use Shopware\Models\Order\Repository;
 
 class ReadOrdersService extends AbstractReadDataService implements ReadDataInterface {
@@ -32,13 +33,14 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
 
         $targetData = array();
 
+        /** @var ShopwareOrder $entity */
         foreach($data as $entity) {
             /** ignore order if not valid */
             if($entity->getBilling() === null || $entity->getDetails() === null) {
                 continue;
             }
 
-            /** @var Order $order */
+            /** @var ValueOrder $order */
             $order = new $this->targetEntity();
 
             //set order positions

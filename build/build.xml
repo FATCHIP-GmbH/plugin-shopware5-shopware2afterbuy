@@ -60,6 +60,7 @@
 			  <exclude name="**/build/**" />
 			  <exclude name="**/Build/**" />
 			  <exclude name="**/Manual/**" />
+			  <exclude name="**/test_data/**" />
 		  </fileset>
 	  </copy>
 

@@ -5,6 +5,8 @@ namespace viaebShopwareAfterbuy\Services\Helper;
 class ShopwareConfigHelper extends AbstractHelper
 {
     public static $AB_UNI_PAYMENT = 'ab_uni';
+    /** when problem with asynchronous config tool happens again, adjust this value */
+    public static $HIGHEST_KNOWN_VERSION_THAT_STORES_VALUES_AS_INTEGER = '5.5.7';
 
     public function getConfigValues($pluginName) {
         $query = $this->dbal->createQueryBuilder();
@@ -35,7 +37,9 @@ class ShopwareConfigHelper extends AbstractHelper
 
         foreach($values as $value) {
             $rawValue = empty($value['value']) ? unserialize($value['def']) : unserialize($value['value']);
-            if ($this::getShopwareVersion() <= '5.5.7' && in_array($value['name'], $specialValues)) {
+
+            $version = self::$HIGHEST_KNOWN_VERSION_THAT_STORES_VALUES_AS_INTEGER;
+            if (self::getShopwareVersion() <= $version && in_array($value['name'], $specialValues)) {
                 $rawValue = strval($rawValue);
             }
             $result[$value['name']] = $rawValue;

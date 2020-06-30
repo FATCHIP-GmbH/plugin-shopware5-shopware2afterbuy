@@ -46,17 +46,19 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             'success' => true,
         ]);
 
-        try{
-            if ($this->configHelper::getShopwareVersion() <= '5.5.7') {
-                $mainSystemValue = intval($_REQUEST['mainSystem']);
-                $ordernumberMappingValue = intval($_REQUEST['ordernumberMapping']);
-                $exportAllArticlesValue = intval($_REQUEST['ExportAllArticles']);
-            } else {
-                $mainSystemValue = $_REQUEST['mainSystem'];
-                $ordernumberMappingValue = $_REQUEST['ordernumberMapping'];
-                $exportAllArticlesValue = $_REQUEST['ExportAllArticles'];
-            }
+        $version = ShopwareConfigHelper::$HIGHEST_KNOWN_VERSION_THAT_STORES_VALUES_AS_INTEGER;
 
+        if (ShopwareConfigHelper::getShopwareVersion() <= $version) {
+            $mainSystemValue = intval($_REQUEST['mainSystem']);
+            $ordernumberMappingValue = intval($_REQUEST['ordernumberMapping']);
+            $exportAllArticlesValue = intval($_REQUEST['ExportAllArticles']);
+        } else {
+            $mainSystemValue = $_REQUEST['mainSystem'];
+            $ordernumberMappingValue = $_REQUEST['ordernumberMapping'];
+            $exportAllArticlesValue = $_REQUEST['ExportAllArticles'];
+        }
+
+        try{
             $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);

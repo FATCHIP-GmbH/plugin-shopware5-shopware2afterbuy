@@ -47,17 +47,27 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
         ]);
 
         try{
+            if ($this->configHelper::getShopwareVersion() <= '5.5.7') {
+                $mainSystemValue = intval($_REQUEST['mainSystem']);
+                $ordernumberMappingValue = intval($_REQUEST['ordernumberMapping']);
+                $exportAllArticlesValue = intval($_REQUEST['ExportAllArticles']);
+            } else {
+                $mainSystemValue = $_REQUEST['mainSystem'];
+                $ordernumberMappingValue = $_REQUEST['ordernumberMapping'];
+                $exportAllArticlesValue = $_REQUEST['ExportAllArticles'];
+            }
+
             $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
             $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
-            $this->configWriter->save('mainSystem', $_REQUEST['mainSystem'], $this->pluginName);
-            $this->configWriter->save('ordernumberMapping', $_REQUEST['ordernumberMapping'], $this->pluginName);
+            $this->configWriter->save('mainSystem', $mainSystemValue, $this->pluginName);
+            $this->configWriter->save('ordernumberMapping', $ordernumberMappingValue, $this->pluginName);
 
             $this->configWriter->save('minOrderDate', str_replace(" ", "T", $_REQUEST['minOrderDate']), $this->pluginName);
 
             $this->configWriter->save('baseCategory', intval($_REQUEST['baseCategory']), $this->pluginName);
-            $this->configWriter->save('ExportAllArticles', $_REQUEST['ExportAllArticles'], $this->pluginName);
+            $this->configWriter->save('ExportAllArticles', $exportAllArticlesValue, $this->pluginName);
             $this->configWriter->save('targetShop', intval($_REQUEST['targetShop']), $this->pluginName);
             $this->configWriter->save('shipping', intval($_REQUEST['shipping']), $this->pluginName);
             $this->configWriter->save('customerGroup', intval($_REQUEST['customerGroup']), $this->pluginName);

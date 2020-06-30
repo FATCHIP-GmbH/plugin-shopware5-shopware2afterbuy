@@ -27,8 +27,18 @@ class ShopwareConfigHelper extends AbstractHelper
 
         $result = [];
 
+        $specialValues = [
+            'mainSystem',
+            'ordernumberMapping',
+            'ExportAllArticles',
+        ];
+
         foreach($values as $value) {
-            $result[$value['name']] = empty($value['value']) ? unserialize($value['def']) : unserialize($value['value']);
+            $rawValue = empty($value['value']) ? unserialize($value['def']) : unserialize($value['value']);
+            if ($this::getShopwareVersion() <= '5.5.7' && in_array($value['name'], $specialValues)) {
+                $rawValue = strval($rawValue);
+            }
+            $result[$value['name']] = $rawValue;
         }
 
         return $result;

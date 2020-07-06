@@ -14,6 +14,7 @@
             <![CDATA[
                 <ul>
                     <li>Neu: Tracking Code wird übertragen</li>
+                    <li>Fix: Stock update reagiert jetzt auch auf die Backend Einstellung "Bestellnummer Mapping"</li>
                 </ul>
             ]]>
         </changes>
@@ -21,6 +22,7 @@
             <![CDATA[
                 <ul>
                     <li>New: Tracking code will be transferred</li>
+                    <li>Fix: Stock update respects now backend-setting "ordernumber mapping"</li>
                 </ul>
             ]]>
         </changes>

@@ -7,7 +7,7 @@ use Fatchip\Afterbuy\ApiClient;
 use viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
-use viaebShopwareAfterbuy\ValueObjects\Article as ValueArticle;
+use viaebShopwareAfterbuy\ValueObjects\Stock as ArticleStock;
 
 /**
  * Class ReadProductsService
@@ -19,7 +19,7 @@ class ReadStockService extends AbstractReadDataService implements ReadDataInterf
     /**
      * @param array $filter
      *
-     * @return ValueArticle[]
+     * @return ArticleStock[]
      */
     public function get(array $filter)
     {
@@ -33,7 +33,7 @@ class ReadStockService extends AbstractReadDataService implements ReadDataInterf
      *
      * @param array $products
      *
-     * @return ValueArticle[]
+     * @return ArticleStock[]
      */
     public function transform(array $products)
     {
@@ -43,8 +43,8 @@ class ReadStockService extends AbstractReadDataService implements ReadDataInterf
             return array();
         }
 
-        /** @var ValueArticle[] $valueArticles */
-        $valueArticles = array();
+        /** @var ArticleStock[] $articleStocks */
+        $articleStocks = array();
 
         foreach ($products as $product) {
 
@@ -52,10 +52,16 @@ class ReadStockService extends AbstractReadDataService implements ReadDataInterf
                 continue;
             }
 
-            $valueArticles[] = new $this->targetEntity($product["ProductID"], intval($product["Quantity"]));
+            if((int)$this->config['ordernumberMapping'] === 1) {
+                $articleIdentifier = $product['Anr'];
+            } else {
+                $articleIdentifier = $product["ProductID"];
+            }
+
+            $articleStocks[] = new $this->targetEntity($articleIdentifier, intval($product["Quantity"]));
         }
 
-        return $valueArticles;
+        return $articleStocks;
     }
 
 

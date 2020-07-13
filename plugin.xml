@@ -15,6 +15,7 @@
                 <ul>
                     <li>Neu: Tracking Code wird übertragen</li>
                     <li>Fix: Stock update reagiert jetzt auch auf die Backend Einstellung "Bestellnummer Mapping"</li>
+                    <li>Fix: Ein kleiner Fix um Änderungen an Artikeldaten zu übertragen, die im Backend List-Editor vorgenommen wurden"</li>
                 </ul>
             ]]>
         </changes>
@@ -23,6 +24,7 @@
                 <ul>
                     <li>New: Tracking code will be transferred</li>
                     <li>Fix: Stock update respects now backend-setting "ordernumber mapping"</li>
+                    <li>Fix: A minor Fix to transmit article changes from Backend List-Editor"</li>
                 </ul>
             ]]>
         </changes>

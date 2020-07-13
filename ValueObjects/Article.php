@@ -892,7 +892,7 @@ class Article extends AbstractValueObject
     /**
      * @param string $keywords
      */
-    public function setKeywords(string $keywords)
+    public function setKeywords($keywords)
     {
         $this->keywords = $keywords;
     }

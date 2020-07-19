@@ -346,6 +346,10 @@
 
         <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_products_helper">
             <argument id="models" type="service"/>
+            <call method="setConfig">
+                <argument type="service" id="shopware.plugin.cached_config_reader" />
+                <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
+            </call>
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>

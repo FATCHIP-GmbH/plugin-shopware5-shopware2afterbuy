@@ -52,13 +52,7 @@ class ReadStockService extends AbstractReadDataService implements ReadDataInterf
                 continue;
             }
 
-            if((int)$this->config['ordernumberMapping'] === 1) {
-                $articleIdentifier = $product['Anr'];
-            } else {
-                $articleIdentifier = $product["ProductID"];
-            }
-
-            $articleStocks[] = new $this->targetEntity($articleIdentifier, intval($product["Quantity"]));
+            $articleStocks[] = new $this->targetEntity($product["ProductID"], intval($product["Quantity"]));
         }
 
         return $articleStocks;

@@ -24,16 +24,18 @@ Die Konfiguration bezüglich des führenden Systems sollte nicht im Betrieb geä
 Das nicht führende System sollte vor Beginn der Synchronisation geleert werden.
 
 ## Cronjobs & Commands
-Diese Erweiterung stellt 2 Shopware-Cronjobs und alternativ 2 Commands für den Updateprozess bereit.
+Diese Erweiterung stellt 3 Shopware-Cronjobs und alternativ 3 Commands für den Updateprozess bereit.
 
 ### Cronjobs
-Die Cronjobs (Update Products & Update Orders) müssen nach Installation konfiguriert und aktiviert werden.
+Die Cronjobs (Update Products, Update Orders, Update Stock) müssen nach Installation konfiguriert und aktiviert werden.
+Der Cronjob Update:Stock steht nur zur Verfügung, wenn Afterbuy das führende System ist.
 
 ### Commands
 Anstelle der Cronjobs können die Commands verwendet werden.
 
     php bin/console Afterbuy:Update:Products
     php bin/console Afterbuy:Update:Orders
+    php bin/console Afterbuy:Update:Stock
     
 # Installation
 
@@ -47,4 +49,5 @@ Die bereitgestellten Cronjobs müssen nach vorgenommener Konfiguration aktiviert
 
     Sync Afterbuy Orders
     Sync Afterbuy Products
+    Sync Afterbuy Stock
        

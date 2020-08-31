@@ -120,6 +120,11 @@ class Order extends AbstractValueObject {
     public $trackingNumber;
 
     /**
+     * @var string
+     */
+    public $paymentStatus;
+
+    /**
      * @return bool
      */
     public function isCleared()
@@ -389,6 +394,22 @@ class Order extends AbstractValueObject {
     public function setTransactionId(string $transactionId)
     {
         $this->transactionId = $transactionId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentStatus()
+    {
+        return $this->paymentStatus;
+    }
+
+    /**
+     * @param string $paymentStatus
+     */
+    public function setPaymentStatus(string $paymentStatus)
+    {
+        $this->paymentStatus = $paymentStatus;
     }
 
     /**

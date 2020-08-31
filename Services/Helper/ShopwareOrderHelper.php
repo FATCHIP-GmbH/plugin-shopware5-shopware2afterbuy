@@ -1007,6 +1007,7 @@ class ShopwareOrderHelper extends AbstractHelper
             $order->setPaid(true);
             $order->setCleared(true);
         }
+        $order->setPaymentStatus($entity->getPaymentStatus()->getName());
     }
 
     /**

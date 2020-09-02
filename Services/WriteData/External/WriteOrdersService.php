@@ -108,6 +108,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'SetPay' => $value->isCleared() ? 1 : 0,
                 'CheckVID' => 1,
                 'CheckPackstation' => 1,
+                'PaymentStatus' => $value->getPaymentStatus(),
                 'PaymentTransactionId' => $value->getTransactionId(),
                 'AdditionalInfo' => $value->getTrackingNumber()
             );

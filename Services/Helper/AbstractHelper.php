@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Enlight_Components_Db_Adapter_Pdo_Mysql;
+use League\Flysystem\Util;
 use Psr\Log\LoggerInterface;
 use Shopware\Components\Model\ModelManager;
 use Shopware\Components\Model\ModelEntity;
@@ -78,6 +79,15 @@ class AbstractHelper
 
     /** @var array */
     public $config;
+
+    private $imageMimeTypes =
+        [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/bmp',
+            'image/tiff',
+        ];
 
     /**
      * @param ModelManager $entityManager
@@ -296,6 +306,11 @@ class AbstractHelper
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
 
         /**
+         * Follow redirects to prevent downloading html redirects as an image
+         */
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
+        /**
          * this enables self signed ssl certificates.
          * as long requests are possible via http, mitm-attacks  will always be a problem
          * @noinspection CurlSslServerSpoofingInspection
@@ -306,6 +321,8 @@ class AbstractHelper
 
         $raw = curl_exec($ch);
 
+        // uncomment to debug redirects and compare download url with redirect url
+        // $redirectURL = curl_getinfo($ch,CURLINFO_EFFECTIVE_URL );
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         $errorOccured = (
@@ -314,7 +331,7 @@ class AbstractHelper
         );
 
         if ($errorOccured) {
-            $this->logger->warning($error, array($url, $status));
+            $this->logger->error('Error Downloading Image: ' . $error, array($url, $status));
             return false;
         }
 
@@ -355,6 +372,19 @@ class AbstractHelper
         if ( ! $contents = $this->grab_image($url)) {
             return null;
         }
+
+        // check if content is really an image to prevent later errors
+        $mimeType = Util::guessMimeType($path, $contents);
+
+        if (! in_array($mimeType, $this->imageMimeTypes, true)) {
+            $this->logger->error('Error: Image file contents does not seem to contain a picture. Content matches ' . $mimeType, array($url));
+            echo 'Error: Image file contents does not seem to be a picture. Content matches ' . $mimeType .PHP_EOL;
+            return null;
+        } else {
+            $this->logger->info('Info: Image file content matches ' .$mimeType, array($url));
+            // echo 'Info: Image file content matches ' . $mimeType . PHP_EOL;
+        }
+
 
         /** @var MediaService $mediaService */
         $mediaService = Shopware()->Container()->get('shopware_media.media_service');

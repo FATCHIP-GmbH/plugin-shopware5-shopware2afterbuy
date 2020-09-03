@@ -5,7 +5,7 @@
     <label lang="en">%%NAME%%</label>
     <version>%%VERSION%%</version>
     <copyright>(c) by VIA-Connect</copyright>
-    <license>General Public License Version 3</license>
+    <license>GPL-3.0-only</license>
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.4.0" />

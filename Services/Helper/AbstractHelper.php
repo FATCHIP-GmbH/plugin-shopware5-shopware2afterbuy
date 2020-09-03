@@ -87,8 +87,6 @@ class AbstractHelper
             'image/gif',
             'image/bmp',
             'image/tiff',
-            'image/svg+xml',
-            'image/svg',
         ];
 
     /**

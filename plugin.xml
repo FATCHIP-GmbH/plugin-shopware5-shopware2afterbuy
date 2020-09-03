@@ -8,7 +8,25 @@
     <license>General Public License Version 3</license>
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
-    <compatibility minVersion="5.3.0" />
+    <compatibility minVersion="5.4.0" />
+    <changelog version="1.0.2">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Die Übertragung der PayPal-Transaktions-ID an Afterbuy wurde korrigiert.</li>
+                    <li>Korrektur des Bildimportes, falls das Bild nicht vorhanden sein sollte</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Fixed trasmitting of PayPal transaction ID to Afterbuy</li>
+                    <li>Fixed image import, if image is not available</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="1.0.1">
         <changes lang="de">
             <![CDATA[

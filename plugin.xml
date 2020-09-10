@@ -9,6 +9,22 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.4.0" />
+    <changelog version="1.0.3">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Korrektur des Imports von Variant Sets</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Fixed variant set import</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="1.0.2">
         <changes lang="de">
             <![CDATA[

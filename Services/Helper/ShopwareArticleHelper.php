@@ -1135,10 +1135,11 @@ ON duplicate key update afterbuy_id = $externalId;";
                 }
                 catch(OptimisticLockException $e) {
                     $this->logger->error('Error storing base article values!');
+                    continue;
                 } catch (ORMException $e) {
                     $this->logger->error('Error storing base article values!');
+                    continue;
                 }
-                continue;
             }
 
             $shopwareArticle->setSupplier($this->getSupplier($valueArticle->getManufacturer()));

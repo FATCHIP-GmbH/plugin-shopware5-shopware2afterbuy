@@ -297,11 +297,11 @@ class ApiClient
 	$advLogLevel = 3;
 
 	if ($advLogLevel >= 1) {
-		$requestFiltered = preg_replace('/<UserPassword>(.*?)<\/UserPassword>/', '<UserPassword>XXXXXXXX</UserPassword>', $request);						// remove Passwords
+		$requestFiltered = preg_replace('/<UserPassword>(.*?)<\/UserPassword>/', '<UserPassword>XXXXXXXX</UserPassword>', $request);				// remove Passwords
 		$requestFiltered = preg_replace('/<PartnerPassword>(.*?)<\/PartnerPassword>/', '<PartnerPassword>XXXXXXXX</PartnerPassword>', $requestFiltered);	// remove Passwords 
-		$requestFiltered = preg_replace('/&UserPassword=(.*?)&Action=/', '&UserPassword=XXXXXXXXXX&Action=', $requestFiltered);								// remove Passwords 
-		$requestFiltered = preg_replace('/&PartnerPass=(.*?)&PosAnz=/', '&PartnerPass=XXXXXXXX&PosAnz=', $requestFiltered);									// remove Passwords 
-		$requestFiltered = str_replace(array("\r", "\n", "\t"), '', $requestFiltered);		// removes \n \r \t
+		$requestFiltered = preg_replace('/&UserPassword=(.*?)&Action=/', '&UserPassword=XXXXXXXXXX&Action=', $requestFiltered);					// remove Passwords 
+		$requestFiltered = preg_replace('/&PartnerPass=(.*?)&PosAnz=/', '&PartnerPass=XXXXXXXX&PosAnz=', $requestFiltered);					// remove Passwords 
+		$requestFiltered = str_replace(array("\r", "\n", "\t"), '', $requestFiltered);			// removes \n \r \t
 		$requestFiltered = preg_replace("/[\s][\s]*/", " ", $requestFiltered);				// removes double Whitespaces
 		$responseFiltered = str_replace(array("\r", "\n", "\t"), '', $response);			// removes \n \r \t
 		$responseFiltered = preg_replace("/[\s][\s]*/", " ", $responseFiltered);			// removes double Whitespaces
@@ -313,18 +313,18 @@ class ApiClient
 		$xmlResponse = simplexml_load_string($responseFiltered);
 		if (($xmlResponse->CallStatus == "Success") OR ($xmlResponse->success == "1")) {
 			$needle = "&ArtikelStammID_1=";
-			if(strpos($requestFiltered, $needle) !== false){			// wenn der Request String "&ArtikelStammID=" enthält, handelt es sich um die Übergabe einer Bestellung.
+			if (strpos($requestFiltered, $needle) !== false){			// wenn der Request String "&ArtikelStammID=" enthält, handelt es sich um die Übergabe einer Bestellung.
 				if ($advLogLevel >= 3) {
 					$statusText1 = 'no Error - only info - Exported offer successfully to Afterbuy - ';
 					$this->logger->error($statusText1 . $statusText2, $content);
 				}
-			} else{
+			} else {
 				if ($advLogLevel >= 4) {
 					$statusText1 = 'no Error - only info - CronJob working correctly - ';
 					$this->logger->error($statusText1 . $statusText2, $content);
 				}
 			}
-		} else {														// if no Success in AB-Response...
+		} else {									// if no Success in AB-Response...
 			if ($advLogLevel >= 2) {
 				$statusText1 = 'ERROR! Check ';
 				$this->logger->error($statusText1 . $statusText2, $content);

@@ -125,12 +125,33 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                     $mainNumber = preg_replace('~\D~', '', $position->getInternalIdentifier());
                 }
 
+				/* ************************************************
+				$directShopLink 
+				0 default (old / default behavior up to Aferbuy Connector v.1.0.3)
+				1 for direct link with article number in afterbuy auction overview
+				
+				ToDo:
+				- include variable to plugin config screen or modify sourcecode (fixed) if old method / value is not needed anymore.
+				- find a better (more secure) way to read the shop URL. Maybe from Shopware config and optional with subfolder, if shop is not in the root directory.
+				- optional - not needed but maybe a little bit better - replace the whole article_link with the exact string read and generated from the article directly. - maybe a more optimized way.
+				************************************************ */
+				$directShopLink = 1;
+
+				if ($directShopLink == 1)
+					$mainNumber = $position->getInternalIdentifier();		// Shopware article number
+                
                 if(empty($mainNumber)) {
                     $mainNumber = 0;
                 }
 
                 $orders[$internalIdentifyer]['Artikelnr_' . $i] = $mainNumber;
-                $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
+				if ($directShopLink == 1) {
+					$orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getInternalIdentifier();										// Shopware article number
+					$websiteUrl = 'https://' . $_SERVER['SERVER_NAME'];																			// read Shop URL - better replace with shopURL from Shopware config...
+					$orders[$internalIdentifyer]['ArtikelLink_' . $i] = $websiteUrl . '/search?sSearch=' . $position->getInternalIdentifier();	// direct Link to the shop article
+				} else {
+					$orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();										// Shopware EAN (old method / value)
+				}
 
                 $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
 

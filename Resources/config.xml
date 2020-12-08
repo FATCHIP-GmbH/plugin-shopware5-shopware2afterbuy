@@ -47,6 +47,39 @@
             <label lang="de">Afterbuy User-Passwort</label>
             <label lang="en">Afterbuy User-Password</label>
         </element>
+        <element type="select" required="true">
+            <name>advLogLevel</name>
+            <label lang="de">Erweitertes Log-Level</label>
+            <label lang="en">Advanced Loglevel</label>
+            <description>Das erweiterte Logging kann über Einstellungen - Logfile - System-Log - "afterbuy_production[datum].log" eingesehen werden.</description>
+            <store>
+                <option>
+                    <value>0</value>
+                    <label lang="de">Logging dekativert</label>
+                    <label lang="en">Log disabled</label>
+                </option>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Standard-Log (veraltet)</label>
+                    <label lang="en">Standard-Log (old version)</label>
+                </option>
+                <option>
+                    <value>2</value>
+                    <label lang="de">nur Fehler</label>
+                    <label lang="en">Errors only</label>
+                </option>
+                <option>
+                    <value>3</value>
+                    <label lang="de">Fehler und übertragene Bestellungen (empfohlen)</label>
+                    <label lang="en">Errors and successful transmitted orders (recommend)</label>
+                </option>
+                <option>
+                    <value>4</value>
+                    <label lang="de">Fehler, übertragene Bestellungen und Alive-Meldungen zum CronJob</label>
+                    <label lang="en">Erros, transmitted orders and alive messages (CronJob working)</label>
+                </option>
+            </store>
+        </element>
         <element type="button">
             <name>Spacer2</name>
             <label>Artikeleinstellungen</label>

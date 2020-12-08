@@ -287,6 +287,7 @@ class ApiClient
 
 	Schöner wäre noch ein zusätzliches Parameterfeld ("Erweitertes Logging-Level" --> $advLogLevel) in der Plugin Konfiguration ("Verbesserungsvorschlag")
 	Dann könnte der User das Loglevel bequem über die Konfiguraton ändern.
+	EDIT: Wurde integriert - nur die Config muss noch korrekt ausgelesen werden, hab es aber nicht hin bekommen, die Funktion zum Auslesen der Config aufzurufen.
 
 	Hinweis: Folgende Datei wurde modifiziert, um das alte Logging zu deaktivieren:
 	[Shopware-Root]/custom/plugins/viaebShopwareAfterbuy/Services/ReadData/Internal/ReadOrdersService.php
@@ -294,7 +295,12 @@ class ApiClient
 
 	*/
 
-	$advLogLevel = 3;
+	$advLogLevel = 3;		// set level manually, because could not read from config at the moment.
+	
+	// $this->config = $configReader->getByPluginName($pluginName);
+	// need to add parameters to this function to read $pluginName... How to do this?
+	// maybe add a check, if parameter "advLogLevel" is set correctly in the config, otherwise assign a default value and send an errormessage to the log...
+	// $advLogLevel = $this->config["advLogLevel"];
 
 	if ($advLogLevel >= 1) {
 		$requestFiltered = preg_replace('/<UserPassword>(.*?)<\/UserPassword>/', '<UserPassword>XXXXXXXX</UserPassword>', $request);				// remove Passwords

@@ -138,7 +138,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 				$directShopLink = 1;
 
 				if ($directShopLink == 1)
-					$mainNumber = $position->getInternalIdentifier();		// Shopware article number
+					// $mainNumber = $position->getInternalIdentifier();				// Shopware article number - removed 2020-12-09 because if not numeric, AB-Response is not successful. Need to be numeric value for afterbuy.
+					$mainNumber = preg_replace('/[^0-9]/', '', $position->getInternalIdentifier());	// Shopware article number (with replaces all which is not numeric)
                 
                 if(empty($mainNumber)) {
                     $mainNumber = 0;

@@ -930,6 +930,10 @@ class ShopwareOrderHelper extends AbstractHelper
         $address->setFirstname($entity->getFirstName());
         $address->setLastname($entity->getLastName());
         $address->setCompany($entity->getCompany());
+
+        if ($entity instanceof Billing) {
+            $address->setVatId($entity->getVatId());
+        }
         $address->setStreet($entity->getStreet());
 
         if($entity->getAdditionalAddressLine1()) {
@@ -996,6 +1000,7 @@ class ShopwareOrderHelper extends AbstractHelper
         $order->setInternalIdentifier($entity->getNumber());
         $order->setCurrency($entity->getCurrency());
         $order->setTransactionId($entity->getTransactionId());
+        $order->setCustomerGroup($entity->getCustomer()->getGroup()->getName());
     }
 
     /**

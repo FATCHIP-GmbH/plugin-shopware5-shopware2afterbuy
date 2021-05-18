@@ -62,6 +62,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'PosAnz' => $value->getPositions()->count(),
                 'Kbenutzername' => $value->getCustomerNumber(),
                 'KFirma' => $value->getBillingAddress()->getCompany(),
+                'UsStID' => $value->getBillingAddress()->getVatId(),
+                'Haendler' => $this->getABHaendler($value),
                 'KVorname' => $value->getBillingAddress()->getFirstname(),
                 'KNachname' => $value->getBillingAddress()->getLastname(),
                 'KStrasse' => $value->getBillingAddress()->getStreet(),
@@ -198,6 +200,30 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 break;
             default:
                 $ret = '';
+        }
+        return $ret;
+    }
+
+    /**
+     * return Haendler flag according to shopware
+     * customer group
+     * @param Order $value
+     * @return int
+     */
+    protected function getABHaendler($value) {
+        switch ($value->getCustomerGroup()) {
+            case 'Kunde_5 netto':
+            case 'Kunde_10 netto':
+            case 'Kunde_20 netto':
+            case 'Kunde_Distributor_netto':
+            case 'Händler':
+                $ret = 1;
+                break;
+            case 'Shopkunden':
+                $ret = 0;
+                break;
+            default:
+                $ret = 0;
         }
         return $ret;
     }

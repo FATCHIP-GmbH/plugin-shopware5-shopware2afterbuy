@@ -35,6 +35,11 @@ class UpdateOrders extends ShopwareCommand
     protected $writeOrderService;
 
     /**
+     * @var WriteDataInterface
+     */
+    protected $updateOrderStatusService;
+
+    /**
      * ImportCategories constructor.
      *
      * @param CachedConfigReader $configReader
@@ -53,6 +58,8 @@ class UpdateOrders extends ShopwareCommand
 
             $this->readOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_orders_service');
+
+            $this->updateOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_status_service');
         }
         //shopware is data carrying system otherwise
         else {
@@ -112,6 +119,14 @@ EOF
 
         $orders = $this->readOrderService->get($filter);
         $output->writeln('Got Orders: ' . count($orders));
-        $this->writeOrderService->put($orders);
+        $updated = $this->writeOrderService->put($orders);
+
+        // update Orderstatus of all exported orders to transmit
+        // "Vorgangsinfo1" to afterbuy
+        if($this->updateOrderStatusService) {
+            $output->writeln('Updating VorgangsInfo1 for new Orders: ' . count($updated));
+            $this->updateOrderStatusService->update($updated);
+        }
+
     }
 }

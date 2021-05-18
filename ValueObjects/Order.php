@@ -69,6 +69,11 @@ class Order extends AbstractValueObject {
     public $transactionId = '';
 
     /**
+     * @var string
+     */
+    public $customergroup = '';
+
+    /**
      * @var bool
      */
     public $taxFree = false;
@@ -394,6 +399,22 @@ class Order extends AbstractValueObject {
     public function setTransactionId(string $transactionId)
     {
         $this->transactionId = $transactionId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerGroup()
+    {
+        return $this->customergroup;
+    }
+
+    /**
+     * @param string $customergroup
+     */
+    public function setCustomerGroup(string $customergroup)
+    {
+        $this->customergroup = $customergroup;
     }
 
     /**

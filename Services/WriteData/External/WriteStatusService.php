@@ -8,6 +8,7 @@ use viaebShopwareAfterbuy\Services\WriteData\AbstractWriteDataService;
 use viaebShopwareAfterbuy\Services\WriteData\WriteDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Category as ValueCategory;
 use viaebShopwareAfterbuy\ValueObjects\OrderStatus;
+use Shopware\Models\Order\Order as ShopwareOrder;
 
 class WriteStatusService extends AbstractWriteDataService implements WriteDataInterface
 {
@@ -20,6 +21,18 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
     public function put(array $valueCategories)
     {
         $catalogs = $this->transform($valueCategories);
+
+        return $this->send($catalogs);
+    }
+
+    /**
+     * @param ValueCategory[] $valueCategories
+     *
+     * @return array|null
+     */
+    public function update(array $valueCategories)
+    {
+        $catalogs = $this->updatetransform($valueCategories);
 
         return $this->send($catalogs);
     }
@@ -52,6 +65,34 @@ class WriteStatusService extends AbstractWriteDataService implements WriteDataIn
                         'DeliveryDate' => date_format($order->getShippingDate(), 'd.m.Y H:i:s')
                     ),
                     'AdditionalInfo' => $order->getTrackingNumber()
+                )
+            );
+        }
+
+        return $content;
+    }
+
+    public function updatetransform(array $orders)
+    {
+        $this->logger->debug('Storing ' . count($orders) . ' items.', array($orders));
+
+        if(empty($orders)) {
+            return array();
+        }
+
+        $content = array(
+            'Orders' => array()
+        );
+
+        foreach($orders as $ordernum => $ABOrdernum) {
+            $order = $this->entityManager->getRepository(ShopwareOrder::class)->findOneBy(['number' => $ordernum]);
+
+            $content['Orders'][] = array(
+                'Order' => array(
+                    'OrderID' => $order->getAttribute()->getAfterbuyOrderId(),
+                    'VorgangsInfo' => array (
+                        'VorgangsInfo1' => $order->getCustomer()->getGroup()->getName()
+                    ),
                 )
             );
         }

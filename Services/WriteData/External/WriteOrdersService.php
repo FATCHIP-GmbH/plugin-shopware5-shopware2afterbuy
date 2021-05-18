@@ -110,7 +110,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'CheckPackstation' => 1,
                 'PaymentStatus' => $value->getPaymentStatus(),
                 'PaymentTransactionId' => $value->getTransactionId(),
-                'AdditionalInfo' => $value->getTrackingNumber()
+                'ZFunktionsID' => $this->getABPaymentId($value->getPaymentType()),
             );
 
             $i = 1;
@@ -183,5 +183,22 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         return $submitted;
 
+    }
+
+    /**
+     * map Shopware Payments to Afterbuy Payments
+     * Used to make it possible to transmit transactionIDs to Afterbuy
+     * @param $paymentName
+     * @return int|string
+     */
+    protected function getABPaymentId($paymentName) {
+        switch ($paymentName) {
+            case 'CrefoPay Kauf auf Rechnung':
+                $ret = 23;
+                break;
+            default:
+                $ret = '';
+        }
+        return $ret;
     }
 }

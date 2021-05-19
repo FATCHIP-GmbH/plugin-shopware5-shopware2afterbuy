@@ -61,6 +61,11 @@ class Cron implements SubscriberInterface
      */
     protected $writeStockService;
 
+    /**
+     * @var WriteDataInterface
+     */
+    protected $updateOrderStatusService;
+
 
     public function __construct(CachedConfigReader $configReader, string $pluginName)
     {
@@ -82,6 +87,8 @@ class Cron implements SubscriberInterface
 
             $this->readStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_stock_service');
             $this->writeStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service');
+
+            $this->updateOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_status_service');
         }
         //shopware is data carrying system otherwise
         else {
@@ -179,7 +186,14 @@ class Cron implements SubscriberInterface
 
         $orders = $this->readOrderService->get($filter);
         $output .= 'Got orders: ' . count($orders). "\n";
-        $this->writeOrderService->put($orders);
+        $updated = $this->writeOrderService->put($orders);
+
+        // update Orderstatus of all exported orders to transmit
+        // "Vorgangsinfo1" to afterbuy
+        if($this->updateOrderStatusService) {
+            $output .='Updating VorgangsInfo1 for new Orders: ' . count($updated) . "\n";
+            $this->updateOrderStatusService->update($updated);
+        }
 
         return $output;
     }

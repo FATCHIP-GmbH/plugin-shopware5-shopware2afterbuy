@@ -205,7 +205,10 @@ class viaebShopwareAfterbuy extends Plugin
             'displayInBackend' => true
         ]);
 
-        $service->update('s_articles_attributes', 'afterbuy_id', 'string');
+        $service->update('s_articles_attributes', 'afterbuy_id', 'string', [
+            'label' => 'AfterbuyId',
+            'displayInBackend' => true
+        ]);
 
         $service->update('s_articles_attributes', 'afterbuy_export_enabled', 'boolean', [
             'label' => 'Artikel zu Afterbuy exportieren',

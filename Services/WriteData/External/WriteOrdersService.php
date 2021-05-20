@@ -211,9 +211,50 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
     
     protected function getABPaymentId($paymentName) {
 		switch ($paymentName) {
-			  case 'CrefoPay Kauf auf Rechnung':
+			  case 'Bank transfer':
+				$ret = 1;
+				break;
+			  case 'PayPal':
+				$ret = 5;
+				break;
+			  case 'Pay later.':
 				$ret = 23;
 				break;
+			  case 'iDEAL':
+				$ret = 20;
+				break;													
+			  case 'Sofortüberweisung':
+				$ret = 23;
+				break;
+			  case 'SOFORT Banking':
+				$ret = 23;
+				break;
+			  case 'KBC/CBC Payment Button':
+				$ret = 23;
+				break;
+			  case 'Belfius Pay Button':
+				$ret = 23;
+				break;		
+			  case 'Bancontact':
+				$ret = 23;
+				break;													
+			  case 'Giropay':
+				$ret = 24;
+				break;
+			  case 'eps':
+				$ret = 26;
+				break;
+			  case 'Przelewy24':
+				$ret = 27;
+				break;
+				// nicht gefunden auf live und stage 
+	          case 'Postepay':
+				$ret = 29;
+				break;
+				// nicht gefunden auf live und stage
+	          case 'SEPA Überweisung':
+				$ret = 23;
+				break;				
 			  default:
 				$ret = '';
 			}

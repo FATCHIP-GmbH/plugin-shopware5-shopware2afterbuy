@@ -393,6 +393,12 @@ class ShopwareOrderHelper extends AbstractHelper
             ->setMaxResults(200)
             ->getResult();
 
+        // die(var_dump($config));
+        // echo('minOrderDate:' . $config["minOrderDate"] . '\r\n');
+        // $test = $query->getQuery()->getSQL();
+        // die($test);
+        // die(var_dump($orders));
+
         return $orders;
     }
 
@@ -996,6 +1002,7 @@ class ShopwareOrderHelper extends AbstractHelper
         $order->setInternalIdentifier($entity->getNumber());
         $order->setCurrency($entity->getCurrency());
         $order->setTransactionId($entity->getTransactionId());
+        $order->setCustomerComment($entity->getCustomerComment());
     }
 
     /**

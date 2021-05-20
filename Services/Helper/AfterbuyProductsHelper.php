@@ -66,14 +66,22 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
                 'Products' => array()
             );
 
+            $sendBaseProduct = true;
             foreach ($value->getVariantArticles() as $variant) {
+                // GP: do not create a new base product when an afterbuy container already exists
+                // this is the case when a least one variant has a afterbuy id (externalidentifier)
+                if (!empty($variant->getExternalIdentifier())) {
+                    $sendBaseProduct = false;
+                }
                 $variant = $this->buildAfterbuyVariant($variant, $value);
                 $products['Products'][] = $variant;
             }
 
             $this->sendAfterbuyProducts($products, $api, $afterbuyProductIds);
-            $baseProduct = $this->buildAfterbuyVariantBaseProduct($value, $afterbuyProductIds);
-            $this->sendAfterbuyProducts($baseProduct, $api);
+            if ($sendBaseProduct) {
+                $baseProduct = $this->buildAfterbuyVariantBaseProduct($value, $afterbuyProductIds);
+                $this->sendAfterbuyProducts($baseProduct, $api);
+            }
         }
 
         return $afterbuyProductIds;
@@ -93,13 +101,18 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
             'Product' => array(
                 'ProductIdent' => array(
                     'ProductInsert' => 1,
-                    'Anr' => $variant->getVariantId()
+                    'Anr' => $this->getANR($variant->getInternalIdentifier()),
+                    // 'Anr' => '1,' .$this->getANR($value->getInternalIdentifier()),
                 ),
-                'Anr' => $variant->getVariantId(),
+                'Anr' => $this->getANR($variant->getInternalIdentifier()),
+                // 'Anr' => '1,' . $this->getANR($value->getInternalIdentifier()),
                 'EAN' => $variant->getInternalIdentifier(),
+                'ManufacturerStandardProductIDType' => 'EAN',
+                'ManufacturerStandardProductIDValue' => $variant->getEan(),
                 'Name' => $variant->getName(),
                 'ManufacturerPartNumber' => $variant->getSupplierNumber(),
-                'Description' => $variant->getDescription(),
+                // 'Description' => $variant->getDescription(),
+                'Description' => $variant->getEbayTemplate(),
                 'ShortDescription' => $variant->getShortDescription(),
                 'Keywords' => $variant->getKeywords(),
                 'Weight' => Helper::convertNumberToABString($variant->getWeight()),
@@ -117,11 +130,35 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
                 'ImageLargeURL' => $variant->getMainImageUrl(),
                 'ImageSmallURL' => $variant->getMainImageThumbnailUrl(),
                 'ProductPictures' => $variantImages,
-                'Stock' => ($variant->isLastStock() === true) ? 1 : 0,
-                'Discontinued' => ($variant->isLastStock() === true) ? 1 : 0,
-                'BasepriceFactor' => $variant->getBasePriceFactor()
+                // GP Always set Stock, Discontinued and MergeStock to 1
+                'Stock' => 1,
+                'Discontinued' => 1,
+                'MergeStock' => 1,
+                'BasepriceFactor' => $variant->getBasePriceFactor(),
+                'FreeValue1' => $variant->getAfterbuyFreeText1(),
+                'FreeValue2' => $variant->getAfterbuyFreeText2(),
+                'FreeValue3' => $variant->getAfterbuyFreeText3(),
+                'FreeValue4' => $variant->getAfterbuyFreeText4(),
+                'FreeValue5' => $variant->getAfterbuyFreeText5(),
+                'FreeValue6' => $variant->getAfterbuyFreeText6(),
+                'FreeValue7' => $variant->getAfterbuyFreeText7(),
+                'FreeValue8' => $variant->getAfterbuyFreeText8(),
+                'FreeValue9' => $variant->getAfterbuyFreeText9(),
+                'FreeValue10' => $variant->getAfterbuyFreeText10(),
+                'Stocklocation_1' => $variant->getAfterbuyLagerplatzHalle(),
+                'Stocklocation_2' => $variant->getAfterbuyLagerplatzRegal(),
+                'Stocklocation_3' => $variant->getAfterbuyLagerplatzEbene(),
+                'Stocklocation_4' => $variant->getAfterbuyLagerplatzFach(),
+                'Condition' => 1, // 0 = Kein Zustand; 1=Neu, 2=gebraucht, 3= Generalüberholt
+                'TitleReplace' => 1,
             )
         );
+
+        // check if product already exists in AB
+        // if product already exists no stocks willl be updated
+        if (! empty($variant->getExternalIdentifier())){
+            unset($product['Product']['Quantity']);
+        }
 
         return $product;
     }
@@ -162,12 +199,17 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
             'Product' => array(
                 'ProductIdent' => array(
                     'ProductInsert' => 1,
-                    'Anr' => '1,' . $value->getMainArticleId(),
+                    // 'Anr' => '1,' . $value->getMainArticleId(),
+                    'Anr' => '1,' .$this->getANR($value->getInternalIdentifier()),
                     'BaseProductType' => 1
                 ),
-                'Anr' => '1,' . $value->getMainArticleId(),
+                // 'Anr' => '1,' . $value->getMainArticleId(),
+                'Anr' => '1,' . $this->getANR($value->getInternalIdentifier()),
                 'EAN' => $value->getInternalIdentifier(),
-                'Name' => $value->getName(),
+                'ManufacturerStandardProductIDType' => 'EAN',
+                'ManufacturerStandardProductIDValue' => $value->getEan(),
+                // GP :prefix AB container name with 'CON_' for filtering
+                'Name' => 'CON_' . $value->getName(),
                 'Description' => $value->getDescription(),
                 'ShortDescription' => $value->getShortDescription(),
                 'Keywords' => $value->getKeywords(),
@@ -183,6 +225,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
                 'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
                 'Stock' => ($value->isLastStock() === true) ? 1 : 0,
                 'Discontinued' => ($value->isLastStock() === true) ? 1 : 0,
+                'TitleReplace' => 1,
+                'Condition' => 1, // 0 = Kein Zustand; 1=Neu, 2=gebraucht, 3= Generalüberholt
             )
         );
 
@@ -200,8 +244,8 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
 
         foreach($value->getVariantArticles() as $variant) {
             /** @var ValueArticle $variant */
-            if(array_key_exists($variant->getVariantId(), $afterbuyProductIds)) {
-                $variant->setExternalIdentifier($afterbuyProductIds[$variant->getVariantId()]);
+            if(array_key_exists($variant->getInternalIdentifier(), $afterbuyProductIds)) {
+                $variant->setExternalIdentifier($afterbuyProductIds[$variant->getInternalIdentifier()]);
             }
 
             if(!$variant->getExternalIdentifier()) {
@@ -285,21 +329,27 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
 
             try {
                 $response = $api->updateShopProducts($products);
+                echo(var_dump($products));
+                echo(var_dump($response));
+                // die(var_dump($response));
             }
             catch (Exception $e) {
                 $this->logger->error($e->getMessage(), array($e->getFile(), $products));
+                die($e->getMessage());
                 exit($e->getMessage());
             }
 
             if(array_key_exists('Result', $response) && array_key_exists('NewProducts', $response['Result'])) {
 
                 if (array_key_exists('ProductID', $response['Result']['NewProducts']['NewProduct'])) {
-                    $internalArticleNumber = $response['Result']['NewProducts']['NewProduct']['Anr'];
+                    // GP use EAN instead of ANR
+                    $internalArticleNumber = $response['Result']['NewProducts']['NewProduct']['EAN'];
                     $afterbuyProductIds[$internalArticleNumber] = $response['Result']['NewProducts']['NewProduct']['ProductID'];
                 } elseif (is_array($response['Result']['NewProducts']['NewProduct'][0])) {
 
                     foreach ($response['Result']['NewProducts']['NewProduct'] as $newProduct) {
-                        $internalArticleNumber = $newProduct['Anr'];
+                        // GP use EAN instead of ANR
+                        $internalArticleNumber = $newProduct['EAN'];
                         $afterbuyProductIds[$internalArticleNumber] = $newProduct['ProductID'];
                     }
                 }
@@ -317,11 +367,15 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
             'Product' => array(
                 'ProductIdent' => array(
                     'ProductInsert' => 1,
-                    'Anr' => $value->getVariantId()
+                    // 'Anr' => $value->getVariantId()
+                    'Anr' => $this->getANR($value->getInternalIdentifier()),
                 ),
                 'EAN' => $value->getInternalIdentifier(),
-                'Anr' => (string) $value->getVariantId(),
+                // 'Anr' => (string) $value->getVariantId(),
+                'Anr' => $this->getANR($value->getInternalIdentifier()),
                 'Name' => $value->getName(),
+                'ManufacturerStandardProductIDType' => 'EAN',
+                'ManufacturerStandardProductIDValue' => $value->getEan(),
                 'ManufacturerPartNumber' => $value->getSupplierNumber(),
                 'Description' => $value->getDescription(),
                 'ShortDescription' => $value->getShortDescription(),
@@ -337,15 +391,54 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
                 'ImageLargeURL' => $value->getMainImageUrl(),
                 'ImageSmallURL' => $value->getMainImageThumbnailUrl(),
                 'AddCatalogs' => $this->buildAfterbuyCatalogAssignment($value->getExternalCategoryIds()),
-                'Stock' => ($value->isLastStock() === true) ? 1 : 0,
-                'Discontinued' => ($value->isLastStock() === true) ? 1 : 0,
-                'BasepriceFactor' => $value->getBasePriceFactor()
+                // GP Always set Stock, Discontinued and MergeStock to 1
+                'Stock' => 1,
+                'Discontinued' => 1,
+                'MergeStock' => 1,
+                'BasepriceFactor' => $value->getBasePriceFactor(),
+                'FreeValue1' => $value->getAfterbuyFreeText1(),
+                'FreeValue2' => $value->getAfterbuyFreeText2(),
+                'FreeValue3' => $value->getAfterbuyFreeText3(),
+                'FreeValue4' => $value->getAfterbuyFreeText4(),
+                'FreeValue5' => $value->getAfterbuyFreeText5(),
+                'FreeValue6' => $value->getAfterbuyFreeText6(),
+                'FreeValue7' => $value->getAfterbuyFreeText7(),
+                'FreeValue8' => $value->getAfterbuyFreeText8(),
+                'FreeValue9' => $value->getAfterbuyFreeText9(),
+                'FreeValue10' => $value->getAfterbuyFreeText10(),
+                'Stocklocation_1' => $value->getAfterbuyLagerplatzHalle(),
+                'Stocklocation_2' => $value->getAfterbuyLagerplatzRegal(),
+                'Stocklocation_3' => $value->getAfterbuyLagerplatzEbene(),
+                'Stocklocation_4' => $value->getAfterbuyLagerplatzFach(),
+                'Condition' => 1, // 0 = Kein Zustand; 1=Neu, 2=gebraucht, 3= Generalüberholt
+                'TitleReplace' => 1,
             )
         );
 
         $product['Product']['ProductPictures'] = $this->buildAfterbuyImages($value->getProductPictures());
 
+        // check if product already exists in AB
+        // if product already exists no stocks willl be updated
+        if (! empty($value->getExternalIdentifier())){
+            unset($product['Product']['Quantity']);
+        }
+
         return $product;
+    }
+
+    private function getANR($Artnum) {
+        $Artnum= str_replace('-KS', '33', $Artnum);
+        $Artnum = str_replace('-SP', '55', $Artnum);
+        $Artnum = str_replace('-NB', '77', $Artnum);
+        $Artnum = str_replace('-GN', '88', $Artnum);
+        // Reserved
+        $Artnum = str_replace('-NEU1', '22', $Artnum);
+        $Artnum = str_replace('-NEU2', '44', $Artnum);
+        $Artnum = str_replace('-NEU3', '66', $Artnum);
+        $Artnum = str_replace('-NEU4', '99', $Artnum);
+
+        $Artnum = str_replace('-', '', $Artnum);
+        return $Artnum;
     }
 
     /**

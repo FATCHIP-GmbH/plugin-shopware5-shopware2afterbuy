@@ -3,7 +3,6 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\ORMException;
 use Shopware\Models\Article\Repository;
 use Shopware\Models\Article\Unit as ShopwareUnit;
@@ -88,8 +87,21 @@ class ShopwareArticleHelper extends AbstractHelper
     public function updateExternalIds(array $ids)
     {
         $sql = '';
+        $newIds = [];
 
+        // GP: internalId ist Articlenumber instead of articleId, so replace it
         foreach ($ids as $internalId => $externalId) {
+            $select = "SELECT  id from s_articles_details WHERE ordernumber ='". $internalId . "'";
+                try {
+                    $res = $this->db->query($select);
+                    $result = $res->fetch();
+                    $id = $result['id'];
+                    $newIds[$id] = $externalId;
+                } catch (Zend_Db_Adapter_Exception $e) {
+                    $this->logger->error('Error storing external ids', array($sql));
+                }
+        }
+        foreach ($newIds as $internalId => $externalId) {
             $sql .= "INSERT INTO s_articles_attributes (articledetailsID, afterbuy_id)
 VALUES ($internalId, $externalId)
 ON duplicate key update afterbuy_id = $externalId;";
@@ -159,6 +171,18 @@ ON duplicate key update afterbuy_id = $externalId;";
 
         $article->setVariantId($detail->getId());
         $article->setVariantArticles(null);
+
+        #Todo: refactor to function and loop
+        $article->setAfterbuyFreeText1($detail->getAttribute()->getAfterbuyFreeText_1());
+        $article->setAfterbuyFreeText2($detail->getAttribute()->getAfterbuyFreeText_2());
+        $article->setAfterbuyFreeText3($detail->getAttribute()->getAfterbuyFreeText_3());
+        $article->setAfterbuyFreeText4($detail->getAttribute()->getAfterbuyFreeText_4());
+        $article->setAfterbuyFreeText5($detail->getAttribute()->getAfterbuyFreeText_5());
+        $article->setAfterbuyFreeText6($detail->getAttribute()->getAfterbuyFreeText_6());
+        $article->setAfterbuyFreeText7($detail->getAttribute()->getAfterbuyFreeText_7());
+        $article->setAfterbuyFreeText8($detail->getAttribute()->getAfterbuyFreeText_8());
+        $article->setAfterbuyFreeText9($detail->getAttribute()->getAfterbuyFreeText_9());
+        $article->setAfterbuyFreeText10($detail->getAttribute()->getAfterbuyFreeText_10());
     }
 
     /**
@@ -227,6 +251,23 @@ ON duplicate key update afterbuy_id = $externalId;";
         $variant->setBuyingPrice($detail->getPurchasePrice());
 
         $variant->setExternalIdentifier($detail->getAttribute()->getAfterbuyId());
+        $variant->setAfterbuyFreeText1($detail->getAttribute()->getAfterbuyFreeText_1());
+        $variant->setAfterbuyFreeText2($detail->getAttribute()->getAfterbuyFreeText_2());
+        $variant->setAfterbuyFreeText3($detail->getAttribute()->getAfterbuyFreeText_3());
+        $variant->setAfterbuyFreeText4($detail->getAttribute()->getAfterbuyFreeText_4());
+        $variant->setAfterbuyFreeText5($detail->getAttribute()->getAfterbuyFreeText_5());
+        $variant->setAfterbuyFreeText6($detail->getAttribute()->getAfterbuyFreeText_6());
+        $variant->setAfterbuyFreeText7($detail->getAttribute()->getAfterbuyFreeText_7());
+        $variant->setAfterbuyFreeText8($detail->getAttribute()->getAfterbuyFreeText_8());
+        $variant->setAfterbuyFreeText9($detail->getAttribute()->getAfterbuyFreeText_9());
+        $variant->setAfterbuyFreeText10($detail->getAttribute()->getAfterbuyFreeText_10());
+
+        $test = $detail->getAttribute()->getAfterbuyLagerplatzHalle();
+        $variant->setAfterbuyLagerplatzHalle($detail->getAttribute()->getAfterbuyLagerplatzHalle());
+        $variant->setAfterbuyLagerplatzRegal($detail->getAttribute()->getAfterbuyLagerplatzRegal());
+        $variant->setAfterbuyLagerplatzEbene($detail->getAttribute()->getAfterbuyLagerplatzEbene());
+        $variant->setAfterbuyLagerplatzFach($detail->getAttribute()->getAfterbuyLagerplatzFach());
+        $variant->setEbayTemplate($detail->getAttribute()->getFcEbayPreview());
 
         return $variant;
     }
@@ -262,9 +303,10 @@ ON duplicate key update afterbuy_id = $externalId;";
         ArticleDetail $detail = null
     )
     {
+        $images = ($detail === null) ?$entity->getImages() : $detail->getImages();
+
         // add pictures from the main article that do not belong to
         // any variant.
-        $images = new ArrayCollection();
         if ($detail !== null) {
             $mainImages = $entity->getImages();
             foreach ($mainImages as $mainImage) {
@@ -276,22 +318,28 @@ ON duplicate key update afterbuy_id = $externalId;";
             }
         }
 
-        $mappedImages = ($detail === null) ?$entity->getImages() : $detail->getImages();
-
-        foreach ($mappedImages as $mappedImage) {
-            $images->add($mappedImage);
-        }
-
         if ($images->count()) {
+            // check whci image is used as preview
+            $previewImage = false;
             foreach ($images as $index => $image) {
+                if ($detail !== null && $image->getMain() === 1) {
+                    $previewImage = $index;
+                }
+            }
+            foreach ($images as $index => $image) {
+                if ($detail !== null && $index === 0 && $previewImage === false) {
+                    $previewImage = $index;
+                }
+            }
 
+            foreach ($images as $index => $image) {
                 /** @var Image $image */
                 if($image->getMedia() === null && $image->getParent() === null) {
                     continue;
                 }
 
                 try {
-                    $path = $image->getParent() === null ? $image->getMedia()->getPath() : $image->getParent()->getMedia()->getPath();
+                    $path = ($image->getParent() !== null) ? $image->getParent()->getMedia()->getPath() : $image->getMedia()->getPath();
                 } catch (Exception $e) {
                     continue;
                 }
@@ -315,8 +363,8 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
-                if ($detail !== null && $image->getMain() === 1) {
-                    $thumbnails = $image->getParent() !== null ? $image->getParent()->getMedia()->getThumbnails() : $image->getMedia()->getThumbnails();
+                if ($detail !== null && $previewImage === $index) {
+                    $thumbnails = ($image->getParent() !== null) ? $image->getParent()->getMedia()->getThumbnails() : $image->getMedia()->getThumbnails();
 
                     if (is_array($thumbnails)) {
                         $thumbnail = reset($thumbnails);

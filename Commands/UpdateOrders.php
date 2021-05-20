@@ -47,7 +47,7 @@ class UpdateOrders extends ShopwareCommand
         $config = $configReader->getByPluginName($pluginName);
 
         //if afterbuy data carrying system
-        if((int)$config['mainSystem'] == 2) {
+        if((int)$config['mainSystem'] != 2) {
             $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_orders_service');
             $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_status_service');
 
@@ -56,6 +56,7 @@ class UpdateOrders extends ShopwareCommand
         }
         //shopware is data carrying system otherwise
         else {
+            die('falscher Zweig');
             $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_status_service');
             $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_status_service');
 

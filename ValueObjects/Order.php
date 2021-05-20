@@ -125,6 +125,11 @@ class Order extends AbstractValueObject {
     public $paymentStatus;
 
     /**
+     * @var string
+     */
+    public $customerComment;
+
+    /**
      * @return bool
      */
     public function isCleared()
@@ -524,5 +529,21 @@ class Order extends AbstractValueObject {
     public function setTrackingNumber($trackingNumber)
     {
         $this->trackingNumber = $trackingNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomerComment()
+    {
+        return $this->customerComment;
+    }
+
+    /**
+     * @param string $customerComment
+     */
+    public function setCustomerComment($customerComment)
+    {
+        $this->customerComment = $customerComment;
     }
 }

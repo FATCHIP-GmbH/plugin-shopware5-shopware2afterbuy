@@ -169,8 +169,8 @@ class AfterbuyOrderHelper extends AbstractHelper
      * @param array $entity
      */
     public function setTransactionDetails(Order &$value, array $entity) {
-        if(array_key_exists('PaymentTransactionID', $entity['PaymentInfo'])) {
+/*        if(array_key_exists('PaymentTransactionID', $entity['PaymentInfo'])) {
             $value->setTransactionId($entity['PaymentInfo']['PaymentTransactionID']);
-        }
+        }*/
     }
 }

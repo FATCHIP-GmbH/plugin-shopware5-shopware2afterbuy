@@ -71,7 +71,7 @@ class ReadProductsService extends AbstractReadDataService implements ReadDataInt
                 $this->helper->setSimpleArticleValues($entity, $article, $netInput);
             }
             else {
-                $article->setInternalIdentifier('AB' . $entity->getMainDetail()->getNumber());
+                $article->setInternalIdentifier($entity->getMainDetail()->getNumber());
 
                 foreach ($entity->getDetails() as $detail) {
 

@@ -237,6 +237,68 @@ class Article extends AbstractValueObject
      */
     public $free10;
 
+    /**
+     * @var
+     */
+    public $afterbuyFreeText1;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText2;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText3;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText4;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText5;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText6;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText7;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText8;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText9;
+    /**
+     * @var
+     */
+    public $afterbuyFreeText10;
+
+    /**
+     * @var
+     */
+    public $afterbuyLagerplatzHalle;
+    /**
+     * @var
+     */
+    public $afterbuyLagerplatzRegal;
+    /**
+     * @var
+     */
+    public $afterbuyLagerplatzEbene;
+    /**
+     * @var
+     */
+    public $afterbuyLagerplatzFach;
+
+    /**
+     * @var
+     */
+    public $ebayTemplate;
 
     /**
      * @return array
@@ -831,6 +893,246 @@ class Article extends AbstractValueObject
     public function setFree10($free10)
     {
         $this->free10 = $free10;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText1()
+    {
+        return $this->afterbuyFreeText1;
+    }
+
+    /**
+     * @param mixed $free1
+     */
+    public function setAfterbuyFreeText1($free1)
+    {
+        $this->afterbuyFreeText1 = $free1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText2()
+    {
+        return $this->afterbuyFreeText2;
+    }
+
+    /**
+     * @param mixed $free2
+     */
+    public function setAfterbuyFreeText2($free2)
+    {
+        $this->afterbuyFreeText2 = $free2;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText3()
+    {
+        return $this->afterbuyFreeText3;
+    }
+
+    /**
+     * @param mixed $free3
+     */
+    public function setAfterbuyFreeText3($free3)
+    {
+        $this->afterbuyFreeText3 = $free3;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText4()
+    {
+        return $this->afterbuyFreeText4;
+    }
+
+    /**
+     * @param mixed $free4
+     */
+    public function setAfterbuyFreeText4($free4)
+    {
+        $this->afterbuyFreeText4 = $free4;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText5()
+    {
+        return $this->afterbuyFreeText5;
+    }
+
+    /**
+     * @param mixed $free5
+     */
+    public function setAfterbuyFreeText5($free5)
+    {
+        $this->afterbuyFreeText5 = $free5;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText6()
+    {
+        return $this->afterbuyFreeText6;
+    }
+
+    /**
+     * @param mixed $free6
+     */
+    public function setAfterbuyFreeText6($free6)
+    {
+        $this->afterbuyFreeText6 = $free6;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText7()
+    {
+        return $this->afterbuyFreeText7;
+    }
+
+    /**
+     * @param mixed $free7
+     */
+    public function setAfterbuyFreeText7($free7)
+    {
+        $this->afterbuyFreeText7 = $free7;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText8()
+    {
+        return $this->afterbuyFreeText8;
+    }
+
+    /**
+     * @param mixed $free8
+     */
+    public function setAfterbuyFreeText8($free8)
+    {
+        $this->afterbuyFreeText8 = $free8;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText9()
+    {
+        return $this->afterbuyFreeText9;
+    }
+
+    /**
+     * @param mixed $free9
+     */
+    public function setAfterbuyFreeText9($free9)
+    {
+        $this->afterbuyFreeText9 = $free9;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyFreeText10()
+    {
+        return $this->afterbuyFreeText10;
+    }
+
+    /**
+     * @param mixed $free10
+     */
+    public function setAfterbuyFreeText10($free10)
+    {
+        $this->afterbuyFreeText10 = $free10;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyLagerplatzHalle()
+    {
+        return $this->afterbuyLagerplatzHalle;
+    }
+
+    /**
+     * @param mixed $halle
+     */
+    public function setAfterbuyLagerplatzHalle($halle)
+    {
+        $this->afterbuyLagerplatzHalle = $halle;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyLagerplatzRegal()
+    {
+        return $this->afterbuyLagerplatzRegal;
+    }
+
+    /**
+     * @param mixed $regal
+     */
+    public function setAfterbuyLagerplatzRegal($regal)
+    {
+        $this->afterbuyLagerplatzRegal = $regal;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyLagerplatzEbene()
+    {
+        return $this->afterbuyLagerplatzEbene;
+    }
+
+    /**
+     * @param mixed $ebene
+     */
+    public function setAfterbuyLagerplatzEbene($ebene)
+    {
+        $this->afterbuyLagerplatzEbene = $ebene;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAfterbuyLagerplatzFach()
+    {
+        return $this->afterbuyLagerplatzFach;
+    }
+
+    /**
+     * @param mixed $template
+     */
+    public function setEbayTemplate($template)
+    {
+        $this->ebayTemplate = $template;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEbayTemplate()
+    {
+        return $this->ebayTemplate;
+    }
+
+    /**
+     * @param mixed $fach
+     */
+    public function setAfterbuyLagerplatzFach($fach)
+    {
+        $this->afterbuyLagerplatzFach = $fach;
     }
 
     /**

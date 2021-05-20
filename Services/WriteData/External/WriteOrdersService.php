@@ -54,7 +54,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             if($value->getShippingAddress() === null) {
                 continue;
             }
-
             $internalIdentifyer = $value->getInternalIdentifier();
 
             /** @noinspection PhpNonStrictObjectEqualityInspection */
@@ -102,7 +101,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'EkundenNr' => $value->getCustomerNumber(),
                 'Kundenerkennung' => 1,
                 'NoeBayNameAktu' => 1,
-                'Artikelerkennung' => ((int)$this->config['ordernumberMapping'] === 0) ? 0 : 1,
+                'Artikelerkennung' => 13,
                 'VID' => $internalIdentifyer,
                 'SoldCurrency' => $value->getCurrency(),
                 'SetPay' => $value->isCleared() ? 1 : 0,
@@ -110,7 +109,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'CheckPackstation' => 1,
                 'PaymentStatus' => $value->getPaymentStatus(),
                 'PaymentTransactionId' => $value->getTransactionId(),
-                'AdditionalInfo' => $value->getTrackingNumber()
+                'AdditionalInfo' => $value->getTrackingNumber(),
+                'ZFunktionsID' => $this->getABPaymentId($value->getPaymentType()),
+                'Kommentar' => $value->getCustomerComment(),
             );
 
             $i = 1;
@@ -132,7 +133,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $orders[$internalIdentifyer]['Artikelnr_' . $i] = $mainNumber;
                 $orders[$internalIdentifyer]['Artikelnr1_' . $i] = $position->getExternalIdentifier();
 
-                $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getInternalIdentifier();
+                $orders[$internalIdentifyer]['ArtikelStammID_' . $i] = $position->getExternalIdentifier();
 
                 $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();
 
@@ -142,6 +143,26 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $orders[$internalIdentifyer]['ArtikelMenge_' . $i] = $position->getQuantity();
 
                 $i++;
+            }
+
+            // GP: Set Klarna to completed
+            if ($value->getPaymentType() === 'Pay later.')
+            {
+                $orders[$value->getInternalIdentifier()]['SetPay'] = 1;
+                $orders[$value->getInternalIdentifier()]['PaymentStatus'] = 'completely_paid';
+            }
+
+            // GP: only export completely_paid Orders
+            // only export Pay Later Orders with the_payment_has_been_ordered
+            if ($value->getPaymentType() === 'Pay later.' &&
+                $value->getPaymentStatus() !== 'the_payment_has_been_ordered'
+            ) {
+                unset($orders[$value->getInternalIdentifier()]);
+            } else if (
+                $value->getPaymentType() !== 'Pay later.' &&
+                $value->getPaymentStatus() !== 'completely_paid')
+            {
+                unset($orders[$value->getInternalIdentifier()]);
             }
         }
 
@@ -160,6 +181,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         foreach ($targetData as $order) {
             $response = $api->sendOrdersToAfterbuy($order);
+            echo(var_dump($order));
+
+            echo(var_dump($response));
 
             if(empty($response)) {
                 continue;
@@ -183,5 +207,31 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
         return $submitted;
 
+    }
+    
+    protected function getABPaymentId($paymentName) {
+		switch ($paymentName) {
+			  case 'CrefoPay Kauf auf Rechnung':
+				$ret = 23;
+				break;
+			  default:
+				$ret = '';
+			}
+			return $ret;
+	}
+
+    private function getANR($Artnum) {
+        $Artnum= str_replace('-KS', '33', $Artnum);
+        $Artnum = str_replace('-SP', '55', $Artnum);
+        $Artnum = str_replace('-NB', '77', $Artnum);
+        $Artnum = str_replace('-GN', '88', $Artnum);
+        // Reserved
+        $Artnum = str_replace('-NEU1', '22', $Artnum);
+        $Artnum = str_replace('-NEU2', '44', $Artnum);
+        $Artnum = str_replace('-NEU3', '66', $Artnum);
+        $Artnum = str_replace('-NEU4', '99', $Artnum);
+
+        $Artnum = str_replace('-', '', $Artnum);
+        return $Artnum;
     }
 }

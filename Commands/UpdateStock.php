@@ -74,7 +74,7 @@ EOF
             )
         );
 
-        if((int)$this->config['mainSystem'] == 2) {
+        if((int)$this->config['mainSystem'] == 1) {
             $products = $this->readProductsService->get($filter['products']);
             $output->writeln('Got Products: ' . count($products));
             $this->writeProductsService->put($products);

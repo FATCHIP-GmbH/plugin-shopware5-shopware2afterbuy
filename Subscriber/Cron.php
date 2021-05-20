@@ -68,6 +68,7 @@ class Cron implements SubscriberInterface
 
         //if afterbuy data carrying system
         if((int)$config['mainSystem'] == 2) {
+            die();
             $this->readOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service');
             $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_orders_service');
 
@@ -91,11 +92,14 @@ class Cron implements SubscriberInterface
             $this->readProductsService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_products_service');
             $this->writeProductsService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_products_service');
 
-            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_status_service');
-            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_status_service');
+            $this->readOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_orders_service');
+            $this->writeOrderStatusService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_status_service');
 
-            $this->readOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_orders_service');
-            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_orders_service');
+            $this->readOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service');
+            $this->writeOrderService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.external.write_orders_service');
+
+            $this->readStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.read_data.external.read_stock_service');
+            $this->writeStockService = Shopware()->Container()->get('viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service');
         }
     }
 

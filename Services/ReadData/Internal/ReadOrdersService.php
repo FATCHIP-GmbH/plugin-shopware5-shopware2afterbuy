@@ -85,6 +85,10 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
          */
         $data = $this->helper->getUnexportedOrders($this->config);
 
+        if(!$data && $this->config['advLogLevel'] === "1") {
+            $this->logger->error('No data received', array('Orders', 'Read', 'Internal'));
+        }
+
         return $data;
     }
 }

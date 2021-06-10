@@ -55,13 +55,13 @@
             <store>
                 <option>
                     <value>0</value>
-                    <label lang="de">Logging dekativert</label>
+                    <label lang="de">Logging deaktivert</label>
                     <label lang="en">Log disabled</label>
                 </option>
                 <option>
                     <value>1</value>
-                    <label lang="de">Standard-Log (veraltet)</label>
-                    <label lang="en">Standard-Log (old version)</label>
+                    <label lang="de">nur Standard-Alive-Meldungen</label>
+                    <label lang="en">Alive messages only</label>
                 </option>
                 <option>
                     <value>2</value>

@@ -62,6 +62,11 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
                 continue;
             }
 
+            // Skip article and all variants if article is not active
+            if (!$value->isActive()) {
+                continue;
+            }
+
             $products = array(
                 'Products' => array()
             );
@@ -305,6 +310,11 @@ class AfterbuyProductsHelper extends ShopwareArticleHelper
              */
 
             if($value->getVariantArticles()) {
+                continue;
+            }
+
+            // Skip article and all variants if article is not active
+            if (!$value->isActive()) {
                 continue;
             }
 

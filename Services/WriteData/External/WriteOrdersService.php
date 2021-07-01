@@ -110,7 +110,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'CheckPackstation' => 1,
                 'PaymentStatus' => $value->getPaymentStatus(),
                 'PaymentTransactionId' => $value->getTransactionId(),
-                'AdditionalInfo' => $value->getTrackingNumber()
+                'AdditionalInfo' => $value->getTrackingNumber(),
+                'UseProductTaxRate' => ((int)$this->config['UseProductTaxRate'] === 1) ? 1 : 0
             );
 
             $i = 1;
@@ -137,7 +138,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();
 
                 $orders[$internalIdentifyer]['ArtikelEpreis_' . $i] = Helper::convertNumberToABString($position->getPrice());
-                $orders[$internalIdentifyer]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString($position->getTax());
+                $orders[$internalIdentifyer]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString(($value->isTaxFree() ? 0 : $position->getTax()));
 
                 $orders[$internalIdentifyer]['ArtikelMenge_' . $i] = $position->getQuantity();
 

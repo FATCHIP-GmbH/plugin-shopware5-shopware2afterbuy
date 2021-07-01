@@ -3,6 +3,7 @@
 
 namespace viaebShopwareAfterbuy\Services\Helper;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\ORMException;
 use Shopware\Models\Article\Repository;
 use Shopware\Models\Article\Unit as ShopwareUnit;
@@ -261,10 +262,24 @@ ON duplicate key update afterbuy_id = $externalId;";
         ArticleDetail $detail = null
     )
     {
-        if ($detail === null) {
-            $images = $entity->getImages();
-        } else {
-            $images = $detail->getImages();
+        // add pictures from the main article that do not belong to
+        // any variant.
+        $images = new ArrayCollection();
+        if ($detail !== null) {
+            $mainImages = $entity->getImages();
+            foreach ($mainImages as $mainImage) {
+                /** @var  Image $mainImage */
+                $mapping = $mainImage->getMappings();
+                if (! $mapping->count()) {
+                    $images->add($mainImage);
+                }
+            }
+        }
+
+        $mappedImages = ($detail === null) ?$entity->getImages() : $detail->getImages();
+
+        foreach ($mappedImages as $mappedImage) {
+            $images->add($mappedImage);
         }
 
         if ($images->count()) {
@@ -276,11 +291,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                 }
 
                 try {
-                    if ($detail === null) {
-                        $path = $image->getMedia()->getPath();
-                    } else {
-                        $path = $image->getParent()->getMedia()->getPath();
-                    }
+                    $path = $image->getParent() === null ? $image->getMedia()->getPath() : $image->getParent()->getMedia()->getPath();
                 } catch (Exception $e) {
                     continue;
                 }
@@ -304,8 +315,8 @@ ON duplicate key update afterbuy_id = $externalId;";
                     continue;
                 }
 
-                if ($index === 0 && $detail !== null) {
-                    $thumbnails = $image->getParent()->getMedia()->getThumbnails();
+                if ($detail !== null && $image->getMain() === 1) {
+                    $thumbnails = $image->getParent() !== null ? $image->getParent()->getMedia()->getThumbnails() : $image->getMedia()->getThumbnails();
 
                     if (is_array($thumbnails)) {
                         $thumbnail = reset($thumbnails);

@@ -65,6 +65,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('userPassword', $_REQUEST['userPassword'], $this->pluginName);
             $this->configWriter->save('mainSystem', $mainSystemValue, $this->pluginName);
             $this->configWriter->save('ordernumberMapping', $ordernumberMappingValue, $this->pluginName);
+            $this->configWriter->save('advLogLevel', $_REQUEST['advLogLevel'], $this->pluginName);
 
             $this->configWriter->save('minOrderDate', str_replace(" ", "T", $_REQUEST['minOrderDate']), $this->pluginName);
 

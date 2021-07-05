@@ -48,31 +48,31 @@
         <!-- Commands -->
 
         <service id="viaeb_shopware_afterbuy.commands.export_status" class="viaebShopwareAfterbuy\Commands\ExportStatus" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Import:Status" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_status_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_status_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.import_categories" class="viaebShopwareAfterbuy\Commands\ImportCategories" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Import:Categories" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_categories_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.export_categories" class="viaebShopwareAfterbuy\Commands\ExportCategories" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Export:Categories" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_categories_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.export_orders" class="viaebShopwareAfterbuy\Commands\ExportOrders" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Export:Orders" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_orders_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.import_orders" class="viaebShopwareAfterbuy\Commands\ImportOrders" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Import:Orders" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_orders_service" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -80,43 +80,43 @@
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.import_products" class="viaebShopwareAfterbuy\Commands\ImportProducts" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Import:Products" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_products_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_products_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.export_products" class="viaebShopwareAfterbuy\Commands\ExportProducts" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Export:Products" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_products_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_products_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.update_products" class="viaebShopwareAfterbuy\Commands\UpdateProducts" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Update:Products" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.update_stock" class="viaebShopwareAfterbuy\Commands\UpdateStock" public="true">
-            <tag name="console.command" />
-            <argument type="service" id="shopware.plugin.cached_config_reader" />
+            <tag name="console.command" command="Afterbuy:Update:Stock" />
+			<argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.update_orders" class="viaebShopwareAfterbuy\Commands\UpdateOrders" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Update:Orders" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.import_status" class="viaebShopwareAfterbuy\Commands\ImportStatus" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Import:Status"/>
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_status_service" />
         </service>
 
         <service id="viaeb_shopware_afterbuy.commands.reset_shop_connection" class="viaebShopwareAfterbuy\Commands\ResetShopConnection" public="true">
-            <tag name="console.command" />
+            <tag name="console.command" command="Afterbuy:Reset:Connection"/>
             <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper" />
         </service>
 

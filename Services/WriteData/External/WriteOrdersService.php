@@ -268,8 +268,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $Artnum = str_replace('-NB', '77', $Artnum);
         $Artnum = str_replace('-GN', '88', $Artnum);
         // Reserved
-        $Artnum = str_replace('-NEU1', '22', $Artnum);
-        $Artnum = str_replace('-NEU2', '44', $Artnum);
+        $Artnum = str_replace('-HD', '22', $Artnum);
+        $Artnum = str_replace('-GI', '44', $Artnum);
         $Artnum = str_replace('-NEU3', '66', $Artnum);
         $Artnum = str_replace('-NEU4', '99', $Artnum);
 

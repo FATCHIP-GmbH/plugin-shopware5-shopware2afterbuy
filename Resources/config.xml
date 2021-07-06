@@ -98,7 +98,25 @@
                 </option>
             </store>
         </element>
-
+        <element type="select" required="true">
+            <name>UseProductTaxRate</name>
+            <label lang="de">Umsatzsteuer-ID-Tabelle in Afterbuy beachten</label>
+            <label lang="en">Use Afterbuy product tax table</label>
+            <value>0</value>
+            <description>Bei Bestellübergabe an Afterbuy wird die Option UseProductTaxRate 1 gesendet</description>
+            <store>
+                <option>
+                    <value>0</value>
+                    <label lang="de">Nein</label>
+                    <label lang="en">No</label>
+                </option>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Ja</label>
+                    <label lang="en">Yes</label>
+                </option>
+            </store>
+        </element>
         <element type="button">
             <name>Spacer3</name>
             <label>Bestellexporteinstellungen</label>

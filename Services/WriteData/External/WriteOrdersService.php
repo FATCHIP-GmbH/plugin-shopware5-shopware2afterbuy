@@ -112,8 +112,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'CheckPackstation' => 1,
                 'PaymentStatus' => $value->getPaymentStatus(),
                 'PaymentTransactionId' => $value->getTransactionId(),
-                // 'AdditionalInfo' => $value->getTrackingNumber(),
-                'UseProductTaxRate' => ((int)$this->config['UseProductTaxRate'] === 1) ? 1 : 0,
                 'ZFunktionsID' => $this->getABPaymentId($value->getPaymentType()),
             );
 

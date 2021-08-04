@@ -45,13 +45,13 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         $orders = [];
 
         $this->ABCountries = $this->helper->getABCountryCodes();
-        
+
         foreach($data as $value) {
             /**
              * @var Order $value
              */
 
-            if($value->getShippingAddress() === null) {
+            if ($value->getShippingAddress() === null) {
                 continue;
             }
 
@@ -82,7 +82,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 'KLPLZ' => $value->getShippingAddress()->getZipcode(),
                 'KLOrt' => $value->getShippingAddress()->getCity(),
                 'KLLand' => $this->ABCountries[$value->getShippingAddress()->getCountry()],
-                
+
                 'Ktelefon' => $value->getBillingAddress()->getPhone(),
                 'Kemail' => $value->getBillingAddress()->getEmail(),
 
@@ -123,11 +123,11 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                  */
 
                 $mainNumber = $position->getExternalIdentifier();
-                if(!is_numeric($mainNumber)) {
+                if (!is_numeric($mainNumber)) {
                     $mainNumber = preg_replace('~\D~', '', $position->getInternalIdentifier());
                 }
 
-                if(empty($mainNumber)) {
+                if (empty($mainNumber)) {
                     $mainNumber = 0;
                 }
 
@@ -138,7 +138,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
                 $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();
 
-                $orders[$internalIdentifyer]['ArtikelEpreis_' . $i] = Helper::convertNumberToABString($position->getPrice());
+                $orders[$internalIdentifyer]['ArtikelEpreis_' . $i] = (!$value->isTaxFree() && $value->isNet()) ?
+                    Helper::convertNumberToABString(round($position->getPrice() + ($position->getPrice() / 100 ) * $position->getTax())) : Helper::convertNumberToABString($position->getPrice());
+
                 $orders[$internalIdentifyer]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString(($value->isTaxFree() ? 0 : $position->getTax()));
 
                 $orders[$internalIdentifyer]['ArtikelMenge_' . $i] = $position->getQuantity();
@@ -155,7 +157,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param $targetData
      * @return array
      */
-    public function send($targetData) {
+    public function send($targetData)
+    {
         $api = new ApiClient($this->apiConfig, $this->logger);
 
         $submitted = [];
@@ -163,23 +166,22 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
         foreach ($targetData as $order) {
             $response = $api->sendOrdersToAfterbuy($order);
 
-            if(empty($response)) {
+            if (empty($response)) {
                 continue;
             }
 
-            if(array_key_exists('ordernumber', $response)) {
+            if (array_key_exists('ordernumber', $response)) {
                 $submitted[$response['ordernumber']] = $response['afterbuyId'];
             }
 
-            if(array_key_exists('error', $response)) {
+            if (array_key_exists('error', $response)) {
                 $this->logger->error('Error submitting order', array($response));
             }
         }
 
         try {
             $this->helper->setAfterBuyIds($submitted);
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Error storing external order ids', array($e->getMessage()));
         }
 
@@ -193,7 +195,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param $paymentName
      * @return int|string
      */
-    protected function getABPaymentId($paymentName) {
+    protected function getABPaymentId($paymentName)
+    {
         switch ($paymentName) {
             case 'CrefoPay Kauf auf Rechnung':
                 $ret = 23;
@@ -210,7 +213,8 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      * @param Order $value
      * @return int
      */
-    protected function getABHaendler($value) {
+    protected function getABHaendler($value)
+    {
         switch ($value->getCustomerGroup()) {
             case 'Kunde_5 netto':
             case 'Kunde_10 netto':

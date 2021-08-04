@@ -1001,6 +1001,7 @@ class ShopwareOrderHelper extends AbstractHelper
         $order->setCurrency($entity->getCurrency());
         $order->setTransactionId($entity->getTransactionId());
         $order->setCustomerGroup($entity->getCustomer()->getGroup()->getName());
+        $order->setNet($entity->getNet() === 1);
     }
 
     /**

@@ -79,6 +79,11 @@ class Order extends AbstractValueObject {
     public $taxFree = false;
 
     /**
+     * @var bool
+     */
+    public $net = false;
+
+    /**
      * @var float
      */
     public $shippingNet;
@@ -447,6 +452,22 @@ class Order extends AbstractValueObject {
     public function setTaxFree(bool $taxFree)
     {
         $this->taxFree = $taxFree;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNet()
+    {
+        return $this->net;
+    }
+
+    /**
+     * @param bool $net
+     */
+    public function setNet(bool $net)
+    {
+        $this->net = $net;
     }
 
     /**

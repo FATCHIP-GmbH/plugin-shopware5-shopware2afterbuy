@@ -139,7 +139,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
                 $orders[$internalIdentifyer]['Artikelname_' . $i] = $position->getName();
 
                 $orders[$internalIdentifyer]['ArtikelEpreis_' . $i] = (!$value->isTaxFree() && $value->isNet()) ?
-                    Helper::convertNumberToABString(round($position->getPrice() + ($position->getPrice() / 100 ) * $position->getTax())) : Helper::convertNumberToABString($position->getPrice());
+                    Helper::convertNumberToABString(round($position->getPrice() + ($position->getPrice() / 100 ) * $position->getTax(),2)) : Helper::convertNumberToABString($position->getPrice());
 
                 $orders[$internalIdentifyer]['ArtikelMwSt_' . $i] = Helper::convertNumberToABString(($value->isTaxFree() ? 0 : $position->getTax()));
 

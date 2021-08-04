@@ -9,7 +9,25 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.4.0" />
-    <changelog version="1.0.3">
+    <changelog version="1.0.4">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Neue Option UseProductTaxRate für Bestellexport hinzugefügt</li>
+                    <li>Fehler beim Export von steuerfreien Shopware-Bestellungen mit Steuer = 0 in Afterbuy behoben</li>
+                    <li>Variantenbild-Exportlogik aktualisiert (Shopware -> Afterbuy)</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Added new option UseProductTaxRate for order export</li>
+                    <li>Fixed bug in export tax free shopware orders with tax = 0 to afterbuy</li>
+                    <li>Updated variant image export logic (Shopware -> Afterbuy)</li>
+                </ul>
+            ]]>
+        </changes>
         <changes lang="de">
             <![CDATA[
                 <ul>

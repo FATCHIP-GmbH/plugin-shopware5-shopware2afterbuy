@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="../../../engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Afterbuy Connector</label>
     <label lang="en">Afterbuy Connector</label>
-    <version>1.0.3</version>
+    <version>1.0.6</version>
     <copyright>(c) by VIA-Connect</copyright>
     <license>GPL-3.0-only</license>
     <link>https://www.via-connect.de/</link>

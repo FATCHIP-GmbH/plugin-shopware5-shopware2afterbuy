@@ -2,7 +2,9 @@
 
 namespace viaebShopwareAfterbuy\Services\ReadData\Internal;
 
+use Shopware\Models\Order\Order;
 use Shopware\Models\Order\Order as ShopwareOrder;
+use Shopware\Models\Order\Status;
 use viaebShopwareAfterbuy\Services\ReadData\AbstractReadDataService;
 use viaebShopwareAfterbuy\Services\ReadData\ReadDataInterface;
 use viaebShopwareAfterbuy\ValueObjects\Order as ValueOrder;
@@ -84,6 +86,35 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
          * @var Repository $repo
          */
         $data = $this->helper->getUnexportedOrders($this->config);
+
+        /** @see https://tickets.fatchip.de/view.php?id=79295
+         *  only export orders which have
+         * - Status::PAYMENT_STATE_COMPLETELY_PAID
+         * - OR its payment Description is either 'Vorkasse' or 'Kauf auf Rechnung'
+         */
+
+        $alwaysAllowedPayments = ['Vorkasse', 'Kauf auf Rechnung'];
+        foreach ($data AS $index => $order) {
+            /** @var Order $order */
+            $paymentStatus = $order->getPaymentStatus();
+            $paymentDesc = $order->getPayment()->getDescription();
+
+            if (in_array($paymentDesc, $alwaysAllowedPayments)) {
+                $this->logger->error('allowing export of Order ' . $order->getNumber() . ' because ' . $paymentDesc . ' is an allowed payment name' . PHP_EOL , []);
+                // echo('allowing export of Order ' . $order->getNumber() . ' because ' . $paymentDesc . ' is an allowed payment name' . PHP_EOL );
+                continue;
+            }
+
+            if ($paymentStatus->getId() === Status::PAYMENT_STATE_COMPLETELY_PAID) {
+                $this->logger->error('allowing export of Order ' . $order->getNumber() . ' because it is completely paid' . PHP_EOL, []);
+                // echo('allowing export of Order ' . $order->getNumber() . ' because it is completely paid' . PHP_EOL );
+                continue;
+            }
+
+            $this->logger->error('denying export of Order ' . $order->getNumber() . ' because it is not completely paid AND is not an allowed payment name' . PHP_EOL , []);
+            // echo('denying export of Order ' . $order->getNumber() . ' because it is not completely paid AND is not an allowed payment name' . PHP_EOL );
+            unset($data[$index]);
+        }
 
         if(!$data) {
             $this->logger->error('No data received', array('Orders', 'Read', 'Internal'));

@@ -145,10 +145,18 @@ ON duplicate key update afterbuy_id = $externalId;";
             $article->setLastStock(true);
         }
 
-        /** @var Price $price */
-        $price = $detail->getPrices()->filter(function (Price $price) {
-            return $price->getCustomerGroup() === $this->customerGroup;
-        })->first();
+        $prices = $detail->getPrices();
+        foreach ($prices AS $detailPrice) {
+            $group = $detailPrice->getCustomerGroup();
+            if ($group === $this->customerGroup) {
+                $price = $detailPrice;
+                break;
+            }
+        }
+        // if no price is found for the default customer group, use first found price
+        if (empty($price)) {
+            $price = $detail->getPrices()->first();
+        }
 
         $price = Helper::convertPrice($price->getPrice(), $entity->getTax()->getTax(), $netInput);
         $article->setPrice($price);
@@ -201,9 +209,18 @@ ON duplicate key update afterbuy_id = $externalId;";
             $variant->setLastStock(true);
         }
 
-        $price = $detail->getPrices()->filter(function (Price $price) {
-            return $price->getCustomerGroup() === $this->customerGroup;
-        })->first();
+        $prices = $detail->getPrices();
+        foreach ($prices AS $detailPrice) {
+            $group = $detailPrice->getCustomerGroup();
+            if ($group === $this->customerGroup) {
+                $price = $detailPrice;
+                break;
+            }
+        }
+        // if no price is found for the default customer group, use first found price
+        if (empty($price)) {
+            $price = $detail->getPrices()->first();
+        }
 
         $options = [];
 
@@ -1018,7 +1035,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         if ( ! $force) {
             $articles =
                 $articles->andWhere("(attributes.afterbuyId IS NULL OR attributes.afterbuyId = '') OR articles.changed >= :lastExport")
-                    ->setParameters(array('lastExport' => $lastExport));
+                    ->setParameter('lastExport',$lastExport);
         }
 
         $articles = $articles->getQuery()
@@ -1440,7 +1457,8 @@ ON duplicate key update afterbuy_id = $externalId;";
                     ->from(ImageRule::class, 'rule')
                     ->where('rule.mappingId = :mapping')
                     ->andWhere('rule.optionId = :option')
-                    ->setParameters(array('mapping' => $imageMapping->getId(), 'option' => $option->getId()))
+                    ->setParameter('mapping', $imageMapping->getId())
+                    ->setParameter('option', $option->getId())
                     ->setMaxResults(1)
                     ->getQuery();
 

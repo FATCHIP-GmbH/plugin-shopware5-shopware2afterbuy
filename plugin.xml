@@ -8,8 +8,24 @@
     <license>GPL-3.0-only</license>
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
-    <compatibility minVersion="5.4.0" />
-    <changelog version="1.0.4">
+    <compatibility minVersion="5.6.0" />
+    <changelog version="1.0.6_axion">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Übertragung von nur als bezahlt markierten Bestellungen an Afterbuy (Ausnahme Kauf auf Rechnung und Vorkasse)</li>
+                    <li>Kompatibilität mit SW 5.7 hergestellt</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Introduced transfer of orders marked as paid to Afterbuy (exception: purchase on invoice and prepayment)</li>
+                    <li>Compatibility established with SW 5.7</li>
+                </ul>
+            ]]>
+        </changes>
         <changes lang="de">
             <![CDATA[
                 <ul>

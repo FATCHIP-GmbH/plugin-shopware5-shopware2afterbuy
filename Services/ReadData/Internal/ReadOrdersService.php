@@ -93,7 +93,7 @@ class ReadOrdersService extends AbstractReadDataService implements ReadDataInter
          * - OR its payment Description is either 'Vorkasse' or 'Kauf auf Rechnung'
          */
 
-        $alwaysAllowedPayments = ['Vorkasse', 'Kauf auf Rechnung'];
+        $alwaysAllowedPayments = ['Vorkasse per Banküberwesiung', 'Crefopay Kauf auf Rechnung'];
         foreach ($data AS $index => $order) {
             /** @var Order $order */
             $paymentStatus = $order->getPaymentStatus();

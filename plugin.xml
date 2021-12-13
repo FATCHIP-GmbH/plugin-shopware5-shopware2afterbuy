@@ -9,6 +9,22 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.6.0" />
+    <changelog version="1.0.7">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Logging verbessert</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Improved Logging</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="1.0.6">
         <changes lang="de">
             <![CDATA[

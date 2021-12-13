@@ -7,7 +7,7 @@
 
         <!-- Cronjobs -->
 
-        <service id="viaeb_shopware_afterbuy.subscriber.cron" class="viaebShopwareAfterbuy\Subscriber\Cron">
+        <service id="viaeb_shopware_afterbuy.subscriber.cron" class="viaebShopwareAfterbuy\Subscriber\Cron" public="true">
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
             <tag name="shopware.event_subscriber" />
@@ -15,7 +15,7 @@
 
         <!-- DispatchEvents -->
 
-        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_order" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendOrder">
+        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_order" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendOrder" public="true">
             <argument id="models" type="service"/>
             <argument>%viaeb_shopware_afterbuy.plugin_dir%</argument>
             <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -26,7 +26,7 @@
             </call>
         </service>
 
-        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_article_list" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendArticleList">
+        <service id="viaeb_shopware_afterbuy.subscriber.post_dispatch_secure_backend_article_list" class="viaebShopwareAfterbuy\Subscriber\PostDispatchSecureBackendArticleList" public="true">
             <argument id="models" type="service"/>
             <argument>%viaeb_shopware_afterbuy.plugin_dir%</argument>
             <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -38,7 +38,7 @@
         </service>
 
         <!-- Subscriber -->
-        <service id="viaeb_shopware_afterbuy.subscriber.template_registration" class="viaebShopwareAfterbuy\Subscriber\TemplateRegistration">
+        <service id="viaeb_shopware_afterbuy.subscriber.template_registration" class="viaebShopwareAfterbuy\Subscriber\TemplateRegistration" public="true">
             <argument type="string">%viaeb_shopware_afterbuy.plugin_dir%</argument>
             <argument type="service" id="template"/>
             <tag name="shopware.event_subscriber"/>
@@ -47,94 +47,94 @@
 
         <!-- Commands -->
 
-        <service id="viaeb_shopware_afterbuy.commands.export_status" class="viaebShopwareAfterbuy\Commands\ExportStatus">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.export_status" class="viaebShopwareAfterbuy\Commands\ExportStatus" public="true">
+            <tag name="console.command" command="Afterbuy:Import:Status" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_status_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_status_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.import_categories" class="viaebShopwareAfterbuy\Commands\ImportCategories">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.import_categories" class="viaebShopwareAfterbuy\Commands\ImportCategories" public="true">
+            <tag name="console.command" command="Afterbuy:Import:Categories" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_categories_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_categories_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.export_categories" class="viaebShopwareAfterbuy\Commands\ExportCategories">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.export_categories" class="viaebShopwareAfterbuy\Commands\ExportCategories" public="true">
+            <tag name="console.command" command="Afterbuy:Export:Categories" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_categories_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_categories_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.export_orders" class="viaebShopwareAfterbuy\Commands\ExportOrders">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.export_orders" class="viaebShopwareAfterbuy\Commands\ExportOrders" public="true">
+            <tag name="console.command" command="Afterbuy:Export:Orders" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_orders_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.import_orders" class="viaebShopwareAfterbuy\Commands\ImportOrders">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.import_orders" class="viaebShopwareAfterbuy\Commands\ImportOrders" public="true">
+            <tag name="console.command" command="Afterbuy:Import:Orders" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_orders_service" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.import_products" class="viaebShopwareAfterbuy\Commands\ImportProducts">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.import_products" class="viaebShopwareAfterbuy\Commands\ImportProducts" public="true">
+            <tag name="console.command" command="Afterbuy:Import:Products" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_products_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_products_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.export_products" class="viaebShopwareAfterbuy\Commands\ExportProducts">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.export_products" class="viaebShopwareAfterbuy\Commands\ExportProducts" public="true">
+            <tag name="console.command" command="Afterbuy:Export:Products" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.internal.read_products_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.external.write_products_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.update_products" class="viaebShopwareAfterbuy\Commands\UpdateProducts">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.update_products" class="viaebShopwareAfterbuy\Commands\UpdateProducts" public="true">
+            <tag name="console.command" command="Afterbuy:Update:Products" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.update_stock" class="viaebShopwareAfterbuy\Commands\UpdateStock">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.update_stock" class="viaebShopwareAfterbuy\Commands\UpdateStock" public="true">
+            <tag name="console.command" command="Afterbuy:Update:Stock" />
+			<argument type="service" id="shopware.plugin.cached_config_reader" />
+            <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
+        </service>
+
+        <service id="viaeb_shopware_afterbuy.commands.update_orders" class="viaebShopwareAfterbuy\Commands\UpdateOrders" public="true">
+            <tag name="console.command" command="Afterbuy:Update:Orders" />
             <argument type="service" id="shopware.plugin.cached_config_reader" />
             <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.update_orders" class="viaebShopwareAfterbuy\Commands\UpdateOrders">
-            <tag name="console.command" />
-            <argument type="service" id="shopware.plugin.cached_config_reader" />
-            <argument type="string">%viaeb_shopware_afterbuy.plugin_name%</argument>
-        </service>
-
-        <service id="viaeb_shopware_afterbuy.commands.import_status" class="viaebShopwareAfterbuy\Commands\ImportStatus">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.import_status" class="viaebShopwareAfterbuy\Commands\ImportStatus" public="true">
+            <tag name="console.command" command="Afterbuy:Import:Status"/>
             <argument type="service" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" />
             <argument type="service" id="viaeb_shopware_afterbuy.services.write_data.internal.write_status_service" />
         </service>
 
-        <service id="viaeb_shopware_afterbuy.commands.reset_shop_connection" class="viaebShopwareAfterbuy\Commands\ResetShopConnection">
-            <tag name="console.command" />
+        <service id="viaeb_shopware_afterbuy.commands.reset_shop_connection" class="viaebShopwareAfterbuy\Commands\ResetShopConnection" public="true">
+            <tag name="console.command" command="Afterbuy:Reset:Connection"/>
             <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper" />
         </service>
 
         <!-- Connection test -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ConnectionTestService" id="viaeb_shopware_afterbuy.services.read_data.external.connection_test_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ConnectionTestService" id="viaeb_shopware_afterbuy.services.read_data.external.connection_test_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
         </service>
 
         <!-- Stock -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadStockService" id="viaeb_shopware_afterbuy.services.read_data.external.read_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadStockService" id="viaeb_shopware_afterbuy.services.read_data.external.read_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setTarget">
                 <argument type="string">viaebShopwareAfterbuy\ValueObjects\Stock</argument>
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStockService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStockService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_stock_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper"/>
@@ -145,7 +145,7 @@
 
         <!-- Products -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadProductsService" id="viaeb_shopware_afterbuy.services.read_data.external.read_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadProductsService" id="viaeb_shopware_afterbuy.services.read_data.external.read_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setTarget">
                 <argument type="string">viaebShopwareAfterbuy\ValueObjects\Article</argument>
@@ -155,7 +155,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteProductsService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteProductsService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Article\Article</argument>
@@ -167,7 +167,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadProductsService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadProductsService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setTarget">
                 <argument type="string">viaebShopwareAfterbuy\ValueObjects\Article</argument>
@@ -182,7 +182,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteProductsService" id="viaeb_shopware_afterbuy.services.write_data.external.write_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteProductsService" id="viaeb_shopware_afterbuy.services.write_data.external.write_products_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.afterbuy_products_helper"/>
@@ -191,7 +191,7 @@
 
         <!-- Orderstatus -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadStatusService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadStatusService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
@@ -199,7 +199,7 @@
                 <argument>false</argument>
             </call>
         </service>
-        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteStatusService" id="viaeb_shopware_afterbuy.services.write_data.external.write_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteStatusService" id="viaeb_shopware_afterbuy.services.write_data.external.write_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
@@ -210,7 +210,7 @@
 
         <!-- Orders -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadOrdersService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
@@ -225,7 +225,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadOrdersService" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadOrdersService" id="viaeb_shopware_afterbuy.services.read_data.external.read_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper"/>
@@ -237,7 +237,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteOrdersService" id="viaeb_shopware_afterbuy.services.write_data.external.write_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteOrdersService" id="viaeb_shopware_afterbuy.services.write_data.external.write_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument type="service" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper"/>
@@ -246,7 +246,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteOrdersService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_orders_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
@@ -258,7 +258,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStatusService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteStatusService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_status_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="setRepo">
                 <argument type="string">\Shopware\Models\Order\Order</argument>
@@ -272,13 +272,13 @@
 
         <!-- Categories -->
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadCategoriesService" id="viaeb_shopware_afterbuy.services.read_data.external.read_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\External\ReadCategoriesService" id="viaeb_shopware_afterbuy.services.read_data.external.read_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <call method="setTarget">
                 <argument type="string">viaebShopwareAfterbuy\ValueObjects\Category</argument>
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\Internal\WriteCategoriesService" id="viaeb_shopware_afterbuy.services.write_data.internal.write_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
             <call method="initHelper">
                 <argument id="viaeb_shopware_afterbuy.services.helper.shopware_category_helper" type="service"/>
@@ -287,7 +287,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\ReadData\Internal\ReadCategoriesService" id="viaeb_shopware_afterbuy.services.read_data.internal.read_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <call method="setTarget">
                 <argument type="string">viaebShopwareAfterbuy\ValueObjects\Category</argument>
             </call>
@@ -298,7 +298,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteCategoriesService" id="viaeb_shopware_afterbuy.services.write_data.external.write_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service">
+        <service class="viaebShopwareAfterbuy\Services\WriteData\External\WriteCategoriesService" id="viaeb_shopware_afterbuy.services.write_data.external.write_categories_service" parent="viaeb_shopware_afterbuy.services.abstract_data_service" public="true">
             <argument id="models" type="service"/>
               <call method="initHelper">
                 <argument id="viaeb_shopware_afterbuy.services.helper.shopware_category_helper" type="service"/>
@@ -309,7 +309,7 @@
 
         <!-- Abstracts -->
 
-        <service id="viaeb_shopware_afterbuy.services.abstract_data_service" class="viaebShopwareAfterbuy\Services\AbstractDataService" abstract="true">
+        <service id="viaeb_shopware_afterbuy.services.abstract_data_service" class="viaebShopwareAfterbuy\Services\AbstractDataService" abstract="true" public="true">
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>
@@ -324,7 +324,7 @@
 
         <!-- Helper -->
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareOrderHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_order_helper" public="true">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Order\Order</argument>
             <argument type="string">\Shopware\Models\Attribute\Order</argument>
@@ -337,14 +337,14 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyOrderHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyOrderHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_order_helper" public="true">
             <argument id="models" type="service"/>
             <call method="setLogger">
                 <argument type="service" id="afterbuy.logger" />
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_products_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\AfterbuyProductsHelper" id="viaeb_shopware_afterbuy.services.helper.afterbuy_products_helper" public="true">
             <argument id="models" type="service"/>
             <call method="setConfig">
                 <argument type="service" id="shopware.plugin.cached_config_reader" />
@@ -358,7 +358,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_category_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareCategoryHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_category_helper" public="true">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Category\Category</argument>
             <argument type="string">\Shopware\Models\Attribute\Category</argument>
@@ -372,7 +372,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareArticleHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_article_helper" public="true">
             <argument id="models" type="service"/>
             <argument type="string">\Shopware\Models\Article\Article</argument>
             <argument type="string">\Shopware\Models\Attribute\Attribute</argument>
@@ -392,7 +392,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareResetHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareResetHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_reset_helper" public="true">
             <argument id="models" type="service"/>
             <call method="initDb">
                 <argument type="service" id="shopware.db"/>
@@ -409,7 +409,7 @@
             </call>
         </service>
 
-        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_config_helper">
+        <service class="viaebShopwareAfterbuy\Services\Helper\ShopwareConfigHelper" id="viaeb_shopware_afterbuy.services.helper.shopware_config_helper" public="true">
             <argument id="models" type="service"/>
             <call method="initDbal">
                 <argument type="service" id="dbal_connection"/>
@@ -421,7 +421,7 @@
 
         <!-- Logger -->
 
-        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="false">
+        <service id="monolog.handler.afterbuy_file" class="Monolog\Handler\RotatingFileHandler" public="true">
             <argument>%kernel.logs_dir%/afterbuy_%kernel.environment%.log</argument>
             <argument>14</argument>
             <argument>%afterbuy.default_error_level%</argument>
@@ -430,7 +430,7 @@
             </call>
         </service>
 
-        <service id="afterbuy.logger" class="Shopware\Components\Logger">
+        <service id="afterbuy.logger" class="Shopware\Components\Logger" public="true">
             <argument>Afterbuy</argument>
             <argument type="collection">
                     <argument type="service" id="monolog.handler.afterbuy_file"/>

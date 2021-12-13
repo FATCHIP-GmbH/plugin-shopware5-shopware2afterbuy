@@ -117,7 +117,6 @@
             <label lang="en">Ordernumber Mapping</label>
             <value>0</value>
             <description>Bei Nutzung der Option "Produkt ID" werden von Afterbuy importierte Artikel mit der Bestellnummer entsprechend der Afterbuy-ProduktId versehen. Diese ist eineindeutig. Alternativ haben Sie hier die Möglichkeit, als Bestellnummer die Afterbuy-Artikelnummer zu vergeben. Dies wird zu Problemen führen, wenn Artikelnummern doppelt oder gar nicht vergeben sind!</description>
-
             <store>
                 <option>
                     <value>0</value>
@@ -128,6 +127,25 @@
                     <value>1</value>
                     <label lang="de">Artikelnummer</label>
                     <label>Article number</label>
+                </option>
+            </store>
+        </element>
+        <element type="select" required="true">
+            <name>UseProductTaxRate</name>
+            <label lang="de">Umsatzsteuer-ID-Tabelle in Afterbuy beachten</label>
+            <label lang="en">Use Afterbuy product tax table</label>
+            <value>0</value>
+            <description>Bei Bestellübergabe an Afterbuy wird die Option UseProductTaxRate 1 gesendet</description>
+            <store>
+                <option>
+                    <value>0</value>
+                    <label lang="de">Nein</label>
+                    <label lang="en">No</label>
+                </option>
+                <option>
+                    <value>1</value>
+                    <label lang="de">Ja</label>
+                    <label lang="en">Yes</label>
                 </option>
             </store>
         </element>

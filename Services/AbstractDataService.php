@@ -82,6 +82,7 @@ class AbstractDataService {
             'afterbuyUsername'             => $this->config['userName'],
             'afterbuyUserPassword'         => $this->config['userPassword'],
             'logLevel'                     => '1',
+            'advLogLevel'                  => (int) $this->config['advLogLevel'],
         ];
     }
 

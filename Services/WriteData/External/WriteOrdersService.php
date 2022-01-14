@@ -255,7 +255,10 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 				// nicht gefunden auf live und stage
 	          case 'SEPA Überweisung':
 				$ret = 23;
-				break;				
+				break;
+              case 'Pay now.':
+                  $ret = 23;
+                  break;
 			  default:
 				$ret = '';
 			}

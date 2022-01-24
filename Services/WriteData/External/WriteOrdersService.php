@@ -160,7 +160,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             ) {
                 unset($orders[$value->getInternalIdentifier()]);
             } else if (
-                ($value->getPaymentType() === 'Pay later.' || $value->getPaymentType() === 'Pay Now.') &&
+                ($value->getPaymentType() !== 'Pay later.' && $value->getPaymentType() !== 'Pay Now.') &&
                 $value->getPaymentStatus() !== 'completely_paid')
             {
                 unset($orders[$value->getInternalIdentifier()]);

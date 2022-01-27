@@ -388,9 +388,10 @@ class ShopwareOrderHelper extends AbstractHelper
                 ->setParameter('minOrderDate', $minOrderDate);
         }
 
+        $query->orderBy('orders.id', 'DESC');
         $orders = $query
             ->getQuery()
-            ->setMaxResults(200)
+            ->setMaxResults(1000)
             ->getResult();
 
         return $orders;

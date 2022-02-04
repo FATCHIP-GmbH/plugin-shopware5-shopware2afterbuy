@@ -147,7 +147,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             }
 
             // GP: Set Klarna to completed
-            if ($value->getPaymentType() === 'Pay later.' || $value->getPaymentType() === 'Pay Now.')
+            if ($value->getPaymentType() === 'Pay later.' || $value->getPaymentType() === 'Pay now.')
             {
                 $orders[$value->getInternalIdentifier()]['SetPay'] = 1;
                 $orders[$value->getInternalIdentifier()]['PaymentStatus'] = 'completely_paid';
@@ -155,12 +155,12 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
 
             // GP: only export completely_paid Orders
             // only export Pay Later and Pay Now Orders with the_payment_has_been_ordered
-            if (($value->getPaymentType() === 'Pay later.' || $value->getPaymentType() === 'Pay Now.') &&
+            if (($value->getPaymentType() === 'Pay later.' || $value->getPaymentType() === 'Pay now.') &&
                 $value->getPaymentStatus() !== 'the_payment_has_been_ordered'
             ) {
                 unset($orders[$value->getInternalIdentifier()]);
             } else if (
-                ($value->getPaymentType() !== 'Pay later.' && $value->getPaymentType() !== 'Pay Now.') &&
+                ($value->getPaymentType() !== 'Pay later.' && $value->getPaymentType() !== 'Pay now.') &&
                 $value->getPaymentStatus() !== 'completely_paid')
             {
                 unset($orders[$value->getInternalIdentifier()]);

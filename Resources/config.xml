@@ -361,7 +361,7 @@
             <label lang="de">Zeitversatz (Minuten)</label>
             <label lang="en">Time offset (minutes)</label>
             <value>0</value>
-            <description>Ruft Bestellungen ab LasterOrderImport - Zeitversatz ab. Dadurch werden AfterBuy Bestellungen importiert, die nach LasterOrderImport erstellt wurden, aber ein Datum in der Vergangenheit haben</description>
+            <description>Ruft Bestellungen ab LasterOrderImport +/- Zeitversatz ab. Dadurch können AfterBuy Bestellungen importiert werden, die nach LastOrderImport erstellt wurden, aber ein Datum in der Vergangenheit haben</description>
         </element>
     </elements>
 

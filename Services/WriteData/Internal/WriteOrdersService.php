@@ -160,9 +160,9 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             return array();
         }
 
-        //if the shop is the data carrying system, we do only import new orders,
-        //otherwise we will receive states from afterbuy for update
-        // if shopwarer is the data carriyng system apply the time offset config option to the date filter
+        // if the shop is the data carrying system, we do only import new orders,
+        // otherwise we will receive states from afterbuy for update
+        // if shopware is the data carrying system apply the time offset config option to the date filter
         if ((int)$this->config['mainSystem'] !== 1) {
             $filterField = 'ModDate';
             $filterDate = date_format($lastDate->getLastOrderImport(), 'd.m.Y H:i:s');

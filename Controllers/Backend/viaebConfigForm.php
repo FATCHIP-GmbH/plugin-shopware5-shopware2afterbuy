@@ -58,7 +58,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $exportAllArticlesValue = $_REQUEST['ExportAllArticles'];
         }
 
-        try{
+        try {
             $this->configWriter->save('partnerId', $_REQUEST['partnerId'], $this->pluginName);
             $this->configWriter->save('partnerPassword', $_REQUEST['partnerPassword'], $this->pluginName);
             $this->configWriter->save('userName', $_REQUEST['userName'], $this->pluginName);
@@ -91,8 +91,7 @@ class Shopware_Controllers_Backend_viaebConfigForm extends Shopware_Controllers_
             $this->configWriter->save('paymentCREDIT_CARD_MB', intval($_REQUEST['paymentCREDIT_CARD_MB']), $this->pluginName);
             $this->configWriter->save('paymentDIRECT_DEBIT_MB', intval($_REQUEST['paymentDIRECT_DEBIT_MB']), $this->pluginName);
             $this->configWriter->save('paymentOTHERS', intval($_REQUEST['paymentOTHERS']), $this->pluginName);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->View()->assign([
                 'success' => false,
             ]);

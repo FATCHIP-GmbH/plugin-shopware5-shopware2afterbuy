@@ -75,7 +75,14 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $shopwareOrder = $this->helper->getEntity($valueOrder->getExternalIdentifier(), 'number');
 
             //fullfilled orders should not get updated
+            /* no longer needed because of next
             if($shopwareOrder->getId() && $this->helper->isFullfilled($shopwareOrder)) {
+                continue;
+            }
+            */
+
+            //already imported orders should not get updated
+            if ($shopwareOrder->getId()) {
                 continue;
             }
 
@@ -123,8 +130,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             $this->entityManager->flush();
 
             $this->storeSubmissionDate('lastOrderImport');
-        }
-        catch(Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error($e->getMessage(), $targetData);
         }
 
@@ -137,7 +143,7 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
      */
     public function getOrderImportDateFilter(bool $force) {
 
-        if($force) {
+        if ($force) {
             return array();
         }
 
@@ -146,23 +152,30 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
          */
         $lastDate = $this->entityManager->getRepository(Status::class)->find(1);
 
-        if(!$lastDate) {
+        if (!$lastDate) {
             return array();
         }
 
-        if(!$lastDate->getLastOrderImport()) {
+        if (!$lastDate->getLastOrderImport()) {
             return array();
         }
 
         //if the shop is the data carrying system, we do only import new orders,
         //otherwise we will receive states from afterbuy for update
-        if((int)$this->config['mainSystem'] !== 1) {
+        // if shopwarer is the data carriyng system apply the time offset config option to the date filter
+        if ((int)$this->config['mainSystem'] !== 1) {
             $filterField = 'ModDate';
+            $filterDate = date_format($lastDate->getLastOrderImport(), 'd.m.Y H:i:s');
         } else {
             $filterField = 'AuctionEndDate';
+            $offset = is_numeric($this->config['deltaOrderDate']) ? (int)$this->config['deltaOrderDate'] : 0;
+            if ($offset < 0) {
+                $filterDate = date_format($lastDate->getLastOrderImport()->sub(new \DateInterval('PT' . abs($offset) . 'M')), 'd.m.Y H:i:s');
+            } else {
+                $filterDate = date_format($lastDate->getLastOrderImport()->add(new \DateInterval('PT' . $offset . 'M')), 'd.m.Y H:i:s');
+            }
         }
 
-        $filterDate = date_format($lastDate->getLastOrderImport(), 'd.m.Y H:i:s');
 
         $filter = array(
             'Filter' => array(

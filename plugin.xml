@@ -3,12 +3,28 @@
         xsi:noNamespaceSchemaLocation="../../../engine/Shopware/Components/Plugin/schema/plugin.xsd">
     <label lang="de">Afterbuy Connector</label>
     <label lang="en">Afterbuy Connector</label>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <copyright>(c) by VIA-Connect</copyright>
     <license>GPL-3.0-only</license>
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.6.0" />
+    <changelog version="1.0.8">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Konfigurierbaren Zeitversatz für Bestellimport hinzugefügt</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Added configurable time offset for order import</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="1.0.7">
         <changes lang="de">
             <![CDATA[

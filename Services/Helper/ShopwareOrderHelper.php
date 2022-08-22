@@ -385,12 +385,13 @@ class ShopwareOrderHelper extends AbstractHelper
             $minOrderDate = new DateTime($config["minOrderDate"]);
 
             $query->andWhere('orders.orderTime > :minOrderDate')
-                ->setParameter('minOrderDate', $minOrderDate);
+                ->setParameters(array('minOrderDate' => $minOrderDate));
         }
 
+        $query->orderBy('orders.id', 'DESC');
         $orders = $query
             ->getQuery()
-            ->setMaxResults(200)
+            ->setMaxResults(1000)
             ->getResult();
 
         return $orders;
@@ -433,7 +434,7 @@ class ShopwareOrderHelper extends AbstractHelper
             ->having('history.changeDate  >= :lastExport')
             ->andHaving('history.paymentStatusId = 12')
             ->andHaving('history.orderStatusId = 2 OR history.orderStatusId = 7')
-            ->setParameter('lastExport', $lastExport)
+            ->setParameters(array('lastExport' => $lastExport))
             ->getQuery()
             ->setMaxResults(145)
             ->getResult();
@@ -722,7 +723,7 @@ class ShopwareOrderHelper extends AbstractHelper
             ->select('states')
             ->from(OrderStatus::class, 'states', 'states.name')
             ->where('states.group = :group')
-            ->setParameter('group', 'payment')
+            ->setParameters(array('group' => 'payment'))
             ->getQuery()
             ->getResult();
 
@@ -738,7 +739,7 @@ class ShopwareOrderHelper extends AbstractHelper
             ->select('states')
             ->from(OrderStatus::class, 'states', 'states.name')
             ->where('states.group = :group')
-            ->setParameter('group', 'state')
+            ->setParameters(array('group' => 'state'))
             ->getQuery()
             ->getResult();
 

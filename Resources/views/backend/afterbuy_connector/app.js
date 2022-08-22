@@ -14,7 +14,7 @@ Ext.define('Shopware.apps.AfterbuyConnector', {
 
 
         Ext.Ajax.request({
-            url: '{url controller=AfterbuyConnector action=testConnection}',
+            url: '{url controller="AfterbuyConnector" action="testConnection"}',
             success: function(response) {
 
                 if(response.responseText == 'Afterbuy Connection not configured!') {

@@ -24,4 +24,8 @@ class PostDispatchSecureBackendOrder extends AbstractPostDispatchSecureBackend
             $this->controller->View()->assign($orders);
         }
     }
+
+    public function onPostDispatchSecureBackendArticleList()
+    {
+    }
 }

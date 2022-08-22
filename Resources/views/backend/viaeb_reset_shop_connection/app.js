@@ -8,7 +8,7 @@ Ext.define('Shopware.apps.viaebResetShopConnection', {
      */
     name: 'Shopware.apps.viaebResetShopConnection',
     bulkLoad: true,
-    loadPath: '{url action=load}',
+    loadPath: '{url action="load"}',
 
     /**
      * Requires class for the module (subapplication)

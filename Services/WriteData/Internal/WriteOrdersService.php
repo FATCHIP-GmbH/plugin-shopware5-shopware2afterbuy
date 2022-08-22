@@ -176,7 +176,6 @@ class WriteOrdersService extends AbstractWriteDataService implements WriteDataIn
             }
         }
 
-
         $filter = array(
             'Filter' => array(
                 'FilterName' => 'DateFilter',

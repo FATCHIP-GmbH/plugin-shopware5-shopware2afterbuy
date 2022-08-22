@@ -12,12 +12,12 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
 
     requestUrl: '{url controller="viaebResetShopConnection" action="reset"}',
     snippets: {
-        growlTitle: '{s name=growlMessage/title}Verbindung zurücksetzen{/s}',
-        growlMessageStart: '{s name=growlMessage/start}Starte Vorgang{/s}',
-        growlMessageSuccess: '{s name=growlMessage/success}Vorgang erfolgreich{/s}',
-        growlMessageFailureTimeout: '{s name=growlMessage/timeout}Timeout: Server nicht erreichbar{/s}',
-        growlMessageFailureServer: '{s name=growlMessage/serverFailure}Fehler: Bei der Ausführung des Vorgangs ist ein Fehler aufgetreten{/s}',
-        growlModule: '{s name=growlMessage/module}viaebResetShopConnection{/s}',
+        growlTitle: '{s name="growlMessage/title"}Verbindung zurücksetzen{/s}',
+        growlMessageStart: '{s name="growlMessage/start"}Starte Vorgang{/s}',
+        growlMessageSuccess: '{s name="growlMessage/success"}Vorgang erfolgreich{/s}',
+        growlMessageFailureTimeout: '{s name="growlMessage/timeout"}Timeout: Server nicht erreichbar{/s}',
+        growlMessageFailureServer: '{s name="growlMessage/serverFailure"}Fehler: Bei der Ausführung des Vorgangs ist ein Fehler aufgetreten{/s}',
+        growlModule: '{s name="growlMessage/module"}viaebResetShopConnection{/s}',
         success: '{s namespace="backend/afterbuy" name="success"}Erfolg{/s}',
         saveConnection: '{s namespace="backend/afterbuy" name="saveConnection"}Verbindungsdaten erfolgreich gespeichert{/s}',
         error: '{s namespace="backend/afterbuy" name="error"}Fehler{/s}',
@@ -53,7 +53,7 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                     Shopware.Notification.createGrowlMessage(
                         me.snippets.success,
                         me.snippets.connection,
-                        'Afterbuy Conncetor'
+                        'Afterbuy Connector'
                     );
                 },
                 failure: function (form, action) {
@@ -63,7 +63,7 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                         Shopware.Notification.createGrowlMessage(
                             me.snippets.error,
                             me.snippets.errorUnknown,
-                            'Afterbuy Conncetor'
+                            'Afterbuy Connector'
                         );
                     }
 
@@ -73,7 +73,7 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                         Shopware.Notification.createGrowlMessage(
                             me.snippets.error,
                             response.responseText,
-                            'Afterbuy Conncetor'
+                            'Afterbuy Connector'
                         );
 
                         return;
@@ -82,7 +82,7 @@ Ext.define('Shopware.apps.viaebConfigForm.controller.ConfigController', {
                     Shopware.Notification.createGrowlMessage(
                         me.snippets.error,
                         status.data.error,
-                        'Afterbuy Conncetor'
+                        'Afterbuy Connector'
                     );
                 }
             });

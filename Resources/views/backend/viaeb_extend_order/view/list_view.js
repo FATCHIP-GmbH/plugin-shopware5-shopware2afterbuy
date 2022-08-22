@@ -6,7 +6,7 @@ Ext.define('Shopware.apps.viaeb_extend_order.view.list.List', {
 
     mySnippets: {
         columns: {
-            afterbuyOrderId: '{s name=column/afterbuyOrderId}Afterbuy Order ID{/s}',
+            afterbuyOrderId: '{s name="column/afterbuyOrderId"}Afterbuy Order ID{/s}',
         },
     },
 

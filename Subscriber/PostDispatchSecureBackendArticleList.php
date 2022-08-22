@@ -26,4 +26,9 @@ class PostDispatchSecureBackendArticleList extends AbstractPostDispatchSecureBac
             $this->controller->View()->assign($columnConfig);
         }
     }
+
+    /** @noinspection PhpUnused */
+    public function onPostDispatchSecureBackendOrder()
+    {
+    }
 }

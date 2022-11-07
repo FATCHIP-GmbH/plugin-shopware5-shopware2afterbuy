@@ -9,6 +9,22 @@
     <link>https://www.via-connect.de/</link>
     <author>ViA-Online GmbH</author>
     <compatibility minVersion="5.6.0" />
+    <changelog version="1.0.9">
+        <changes lang="de">
+            <![CDATA[
+                <ul>
+                    <li>Kompatiblität mit PHP 8.0/8.1 hinzugefügt</li>
+                </ul>
+            ]]>
+        </changes>
+        <changes lang="en">
+            <![CDATA[
+                <ul>
+                    <li>Added compatibility with PHP 8.0/8.1</li>
+                </ul>
+            ]]>
+        </changes>
+    </changelog>
     <changelog version="1.0.8">
         <changes lang="de">
             <![CDATA[

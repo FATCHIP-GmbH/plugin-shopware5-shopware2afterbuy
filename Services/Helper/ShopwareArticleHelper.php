@@ -1035,7 +1035,7 @@ ON duplicate key update afterbuy_id = $externalId;";
         if ( ! $force) {
             $articles =
                 $articles->andWhere("(attributes.afterbuyId IS NULL OR attributes.afterbuyId = '') OR articles.changed >= :lastExport")
-                    ->setParameter('lastExport',$lastExport);
+                    ->setParameters(array('lastExport' => $lastExport));
         }
 
         $articles = $articles->getQuery()
@@ -1457,8 +1457,7 @@ ON duplicate key update afterbuy_id = $externalId;";
                     ->from(ImageRule::class, 'rule')
                     ->where('rule.mappingId = :mapping')
                     ->andWhere('rule.optionId = :option')
-                    ->setParameter('mapping', $imageMapping->getId())
-                    ->setParameter('option', $option->getId())
+                    ->setParameters(array('mapping' => $imageMapping->getId(), 'option' => $option->getId()))
                     ->setMaxResults(1)
                     ->getQuery();
 

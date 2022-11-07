@@ -140,7 +140,7 @@ class viaebShopwareAfterbuy extends Plugin
                     // replace int value by its string equivalent
                     // ex: 'i:0;' => 's:1:"0";'
                     Shopware()->Db()->query($sql, [
-                        implode(':', ['s', sizeof($fields[1]), '"' . $fields[1] . '"']) . ';',
+                        implode(':', ['s', strlen($fields[1]), '"' . $fields[1] . '"']) . ';',
                         $row['name'],
                     ]);
                 }

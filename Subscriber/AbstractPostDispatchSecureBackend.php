@@ -82,6 +82,33 @@ class AbstractPostDispatchSecureBackend implements SubscriberInterface
 
     }
 
+    public function onPostDispatchSecureBackendArticleList()
+    {
+        if ($this->controller->Request()->getActionName() == 'load') {
+            $this->view->extendsTemplate('backend/viaeb_extend_article_list/view/list_view.js');
+        } elseif ($this->controller->Request()->getActionName() == 'columnConfig') {
+
+            $columnConfig = $this->controller->View()->getAssign();
+
+            $columnConfig = $this->helper->manipulateArticleList($columnConfig, $this->config);
+
+            $this->controller->View()->assign($columnConfig);
+        }
+    }
+
+    /** @noinspection PhpUnused */
+    public function onPostDispatchSecureBackendOrder()
+    {
+        if ($this->controller->Request()->getActionName() == 'load') {
+            $this->view->extendsTemplate('backend/viaeb_extend_order/view/list_view.js');
+            $this->view->extendsTemplate('backend/viaeb_extend_order/model/order_model.tpl');
+        } elseif ($this->controller->Request()->getActionName() === 'getList') {
+            $orders = $this->controller->View()->getAssign();
+            $orders = $this->helper->addAfterbuyOrderIdToOrders($orders);
+            $this->controller->View()->assign($orders);
+        }
+    }
+
     /**
      * @param Enlight_Event_EventArgs $args
      */
